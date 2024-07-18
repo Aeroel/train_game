@@ -1,6 +1,6 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-import utiliy_functions from "./utiliy_functions.mjs";
+import utiliy_functions from "./utility_functions.js";
 
 const httpServer = createServer();
 
@@ -15,12 +15,18 @@ io.on("connection", onConnection);
 
 function onConnection(socket) {
     console.log("Socket connection established...");
-    socket.emit("test", "hehe");
+    socket.emit("testMessage", "hehe");
     observers.push({
         socket,
         x: 400,
         y: 400,
-        visionRadius: 400,
+        visionRange: 100,
+
+    });
+    socket.on("moveRequest", (moveReq) => {
+        const observer = observers.find(obs => obs.socket === socket);
+
+
     });
 }
 
@@ -28,18 +34,14 @@ httpServer.listen(3000);
 console.log("Started server");
 
 const observers = [];
-const MAP_WIDTH = 5000;
-const MAP_HEIGHT = 5000;
+const MAP_WIDTH = 50000;
+const MAP_HEIGHT = 50000;
 
-class Object {
-    constructor({ x, y, width, height, color }) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.color = color;
-        this.distancePerMove = 5;
-    }
+
+class Shared {
+    x;
+    y;
+
     move({ axis, direction }) {
         let axisAddition = null;
         let axisSubtraction = null;
@@ -84,6 +86,29 @@ class Object {
         }
     }
 
+}
+
+class Observer extends Shared {
+    visionRange;
+    socket;
+    constructor({x, y, visionRange, socket}) {
+        super();
+        this.visionRange = visionRange;
+        this.socket = socket;
+        this.x = x;
+        this.y = y;
+    }
+}
+class Object extends Shared {
+    constructor({ x, y, width, height, color }) {
+        super();
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        this.color = color;
+        this.distancePerMove = 5;
+    }
 
 }
 const objects = [];
@@ -94,7 +119,7 @@ objects.push(new Object(
     { x: 100, y: 100, width: 10, height: 10, color: 'black' }
 ));
 objects.push(new Object(
-    { x: 300, y: 300, width: 10, height: 10, color: 'blue' }
+    { x: 400, y: 400, width: 10, height: 10, color: 'blue' }
 ));
 objects.push(new Object(
     { x: 500, y: 500, width: 10, height: 10, color: 'green' }
@@ -109,24 +134,24 @@ function gameLoop() {
         object.move({ axis: "y", direction: yDirection });
 
     });
-    
+
     observers.forEach(observer => {
 
-        const minXToBeVisible = observer.x - observer.visionRadius;
-        const maxXToBeVisible = observer.x + observer.visionRadius;
+        const minXToBeVisible = observer.x - observer.visionRange;
+        const maxXToBeVisible = observer.x + observer.visionRange;
 
-        const minYToBeVisible = observer.y - observer.visionRadius;
-        const maxYToBeVisible = observer.y + observer.visionRadius;
+        const minYToBeVisible = observer.y - observer.visionRange;
+        const maxYToBeVisible = observer.y + observer.visionRange;
 
         const visibleObjects = [];
 
         objects.forEach(object => {
-            const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible && 
-            object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
-            if(objectIsVisible) {
+            const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible &&
+                object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
+            if (objectIsVisible) {
                 visibleObjects.push(object);
             }
-            
+
         });
         console.log(visibleObjects)
         observer.socket.emit("objects", visibleObjects);

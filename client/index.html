@@ -1,26 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="rando.min.js"></script>
     <meta charset="UTF-8">
     <title>Page</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id ="game"></canvas>
-<script type = "module">
-    import game from "./game.mjs"
-    import { io } from "./socket.io.esm.min.js";
-
-    game.beginGame();
-    const socket = io("127.0.0.1:3000");
-    
-    socket.on("test", msg => {
-        console.log(msg);
-    })
-    socket.on("objects", objects => {
-        game.receiveObjects(objects);
-    })
+<canvas id ="world"></canvas>
+<script type="module">
+    import { main } from "./main.js";
+    main();
 </script>
 </body>
 </html>
