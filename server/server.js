@@ -16,16 +16,16 @@ io.on("connection", onConnection);
 function onConnection(socket) {
     console.log("Socket connection established...");
     socket.emit("testMessage", "hehe");
-    observers.push({
+    observers.push(new Observer({
         socket,
         x: 400,
         y: 400,
         visionRange: 100,
 
-    });
+    }));
     socket.on("moveRequest", (moveReq) => {
         const observer = observers.find(obs => obs.socket === socket);
-
+        observer.move(moveReq);
 
     });
 }
@@ -91,6 +91,7 @@ class Shared {
 class Observer extends Shared {
     visionRange;
     socket;
+    distancePerMove = 2;
     constructor({x, y, visionRange, socket}) {
         super();
         this.visionRange = visionRange;
@@ -100,6 +101,10 @@ class Observer extends Shared {
     }
 }
 class Object extends Shared {
+    width;
+    height;
+    color;
+    distancePerMove = 5;
     constructor({ x, y, width, height, color }) {
         super();
         this.x = x;
@@ -107,7 +112,6 @@ class Object extends Shared {
         this.width = width;
         this.height = height;
         this.color = color;
-        this.distancePerMove = 5;
     }
 
 }
