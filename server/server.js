@@ -10,22 +10,30 @@ const options = {
     }
 };
 const io = new Server(httpServer, options);
+const objects = [];
+
+const MAP_WIDTH = 1000;
+const MAP_HEIGHT = 1000;
 
 io.on("connection", onConnection);
 
 function onConnection(socket) {
     console.log("Socket connection established...");
     socket.emit("testMessage", "hehe");
-    observers.push(new Observer({
+    socket.emit("mapSize", {width: MAP_WIDTH, height: MAP_HEIGHT});
+    objects.push(new Player({
         socket,
         x: 400,
         y: 400,
+        width: 10,
+        height: 10,
         visionRange: 100,
+        started: false,
 
     }));
     socket.on("moveRequest", (moveReq) => {
-        const observer = observers.find(obs => obs.socket === socket);
-        observer.move(moveReq);
+        const player = objects.find(player => player.socket === socket);
+        player.move(moveReq);
 
     });
 }
@@ -33,14 +41,20 @@ function onConnection(socket) {
 httpServer.listen(3000);
 console.log("Started server");
 
-const observers = [];
-const MAP_WIDTH = 50000;
-const MAP_HEIGHT = 50000;
 
-
-class Shared {
+class Object {
     x;
     y;
+    color;
+    width;
+    height;
+    constructor({x, y, color, width, height}) {
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.width = width;
+        this.height = height;
+    }
 
     move({ axis, direction }) {
         let axisAddition = null;
@@ -71,67 +85,67 @@ class Shared {
         this.fixIfPositionGotOutOfMapBounds();
     }
     fixIfPositionGotOutOfMapBounds() {
-        if (this.x < 0) {
+        if (this.x <= 0) {
             this.x = 0;
         }
-        if (this.y < 0) {
+        if (this.y <= 0) {
             this.y = 0;
         }
 
-        if (this.y > MAP_HEIGHT) {
+        if (this.y >= MAP_HEIGHT) {
             this.y = MAP_HEIGHT;
         }
-        if (this.x > MAP_WIDTH) {
+        if (this.x >= MAP_WIDTH) {
             this.x = MAP_WIDTH;
         }
     }
 
 }
 
-class Observer extends Shared {
+class Player extends Object {
     visionRange;
     socket;
     distancePerMove = 2;
-    constructor({x, y, visionRange, socket}) {
-        super();
+    started;
+    constructor({x, y, width, height, visionRange, socket}) {
+        super({x, y, width, height, color:"black"});
         this.visionRange = visionRange;
         this.socket = socket;
-        this.x = x;
-        this.y = y;
     }
 }
-class Object extends Shared {
-    width;
-    height;
-    color;
+
+class AI extends Object {
     distancePerMove = 5;
     constructor({ x, y, width, height, color }) {
-        super();
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        this.color = color;
+        super({x, y, width, height, color});
+
     }
 
 }
-const objects = [];
-objects.push(new Object(
+
+objects.push(new AI(
     { x: 0, y: 0, width: 10, height: 10, color: 'red' }
 ));
-objects.push(new Object(
+objects.push(new AI(
     { x: 100, y: 100, width: 10, height: 10, color: 'black' }
 ));
-objects.push(new Object(
+objects.push(new AI(
     { x: 400, y: 400, width: 10, height: 10, color: 'blue' }
 ));
-objects.push(new Object(
+objects.push(new AI(
     { x: 500, y: 500, width: 10, height: 10, color: 'green' }
 ));
 
 setInterval(gameLoop, 50);
 function gameLoop() {
-    objects.forEach(object => {
+    const AIObjects = objects.filter(object => {
+        return object instanceof AI;   
+    });
+    const playerObjects = objects.filter(object => {
+        return object instanceof Player;   
+    });
+
+    AIObjects.forEach(object => {
         const xDirection = utiliy_functions.chooseRandomlyFromPossibilities({ possibilities: ["left", "right"] });
         const yDirection = utiliy_functions.chooseRandomlyFromPossibilities({ possibilities: ["up", "down"] });
         object.move({ axis: "x", direction: xDirection });
@@ -139,13 +153,18 @@ function gameLoop() {
 
     });
 
-    observers.forEach(observer => {
+    playerObjects.forEach(playerObject => {
+        if(!playerObject.started) {
+            playerObject.socket.emit("started", true);
+            playerObject.started = true;
+            playerObject.sameAsPlayer = true;
+        }
 
-        const minXToBeVisible = observer.x - observer.visionRange;
-        const maxXToBeVisible = observer.x + observer.visionRange;
+        const minXToBeVisible = playerObject.x - playerObject.visionRange;
+        const maxXToBeVisible = playerObject.x + playerObject.visionRange;
 
-        const minYToBeVisible = observer.y - observer.visionRange;
-        const maxYToBeVisible = observer.y + observer.visionRange;
+        const minYToBeVisible = playerObject.y - playerObject.visionRange;
+        const maxYToBeVisible = playerObject.y + playerObject.visionRange;
 
         const visibleObjects = [];
 
@@ -153,12 +172,23 @@ function gameLoop() {
             const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible &&
                 object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
             if (objectIsVisible) {
-                visibleObjects.push(object);
+                const temp = object.socket;
+                delete object.socket;
+                const clone = structuredClone(object);
+                visibleObjects.push(clone);
+                object.socket = temp;
             }
 
         });
-        console.log(visibleObjects)
-        observer.socket.emit("objects", visibleObjects);
+        const playerObjectToSend = {};
+        playerObjectToSend.x = playerObject.x;
+        playerObjectToSend.y = playerObject.y;
+        playerObjectToSend.color = playerObject.color;
+        playerObjectToSend.width = playerObject.width;
+        playerObjectToSend.height = playerObject.height;
+        
+        playerObject.socket.emit("player", playerObjectToSend);
+        playerObject.socket.emit("objects", visibleObjects);
     });
 
 }

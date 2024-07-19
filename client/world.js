@@ -6,58 +6,83 @@ class World {
 
     objects = [];
 
-    observer = {
-        canvasX: null,
-        canvasY: null,
-        serverX: null,
-        serverY: null,
-        offsetX: null,
-        offsetY: null,
-    };
+    keyControlsObject;
 
-    keyControls;
+    socket;
+
+    player = {};
+
+    mapSize;
+
 
     constructor() {
         this.canvas = document.getElementById("world");
         this.canvas.width = (window.innerWidth - 15);
         this.canvas.height = (window.innerHeight - 30);
-
-        this.observer.canvasX = this.canvas.width / 2;
-        this.observer.canvasY = this.canvas.height / 2;
+        console.log(`cw: ${this.canvas.width}, ch: ${this.canvas.height}`)
 
         this.canvasContext = this.canvas.getContext('2d');
 
+
     }
-    objectServerPositionToCanvasPosition({ serverX, serverY }) {
-        const x = serverX - this.observer.offsetX;
-        const y = serverY - this.observer.offsetY;
-        return { x, y };
+    setKeyControlsObject(keyControlsObject) {
+        this.keyControlsObject = keyControlsObject;
     }
-    motion(timeStamp) {
-        if (window.keyControls.activeControls.length > 0) {
-            const ac = window.keyControls.activeControls;
-            if (ac.includes("ArrowUp")) {
-                this.observerMoveRequest({ axis: "y", direction: "up" });
-            }
-            if (ac.includes("ArrowDown")) {
-                this.observerMoveRequest({ axis: "y", direction: "down" });
-            }
-            if (ac.includes("ArrowLeft")) {
-                this.observerMoveRequest({ axis: "x", direction: "left" });
-            }
-            if (ac.includes("ArrowRight")) {
-                this.observerMoveRequest({ axis: "x", direction: "right" });
-            }
+    setSocket(socket) {
+        this.socket = socket;
+    }
+
+
+    handleMovementRequest() {
+        const ac = this.keyControlsObject.activeControls;
+
+        if (ac.length === 0) {
+            return;
         }
+
+        if (ac.includes("ArrowUp")) {
+            this.moveRequest({ axis: "y", direction: "up" });
+        }
+        if (ac.includes("ArrowDown")) {
+            this.moveRequest({ axis: "y", direction: "down" });
+        }
+        if (ac.includes("ArrowLeft")) {
+            this.moveRequest({ axis: "x", direction: "left" });
+        }
+        if (ac.includes("ArrowRight")) {
+            this.moveRequest({ axis: "x", direction: "right" });
+        }
+    }
+
+    motion(timeStamp) {
+        this.handleMovementRequest();
         this.canvasContext.clearRect(0, 0, this.canvas.width, this.canvas.height)
         this.canvasContext.fillStyle = 'black';
 
-        this.canvasContext.fillRect(this.observer.canvasX, this.observer.canvasY, 10, 10);
+        // Calculate scaling factor
+        const scaleX = this.canvas.width / this.mapSize.width;
+        const scaleY = this.canvas.height / this.mapSize.height;
+        const scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
+
+
+        const scaledPlayerX = this.player.x * scale;
+        const scaledPlayerY = this.player.y * scale;
+        const scaledPlayerWidth = this.player.width * scale;
+        const scaledPlayerHeight = this.player.height * scale;
+        this.canvasContext.fillRect(scaledPlayerX, scaledPlayerY, scaledPlayerWidth, scaledPlayerHeight);
 
         this.objects.forEach(object => {
+            if(object.sameAsPlayer) {
+                return;
+            }
+            const scaledObjectX = object.x * scale;
+            const scaledObjectY = object.y * scale;
+            const scaledObjectWidth = object.width * scale;
+            const scaledObjectHeight = object.height * scale;
+            console.log(object, scale);
+
             this.canvasContext.fillStyle = object.color;
-            const objectCanvasPosition = this.objectServerPositionToCanvasPosition({ serverX: object.x, serverY: object.y });
-            this.canvasContext.fillRect(objectCanvasPosition.x, objectCanvasPosition.y, object.width, object.height);
+            this.canvasContext.fillRect(scaledObjectX, scaledObjectY, scaledObjectWidth, scaledObjectHeight);
         }, this);
 
         requestAnimationFrame((timeStamp) => this.motion(timeStamp));
@@ -69,15 +94,14 @@ class World {
     receiveObjects(objectsToReceive) {
         this.objects = objectsToReceive;
     }
-    receiveObserverServerPosition(position) {
-        this.observer.serverX = position.x;
-        this.observer.serverY = position.y;
-
-        this.observer.offsetX = this.observer.serverX - this.observer.canvasX;
-        this.observer.offsetY = this.observer.serverY - this.observer.canvasY;
+    receivePlayer(player) {
+        this.player = player;
     }
-    observerMoveRequest({ axis, direction }) {
-        window.socket.emit("moveRequest", {axis, direction});
+    receiveMapSize(mapSize) {
+        this.mapSize = mapSize;
+    }
+    moveRequest({ axis, direction }) {
+        this.socket.emit("moveRequest", { axis, direction });
     }
 
 }
