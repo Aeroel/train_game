@@ -41,16 +41,16 @@ class World {
         }
 
         if (ac.includes("ArrowUp")) {
-            this.moveRequest({ axis: "y", direction: "up" });
+            this.moveRequest({ direction: "up" });
         }
         if (ac.includes("ArrowDown")) {
-            this.moveRequest({ axis: "y", direction: "down" });
+            this.moveRequest({ direction: "down" });
         }
         if (ac.includes("ArrowLeft")) {
-            this.moveRequest({ axis: "x", direction: "left" });
+            this.moveRequest({ direction: "left" });
         }
         if (ac.includes("ArrowRight")) {
-            this.moveRequest({ axis: "x", direction: "right" });
+            this.moveRequest({ direction: "right" });
         }
     }
 
@@ -93,6 +93,7 @@ class World {
 
     receiveObjects(objectsToReceive) {
         this.objects = objectsToReceive;
+        this.playerObject = objectsToReceive.find(object => (isPlayer in object));
     }
     receivePlayer(player) {
         this.player = player;

@@ -17,9 +17,6 @@ function main() {
     socket.on("objects", objects => {
         worldObject.receiveObjects(objects);
     })
-    socket.on("player", player => {
-        worldObject.receivePlayer(player);
-    })
     socket.on("mapSize", mapSize => {
         worldObject.receiveMapSize(mapSize);
     })
