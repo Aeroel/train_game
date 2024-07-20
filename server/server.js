@@ -1,7 +1,7 @@
 import { createServer } from "http";
 import { Server } from "socket.io";
-import utiliy_functions from "./utility_functions.js";
-import {World, ObjectInWorld, Player, AI, World, WorldMovement, WorldPosition,} from "./classes.js";
+import { chooseRandomlyFromPossibilities } from "./utility_functions.js";
+import {World, WorldDimensions } from "./classes.js";
 
 const httpServer = createServer();
 
@@ -11,17 +11,20 @@ const options = {
     }
 };
 const io = new Server(httpServer, options);
+sockets = [];
 
 const worldObject = new World();
-worldObject.dimensions.addDimension({name:"x", size:1000, additionalName: "width"});
-worldObject.dimensions.addDimension({name:"y", size:1000, additionalName: "height",});
 
 io.on("connection", onConnection);
 
 function onConnection(socket) {
     console.log("Socket connection established...");
+
+    global.sockets.push(socket);
+    
     socket.emit("testMessage", "hehe");
-    socket.emit("mapDimensionsAndSizes", worldObject.dimensions.getDimensions());
+    socket.emit("mapSize", global.worldObject.dimensions.getAlternativeNamesSizes());
+
     const position = new ObjectPosition({
         dimensions: worldObject.dimensions.getDimensionNames()
     });
@@ -30,7 +33,7 @@ function onConnection(socket) {
     position.setCoordinate({name: "y", value: 400});
 
     objects.push(new Player({
-        socket,
+        socketId: socket.id,
         position,
         width: 10,
         height: 10,
@@ -39,7 +42,7 @@ function onConnection(socket) {
 
     }));
     socket.on("moveRequest", (moveReq) => {
-        const player = objects.find(player => player.socket === socket);
+        const player = objects.find(player => player.socketId === socket.id);
         player.move(moveReq);
 
     });
@@ -63,18 +66,18 @@ objects.push(new AI(
 
 setInterval(gameLoop, 50);
 function gameLoop() {
-    const AIObjects = objects.filter(object => {
+    const AIObjects = worldObject.objects.filter(object => {
         return object instanceof AI;   
     });
-    const playerObjects = objects.filter(object => {
+    const playerObjects = worldObject.objects.filter(object => {
         return object instanceof Player;   
     });
 
     AIObjects.forEach(object => {
-        const xDirection = utiliy_functions.chooseRandomlyFromPossibilities({ possibilities: ["left", "right"] });
-        const yDirection = utiliy_functions.chooseRandomlyFromPossibilities({ possibilities: ["up", "down"] });
-        object.move({ axis: "x", direction: xDirection });
-        object.move({ axis: "y", direction: yDirection });
+        const xDirection = chooseRandomlyFromPossibilities({ possibilities: ["left", "right"] });
+        const yDirection = chooseRandomlyFromPossibilities({ possibilities: ["up", "down"] });
+        object.move({ direction: xDirection });
+        object.move({ direction: yDirection });
 
     });
 
@@ -93,27 +96,21 @@ function gameLoop() {
 
         const visibleObjects = [];
 
-        objects.forEach(object => {
+        worldObject.objects.forEach(object => {
             const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible &&
                 object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
             if (objectIsVisible) {
-                const temp = object.socket;
-                delete object.socket;
-                const clone = structuredClone(object);
-                visibleObjects.push(clone);
-                object.socket = temp;
+                const dataToPush = {x: object.x, y: object.y, color: object.color, width: object.width, height: object.height};
+                if(object === playerObject) {
+                    dataToPush.isPlayer = true;
+                }
+                visibleObjects.push(dataToPush);
             }
 
         });
-        const playerObjectToSend = {};
-        playerObjectToSend.x = playerObject.x;
-        playerObjectToSend.y = playerObject.y;
-        playerObjectToSend.color = playerObject.color;
-        playerObjectToSend.width = playerObject.width;
-        playerObjectToSend.height = playerObject.height;
         
-        playerObject.socket.emit("player", playerObjectToSend);
-        playerObject.socket.emit("objects", visibleObjects);
+        const playerSocket = global.sockets.find(socket => playerObject.socketId = socket.id);
+        playerSocket.emit("objects", visibleObjects);
     });
 
 }

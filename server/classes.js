@@ -1,16 +1,38 @@
 class World {
-    dimensions = new WorldDimensions();
+    dimensions;
     objects = [];
+    constructor() {
+        this.dimensions = new WorldDimensions();
 
+        this.dimensions.addDimension({
+            name: "x",
+            alternativeName: "width",
+            movementOperations: {
+                subtraction: "left",
+                addition: "right",
+            },
+            size: 1000
+        });
+        this.dimensions.addDimension({
+            name: "y",
+            alternativeName: "height",
+            movementOperations: {
+                subtraction: "up",
+                addition: "down",
+            },
+            size: 1000
+        });
+
+    }
     addObject(object) {
         this.objects.push(object);
     }
 }
 class WorldDimensions {
     dimensions = [];
-    addDimension({name, additionalName,  size}) {
+    addDimension({ name, alternativeName, movementOperations, size }) {
 
-        this.dimensions[name] = {additionalName, size};
+        this.dimensions[name] = { alternativeName, movementOperations, size };
     }
     getDimensionSize(name) {
         return this.dimensions[name].size;
@@ -19,27 +41,44 @@ class WorldDimensions {
     getDimensionNames() {
         return Object.keys(this.dimensions);
     }
-    getDimensions() {
-        return this.dimensions;
+
+    getDimensionsSizes() {
+        const dimEntries = Object.entries(this.dimensions);
+        return dimEntries.map(([name, { size }]) => ({ [name]: size }));
+    }
+    getAlternativeNamesSizes() {
+        const dimValues = Object.values(this.dimensions);
+        return dimValues.map(({ alternativeName, size }) => ({ [alternativeName]: size }));
+    }
+    getDirectionInfo(direction) {
+        for (const [dimension, { movementOperations }] of Object.entries(this.dimensions)) {
+            console.log(movementOperations);
+            for (const [operation, dir] of Object.entries(movementOperations)) {
+                if (dir === direction) {
+                    return {
+                        dimension,
+                        dimensionOperation: operation
+                    };
+                }
+            }
+        }
+        return null;
     }
 }
 
 class ObjectPosition {
     coordinates = {};
-    constructor({ dimensions }) {
+    worldDimensions;
+    constructor({ worldDimensions }) {
+        this.worldDimensions = worldDimensions;
 
+        const dimensions = this.worldDimensions.getDimensionNames();
         dimensions.forEach(dimension => {
             this.coordinates[dimension] = 0;
         });
-
     }
     setCoordinate({ name, value }) {
-        if (this.coordinates.hasOwnProperty(name)) {
-            this.coordinates[name] = value;
-        } else {
-            throw new Error(`Dimension ${name} not found in position`);
-        }
-
+        this.coordinates[name] = value;
     }
     getCoordinate({ name }) {
         return this.coordinates[name];
@@ -47,42 +86,18 @@ class ObjectPosition {
     getCoordinates() {
         return this.coordinates;
     }
-}
-
-class ObjectMovement {
-    world;
-    constructor({world}) {
-        this.world = world;
-    }
-
-    static move({ direction }) {
-        const info = { axis: null, axisOperation: null };
-
-        switch (direction) {
-            case "up":
-                info.axisOperation = "subtraction";
-            case "down":
-                info.axisOperation = "addition";
-
-                info.axis = "y";
-                break;
-
-            case "left":
-                info.axisOperation = "subtraction";
-            case "right":
-                info.axisOperation = "addition";
-
-                info.axis = "x";
-                break;
-
-            default:
-                throw new Error(`Invalid direction ${direction}`);
-                break;
+    ensurePositionIsWithinWorldBounds() {
+        for (let coordName in this.coordinates) {
+            if (!this.coordinates.hasOwnProperty(coordName)) {
+                return;
+            }
+            const coordValue = this.coordinates[coordName];
+            const dimensionLimit = this.worldDimensions.getDimensionSize(coordName);
+            if (coordValue > dimensionLimit) {
+                this.coordinates[coordName] = dimensionLimit;
+            }
         }
-
-        return info;
     }
-
 }
 
 class ObjectInWorld {
@@ -90,7 +105,9 @@ class ObjectInWorld {
     color;
     width;
     height;
-    constructor({ position, color, width, height }) {
+    worldDimensions;
+    constructor({worldDimensions, position, color, width, height }) {
+        this.worldDimensions = worldDimensions;
         this.position = position;
         this.color = color;
         this.width = width;
@@ -100,45 +117,52 @@ class ObjectInWorld {
 
 class AgentObject extends ObjectInWorld {
     move(direction) {
-        const moveInfo = WorldMovement.move(direction);
-        if (moveInfo.axisOperation === "addition") {
-            this.position[moveInfo.axis] += this.distancePerMove;
-        } else if (moveInfo.axisOperation === "subtraction") {
-            this.position[moveInfo.axis] -= this.distancePerMove;
+        const directionInfo = this.worldDimensions.getDirectionInfo(direction);
+        if (directionInfo.dimensionOperation === "addition") {
+            this.position[directionInfo.dimension] += this.distancePerMove;
+        } else if (directionInfo.dimensionOperation === "subtraction") {
+            this.position[directionInfo.dimension] -= this.distancePerMove;
         }
 
-        WorldPosition.ensurePositionIsWithinWorldBounds({ position: this.position });
+        this.position.ensurePositionIsWithinWorldBounds();
     }
 
 }
 
-class Player extends AgentObject {
+class PlayerObject extends AgentObject {
     visionRange;
     socket;
     distancePerMove = 2;
     started;
-    constructor({ position, width, height, visionRange, socket }) {
-        super({ position, width, height, color: "black" });
+    constructor({worldDimensions, position, width, height, visionRange, socket }) {
+        super({ worldDimensions, position, width, height, color: "black" });
         this.visionRange = visionRange;
         this.socket = socket;
     }
 }
 
-class AI extends AgentObject {
+class AIObject extends AgentObject {
     distancePerMove = 5;
-    constructor({ position, width, height, color }) {
-        super({ position, width, height, color });
+    constructor({worldDimensions, position, width, height, color }) {
+        super({worldDimensions, position, width, height, color });
 
     }
 
 }
 
 class StaticObject extends ObjectInWorld {
-    constructor({ position, width, height, color }) {
-
+    constructor({worldDimensions, position, width, height, color }) {
+        super({worldDimensions, position, width, height, color })
     }
 }
 
 export {
-    World, ObjectInWorld, Player, AI, World, WorldMovement, WorldPosition, AgentObject,
+    World,
+    WorldDimensions,
+    ObjectPosition,
+    ObjectInWorld,
+    AgentObject,
+    AIObject,
+    PlayerObject,
+    StaticObject,
 }

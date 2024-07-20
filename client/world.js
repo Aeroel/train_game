@@ -10,8 +10,6 @@ class World {
 
     socket;
 
-    player = {};
-
     mapSize;
 
 
@@ -62,24 +60,13 @@ class World {
         // Calculate scaling factor
         const scaleX = this.canvas.width / this.mapSize.width;
         const scaleY = this.canvas.height / this.mapSize.height;
-        const scale = Math.min(scaleX, scaleY); // Maintain aspect ratio
-
-
-        const scaledPlayerX = this.player.x * scale;
-        const scaledPlayerY = this.player.y * scale;
-        const scaledPlayerWidth = this.player.width * scale;
-        const scaledPlayerHeight = this.player.height * scale;
-        this.canvasContext.fillRect(scaledPlayerX, scaledPlayerY, scaledPlayerWidth, scaledPlayerHeight);
 
         this.objects.forEach(object => {
-            if(object.sameAsPlayer) {
-                return;
-            }
-            const scaledObjectX = object.x * scale;
-            const scaledObjectY = object.y * scale;
-            const scaledObjectWidth = object.width * scale;
-            const scaledObjectHeight = object.height * scale;
-            console.log(object, scale);
+
+            const scaledObjectX = object.x * scaleX;
+            const scaledObjectY = object.y * scaleX;
+            const scaledObjectWidth = object.width * scaleY;
+            const scaledObjectHeight = object.height * scaleY;
 
             this.canvasContext.fillStyle = object.color;
             this.canvasContext.fillRect(scaledObjectX, scaledObjectY, scaledObjectWidth, scaledObjectHeight);
@@ -93,16 +80,12 @@ class World {
 
     receiveObjects(objectsToReceive) {
         this.objects = objectsToReceive;
-        this.playerObject = objectsToReceive.find(object => (isPlayer in object));
-    }
-    receivePlayer(player) {
-        this.player = player;
     }
     receiveMapSize(mapSize) {
         this.mapSize = mapSize;
     }
-    moveRequest({ axis, direction }) {
-        this.socket.emit("moveRequest", { axis, direction });
+    moveRequest({ direction }) {
+        this.socket.emit("moveRequest", { direction });
     }
 
 }
