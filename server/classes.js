@@ -1,31 +1,17 @@
 class World {
     dimensions;
     objects = [];
-    constructor() {
-        this.dimensions = new WorldDimensions();
-
-        this.dimensions.addDimension({
-            name: "x",
-            alternativeName: "width",
-            movementOperations: {
-                subtraction: "left",
-                addition: "right",
-            },
-            size: 1000
-        });
-        this.dimensions.addDimension({
-            name: "y",
-            alternativeName: "height",
-            movementOperations: {
-                subtraction: "up",
-                addition: "down",
-            },
-            size: 1000
-        });
-
+    constructor(dimensions) {
+        this.dimensions = dimensions;
     }
     addObject(object) {
         this.objects.push(object);
+    }
+    removeObject(object) {
+        const index = this.objects.indexOf(object);
+        if (index !== -1) {
+            this.objects.splice(index, 1);
+        }
     }
 }
 class WorldDimensions {
@@ -69,9 +55,12 @@ class WorldDimensions {
 class ObjectPosition {
     coordinates = {};
     worldDimensions;
-    constructor({ worldDimensions }) {
+    constructor(worldDimensions ) {
         this.worldDimensions = worldDimensions;
 
+        this.initializeCoordinates();        
+    }
+    initializeCoordinates() {
         const dimensions = this.worldDimensions.getDimensionNames();
         dimensions.forEach(dimension => {
             this.coordinates[dimension] = 0;
@@ -105,9 +94,7 @@ class ObjectInWorld {
     color;
     width;
     height;
-    worldDimensions;
-    constructor({worldDimensions, position, color, width, height }) {
-        this.worldDimensions = worldDimensions;
+    constructor({position, color, width, height }) {
         this.position = position;
         this.color = color;
         this.width = width;
@@ -117,7 +104,7 @@ class ObjectInWorld {
 
 class AgentObject extends ObjectInWorld {
     move(direction) {
-        const directionInfo = this.worldDimensions.getDirectionInfo(direction);
+        const directionInfo = this.position.worldDimensions.getDirectionInfo(direction);
         if (directionInfo.dimensionOperation === "addition") {
             this.position[directionInfo.dimension] += this.distancePerMove;
         } else if (directionInfo.dimensionOperation === "subtraction") {
@@ -131,28 +118,28 @@ class AgentObject extends ObjectInWorld {
 
 class PlayerObject extends AgentObject {
     visionRange;
-    socket;
+    socketId;
     distancePerMove = 2;
     started;
-    constructor({worldDimensions, position, width, height, visionRange, socket }) {
-        super({ worldDimensions, position, width, height, color: "black" });
+    constructor({position, width, height, visionRange, socketId }) {
+        super({ position, width, height, color: "black" });
         this.visionRange = visionRange;
-        this.socket = socket;
+        this.socketId = socketId;
     }
 }
 
 class AIObject extends AgentObject {
     distancePerMove = 5;
-    constructor({worldDimensions, position, width, height, color }) {
-        super({worldDimensions, position, width, height, color });
+    constructor({ position, width, height, color }) {
+        super({ position, width, height, color });
 
     }
 
 }
 
 class StaticObject extends ObjectInWorld {
-    constructor({worldDimensions, position, width, height, color }) {
-        super({worldDimensions, position, width, height, color })
+    constructor({ position, width, height, color }) {
+        super({ position, width, height, color })
     }
 }
 

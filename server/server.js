@@ -13,7 +13,27 @@ const options = {
 const io = new Server(httpServer, options);
 sockets = [];
 
-const worldObject = new World();
+const worldDimensions = new WorldDimensions();
+worldDimensions.addDimension({
+    name: "x",
+    alternativeName: "width",
+    movementOperations: {
+        subtraction: "left",
+        addition: "right",
+    },
+    size: 1000
+});
+worldDimensions.addDimension({
+    name: "y",
+    alternativeName: "height",
+    movementOperations: {
+        subtraction: "up",
+        addition: "down",
+    },
+    size: 1000
+});
+
+const world = new World(worldDimensions);
 
 io.on("connection", onConnection);
 
@@ -25,14 +45,7 @@ function onConnection(socket) {
     socket.emit("testMessage", "hehe");
     socket.emit("mapSize", global.worldObject.dimensions.getAlternativeNamesSizes());
 
-    const position = new ObjectPosition({
-        dimensions: worldObject.dimensions.getDimensionNames()
-    });
-
-    position.setCoordinate({name: "x", value: 400});
-    position.setCoordinate({name: "y", value: 400});
-
-    objects.push(new Player({
+    world.addObject(new Player({
         socketId: socket.id,
         position,
         width: 10,
@@ -51,25 +64,25 @@ function onConnection(socket) {
 httpServer.listen(3000);
 console.log("Started server");
 
-objects.push(new AI(
+world.addObject(new AI(
     { x: 0, y: 0, width: 10, height: 10, color: 'red' }
 ));
-objects.push(new AI(
+world.addObject(new AI(
     { x: 100, y: 100, width: 10, height: 10, color: 'black' }
 ));
-objects.push(new AI(
+world.addObject(new AI(
     { x: 400, y: 400, width: 10, height: 10, color: 'blue' }
 ));
-objects.push(new AI(
+world.addObject(new AI(
     { x: 500, y: 500, width: 10, height: 10, color: 'green' }
 ));
 
 setInterval(gameLoop, 50);
 function gameLoop() {
-    const AIObjects = worldObject.objects.filter(object => {
+    const AIObjects = world.getObjectsOfClass(AI);.filter(object => {
         return object instanceof AI;   
     });
-    const playerObjects = worldObject.objects.filter(object => {
+    const playerObjects = world.objects.filter(object => {
         return object instanceof Player;   
     });
 
@@ -96,7 +109,7 @@ function gameLoop() {
 
         const visibleObjects = [];
 
-        worldObject.objects.forEach(object => {
+        world.objects.forEach(object => {
             const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible &&
                 object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
             if (objectIsVisible) {
