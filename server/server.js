@@ -1,7 +1,9 @@
+'use strict';
+
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { chooseRandomlyFromPossibilities } from "./utility_functions.js";
-import {World, WorldDimensions } from "./classes.js";
+import { WorldsContainer, World, WorldDimensions } from "./classes.js";
 
 const httpServer = createServer();
 
@@ -11,7 +13,32 @@ const options = {
     }
 };
 const io = new Server(httpServer, options);
-sockets = [];
+
+httpServer.listen(3000);
+console.log("Started server");
+
+io.on("connection", onConnection);
+
+function onConnection(socket) {
+    console.log("Socket connection established...");
+
+    global.sockets.push(socket);
+
+    socket.emit("testMessage", "hehe");
+    socket.emit("mapSize", global.worldObject.dimensions.getAlternativeNamesSizes());
+
+    const randomWorld = worldsContainer.giveMeARandomWorld();
+
+    randomWorld.addObject({ type: "player", position:"random",  data: { socketId: socket.id, visionRange: 100, started: false } });
+    socket.on("moveRequest", (moveReq) => {
+        const player = objects.find(player => player.socketId === socket.id);
+        player.move(moveReq);
+
+    });
+}
+
+
+const worldsContainer = new WorldsContainer;
 
 const worldDimensions = new WorldDimensions();
 worldDimensions.addDimension({
@@ -34,57 +61,23 @@ worldDimensions.addDimension({
 });
 
 const world = new World(worldDimensions);
+world.addObject({ type: "AI", position: "random", data: {color: "yellow" } });
+world.addObject({ type: "AI", position: "random", data: {color: "black" } });
+world.addObject({ type: "AI", position: "random", data: {color: "blue"} });
+world.addObject({ type: "AI", position: "random", data: {color: "green"} });
 
-io.on("connection", onConnection);
+worldsContainer.addWorld(world);
 
-function onConnection(socket) {
-    console.log("Socket connection established...");
-
-    global.sockets.push(socket);
-    
-    socket.emit("testMessage", "hehe");
-    socket.emit("mapSize", global.worldObject.dimensions.getAlternativeNamesSizes());
-
-    world.addObject(new Player({
-        socketId: socket.id,
-        position,
-        width: 10,
-        height: 10,
-        visionRange: 100,
-        started: false,
-
-    }));
-    socket.on("moveRequest", (moveReq) => {
-        const player = objects.find(player => player.socketId === socket.id);
-        player.move(moveReq);
-
+const howOftenLoopRunsInMs = 50;
+setInterval(serverLoop, howOftenLoopRunsInMs);
+function serverLoop() {
+    worldsContainer.getAllWorlds().forEach((world, worldId) => {
+        worldTick(world);
     });
 }
-
-httpServer.listen(3000);
-console.log("Started server");
-
-world.addObject(new AI(
-    { x: 0, y: 0, width: 10, height: 10, color: 'red' }
-));
-world.addObject(new AI(
-    { x: 100, y: 100, width: 10, height: 10, color: 'black' }
-));
-world.addObject(new AI(
-    { x: 400, y: 400, width: 10, height: 10, color: 'blue' }
-));
-world.addObject(new AI(
-    { x: 500, y: 500, width: 10, height: 10, color: 'green' }
-));
-
-setInterval(gameLoop, 50);
-function gameLoop() {
-    const AIObjects = world.getObjectsOfClass(AI);.filter(object => {
-        return object instanceof AI;   
-    });
-    const playerObjects = world.objects.filter(object => {
-        return object instanceof Player;   
-    });
+function worldTick(world) {
+    const AIObjects = world.getObjectsOfClass("AIObject");
+    const playerObjects = world.getObjectsOfClass("PlayerObject");
 
     AIObjects.forEach(object => {
         const xDirection = chooseRandomlyFromPossibilities({ possibilities: ["left", "right"] });
@@ -95,10 +88,9 @@ function gameLoop() {
     });
 
     playerObjects.forEach(playerObject => {
-        if(!playerObject.started) {
+        if (!playerObject.started) {
             playerObject.socket.emit("started", true);
             playerObject.started = true;
-            playerObject.sameAsPlayer = true;
         }
 
         const minXToBeVisible = playerObject.x - playerObject.visionRange;
@@ -113,15 +105,12 @@ function gameLoop() {
             const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible &&
                 object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
             if (objectIsVisible) {
-                const dataToPush = {x: object.x, y: object.y, color: object.color, width: object.width, height: object.height};
-                if(object === playerObject) {
-                    dataToPush.isPlayer = true;
-                }
+                const dataToPush = { x: object.x, y: object.y, color: object.color, width: object.width, height: object.height };
                 visibleObjects.push(dataToPush);
             }
 
         });
-        
+
         const playerSocket = global.sockets.find(socket => playerObject.socketId = socket.id);
         playerSocket.emit("objects", visibleObjects);
     });

@@ -6,6 +6,7 @@ import { KeyControls } from "./keyControls.js";
 
 function main() {
     const socket = io("127.0.0.1:3000");
+    
     const keyControlsObject = new KeyControls();
     const worldObject = new World();
     worldObject.setKeyControlsObject(keyControlsObject);

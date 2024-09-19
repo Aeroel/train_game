@@ -1,11 +1,43 @@
+import { rando } from "@nastyox/rando.js";
+
+class WorldsContainer {
+    worlds = new Map();
+    nextIdWillBe = 0;
+    giveMeARandomWorldId() {
+        const minWorldId = 0;
+        const maxWorldId = this.nextIdWillBe;
+        const randomWorldId = rando(minWorldId, maxWorldId);
+        return randomWorldId;
+    }
+    giveMeARandomWorld() {
+        const randomWorldId = this.giveMeARandomWorldId();
+        const randomWorld = this.worlds.get(randomWorldId);
+        return randomWorld;
+    }
+    addWorld(world) {
+        this.worlds.set(this.nextIdWillBe, world);
+        this.nextIdWillBe++;
+    }
+    getAllWorlds() {
+        return this.worlds;
+    }
+    getWorldById(id) {
+        return this.worlds.get(id);
+    }
+}
 class World {
     dimensions;
     objects = [];
     constructor(dimensions) {
         this.dimensions = dimensions;
     }
-    addObject(object) {
-        this.objects.push(object);
+    getObjectsOfClass(className) {
+        const objectsOfSpecifiedClass = this.objects.filter(object => object.constructor.name === className);
+        return objectsOfSpecifiedClass;
+    }
+    addObject({type, position, data}) {
+        const positionObject = new ObjectPosition(this.dimensions);
+        
     }
     removeObject(object) {
         const index = this.objects.indexOf(object);
@@ -144,6 +176,7 @@ class StaticObject extends ObjectInWorld {
 }
 
 export {
+    WorldsContainer,
     World,
     WorldDimensions,
     ObjectPosition,
