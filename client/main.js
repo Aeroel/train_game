@@ -12,9 +12,6 @@ function main() {
     worldObject.setKeyControlsObject(keyControlsObject);
     worldObject.setSocket(socket);
 
-    socket.on("testMessage", msg => {
-        console.log(msg);
-    })
     socket.on("objects", objects => {
         worldObject.receiveObjects(objects);
     })
@@ -22,6 +19,8 @@ function main() {
         worldObject.receiveMapSize(mapSize);
     })
     socket.on("started", noMessageApplicable => {
+        console.log("started");
+        socket.emit("startAcknowledged", true);
         worldObject.start();
     })
 

@@ -5,7 +5,7 @@ class WorldsContainer {
     nextIdWillBe = 0;
     giveMeARandomWorldId() {
         const minWorldId = 0;
-        const maxWorldId = this.nextIdWillBe;
+        const maxWorldId = this.nextIdWillBe - 1;
         const randomWorldId = rando(minWorldId, maxWorldId);
         return randomWorldId;
     }
@@ -26,18 +26,19 @@ class WorldsContainer {
     }
 }
 class World {
-    dimensions;
+    width;
+    height;
     objects = [];
-    constructor(dimensions) {
-        this.dimensions = dimensions;
+    constructor({width, height}) {
+        this.width = width;
+        this.height = height;
     }
     getObjectsOfClass(className) {
         const objectsOfSpecifiedClass = this.objects.filter(object => object.constructor.name === className);
         return objectsOfSpecifiedClass;
     }
-    addObject({type, position, data}) {
-        const positionObject = new ObjectPosition(this.dimensions);
-        
+    addObject(theObject) {
+        this.objects.push(theObject);
     }
     removeObject(object) {
         const index = this.objects.indexOf(object);
@@ -46,88 +47,16 @@ class World {
         }
     }
 }
-class WorldDimensions {
-    dimensions = [];
-    addDimension({ name, alternativeName, movementOperations, size }) {
-
-        this.dimensions[name] = { alternativeName, movementOperations, size };
-    }
-    getDimensionSize(name) {
-        return this.dimensions[name].size;
-    }
-
-    getDimensionNames() {
-        return Object.keys(this.dimensions);
-    }
-
-    getDimensionsSizes() {
-        const dimEntries = Object.entries(this.dimensions);
-        return dimEntries.map(([name, { size }]) => ({ [name]: size }));
-    }
-    getAlternativeNamesSizes() {
-        const dimValues = Object.values(this.dimensions);
-        return dimValues.map(({ alternativeName, size }) => ({ [alternativeName]: size }));
-    }
-    getDirectionInfo(direction) {
-        for (const [dimension, { movementOperations }] of Object.entries(this.dimensions)) {
-            console.log(movementOperations);
-            for (const [operation, dir] of Object.entries(movementOperations)) {
-                if (dir === direction) {
-                    return {
-                        dimension,
-                        dimensionOperation: operation
-                    };
-                }
-            }
-        }
-        return null;
-    }
-}
-
-class ObjectPosition {
-    coordinates = {};
-    worldDimensions;
-    constructor(worldDimensions ) {
-        this.worldDimensions = worldDimensions;
-
-        this.initializeCoordinates();        
-    }
-    initializeCoordinates() {
-        const dimensions = this.worldDimensions.getDimensionNames();
-        dimensions.forEach(dimension => {
-            this.coordinates[dimension] = 0;
-        });
-    }
-    setCoordinate({ name, value }) {
-        this.coordinates[name] = value;
-    }
-    getCoordinate({ name }) {
-        return this.coordinates[name];
-    }
-    getCoordinates() {
-        return this.coordinates;
-    }
-    ensurePositionIsWithinWorldBounds() {
-        for (let coordName in this.coordinates) {
-            if (!this.coordinates.hasOwnProperty(coordName)) {
-                return;
-            }
-            const coordValue = this.coordinates[coordName];
-            const dimensionLimit = this.worldDimensions.getDimensionSize(coordName);
-            if (coordValue > dimensionLimit) {
-                this.coordinates[coordName] = dimensionLimit;
-            }
-        }
-    }
-}
 
 class ObjectInWorld {
-    position
+    x;
+    y;
     color;
     width;
     height;
-    constructor({position, color, width, height }) {
-        this.position = position;
+    constructor({ x, y, color, width, height }) {
+        this.x = x;
+        this.y = y;
         this.color = color;
         this.width = width;
         this.height = height;
@@ -135,41 +64,52 @@ class ObjectInWorld {
 }
 
 class AgentObject extends ObjectInWorld {
+    visionRange;
+    distancePerMove;
+    constructor({ x, y, color, width, height, visionRange, distancePerMove }) {
+        super({ x, y, color, width, height });
+        this.visionRange = visionRange;
+        this.distancePerMove = distancePerMove;
+    }
     move(direction) {
-        const directionInfo = this.position.worldDimensions.getDirectionInfo(direction);
-        if (directionInfo.dimensionOperation === "addition") {
-            this.position[directionInfo.dimension] += this.distancePerMove;
-        } else if (directionInfo.dimensionOperation === "subtraction") {
-            this.position[directionInfo.dimension] -= this.distancePerMove;
+        switch (direction) {
+            case "left":
+                this.x -= this.distancePerMove;
+                break;
+            case "right":
+                this.x += this.distancePerMove;
+                break;
+            case "up":
+                this.y -= this.distancePerMove;
+                break;
+            case "down":
+                this.y += this.distancePerMove;
+                break;
         }
-
-        this.position.ensurePositionIsWithinWorldBounds();
     }
 
 }
 
 class PlayerObject extends AgentObject {
-    visionRange;
     socketId;
     distancePerMove = 2;
-    started;
-    constructor({position, width, height, visionRange, socketId }) {
-        super({ position, width, height, color: "black" });
-        this.visionRange = visionRange;
+    started = false;
+    constructor({ x, y, width, height, visionRange, socketId }) {
+        super({ x, y, width, height, color: "purple", visionRange });
         this.socketId = socketId;
     }
 }
 
 class AIObject extends AgentObject {
     distancePerMove = 5;
-    constructor({ position, width, height, color }) {
-        super({ position, width, height, color });
+    constructor({ x, y, width, height, visionRange, color }) {
+        super({ x, y, width, height, color, visionRange });
 
     }
 
 }
 
-class StaticObject extends ObjectInWorld {
+class StationaryObject extends ObjectInWorld {
     constructor({ position, width, height, color }) {
         super({ position, width, height, color })
     }
@@ -178,11 +118,9 @@ class StaticObject extends ObjectInWorld {
 export {
     WorldsContainer,
     World,
-    WorldDimensions,
-    ObjectPosition,
     ObjectInWorld,
     AgentObject,
     AIObject,
     PlayerObject,
-    StaticObject,
+    StationaryObject,
 }

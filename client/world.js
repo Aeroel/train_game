@@ -75,6 +75,7 @@ class World {
         requestAnimationFrame((timeStamp) => this.motion(timeStamp));
     }
     start() {
+        console.log("world start")
         this.motion(0);
     }
 

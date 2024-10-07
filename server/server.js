@@ -1,96 +1,113 @@
 'use strict';
 
 import { createServer } from "http";
-import { Server } from "socket.io";
+import { Server as SocketIO } from "socket.io";
 import { chooseRandomlyFromPossibilities } from "./utility_functions.js";
-import { WorldsContainer, World, WorldDimensions } from "./classes.js";
+import { AIObject, PlayerObject, World, WorldsContainer, } from "./classes.js";
+import { log } from "console";
 
-const httpServer = createServer();
+function getSocket(playerObject) {
+return sockets.find(socket => playerObject.socketId = socket.id);
+}
+
+const sockets = [];
+
+const worldsContainer = new WorldsContainer();
 
 const options = {
     cors: {
         origin: "http://127.0.0.1:5500"
     }
 };
-const io = new Server(httpServer, options);
-
+const httpServer = createServer();
+const io = new SocketIO(httpServer, options);
 httpServer.listen(3000);
 console.log("Started server");
 
 io.on("connection", onConnection);
 
 function onConnection(socket) {
-    console.log("Socket connection established...");
-
-    global.sockets.push(socket);
+    console.log("A socket has connected");
+    let socketLastRequest = Date.now();
+    const ignoreForMs = 200;
+    sockets.push(socket);
 
     socket.emit("testMessage", "hehe");
-    socket.emit("mapSize", global.worldObject.dimensions.getAlternativeNamesSizes());
-
     const randomWorld = worldsContainer.giveMeARandomWorld();
+    socket.emit("mapSize", {width: randomWorld.width, height: randomWorld.height});
 
-    randomWorld.addObject({ type: "player", position:"random",  data: { socketId: socket.id, visionRange: 100, started: false } });
+
+    const playerObject = new PlayerObject({ x: 100, y: 100, width: 10, height: 5, visionRange: 100, socketId: socket.id });
+    randomWorld.addObject(playerObject);
+
+    socket.on("disconnect", () => {
+        console.log("socket disconnected");
+        const player = randomWorld.objects.find(player => player.socketId === socket.id);
+        randomWorld.removeObject(player);
+        console.log(randomWorld.objects);
+    })
+    socket.on("startAcknowledged", () => {
+        console.log("yep");
+        const player = randomWorld.objects.find(player => player.socketId === socket.id);
+        player.started = true;
+        console.log(player);
+    });
     socket.on("moveRequest", (moveReq) => {
-        const player = objects.find(player => player.socketId === socket.id);
-        player.move(moveReq);
-
+        if(socketLastRequest + ignoreForMs > Date.now()) {
+            return null;
+        }
+        const player = randomWorld.objects.find(player => player.socketId === socket.id);
+        if(!player) {
+            console.log(randomWorld.objects);
+            
+        }
+        player.move(moveReq.direction);
+        
     });
 }
 
 
-const worldsContainer = new WorldsContainer;
 
-const worldDimensions = new WorldDimensions();
-worldDimensions.addDimension({
-    name: "x",
-    alternativeName: "width",
-    movementOperations: {
-        subtraction: "left",
-        addition: "right",
-    },
-    size: 1000
-});
-worldDimensions.addDimension({
-    name: "y",
-    alternativeName: "height",
-    movementOperations: {
-        subtraction: "up",
-        addition: "down",
-    },
-    size: 1000
-});
-
-const world = new World(worldDimensions);
-world.addObject({ type: "AI", position: "random", data: {color: "yellow" } });
-world.addObject({ type: "AI", position: "random", data: {color: "black" } });
-world.addObject({ type: "AI", position: "random", data: {color: "blue"} });
-world.addObject({ type: "AI", position: "random", data: {color: "green"} });
-
+const world = new World({width: 1000, height: 1000});
 worldsContainer.addWorld(world);
 
-const howOftenLoopRunsInMs = 50;
-setInterval(serverLoop, howOftenLoopRunsInMs);
-function serverLoop() {
-    worldsContainer.getAllWorlds().forEach((world, worldId) => {
-        worldTick(world);
+world.addObject(new AIObject({ x: 90, y: 90, width: 10, height: 10, visionRange: 10, color: "black" })
+);
+world.addObject(new AIObject({ x: 90, y: 90, width: 10, height: 10, visionRange: 10, color: "yellow" })
+);
+world.addObject(new AIObject({ x: 90, y: 90, width: 10, height: 10, visionRange: 10, color: "blue" })
+);
+world.addObject(new AIObject({ x: 90, y: 90, width: 10, height: 10, visionRange: 10, color: "pink" })
+);
+
+function server_loop() {
+    worldsContainer.getAllWorlds().forEach((world, worldIdButNotUsed) => {
+        world_tick(world);
     });
 }
-function worldTick(world) {
+const how_often_server_loop_runs_in_ms = 50;
+setInterval(server_loop, how_often_server_loop_runs_in_ms);
+
+function world_tick(world) {
+
+    
     const AIObjects = world.getObjectsOfClass("AIObject");
     const playerObjects = world.getObjectsOfClass("PlayerObject");
 
     AIObjects.forEach(object => {
         const xDirection = chooseRandomlyFromPossibilities({ possibilities: ["left", "right"] });
         const yDirection = chooseRandomlyFromPossibilities({ possibilities: ["up", "down"] });
-        object.move({ direction: xDirection });
-        object.move({ direction: yDirection });
+        object.move( xDirection );
+        object.move(yDirection);
 
     });
 
     playerObjects.forEach(playerObject => {
+        console.log(playerObject);
+        
         if (!playerObject.started) {
-            playerObject.socket.emit("started", true);
-            playerObject.started = true;
+            const playerSocket = getSocket(playerObject);
+            playerSocket.emit("started", true);
         }
 
         const minXToBeVisible = playerObject.x - playerObject.visionRange;
@@ -100,7 +117,6 @@ function worldTick(world) {
         const maxYToBeVisible = playerObject.y + playerObject.visionRange;
 
         const visibleObjects = [];
-
         world.objects.forEach(object => {
             const objectIsVisible = (object.x >= minXToBeVisible && object.x <= maxXToBeVisible &&
                 object.y >= minYToBeVisible && object.y <= maxYToBeVisible);
@@ -111,7 +127,7 @@ function worldTick(world) {
 
         });
 
-        const playerSocket = global.sockets.find(socket => playerObject.socketId = socket.id);
+        const playerSocket = getSocket(playerObject);
         playerSocket.emit("objects", visibleObjects);
     });
 
