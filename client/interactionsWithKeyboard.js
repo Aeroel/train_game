@@ -21,7 +21,7 @@ class InteractionsWithKeyboard {
         return this.currentlyPressedKeys.splice(index, howManyElementsToRemoveStartingFromTheIndex);
     }
 
-    addKeyToPressed(keyCode) {
+    addKeyToPressed(keyEvent) {
         const keyCode = keyEvent.code;
         const index = this.currentlyPressedKeys.indexOf(keyCode);
         const keyAlreadyInPressed = (index !== -1);
