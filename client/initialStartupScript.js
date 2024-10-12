@@ -1,4 +1,4 @@
-simport { InteractionsWithKeyboard } from "./InteractionsWithKeyboard.js";
+import { InteractionsWithKeyboard } from "./InteractionsWithKeyboard.js";
 import { GameLoop } from "./gameLoop.js";
 import { Game } from "./game.js";
 import { Player } from "./player.js";
