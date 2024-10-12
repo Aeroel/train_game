@@ -1,8 +1,8 @@
 class InteractionsWithKeyboard {
     currentlyPressedKeys = []
     constructor() {
-        document.addEventListener("keydown", this.keydownListener.bind(this));
-        document.addEventListener("keyup", this.keyupListener.bind(this));
+        document.addEventListener("keydown", this.addKeyToPressed.bind(this));
+        document.addEventListener("keyup", this.removeKeyFromPressed.bind(this));
     }
 
     isKeyBeingPressed(keyName) {
@@ -10,23 +10,28 @@ class InteractionsWithKeyboard {
         return answer;
     }
 
-    keyupListener(keyEvent) {
-        const index = this.currentlyPressedKeys.indexOf(keyEvent.code);
-        if (index === -1) {
+    removeKeyFromPressed(keyEvent) {
+        const keyCode = keyEvent.code;
+        const index = this.currentlyPressedKeys.indexOf(keyCode);
+        const keyIsNotInPressed = (index === -1);
+        const howManyElementsToRemoveStartingFromTheIndex = 1;
+        if (keyIsNotInPressed) {
             return;
         }
-        this.currentlyPressedKeys.splice(index, 1);
-
+        return this.currentlyPressedKeys.splice(index, howManyElementsToRemoveStartingFromTheIndex);
     }
-    keydownListener(keyEvent) {
-        const index = this.currentlyPressedKeys.indexOf(keyEvent.code);
-        if (index !== -1) {
+
+    addKeyToPressed(keyCode) {
+        const keyCode = keyEvent.code;
+        const index = this.currentlyPressedKeys.indexOf(keyCode);
+        const keyAlreadyInPressed = (index !== -1);
+        if (keyAlreadyInPressed) {
             return;
         }
-        this.currentlyPressedKeys.push(keyEvent.code)
+        this.currentlyPressedKeys.push(keyCode);
     }
 }
 
 export {
- InteractionsWithKeyboard 
- } 
+    InteractionsWithKeyboard
+} 
