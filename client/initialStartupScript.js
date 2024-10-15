@@ -3,13 +3,14 @@ import { GameLoop } from "./gameLoop.js";
 import { Game } from "./game.js";
 import { Player } from "./player.js";
 import { Wall } from "./wall.js";
-window.gameCanvasWidth = 1280;
-window.gameCanvasHeight = 720;
-window.gameWorldWidth = 10_000;
-window.gameWorldHeight = 10_000;
+globalThis.gameCanvasWidth = 1280;
+globalThis.gameCanvasHeight = 720;
 
-window.keyboard = new InteractionsWithKeyboard();
-window.thePlayer = new Player({ keyboard, x: 0, y: 0, width: 10, height: 10 });
+globalThis.gameWorldWidth = 10_000;
+globalThis.gameWorldHeight = 10_000;
+
+globalThis.keyboard = new InteractionsWithKeyboard();
+globalThis.thePlayer = new Player({ keyboard, x: 50, y: 50, width: 10, height: 10 });
 
 function initialStartupScript() {
     const canvas = document.getElementById("gameCanvas");
@@ -18,19 +19,24 @@ function initialStartupScript() {
     gameCanvas.height = gameCanvasHeight;
 
     const game = new Game({ keyboard, canvas, context, xBounds: gameWorldWidth, yBounds: gameWorldHeight });
+    globalThis.gameEntities = game.entities;
     const gameLoop = new GameLoop({ game });
     gameLoop.start();
 
-    game.addEntity(window.thePlayer);
+    game.addEntity(globalThis.thePlayer);
     
-    const leftWall = new Wall({ x: 0, y: 0, width: 20, height: window.gameWorldHeight });
-    const topWall = new Wall({ x: 20, y: 0, width: -20 + window.gameWorldWidth, height: 20 });
-    const bottomWall = new Wall({ x: 20, y: window.gameWorldHeight, width: -20 + window.gameWorldWidth, height: 20 });
-    const rightWall = new Wall({ x: -20 + window.gameWorldWidth, y: 20, width: 20, height: window.gameWorldHeight });
+    const leftWall = new Wall({ x: 0, y: 0, width: 20, height: globalThis.gameWorldHeight });
+    const topWall = new Wall({ x: 20, y: 0, width: -20 + globalThis.gameWorldWidth, height: 20 });
+    const bottomWall = new Wall({ x: 20, y: globalThis.gameWorldHeight, width: -20 + globalThis.gameWorldWidth, height: 20 });
+    const rightWall = new Wall({ x: -20 + globalThis.gameWorldWidth, y: 20, width: 20, height: globalThis.gameWorldHeight });
+    const thinWall = new Wall({x: 100, y:100, width:1, height:10});
+    const thickerWall = new Wall({x: 120, y:120, width:10, height:20});
     game.addEntity(leftWall);
     game.addEntity(topWall);
     game.addEntity(bottomWall);
     game.addEntity(rightWall);
+    game.addEntity(thinWall);
+    game.addEntity(thickerWall);
     
 }
 

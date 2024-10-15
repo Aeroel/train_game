@@ -19,26 +19,33 @@ class Game {
         this.entities.forEach(entity => {
             this.forcePositionToBeWithinBounds(entity);
             entity.tick({ timestamp, context: this.context });
-            this.forcePositionToBeWithinBounds(entity);
+            this.forcePositionToBeWithinBoundsAgain(entity);
         }, this);
     }
-    forcePositionToBeWithinBounds(entity) {
 
+    forcePositionToBeWithinBounds(entity) {
         if (entity.x <= 0) {
             entity.x = 0;
         }
-        if (entity.x + entity.width >= this.xBounds) {
-            entity.x = this.xBounds - entity.width;
+        const entityRightEdge = entity.x + entity.width;
+        if (entityRightEdge >= this.xBounds) {
+            const worldRightEdgeEntityPosition = this.xBounds - entity.width;
+            entity.x = worldRightEdgeEntityPosition;
         }
 
         if (entity.y <= 0) {
             entity.y = 0;
         }
-        if (entity.y + entity.height >= this.yBounds) {
-            entity.y = this.yBounds - entity.height;
+        const entityBottom = entity.y + entity.height;
+        if (entityBottom >= this.yBounds) {
+            const worldBottomEdgeEntityPosition = this.yBounds - entity.height;;
+            entity.y = worldBottomEdgeEntityPosition;
         }
 
     }
+    // alias  for reading clarity in tick;
+    forcePositionToBeWithinBoundsAgain = this.forcePositionToBeWithinBounds;
+    
 }
 
 export {

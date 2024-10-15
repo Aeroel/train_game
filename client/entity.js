@@ -13,6 +13,13 @@ class Entity {
         this.width = width;
     }
     tick({timestamp, context}) {
+        gameEntities.forEach(entity => {
+            const foundSelf = Boolean(entity === this);
+            if(foundSelf) {
+                return;
+            }
+            
+        });
         this.draw({context});
     }
     draw({context}) {
