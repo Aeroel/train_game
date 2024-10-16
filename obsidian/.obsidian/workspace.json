@@ -11,8 +11,12 @@
             "id": "f6a1623215c0c1a4",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "Objectives and solutions, general thoughts.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "Objectives and solutions, general thoughts.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "Objectives and solutions, general thoughts.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "Objectives and solutions, general thoughts.md"
+              }
             }
           }
         ]
@@ -140,6 +148,6 @@
   },
   "active": "f6a1623215c0c1a4",
   "lastOpenFiles": [
-    "Objectives and solutions.md"
+    "Objectives and solutions, general thoughts.md"
   ]
 }

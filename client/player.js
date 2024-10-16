@@ -1,4 +1,5 @@
 import { Entity } from "./entity.js"
+import { movePlayer } from "./movement.js";
 
 class Player extends Entity {
     type = "player";
@@ -21,16 +22,22 @@ class Player extends Entity {
     }
     handleMovement() {
         if (this.keyboard.currentlyPressedKeys.includes("ArrowLeft")) {
-            this.x -= this.singleMovementDistance;
+            //this.x -= this.singleMovementDistance;
+            movePlayer({player:this, xStep:-this.singleMovementDistance, yStep:0, entities:globalThis.gameEntities})
         }
         if (this.keyboard.currentlyPressedKeys.includes("ArrowRight")) {
-            this.x += this.singleMovementDistance;
+           //this.x += this.singleMovementDistance;
+           movePlayer({player:this, xStep:this.singleMovementDistance, yStep:0, entities:globalThis.gameEntities});
+
+
         }
         if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
-            this.y -= this.singleMovementDistance;
+            //this.y -= this.singleMovementDistance;
+            movePlayer({player:this, xStep:0, yStep:-this.singleMovementDistance, entities:globalThis.gameEntities})
         }
         if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
-            this.y += this.singleMovementDistance;
+            //this.y += this.singleMovementDistance;
+            movePlayer({player:this, xStep:0, yStep:this.singleMovementDistance, entities:globalThis.gameEntities})
         }
     }
 
