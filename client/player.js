@@ -14,7 +14,9 @@ class Player extends Entity {
         super.draw({ context });
     }
     draw({ context }) {
-        context.fillRect(window.gameCanvasWidth / 2, window.gameCanvasHeight / 2, this.width, this.height);
+        const middleOfCanvasX = window.gameCanvasWidth / 2;
+        const middleOfCanvasY = window.gameCanvasHeight / 2;
+        context.fillRect(middleOfCanvasX, middleOfCanvasY, this.width, this.height);
         return;
     }
     handleMovement() {
