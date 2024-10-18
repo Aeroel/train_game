@@ -1,7 +1,30 @@
 import { rectIntersectsRect } from "./rectIntersectsRect.js";
 
 function move({ dir, step, player, entities }) {
-    const formulas = {
+    const formulas = setUpFormulas({dir, step, player, entities});
+    let pointBeforeClosestCollision = formulas[dir].closestValidInitial;
+    entities.forEach((entity) => {
+        if (entity.type !== 'wall') {
+            return;
+        }
+        const potential = formulas[dir].potential({entity, player});
+        for (let subStep = 1; subStep < step; subStep++) {
+            const hypotheticalFuturePlayerState = { x: formulas[dir].xSubStep({x:player.x, subStep}), y: formulas[dir].ySubStep({y:player.y, subStep}), width: player.width, height: player.height }
+            if (!rectIntersectsRect(hypotheticalFuturePlayerState, entity)) {
+                continue;
+            }
+            if (formulas[dir].needToSkipCollision({potential,pointBeforeClosestCollision: pointBeforeClosestCollision})) {
+                continue;
+            }
+            pointBeforeClosestCollision = potential;
+            return;
+        }
+    })
+    formulas[dir].setPosition({player, pointBeforeClosestCollision});
+
+}
+function setUpFormulas({dir, step, player, entities}) {
+    return {
         left: {
             closestValidInitial: player.x - step,
             potential: function({entity, player}) {
@@ -75,26 +98,6 @@ function move({ dir, step, player, entities }) {
             }
         },
     };
-    let pointBeforeClosestCollision = formulas[dir].closestValidInitial;
-    entities.forEach((entity) => {
-        if (entity.type !== 'wall') {
-            return;
-        }
-        const potential = formulas[dir].potential({entity, player});
-        for (let subStep = 1; subStep < step; subStep++) {
-            const hypotheticalFuturePlayerState = { x: formulas[dir].xSubStep({x:player.x, subStep}), y: formulas[dir].ySubStep({y:player.y, subStep}), width: player.width, height: player.height }
-            if (!rectIntersectsRect(hypotheticalFuturePlayerState, entity)) {
-                continue;
-            }
-            if (formulas[dir].needToSkipCollision({potential,pointBeforeClosestCollision: pointBeforeClosestCollision})) {
-                continue;
-            }
-            pointBeforeClosestCollision = potential;
-            return;
-        }
-    })
-    formulas[dir].setPosition({player, pointBeforeClosestCollision});
-
 }
 
 export {move}
