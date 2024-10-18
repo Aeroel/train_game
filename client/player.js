@@ -1,11 +1,11 @@
 import { Entity } from "./entity.js"
-import { movePlayer } from "./movement.js";
+import { move } from "./move.js";
 
 class Player extends Entity {
     type = "player";
     hp;
     keyboard;
-    singleMovementDistance = 5;
+    singleMovementDistance = 10;
     constructor({ keyboard, x, y, width, height }) {
         super({ x, y, width, height });
         this.keyboard = keyboard;
@@ -22,22 +22,16 @@ class Player extends Entity {
     }
     handleMovement() {
         if (this.keyboard.currentlyPressedKeys.includes("ArrowLeft")) {
-            //this.x -= this.singleMovementDistance;
-            movePlayer({player:this, xStep:-this.singleMovementDistance, yStep:0, entities:globalThis.gameEntities})
+            move({ dir: "left", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
         }
         if (this.keyboard.currentlyPressedKeys.includes("ArrowRight")) {
-           //this.x += this.singleMovementDistance;
-           movePlayer({player:this, xStep:this.singleMovementDistance, yStep:0, entities:globalThis.gameEntities});
-
-
+            move({ dir: "right", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
         }
         if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
-            //this.y -= this.singleMovementDistance;
-            movePlayer({player:this, xStep:0, yStep:-this.singleMovementDistance, entities:globalThis.gameEntities})
+            move({ dir: "up", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
         }
         if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
-            //this.y += this.singleMovementDistance;
-            movePlayer({player:this, xStep:0, yStep:this.singleMovementDistance, entities:globalThis.gameEntities})
+            move({dir:"down", step:this.singleMovementDistance, player:this, entities:globalThis.gameEntities});
         }
     }
 
