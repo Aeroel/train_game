@@ -1,18 +1,15 @@
-import { Entity } from "./entity.js"
-import { move } from "./move.js";
+import { MovingEntity } from "./MovingEntity.js"
 
-class Player extends Entity {
+class Player extends MovingEntity {
     type = "player";
-    hp;
     keyboard;
-    singleMovementDistance = 10;
+    singleMovementDistance = 5;
     constructor({ keyboard, x, y, width, height }) {
         super({ x, y, width, height });
         this.keyboard = keyboard;
     }
     tick({ timestamp, context }) {
-        this.handleMovement();
-        super.draw({ context });
+        super.tick({ context });
     }
     draw({ context }) {
         const middleOfCanvasX = window.gameCanvasWidth / 2;
@@ -20,19 +17,35 @@ class Player extends Entity {
         context.fillRect(middleOfCanvasX, middleOfCanvasY, this.width, this.height);
         return;
     }
-    handleMovement() {
+    adjustMovementDirectionBasedOnKeyboardState() {
         if (this.keyboard.currentlyPressedKeys.includes("ArrowLeft")) {
-            move({ dir: "left", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
+           this.addMovementDirection({directionName: "left"})
+        } else {
+            this.removeMovementDirection({directionName: "left"})
         }
+
         if (this.keyboard.currentlyPressedKeys.includes("ArrowRight")) {
-            move({ dir: "right", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
-        }
-        if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
-            move({ dir: "up", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
-        }
-        if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
-            move({dir:"down", step:this.singleMovementDistance, player:this, entities:globalThis.gameEntities});
-        }
+            this.addMovementDirection({directionName: "right"})
+         } else {
+             this.removeMovementDirection({directionName: "right"})
+         }
+
+         if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
+            this.addMovementDirection({directionName: "down"})
+         } else {
+             this.removeMovementDirection({directionName: "down"})
+         }
+
+         if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
+            this.addMovementDirection({directionName: "up"})
+         } else {
+             this.removeMovementDirection({directionName: "up"})
+         }
+
+    }
+    handleMovement() {
+        this.adjustMovementDirectionBasedOnKeyboardState();
+        super.handleMovement();
     }
 
 }

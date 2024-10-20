@@ -46,6 +46,12 @@ In the player movement method, whenever a player moves, say, arrow left (at firs
 3. Same for every other entity, because a closer entity might appear later.
 4. After I finish this process I have an array of possiblePositions. It will contain a single element stepDist if no collisions occurred, or one/more than one if at least one collision occurred. I select from this array either the only value or if there are multiple, then the value closest to the original player.x. This is what I set the player.x to be.
 I think this should work alright?
+Solution: Well, I seem to have settled on simply simulating each subStep of a step of the player against every wall entity and setting it to closest encountered entity's edge, so basically now irrespective of the step size, the player will not teleport through any walls
+
+
+Objective: The player has a forcefield around them. Whenever a projectile makes contact with it, the projectile's direction is reversed. 
+Solution: Well, the basic idea is simple enough to implement, I suppose. I mean, all that is really needed is to make an entity called projectile or something. Then, I will add to it a property direction x and direction y or something like direction property... With values like left up down right. So, I spawn the projectile on the same y axis as the player and then add the "left" direction to the projectile's direction property. On every tick of the projectile it will move accordingly, just as with player. (Probably should make the movement code be shared, so maybe put in into movingEntity subclass of Entity and make both projectile and player be subclasses of movingEntity)
+When the projectile makes contact with the player's forcefield... Well, the way this will be implemented is the forcefield, on each of it's tick() will check if it collides with anything, that is to say if anything touches it. If yes, then it will switch up it's direction. If, for example, the projectile has direction value of \["left"\], it turns it to \["right"\], if \["up", "right"\] then to \["down", "left"\], etc.
 
 
 General thoughts: 

@@ -1,8 +1,9 @@
 import { InteractionsWithKeyboard } from "./InteractionsWithKeyboard.js";
-import { GameLoop } from "./gameLoop.js";
-import { Game } from "./game.js";
-import { Player } from "./player.js";
-import { Wall } from "./wall.js";
+import { GameLoop } from "./GameLoop.js";
+import { Game } from "./Game.js";
+import { Player } from "./Player.js";
+import { Wall } from "./Wall.js";
+import { Projectile } from "./projectile.js";
 globalThis.gameCanvasWidth = 1280;
 globalThis.gameCanvasHeight = 720;
 
@@ -24,6 +25,10 @@ function initialStartupScript() {
     gameLoop.start();
 
     game.addEntity(globalThis.thePlayer);
+
+    const projectile = new Projectile({x: 50, y: 50, width: 4, height: 4});
+    game.addEntity(projectile)
+    projectile.addMovementDirection({directionName: "right"});
     
     const leftWall = new Wall({ x: 0, y: 0, width: 20, height: globalThis.gameWorldHeight });
     const topWall = new Wall({ x: 20, y: 0, width: -20 + globalThis.gameWorldWidth, height: 20 });
