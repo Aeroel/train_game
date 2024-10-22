@@ -64,28 +64,52 @@ class Forcefield extends MovingEntity {
                     isColliding = true;
                     return;
                 }
-
-                this.movingInDirections.forEach(direction => {
-                    for (let subStep = 1; subStep < this.singleMovementDistance; subStep++) {
-                        let mockPosition = null;
-                        if (direction === 'right') {
-                            mockPosition = { x: this.x + subStep, y: this.y, width: this.width, height: this.height };
-                        } else if (direction === 'left') {
-                            mockPosition = { x: this.x - subStep, y: this.y, width: this.width, height: this.height };
-                        } else if (direction === 'up') {
-                            mockPosition = { x: this.x, y: this.y - subStep, width: this.width, height: this.height };
-                        } else if (direction === 'down') {
-                            mockPosition = { x: this.x, y: this.y + subStep, width: this.width, height: this.height };
-                        }
-                        if (rectIntersectsRect(mockPosition, mockEntityPosition)) {
-                            isColliding = true;
-                            return;
-                        }
-                    }
-                }, this);
             }
         }, this);
 
+        if (!this.isMoving()) {
+            return isColliding;
+        }
+
+        // if both are moving the check algo is different
+        for (let subStep = 1; subStep < this.singleMovementDistance; subStep++) {
+            let nextFieldX;
+            let nextFieldY;
+            if (this.movingInDirections.has("right")) {
+                nextFieldX = this.x + subStep;
+            }
+            if (this.movingInDirections.has("left")) {
+                nextFieldX = this.x - subStep;
+            }
+            if (this.movingInDirections.has("down")) {
+                nextFieldY = this.y + subStep;
+            }
+            if (this.movingInDirections.has("up")) {
+                nextFieldY = this.y - subStep;
+            }
+            let simulatedFieldObject = {x: nextFieldX, y: nextFieldY, height: this.height, width:this.width};
+            for (let entitySubstep = 1; entitySubstep < entity.singleMovementDistance; entitySubstep++) {
+                let nextEntityX;
+                let nextEntityY;
+                if (this.movingInDirections.has("right")) {
+                    nextEntityX = entity.x + entitySubstep;
+                }
+                if (entity.movingInDirections.has("left")) {
+                    nextEntityX = entity.x - entitySubstep;
+                }
+                if (entity.movingInDirections.has("down")) {
+                    nextEntityY = entity.y + entitySubstep;
+                }
+                if (entity.movingInDirections.has("up")) {
+                    nextEntityY = entity.y - entitySubstep;
+                }
+                let simulatedEntityObject = {x: nextEntityX, y: nextEntityY, height: entity.height, width:entity.width};
+                if(rectIntersectsRect(simulatedEntityObject, simulatedFieldObject)) {
+                    isColliding = true;
+                }
+            }
+
+        }
 
         return isColliding;
     }
