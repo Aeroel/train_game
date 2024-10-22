@@ -9,6 +9,17 @@ class MovingEntity extends Entity {
     }
     addMovementDirection({directionName}) {
         this.movingInDirections.add(directionName);
+        const opposingDirection = this.getOpposingDirection({directionName});
+        if(this.movingInDirections.has(opposingDirection)) {
+            this.removeMovementDirection({directionName: opposingDirection});
+        }
+    }
+    isMoving() {
+        return (this.movingInDirections.size > 0);
+    }
+    getOpposingDirection({directionName}){
+        const relationships = {right: "left", left: "right", down: "up", up: "down"};
+        return relationships[directionName];
     }
     removeMovementDirection({directionName}) {
         this.movingInDirections.delete(directionName);

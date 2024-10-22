@@ -1,6 +1,8 @@
 import { MovingEntity } from "./MovingEntity.js"
 
 class Player extends MovingEntity {
+    canvasX;
+    canvasY;
     type = "player";
     keyboard;
     singleMovementDistance = 5;
@@ -9,12 +11,16 @@ class Player extends MovingEntity {
         this.keyboard = keyboard;
     }
     tick({ timestamp, context }) {
+        this.updatePlayerCanvasPosition();
         super.tick({ context });
     }
+    updatePlayerCanvasPosition() {
+        this.canvasX = window.gameCanvasWidth / 2;
+        this.canvasY = window.gameCanvasHeight / 2;
+    }
     draw({ context }) {
-        const middleOfCanvasX = window.gameCanvasWidth / 2;
-        const middleOfCanvasY = window.gameCanvasHeight / 2;
-        context.fillRect(middleOfCanvasX, middleOfCanvasY, this.width, this.height);
+        
+        context.fillRect(this.canvasX, this.canvasY, this.width, this.height);
         return;
     }
     adjustMovementDirectionBasedOnKeyboardState() {
