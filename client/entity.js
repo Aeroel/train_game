@@ -11,9 +11,18 @@ class Entity {
         this.y = y;
         this.height = height;
         this.width = width;
+        this.frozenForTicks = 0;;
     }
-    tick({timestamp, context}) {
-        this.draw({context});
+    isFrozen() {
+        return (this.frozenForTicks > 0);
+    }
+    freeze({amount}) {
+        this.frozenForTicks = amount;
+    }
+    tick({timestamp}) {
+        if(this.frozenForTicks > 0) {
+            this.frozenForTicks--;
+        }
     }
     draw({context}) {
         const canvasX = calculateCanvasCoordinate({ maxCanvasValue:window.gameCanvasWidth, realPlayerPosition: window.thePlayer.x, realObjectPosition: this.x });

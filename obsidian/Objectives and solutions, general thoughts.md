@@ -65,3 +65,25 @@ Well, I need to use some algorithm to display visible parts of entities whose ba
 
 For now, though, I will just implement  simple stuff... Or should I? Or should I, rather, restructure the code now?
 Question: Is it possible to make the server component completely interchangeable between  being located as an html5 game component or as a nodejs server side component interacting with browser using, say, socket.io? I guess the simulation logic would be identical, but the interfacing (I mean, communication) would still be different? Or can it be made exactly identical? Well, I think that even if it won't be the same, I think I can abstract it away in a communication/interfacing layer and the main part, i.e. the world simulation logic would remain exactly the same irrespective of whether I make it into a singleplayer or a multiplayer game.
+
+
+Hm, having some trouble with... Collision. How do I implement collision for two moving objects?
+I could create arrays based on each object's current direction.
+possible movingInDirections: left, right, left-up, left-down, right-up, right-down. entity has {properties x, y, movingInDirections, singleMovementDistance}
+six possible movement states... If I make a function which can take in (entity) to output [positions inbetween...]...
+for example (500, 5, right) would give [{x: 500, y:100}, {x: 501, y: 100}, {x: 502, y:100}, {x: 503, y: 100}, {x: 504, y: 100},  {x: 505, y: 100}, ] (entity's original position at this point is x 500 y 100)
+Well, I guess the logic here is clear enough... If I give the same input but direction is "right down" you can guess the output, y would also be changed in each object 100, 101, 102 etc.
+And what can I do with this function?... Well, I also need a function to see if any element in one object is identical to any element in the other object.
+Basically the algo would be:
+1. generate two object arrays for two moving objects
+2. compare them
+3. if true, they are colliding while moving, false otherwise
+
+I guess this seems pretty... Bulletproof?
+
+Entities have properties x, y, width, height, type. Moving entities have properties singleMovementDistance and movingInDirections. MovingInDirections is a Set which can contain either: one element "left" or one element "right" or two elements "up", "left" or two elements "up", right" or two elements "down", "right" or two elements "down", "left", or one element "up" or one element "down". On each game tick an entity might be standing (movingInDirections empty) or moving in some direction(s). Whenever a direction is in the set, I add or subtract, depending on what the direction is, from either x or y property singeMovementDistance depending on what the set contains. 
+ I have a wall entity. Any other entity that collides with wall entity must be stopped just at the edge of the wall. 
+ I have two other entity types: forcefield and projectile. A forcefield might be either standing or moving at any game tick. Same goes for projectile. The fact that any non-wall entity can be either standing or moving at any given time is important for the way collision stuff is implemented.
+ To differentiate between entity types, I have a class property type. Walls have type "wall", projectiles type "projectile", forcefields type "forcefield", players type "player". A forcefield basically has the same position as player that attached with minor difference: it is 2 pixels biggers than the player so it's like perimeter of a  square surrounding the player square when I render it. Whenever a player moves, obviously the forcefield moves along with it.
+ When a projectile touches forcefield, I want the projectile's direction to be reversed (it's set's elements to be reversed, if any. For example, right becomes left, up becomes down, no element remains no element). 
+ Write js code which implements these things. All my entities are stored in a single array.

@@ -1,3 +1,5 @@
+
+
 class Game {
     keyboard;
     yBounds;
@@ -15,11 +17,24 @@ class Game {
     addEntity(entity) {
         this.entities.push(entity);
     }
+    makeForcefieldsAppearOnTopWhenDrawn(){
+        this.entities.sort((a, b) => {
+            if (a.type === 'forcefield' && b.type !== 'forcefield') {
+              return 1;
+            } else if (a.type !== 'forcefield' && b.type === 'forcefield') {
+              return -1;
+            } else {
+              return 0;
+            }
+          });
+    }
     tick({ timestamp }) {
         this.entities.forEach(entity => {
             this.forcePositionToBeWithinBounds(entity);
             entity.tick({ timestamp, context: this.context });
             this.forcePositionToBeWithinBoundsAgain(entity);
+            this.makeForcefieldsAppearOnTopWhenDrawn();
+            entity.draw({context: this.context});
         }, this);
     }
 

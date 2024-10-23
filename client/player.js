@@ -10,9 +10,9 @@ class Player extends MovingEntity {
         super({ x, y, width, height });
         this.keyboard = keyboard;
     }
-    tick({ timestamp, context }) {
+    tick({ timestamp }) {
         this.updatePlayerCanvasPosition();
-        super.tick({ context });
+        super.tick({ });
     }
     updatePlayerCanvasPosition() {
         this.canvasX = window.gameCanvasWidth / 2;

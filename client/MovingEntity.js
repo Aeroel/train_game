@@ -24,22 +24,22 @@ class MovingEntity extends Entity {
     removeMovementDirection({directionName}) {
         this.movingInDirections.delete(directionName);
     }
-    tick({ timestamp, context }) {
+    tick({ timestamp }) {
         this.handleMovement();
-        super.tick({ context });
+        super.tick({ timestamp });
     }
     handleMovement() {
         if (this.movingInDirections.has("left")) {
-            move({ dir: "left", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
+            move({ dir: "left", step: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("right")) {
-            move({ dir: "right", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
+            move({ dir: "right", step: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("down")) {
-            move({ dir: "down", step: this.singleMovementDistance, player: this, entities: globalThis.gameEntities });
+            move({ dir: "down", step: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("up")) {
-            move({dir:"up", step:this.singleMovementDistance, player:this, entities:globalThis.gameEntities});
+            move({dir:"up", step:this.singleMovementDistance, selfEntity:this, entities:globalThis.gameEntities});
         }
     }
 }
