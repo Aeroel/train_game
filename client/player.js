@@ -5,7 +5,6 @@ class Player extends MovingEntity {
     canvasY;
     type = "player";
     keyboard;
-    singleMovementDistance = 5;
     constructor({ keyboard, x, y, width, height }) {
         super({ x, y, width, height });
         this.keyboard = keyboard;

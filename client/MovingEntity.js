@@ -3,7 +3,9 @@ import { move } from "./entityMovementImplementation.js";
 
 class MovingEntity extends Entity {
     movingInDirections = new Set();
-    singleMovementDistance = 5;
+    maxSpeed = 5;
+    currentSpeed = 5;
+    slowDownToPercentPerTick = 90;
     constructor({x, y, width, height}){
         super({ x, y, width, height });
     }
@@ -37,16 +39,16 @@ class MovingEntity extends Entity {
     }
     handleMovement() {
         if (this.movingInDirections.has("left")) {
-            move({ direction: "left", stepDistance: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
+            move({ direction: "left", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("right")) {
-            move({ direction: "right", stepDistance: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
+            move({ direction: "right", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("down")) {
-            move({ direction: "down", stepDistance: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
+            move({ direction: "down", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("up")) {
-            move({direction:"up", stepDistance:this.singleMovementDistance, selfEntity:this, entities:globalThis.gameEntities});
+            move({direction:"up", stepDistance:this.currentSpeed, selfEntity:this, entities:globalThis.gameEntities});
         }
     }
 }

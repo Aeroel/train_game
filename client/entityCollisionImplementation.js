@@ -108,7 +108,7 @@ function generateAllCurrentMovementPositions({ entity }) {
     positions.push(startPos);
 
     // middle positions
-    for (let substep = 1; substep < entity.singleMovementDistance; substep++) {
+    for (let substep = 1; substep < entity.currentSpeed; substep++) {
         if (entity.movingInDirections.has('left')) {
             positions.push({ x: entity.x - substep, y: entity.y });
         }
@@ -123,20 +123,20 @@ function generateAllCurrentMovementPositions({ entity }) {
         }
     }
 
-    // end, where it (the entity, that is) wants to be at end of the whole movement/entity.singleMovementDistance
+    // end, where it (the entity, that is) wants to be at end of the whole movement/entity.currentSpeed
     let endX = entity.x
     let endY = entity.y
     if (entity.movingInDirections.has("right")) {
-        endX += entity.singleMovementDistance;
+        endX += entity.currentSpeed;
     }
     if (entity.movingInDirections.has("left")) {
-        endX -= entity.singleMovementDistance;
+        endX -= entity.currentSpeed;
     }
     if (entity.movingInDirections.has("down")) {
-        endY += entity.singleMovementDistance;
+        endY += entity.currentSpeed;
     }
     if (entity.movingInDirections.has("up")) {
-        endY -= entity.singleMovementDistance;
+        endY -= entity.currentSpeed;
     }
 
     let endPos = { x: endX, y: endY };
@@ -153,9 +153,12 @@ function handleCollisionForProjectile({ projectile, entities }) {
         const forcefieldGenerator = forcefield.entityThatGeneratesIt;
 
         if (willEntitiesTouchAtAnyPoint({ entity1: projectile, entity2: forcefieldGenerator, })) {
-            projectile.flipMovementDirection();
+            whenProjectileCollidesWithForceField({projectile});
         }
     })
+}
+function whenProjectileCollidesWithForceField({projectile}) {
+    projectile.flipMovementDirection();
 }
 function handleCollisionForForcefield({ forcefield, entities }) {
     const forcefieldGenerator = forcefield.entityThatGeneratesIt;
@@ -165,7 +168,7 @@ function handleCollisionForForcefield({ forcefield, entities }) {
         }
         const projectile = entity;
         if (willEntitiesTouchAtAnyPoint({ entity1: forcefieldGenerator, entity2: projectile})) {
-            projectile.flipMovementDirection();
+            whenProjectileCollidesWithForceField({projectile});
         }
     })
 }
