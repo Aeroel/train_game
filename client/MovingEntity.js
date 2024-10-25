@@ -37,16 +37,16 @@ class MovingEntity extends Entity {
     }
     handleMovement() {
         if (this.movingInDirections.has("left")) {
-            move({ dir: "left", step: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
+            move({ direction: "left", stepDistance: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("right")) {
-            move({ dir: "right", step: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
+            move({ direction: "right", stepDistance: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("down")) {
-            move({ dir: "down", step: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
+            move({ direction: "down", stepDistance: this.singleMovementDistance, selfEntity: this, entities: globalThis.gameEntities });
         }
         if (this.movingInDirections.has("up")) {
-            move({dir:"up", step:this.singleMovementDistance, selfEntity:this, entities:globalThis.gameEntities});
+            move({direction:"up", stepDistance:this.singleMovementDistance, selfEntity:this, entities:globalThis.gameEntities});
         }
     }
 }

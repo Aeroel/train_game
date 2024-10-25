@@ -1,5 +1,6 @@
 import { Entity } from "./Entity.js";
 import { calculateCanvasCoordinate } from "./calculateCanvasCoordinate.js";
+import { handleCollisionForForcefield } from "./entityMovementImplementation.js";
 
 class Forcefield extends Entity {
     distanceBetween = 3;
@@ -12,9 +13,10 @@ class Forcefield extends Entity {
         this.width = Math.ceil(this.entityThatGeneratesIt.width * (1 + 0.58));
         this.height = Math.ceil(this.entityThatGeneratesIt.height * (1 + 0.58));
     }
-    tick({timestamp,}){
+    tick({timestamp}){
         this.handlePosition();
-        super.tick({timestamp,});
+        handleCollisionForForcefield({forcefield: this, entities: globalThis.game.entities})
+        super.tick({timestamp});
     }
     handlePosition() {
         this.x = this.entityThatGeneratesIt.x - this.distanceBetween;

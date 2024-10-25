@@ -17,7 +17,7 @@ class Game {
     addEntity(entity) {
         this.entities.push(entity);
     }
-    makeForcefieldsAppearOnTopWhenDrawn(){
+    whenDrawnMakeForcefieldsAppearOnTopOfAllOtherEntities(){
         this.entities.sort((a, b) => {
             if (a.type === 'forcefield' && b.type !== 'forcefield') {
               return 1;
@@ -29,11 +29,9 @@ class Game {
           });
     }
     tick({ timestamp }) {
+        this.whenDrawnMakeForcefieldsAppearOnTopOfAllOtherEntities();
         this.entities.forEach(entity => {
-            this.forcePositionToBeWithinBounds(entity);
             entity.tick({ timestamp, context: this.context });
-            this.forcePositionToBeWithinBoundsAgain(entity);
-            this.makeForcefieldsAppearOnTopWhenDrawn();
             entity.draw({context: this.context});
         }, this);
     }
@@ -58,8 +56,6 @@ class Game {
         }
 
     }
-    // alias  for reading clarity in tick;
-    forcePositionToBeWithinBoundsAgain = this.forcePositionToBeWithinBounds;
     
 }
 
