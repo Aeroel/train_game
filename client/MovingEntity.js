@@ -1,5 +1,5 @@
 import { Entity } from "./Entity.js"
-import { move } from "./entityMovementCode.js";
+import { move } from "./entityMovementImplementation.js";
 
 class MovingEntity extends Entity {
     movingInDirections = new Set();
@@ -13,6 +13,13 @@ class MovingEntity extends Entity {
         if(this.movingInDirections.has(opposingDirection)) {
             this.removeMovementDirection({directionName: opposingDirection});
         }
+    }
+    ceaseMovement() {
+        if(!this.isMoving()) {
+            return false;
+        }
+        this.movingInDirections.clear();
+        return true;
     }
     isMoving() {
         return (this.movingInDirections.size > 0);

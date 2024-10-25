@@ -4,21 +4,21 @@ import { calculateCanvasCoordinate } from "./calculateCanvasCoordinate.js";
 class Forcefield extends Entity {
     distanceBetween = 3;
     type = "forcefield";
-    player;
-    constructor({ player }) {
+    entityThatGeneratesIt;
+    constructor({ entityThatGeneratesIt }) {
         super({ x: 0, y: 0, width: 0, height: 0 });
-        this.player = player;
+        this.entityThatGeneratesIt = entityThatGeneratesIt;
         this.handlePosition();
-        this.width = Math.ceil(this.player.width * (1 + 0.58));
-        this.height = Math.ceil(this.player.height * (1 + 0.58));
+        this.width = Math.ceil(this.entityThatGeneratesIt.width * (1 + 0.58));
+        this.height = Math.ceil(this.entityThatGeneratesIt.height * (1 + 0.58));
     }
     tick({timestamp,}){
         this.handlePosition();
         super.tick({timestamp,});
     }
     handlePosition() {
-        this.x = this.player.x - this.distanceBetween;
-        this.y = this.player.y - this.distanceBetween;
+        this.x = this.entityThatGeneratesIt.x - this.distanceBetween;
+        this.y = this.entityThatGeneratesIt.y - this.distanceBetween;
     }
     draw({ context }) {
         const canvasX = calculateCanvasCoordinate({ maxCanvasValue: window.gameCanvasWidth, realPlayerPosition: window.thePlayer.x, realObjectPosition: this.x });

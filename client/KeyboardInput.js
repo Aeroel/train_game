@@ -1,4 +1,4 @@
-class InteractionsWithKeyboard {
+class KeyboardInput {
     currentlyPressedKeys = []
     constructor() {
         document.addEventListener("keydown", this.addKeyToPressed.bind(this));
@@ -33,5 +33,5 @@ class InteractionsWithKeyboard {
 }
 
 export {
-    InteractionsWithKeyboard
+    KeyboardInput
 } 
