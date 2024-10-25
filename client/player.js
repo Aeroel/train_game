@@ -49,6 +49,7 @@ class Player extends MovingEntity {
 
     }
     handleMovement() {
+        this.currentSpeed = this.maxSpeed
         this.adjustMovementDirectionBasedOnKeyboardState();
         super.handleMovement();
     }

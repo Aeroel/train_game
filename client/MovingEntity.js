@@ -5,13 +5,13 @@ class MovingEntity extends Entity {
     movingInDirections = new Set();
     maxSpeed = 5;
     currentSpeed = 5;
-    slowDownToPercentPerTick = 90;
+    slowDownByPerTick = 0.1;
     constructor({x, y, width, height}){
         super({ x, y, width, height });
     }
     addMovementDirection({directionName}) {
         this.movingInDirections.add(directionName);
-        const opposingDirection = this.getOpposingDirection({directionName});
+        const opposingDirection = MovingEntity.getOpposingDirection({directionName});
         if(this.movingInDirections.has(opposingDirection)) {
             this.removeMovementDirection({directionName: opposingDirection});
         }
@@ -26,18 +26,29 @@ class MovingEntity extends Entity {
     isMoving() {
         return (this.movingInDirections.size > 0);
     }
-    getOpposingDirection({directionName}){
+    setSpeed(speed) {
+        this.currentSpeed = speed;
+    }
+    static getOpposingDirection({directionName}){
         const relationships = {right: "left", left: "right", down: "up", up: "down"};
         return relationships[directionName];
     }
     removeMovementDirection({directionName}) {
         this.movingInDirections.delete(directionName);
     }
+
     tick({ timestamp }) {
         this.handleMovement();
         super.tick({ timestamp });
     }
     handleMovement() {
+        if(this.movingInDirections.size > 0) {
+            this.currentSpeed = this.currentSpeed - this.slowDownByPerTick;
+            if(this.currentSpeed < 0) {
+                this.movingInDirections.clear();
+                this.currentSpeed = 0;
+            }
+        }
         if (this.movingInDirections.has("left")) {
             move({ direction: "left", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
         }

@@ -9,6 +9,7 @@ class Forcefield extends Entity {
     constructor({ entityThatGeneratesIt }) {
         super({ x: 0, y: 0, width: 0, height: 0 });
         this.entityThatGeneratesIt = entityThatGeneratesIt;
+        this.movingInDirections = this.entityThatGeneratesIt.movingInDirections;
         this.handlePosition();
         this.width = Math.ceil(this.entityThatGeneratesIt.width * (1 + 0.58));
         this.height = Math.ceil(this.entityThatGeneratesIt.height * (1 + 0.58));

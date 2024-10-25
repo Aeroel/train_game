@@ -1,5 +1,7 @@
+import { MovingEntity } from "./MovingEntity.js";
 import { rectIntersectsRect } from "./rectIntersectsRect.js";
-export { handleCollisionForForcefield, handleCollisionForProjectile, handleProjectileAndForcefieldCollisions, handleWallCollisions};
+export { handleCollisionForForcefield, handleCollisionForProjectile, handleProjectileAndForcefieldCollisions, handleWallCollisions };
+
 function setUpFormulas({ direction, stepDistance, selfEntity, entities }) {
     return {
         left: {
@@ -78,15 +80,15 @@ function setUpFormulas({ direction, stepDistance, selfEntity, entities }) {
 }
 
 function willEntitiesTouchAtAnyPoint({ entity1, entity2 }) {
-    
-    const entity1Positions = generateAllCurrentMovementPositions({entity:entity1})
-    const entity2Positions = generateAllCurrentMovementPositions({entity:entity2})
-    
+
+    const entity1Positions = generateAllCurrentMovementPositions({ entity: entity1 })
+    const entity2Positions = generateAllCurrentMovementPositions({ entity: entity2 })
+
     let willThey = false;
     for (const entity1Position of entity1Positions) {
         const x1 = entity1Position.x;
         const y1 = entity1Position.y;
-        const simE1 = { x: x1, y: y1, width: entity1.width, height: entity1.height }; 
+        const simE1 = { x: x1, y: y1, width: entity1.width, height: entity1.height };
         for (const entity2Position of entity2Positions) {
             const x2 = entity2Position.x;
             const y2 = entity2Position.y;
@@ -146,34 +148,44 @@ function generateAllCurrentMovementPositions({ entity }) {
 
 function handleCollisionForProjectile({ projectile, entities }) {
     entities.forEach((entity) => {
-        if (entity.type !== 'forcefield'  || entity === projectile) {
+        if (entity.type !== 'forcefield' || entity === projectile) {
             return;
         }
         const forcefield = entity;
-        const forcefieldGenerator = forcefield.entityThatGeneratesIt;
 
-        if (willEntitiesTouchAtAnyPoint({ entity1: projectile, entity2: forcefieldGenerator, })) {
-            whenProjectileCollidesWithForceField({projectile});
+        if (willEntitiesTouchAtAnyPoint({ entity1: projectile, entity2: forcefield, })) {
+            whenProjectileCollidesWithForceField({ projectile, forcefield });
         }
     })
 }
-function whenProjectileCollidesWithForceField({projectile}) {
-    projectile.flipMovementDirection();
+function whenProjectileCollidesWithForceField({ projectile, forcefield }) {
+    if (projectile.isMoving()) {
+        console.log(projectile);
+        projectile.flipMovementDirection();
+        return;
+    }
+    
+    forcefield.entityThatGeneratesIt.movingInDirections.forEach(direction => {
+        const opposingDirection = MovingEntity.getOpposingDirection({ directionName: direction });
+        projectile.movingInDirections.add(opposingDirection);
+        projectile.setSpeed(5);
+    })
+
+
 }
 function handleCollisionForForcefield({ forcefield, entities }) {
-    const forcefieldGenerator = forcefield.entityThatGeneratesIt;
     entities.forEach((entity) => {
         if (entity.type !== 'projectile' || entity === forcefield) {
             return;
         }
         const projectile = entity;
-        if (willEntitiesTouchAtAnyPoint({ entity1: forcefieldGenerator, entity2: projectile})) {
-            whenProjectileCollidesWithForceField({projectile});
+        if (willEntitiesTouchAtAnyPoint({ entity1: forcefield, entity2: projectile })) {
+            whenProjectileCollidesWithForceField({ projectile, forcefield });
         }
     })
 }
 function handleProjectileAndForcefieldCollisions({ selfEntity, entities }) {
-    
+
     if (selfEntity.type === 'projectile') {
         handleCollisionForProjectile({ projectile: selfEntity, entities });
     } else if (selfEntity.type === 'forcefield') {
