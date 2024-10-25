@@ -1,6 +1,6 @@
 import { Entity } from "./Entity.js";
 import { calculateCanvasCoordinate } from "./calculateCanvasCoordinate.js";
-import { handleCollisionForForcefield } from "./entityMovementImplementation.js";
+import { handleCollisionForForcefield } from "./entityCollisionImplementation.js";
 
 class Forcefield extends Entity {
     distanceBetween = 3;
