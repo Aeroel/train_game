@@ -4,7 +4,7 @@ import { move } from "./entityMovementImplementation.js";
 class MovingEntity extends Entity {
     movingInDirections = new Set();
     maxSpeed = 5;
-    currentSpeed = 5;
+    currentSpeed = 10;
     slowDownByPerTick = 0.1;
     constructor({x, y, width, height}){
         super({ x, y, width, height });

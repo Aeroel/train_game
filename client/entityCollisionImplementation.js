@@ -1,6 +1,6 @@
 import { MovingEntity } from "./MovingEntity.js";
 import { rectIntersectsRect } from "./rectIntersectsRect.js";
-export { handleCollisionForForcefield, handleCollisionForProjectile, handleProjectileAndForcefieldCollisions, handleWallCollisions };
+export { handleCollisionForForcefield, handleCollisionForProjectile, handleProjectileAndForcefieldCollisions, handleWallCollisions, generateAllCurrentMovementPositions };
 
 function setUpFormulas({ direction, stepDistance, selfEntity, entities }) {
     return {
@@ -79,28 +79,51 @@ function setUpFormulas({ direction, stepDistance, selfEntity, entities }) {
     };
 }
 
+// loops over sub positions of moving or stationary entities, simulating them moving.
+// stationary entities have fewer elements than moving ones, in that case we can just expand the
+// stationary entity's elements by copying the same value of it's current position to fit the
+/// moving one's
 function willEntitiesTouchAtAnyPoint({ entity1, entity2 }) {
 
-    const entity1Positions = generateAllCurrentMovementPositions({ entity: entity1 })
-    const entity2Positions = generateAllCurrentMovementPositions({ entity: entity2 })
-
+    let entity1Positions = generateAllCurrentMovementPositions({ entity: entity1 })
+    let entity2Positions = generateAllCurrentMovementPositions({ entity: entity2 })
+    // this does something like... well, equalize the subpositions arrays if they differ
+    // to allow to compare each sub position
+    if (entity1Positions.length > entity2Positions.length) {
+        entity2Positions = expandForComparison({ subpositions: entity2Positions, numberOfTimes: entity1Positions.length });
+    } else if (entity1Positions.length < entity2Positions.length) {
+        entity1Positions = expandForComparison({ subpositions: entity1Positions, numberOfTimes: entity2Positions.length });
+    }
     let willThey = false;
-    for (const entity1Position of entity1Positions) {
-        const x1 = entity1Position.x;
-        const y1 = entity1Position.y;
+    // above call to expandForComparison must have made lengths equal for sure
+    const lengthOfEither = entity1Positions.length;
+    console.log(entity1Positions, entity2Positions);
+    
+    for (let positionIndex = 0; positionIndex < lengthOfEither; positionIndex++) {
+        const x1 = entity1Positions[positionIndex].x;
+        const y1 = entity1Positions[positionIndex].y;
         const simE1 = { x: x1, y: y1, width: entity1.width, height: entity1.height };
-        for (const entity2Position of entity2Positions) {
-            const x2 = entity2Position.x;
-            const y2 = entity2Position.y;
-            const simE2 = { x: x2, y: y2, width: entity2.width, height: entity2.height };
-            if (rectIntersectsRect(simE1, simE2)) {
-                willThey = true;
-                break;
-            }
+        const x2 = entity2Positions[positionIndex].x;
+        const y2 = entity2Positions[positionIndex].y;
+        
+        const simE2 = { x: x2, y: y2, width: entity2.width, height: entity2.height };
+        if (rectIntersectsRect(simE1, simE2)) {
+            willThey = true;
+            break;
         }
     }
 
     return willThey;
+}
+function expandForComparison({ subpositions, numberOfTimes }) {
+    const expandedPositions = [...subpositions];
+    const lastPosition = subpositions[subpositions.length - 1];
+
+    while (expandedPositions.length < numberOfTimes) {
+        expandedPositions.push({ ...lastPosition });
+    }
+
+    return expandedPositions;
 }
 function generateAllCurrentMovementPositions({ entity }) {
 
@@ -109,20 +132,27 @@ function generateAllCurrentMovementPositions({ entity }) {
     let startPos = { x: entity.x, y: entity.y };
     positions.push(startPos);
 
+    if (entity.currentSpeed === 0) {
+        return positions;
+    }
+
     // middle positions
     for (let substep = 1; substep < entity.currentSpeed; substep++) {
+        let tempX = entity.x;
+        let tempY = entity.y;
         if (entity.movingInDirections.has('left')) {
-            positions.push({ x: entity.x - substep, y: entity.y });
+            tempX -= substep;
         }
         if (entity.movingInDirections.has('right')) {
-            positions.push({ x: entity.x + substep, y: entity.y });
+            tempX += substep;
         }
         if (entity.movingInDirections.has('up')) {
-            positions.push({ x: entity.x, y: entity.y - substep });
+            tempY -= substep;
         }
         if (entity.movingInDirections.has('down')) {
-            positions.push({ x: entity.x, y: entity.y + substep });
+            tempY += substep;
         }
+        positions.push({ x: tempX, y: tempY });
     }
 
     // end, where it (the entity, that is) wants to be at end of the whole movement/entity.currentSpeed
@@ -164,7 +194,7 @@ function whenProjectileCollidesWithForceField({ projectile, forcefield }) {
         projectile.flipMovementDirection();
         return;
     }
-    
+
     forcefield.entityThatGeneratesIt.movingInDirections.forEach(direction => {
         const opposingDirection = MovingEntity.getOpposingDirection({ directionName: direction });
         projectile.movingInDirections.add(opposingDirection);
