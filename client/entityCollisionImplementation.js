@@ -97,23 +97,23 @@ function willEntitiesTouchAtAnyPoint({ entity1, entity2 }) {
     let willThey = false;
     // above call to expandForComparison must have made lengths equal for sure
     const lengthOfEither = entity1Positions.length;
-    console.log(entity1Positions, entity2Positions);
-    
+
+
     for (let positionIndex = 0; positionIndex < lengthOfEither; positionIndex++) {
         const x1 = entity1Positions[positionIndex].x;
         const y1 = entity1Positions[positionIndex].y;
         const simE1 = { x: x1, y: y1, width: entity1.width, height: entity1.height };
         const x2 = entity2Positions[positionIndex].x;
         const y2 = entity2Positions[positionIndex].y;
-        
+
         const simE2 = { x: x2, y: y2, width: entity2.width, height: entity2.height };
         if (rectIntersectsRect(simE1, simE2)) {
             willThey = true;
             break;
         }
     }
-
     return willThey;
+
 }
 function expandForComparison({ subpositions, numberOfTimes }) {
     const expandedPositions = [...subpositions];
@@ -190,16 +190,13 @@ function handleCollisionForProjectile({ projectile, entities }) {
 }
 function whenProjectileCollidesWithForceField({ projectile, forcefield }) {
     if (projectile.isMoving()) {
-        console.log(projectile);
         projectile.flipMovementDirection();
         return;
     }
-
     forcefield.entityThatGeneratesIt.movingInDirections.forEach(direction => {
-        const opposingDirection = MovingEntity.getOpposingDirection({ directionName: direction });
-        projectile.movingInDirections.add(opposingDirection);
-        projectile.setSpeed(5);
+        projectile.movingInDirections.add(direction);
     })
+    projectile.setSpeed(8);
 
 
 }
