@@ -1,23 +1,17 @@
 
 
 class Game {
-    keyboard;
-    yBounds;
-    xBounds;
-    context;
-    canvas;
+    xLimit;
+    yLimit;
     entities = [];
-    constructor({ keyboard, canvas, context, xBounds, yBounds }) {
-        this.keyboard = keyboard;
-        this.xBounds = xBounds;
-        this.yBounds = yBounds;
-        this.context = context;
-        this.canvas = canvas;
+    constructor({yLimit, xLimit }) {
+        this.yLimit = yLimit;
+        this.xLimit = xLimit;
     }
     addEntity(entity) {
         this.entities.push(entity);
     }
-    whenDrawnMakeForcefieldsAppearOnTopOfAllOtherEntities(){
+    makeForcefieldsAppearOnTopOfAllOtherEntitiesWhenRendered(){
         this.entities.sort((a, b) => {
             if (a.type === 'forcefield' && b.type !== 'forcefield') {
               return 1;
@@ -28,12 +22,12 @@ class Game {
             }
           });
     }
-    tick({ timestamp }) {
-        this.whenDrawnMakeForcefieldsAppearOnTopOfAllOtherEntities();
+    tick() {
+        this.makeForcefieldsAppearOnTopOfAllOtherEntitiesWhenRendered();
         this.entities.forEach(entity => {
-            entity.tick({ timestamp, context: this.context });
-            entity.draw({context: this.context});
-        }, this);
+            entity.tick();
+            entity.draw();
+        });
     }
 
     forcePositionToBeWithinBounds(entity) {
@@ -41,8 +35,8 @@ class Game {
             entity.x = 0;
         }
         const entityRightEdge = entity.x + entity.width;
-        if (entityRightEdge >= this.xBounds) {
-            const worldRightEdgeEntityPosition = this.xBounds - entity.width;
+        if (entityRightEdge >= this.yLimit) {
+            const worldRightEdgeEntityPosition = this.yLimit - entity.width;
             entity.x = worldRightEdgeEntityPosition;
         }
 
@@ -50,8 +44,8 @@ class Game {
             entity.y = 0;
         }
         const entityBottom = entity.y + entity.height;
-        if (entityBottom >= this.yBounds) {
-            const worldBottomEdgeEntityPosition = this.yBounds - entity.height;;
+        if (entityBottom >= this.xLimit) {
+            const worldBottomEdgeEntityPosition = this.xLimit - entity.height;;
             entity.y = worldBottomEdgeEntityPosition;
         }
 

@@ -14,22 +14,22 @@ class Forcefield extends Entity {
         this.width = Math.ceil(this.entityThatGeneratesIt.width * (1 + 0.58));
         this.height = Math.ceil(this.entityThatGeneratesIt.height * (1 + 0.58));
     }
-    tick({timestamp}){
+    tick(){
         this.handlePosition();
         handleCollisionForForcefield({forcefield: this, entities: globalThis.game.entities})
-        super.tick({timestamp});
+        super.tick();
     }
     handlePosition() {
         this.x = this.entityThatGeneratesIt.x - this.distanceBetween;
         this.y = this.entityThatGeneratesIt.y - this.distanceBetween;
     }
-    draw({ context }) {
+    draw() {
         const canvasX = calculateCanvasCoordinate({ maxCanvasValue: window.gameCanvasWidth, realPlayerPosition: window.thePlayer.x, realObjectPosition: this.x });
         const canvasY = calculateCanvasCoordinate({ maxCanvasValue: window.gameCanvasHeight, realPlayerPosition: window.thePlayer.y, realObjectPosition: this.y });
-        context.save();
-        context.strokeStyle = "blue";
-        context.strokeRect(canvasX, canvasY, this.width, this.height);
-        context.restore();
+        globalThis.context.save();
+        globalThis.context.strokeStyle = "blue";
+        globalThis.context.strokeRect(canvasX, canvasY, this.width, this.height);
+        globalThis.context.restore();
     }
 }
 

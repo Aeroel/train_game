@@ -8,8 +8,8 @@ class GameLoop {
         this.tick(0);
     }
     tick(timestamp) {
-        this.game.context.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);
-        this.game.tick({timestamp});
+        globalThis.context.clearRect(0, 0, globalThis.canvas.width, globalThis.canvas.height);
+        this.game.tick();
         requestAnimationFrame((timestamp) => this.tick(timestamp));
     }
 }

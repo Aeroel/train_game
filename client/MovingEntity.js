@@ -37,9 +37,9 @@ class MovingEntity extends Entity {
         this.movingInDirections.delete(directionName);
     }
 
-    tick({ timestamp }) {
+    tick() {
         this.handleMovement();
-        super.tick({ timestamp });
+        super.tick();
     }
     handleMovement() {
         if(this.movingInDirections.size > 0) {

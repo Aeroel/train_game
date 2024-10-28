@@ -9,17 +9,17 @@ class Player extends MovingEntity {
         super({ x, y, width, height });
         this.keyboard = keyboard;
     }
-    tick({ timestamp }) {
+    tick() {
         this.updatePlayerCanvasPosition();
-        super.tick({ });
+        super.tick();
     }
     updatePlayerCanvasPosition() {
         this.canvasX = window.gameCanvasWidth / 2;
         this.canvasY = window.gameCanvasHeight / 2;
     }
-    draw({ context }) {
+    draw() {
         
-        context.fillRect(this.canvasX, this.canvasY, this.width, this.height);
+        globalThis.context.fillRect(this.canvasX, this.canvasY, this.width, this.height);
         return;
     }
     adjustMovementDirectionBasedOnKeyboardState() {
