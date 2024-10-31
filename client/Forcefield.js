@@ -1,22 +1,28 @@
 import { Entity } from "./Entity.js";
 import { calculateCanvasCoordinate } from "./calculateCanvasCoordinate.js";
-import { handleCollisionForForcefield } from "./entityCollisionImplementation.js";
+import { getPositionsPerTick } from "./entityMovementImplementation.js";
 
 class Forcefield extends Entity {
     distanceBetween = 3;
-    type = "forcefield";
+    tags = ["Entity", "Forcefield"];
     entityThatGeneratesIt;
     constructor({ entityThatGeneratesIt }) {
         super({ x: 0, y: 0, width: 0, height: 0 });
         this.entityThatGeneratesIt = entityThatGeneratesIt;
-        this.movingInDirections = this.entityThatGeneratesIt.movingInDirections;
         this.handlePosition();
         this.width = Math.ceil(this.entityThatGeneratesIt.width * (1 + 0.58));
         this.height = Math.ceil(this.entityThatGeneratesIt.height * (1 + 0.58));
     }
-    tick(){
+    getPositionsPerTick() {
+        this.velocityX = this.entityThatGeneratesIt.velocityX;
+        this.velocityY = this.entityThatGeneratesIt.velocityY;
+        const positions = getPositionsPerTick(this);
+        delete this.velocityX;
+        delete this.velocityY;
+        return positions;
+    }
+    tick() {
         this.handlePosition();
-        handleCollisionForForcefield({forcefield: this, entities: globalThis.game.entities})
         super.tick();
     }
     handlePosition() {

@@ -1,66 +1,70 @@
 import { Entity } from "./Entity.js"
-import { move } from "./entityMovementImplementation.js";
+import { getPositionsPerTick } from "./entityMovementImplementation.js";
 
 class MovingEntity extends Entity {
-    movingInDirections = new Set();
-    maxSpeed = 5;
-    currentSpeed = 10;
-    slowDownByPerTick = 0.1;
-    constructor({x, y, width, height}){
+    velocityX = 0;
+    velocityY = 0;
+    speedX = 5;
+    speedY = 5;
+    slowDownFactorX = 1;
+    slowDownFactorY = 1;
+    tags = ["Entity", "MovingEntity"];
+    constructor({ x, y, width, height }) {
         super({ x, y, width, height });
     }
-    addMovementDirection({directionName}) {
-        this.movingInDirections.add(directionName);
-        const opposingDirection = MovingEntity.getOpposingDirection({directionName});
-        if(this.movingInDirections.has(opposingDirection)) {
-            this.removeMovementDirection({directionName: opposingDirection});
-        }
+    getPositionsPerTick() {
+       return getPositionsPerTick(this);
     }
     ceaseMovement() {
-        if(!this.isMoving()) {
+        if (!this.isMoving()) {
             return false;
         }
-        this.movingInDirections.clear();
+        this.velocityX = 0;
+        this.velocityY = 0;
         return true;
     }
     isMoving() {
-        return (this.movingInDirections.size > 0);
+        return (this.velocityX !== 0 || this.velocityY !== 0);
     }
-    setSpeed(speed) {
-        this.currentSpeed = speed;
+    flipMovementDirection() {
+        this.velocityX *= -1;
+        this.velocityY *= -1;
     }
-    static getOpposingDirection({directionName}){
-        const relationships = {right: "left", left: "right", down: "up", up: "down"};
-        return relationships[directionName];
-    }
-    removeMovementDirection({directionName}) {
-        this.movingInDirections.delete(directionName);
-    }
-
     tick() {
         this.handleMovement();
         super.tick();
     }
     handleMovement() {
-        if(this.movingInDirections.size > 0) {
-            this.currentSpeed = this.currentSpeed - this.slowDownByPerTick;
-            if(this.currentSpeed < 0) {
-                this.movingInDirections.clear();
-                this.currentSpeed = 0;
-            }
+        if (!this.isMoving()) {
+            return;
         }
-        if (this.movingInDirections.has("left")) {
-            move({ direction: "left", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
+        this.slowDownMovementSpeedToPercentOfOriginal();
+    }
+    slowDownMovementSpeedToPercentOfOriginal() {
+        let currentSpeedX = Math.abs(this.velocityX);
+        let currentSpeedY = Math.abs(this.velocityY);
+
+        let currentDirectionX = Math.sign(this.velocityX);
+        let currentDirectionY = Math.sign(this.velocityY);
+
+        let slowedSpeedX = currentSpeedX * this.slowDownFactorX;
+        let slowedSpeedY = currentSpeedY * this.slowDownFactorY;
+
+        let futureVelocityX;
+        let futureVelocityY;
+        if (slowedSpeedX <= 0) {
+            futureVelocityX = 0;
+        } else {
+            futureVelocityX = currentDirectionX * slowedSpeedX;
         }
-        if (this.movingInDirections.has("right")) {
-            move({ direction: "right", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
+        if (slowedSpeedY <= 0) {
+            futureVelocityY = 0;
+        } else {
+            futureVelocityY = currentDirectionY * slowedSpeedY;
         }
-        if (this.movingInDirections.has("down")) {
-            move({ direction: "down", stepDistance: this.currentSpeed, selfEntity: this, entities: globalThis.gameEntities });
-        }
-        if (this.movingInDirections.has("up")) {
-            move({direction:"up", stepDistance:this.currentSpeed, selfEntity:this, entities:globalThis.gameEntities});
-        }
+
+        this.velocityX = futureVelocityX;
+        this.velocityY = futureVelocityY;
     }
 }
 

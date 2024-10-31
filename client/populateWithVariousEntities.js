@@ -13,7 +13,7 @@ function populateWithVariousEntities() {
     globalThis.game.addEntity(playerForcefield);
 
     const projectile = new Projectile({ x: 300, y: 50, width: 4, height: 4 });
-    projectile.addMovementDirection({ directionName: "left" });
+    projectile.velocityX = projectile.speedX * -1;
     globalThis.game.addEntity(projectile);
 
     const leftWall = new Wall({ x: 0, y: 0, width: 20, height: globalThis.gameWorldHeight });

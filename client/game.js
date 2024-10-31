@@ -1,3 +1,4 @@
+import { handleCollision } from "./entityCollisionImplementation.js";
 
 
 class Game {
@@ -26,8 +27,37 @@ class Game {
         this.makeForcefieldsAppearOnTopOfAllOtherEntitiesWhenRendered();
         this.entities.forEach(entity => {
             entity.tick();
-            entity.draw();
         });
+
+        this.entities.forEach(entity => {
+            let anyCollisionOccurred = false;
+            this.entities.forEach(otherEntity => {
+                if(otherEntity === entity) {
+                    return;
+                }
+                if(entity.hasTag("Wall")) {
+                    return;
+                }
+                
+                const thisCollisionOccurred = handleCollision(entity, otherEntity);
+                if(thisCollisionOccurred) {
+                    anyCollisionOccurred = true;
+                }
+
+            })
+            if(entity.hasTag("Player")){
+                console.log(anyCollisionOccurred);
+                
+            }
+            if(!anyCollisionOccurred && !entity.hasTag("Wall")) {
+                entity.x += entity.velocityX;
+                entity.y += entity.velocityY;
+            }
+        })
+
+        this.entities.forEach(entity => {
+            entity.draw();
+        })
     }
 
     forcePositionToBeWithinBounds(entity) {

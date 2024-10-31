@@ -1,9 +1,12 @@
 import { Entity} from "./Entity.js"
 
 class Wall extends Entity {
-    type = "wall";
+    tags = ["Entity", "Wall"]
     constructor({x, y, width, height}) {
         super({x, y, width, height});
+    }
+    getPositionsPerTick() {
+        return [{x: this.x, y: this.y}];
     }
 }
 

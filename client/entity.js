@@ -7,12 +7,15 @@ class Entity {
     y;
     width;
     height;
-    type;
+    tags = ["Entity"];
     constructor({x, y, width, height}) {
         this.x = x;
         this.y = y;
         this.height = height;
         this.width = width;
+    }
+    hasTag(tagName) {
+        return this.tags.includes(tagName);
     }
     tick() {
 

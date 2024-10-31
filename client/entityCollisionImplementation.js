@@ -1,251 +1,89 @@
-import { MovingEntity } from "./MovingEntity.js";
-import { rectIntersectsRect } from "./rectIntersectsRect.js";
-export { handleCollisionForForcefield, handleCollisionForProjectile, handleProjectileAndForcefieldCollisions, handleWallCollisions, generateAllCurrentMovementPositions };
-
-function setUpFormulas({ direction, stepDistance, selfEntity, entities }) {
-    return {
-        left: {
-            closestValidInitial: selfEntity.x - stepDistance,
-            potential: function ({ entity, selfEntity }) {
-                return entity.x + entity.width;
-            },
-            xSubStep: function ({ x, subStep }) {
-                return x - subStep;
-            },
-            ySubStep: function ({ y, subStep }) {
-                return y;
-            },
-            needToSkipCollision: function ({ potential, pointBeforeClosestCollision }) {
-                return (potential < pointBeforeClosestCollision);
-            },
-            setPosition({ selfEntity, pointBeforeClosestCollision }) {
-                selfEntity.x = pointBeforeClosestCollision
-            }
-        },
-        right: {
-            closestValidInitial: selfEntity.x + stepDistance,
-            potential: function ({ entity, selfEntity }) {
-                return entity.x - selfEntity.width;
-            },
-            xSubStep: function ({ x, subStep }) {
-                return x + subStep;
-            },
-            ySubStep: function ({ y, subStep }) {
-                return y;
-            },
-            needToSkipCollision: function ({ potential, pointBeforeClosestCollision }) {
-                return (potential > pointBeforeClosestCollision);
-            },
-            setPosition({ selfEntity, pointBeforeClosestCollision }) {
-                selfEntity.x = pointBeforeClosestCollision
-            }
-        },
-        up: {
-            closestValidInitial: selfEntity.y - stepDistance,
-            potential: function ({ entity, selfEntity }) {
-                return entity.y + entity.height;
-            },
-            xSubStep: function ({ x, subStep }) {
-                return x;
-            },
-            ySubStep: function ({ y, subStep }) {
-                return y - subStep;
-            },
-            needToSkipCollision: function ({ potential, pointBeforeClosestCollision }) {
-                return (potential < pointBeforeClosestCollision);
-            },
-            setPosition({ selfEntity, pointBeforeClosestCollision }) {
-                selfEntity.y = pointBeforeClosestCollision
-            }
-        },
-        down: {
-            closestValidInitial: selfEntity.y + stepDistance,
-            potential: function ({ entity, selfEntity }) {
-                return entity.y - selfEntity.height;
-            },
-            xSubStep: function ({ x, subStep }) {
-                return x;
-            },
-            ySubStep: function ({ y, subStep }) {
-                return y + subStep;
-            },
-            needToSkipCollision: function ({ potential, pointBeforeClosestCollision }) {
-                return (potential > pointBeforeClosestCollision);
-            },
-            setPosition({ selfEntity, pointBeforeClosestCollision }) {
-                selfEntity.y = pointBeforeClosestCollision
-            }
-        },
-    };
-}
-
-// loops over sub positions of moving or stationary entities, simulating them moving.
-// stationary entities have fewer elements than moving ones, in that case we can just expand the
-// stationary entity's elements by copying the same value of it's current position to fit the
-/// moving one's
-function willEntitiesTouchAtAnyPoint({ entity1, entity2 }) {
-
-    let entity1Positions = generateAllCurrentMovementPositions({ entity: entity1 })
-    let entity2Positions = generateAllCurrentMovementPositions({ entity: entity2 })
-    // this does something like... well, equalize the subpositions arrays if they differ
-    // to allow to compare each sub position
-    if (entity1Positions.length > entity2Positions.length) {
-        entity2Positions = expandForComparison({ subpositions: entity2Positions, numberOfTimes: entity1Positions.length });
-    } else if (entity1Positions.length < entity2Positions.length) {
-        entity1Positions = expandForComparison({ subpositions: entity1Positions, numberOfTimes: entity2Positions.length });
-    }
-    let willThey = false;
-    // above call to expandForComparison must have made lengths equal for sure
-    const lengthOfEither = entity1Positions.length;
-
-
-    for (let positionIndex = 0; positionIndex < lengthOfEither; positionIndex++) {
-        const x1 = entity1Positions[positionIndex].x;
-        const y1 = entity1Positions[positionIndex].y;
-        const simE1 = { x: x1, y: y1, width: entity1.width, height: entity1.height };
-        const x2 = entity2Positions[positionIndex].x;
-        const y2 = entity2Positions[positionIndex].y;
-
-        const simE2 = { x: x2, y: y2, width: entity2.width, height: entity2.height };
-        if (rectIntersectsRect(simE1, simE2)) {
-            willThey = true;
-            break;
-        }
-    }
-    return willThey;
-
-}
-function expandForComparison({ subpositions, numberOfTimes }) {
-    const expandedPositions = [...subpositions];
-    const lastPosition = subpositions[subpositions.length - 1];
-
-    while (expandedPositions.length < numberOfTimes) {
-        expandedPositions.push({ ...lastPosition });
-    }
-
-    return expandedPositions;
-}
-function generateAllCurrentMovementPositions({ entity }) {
-
-    const positions = [];
-    // starting position
-    let startPos = { x: entity.x, y: entity.y };
-    positions.push(startPos);
-
-    if (entity.currentSpeed === 0) {
-        return positions;
-    }
-
-    // middle positions
-    for (let substep = 1; substep < entity.currentSpeed; substep++) {
-        let tempX = entity.x;
-        let tempY = entity.y;
-        if (entity.movingInDirections.has('left')) {
-            tempX -= substep;
-        }
-        if (entity.movingInDirections.has('right')) {
-            tempX += substep;
-        }
-        if (entity.movingInDirections.has('up')) {
-            tempY -= substep;
-        }
-        if (entity.movingInDirections.has('down')) {
-            tempY += substep;
-        }
-        positions.push({ x: tempX, y: tempY });
-    }
-
-    // end, where it (the entity, that is) wants to be at end of the whole movement/entity.currentSpeed
-    let endX = entity.x
-    let endY = entity.y
-    if (entity.movingInDirections.has("right")) {
-        endX += entity.currentSpeed;
-    }
-    if (entity.movingInDirections.has("left")) {
-        endX -= entity.currentSpeed;
-    }
-    if (entity.movingInDirections.has("down")) {
-        endY += entity.currentSpeed;
-    }
-    if (entity.movingInDirections.has("up")) {
-        endY -= entity.currentSpeed;
-    }
-
-    let endPos = { x: endX, y: endY };
-    positions.push(endPos);
-    return positions;
-}
-
-function handleCollisionForProjectile({ projectile, entities }) {
-    entities.forEach((entity) => {
-        if (entity.type !== 'forcefield' || entity === projectile) {
-            return;
-        }
-        const forcefield = entity;
-
-        if (willEntitiesTouchAtAnyPoint({ entity1: projectile, entity2: forcefield, })) {
-            whenProjectileCollidesWithForceField({ projectile, forcefield });
-        }
-    })
-}
-function whenProjectileCollidesWithForceField({ projectile, forcefield }) {
-    if (projectile.isMoving()) {
-        projectile.flipMovementDirection();
-        return;
-    }
-    forcefield.entityThatGeneratesIt.movingInDirections.forEach(direction => {
-        projectile.movingInDirections.add(direction);
-    })
-    projectile.setSpeed(8);
-
-
-}
-function handleCollisionForForcefield({ forcefield, entities }) {
-    entities.forEach((entity) => {
-        if (entity.type !== 'projectile' || entity === forcefield) {
-            return;
-        }
-        const projectile = entity;
-        if (willEntitiesTouchAtAnyPoint({ entity1: forcefield, entity2: projectile })) {
-            whenProjectileCollidesWithForceField({ projectile, forcefield });
-        }
-    })
-}
-function handleProjectileAndForcefieldCollisions({ selfEntity, entities }) {
-
-    if (selfEntity.type === 'projectile') {
-        handleCollisionForProjectile({ projectile: selfEntity, entities });
-    } else if (selfEntity.type === 'forcefield') {
-        handleCollisionForForcefield({ forcefield: selfEntity, entities });
-    } else {
-        return;
-    }
-}
-function handleWallCollisions({ direction, stepDistance, selfEntity, entities }) {
-    const formulas = setUpFormulas({ direction, stepDistance, selfEntity, entities });
-    let pointBeforeClosestCollision = formulas[direction].closestValidInitial;
+import { equalizePositionSteps, getPositionsPerTick } from "./entityMovementImplementation.js";
+export { handleCollision }
+// Collision handling function
+function handleCollision(entity, otherEntity) {
     let anyCollisionOccurred = false;
-    entities.forEach((entity) => {
-        if (entity.type !== 'wall' || selfEntity === entity) {
-            return;
-        }
-        const potential = formulas[direction].potential({ entity, selfEntity });
-        for (let subStep = 1; subStep < stepDistance; subStep++) {
-            const hypotheticalFuturePlayerState = { x: formulas[direction].xSubStep({ x: selfEntity.x, subStep }), y: formulas[direction].ySubStep({ y: selfEntity.y, subStep }), width: selfEntity.width, height: selfEntity.height }
-            if (!rectIntersectsRect(hypotheticalFuturePlayerState, entity)) {
-                continue;
-            }
-            if (formulas[direction].needToSkipCollision({ potential, pointBeforeClosestCollision: pointBeforeClosestCollision })) {
-                continue;
-            }
-            pointBeforeClosestCollision = potential;
-            anyCollisionOccurred = true;
-            return;
-        }
-    })
-    if (anyCollisionOccurred) {
-        selfEntity.movingInDirections.delete(direction);
-    }
-    formulas[direction].setPosition({ selfEntity, pointBeforeClosestCollision });
-
+    // Generate equalized subpositions for both entities.
+    const { entity1Pos: entityPosArray, entity2Pos: otherEntityPosArray } = equalizePositionSteps(
+        entity.getPositionsPerTick(),
+        otherEntity.getPositionsPerTick()
+    );
+if(entity.hasTag("Player")) {
+    console.log(entityPosArray, otherEntityPosArray);
+    
 }
+    // Loop through each subposition to check for collision
+    for (let i = 0; i < entityPosArray.length; i++) {
+        const entityPos = entityPosArray[i];
+        const otherPos = otherEntityPosArray[i];
+
+        // Check if the entities intersect at the current subposition
+        const isColliding = checkCollision(entityPos, entity.width, entity.height, otherPos, otherEntity.width, otherEntity.height);
+
+        if (isColliding) {
+            anyCollisionOccurred = true;
+            // Condition: Wall collision
+            if (otherEntity.type === 'wall' && entity.type !== 'forcefield') {
+                // Position entity just outside the wall
+                positionAtEdge(entity, otherEntity);
+                return anyCollisionOccurred; // Stop further checks as we’ve adjusted entity’s position
+            }
+
+            // Condition: Forcefield and Projectile collision
+            if ((entity.type === 'forcefield' && otherEntity.type === 'projectile') ||
+                (entity.type === 'projectile' && otherEntity.type === 'forcefield')) {
+
+                // Move forcefield to its last position, as instructed
+                const forcefield = entity.type === 'forcefield' ? entity : otherEntity;
+                const projectile = entity.type === 'projectile' ? entity : otherEntity;
+
+                forcefield.x = entityPosArray[entityPosArray.length - 1].x;
+                forcefield.y = entityPosArray[entityPosArray.length - 1].y;
+
+                // Place projectile just outside the forcefield on the entry side
+                positionAtEdge(projectile, forcefield);
+
+                // Flip the projectile's direction
+                projectile.flipMovementDirection();
+                return anyCollisionOccurred; // Stop further checks
+            }
+        }
+    }
+    return anyCollisionOccurred;
+}
+
+// Helper function to check collision
+function checkCollision(pos1, width1, height1, pos2, width2, height2) {
+    return pos1.x < pos2.x + width2 &&
+        pos1.x + width1 > pos2.x &&
+        pos1.y < pos2.y + height2 &&
+        pos1.y + height1 > pos2.y;
+}
+
+// Helper function to position entity at the edge of another entity upon collision
+function positionAtEdge(entity, obstacle) {
+    // Determine relative movement direction to place entity outside obstacle.
+    const dx = entity.velx;
+    const dy = entity.vely;
+
+    if (Math.abs(dx) > Math.abs(dy)) {
+        // Horizontal movement: adjust x position
+        if (dx > 0) {
+            // Moving right, place entity to the left of obstacle
+            entity.x = obstacle.x - entity.width;
+        } else {
+            // Moving left, place entity to the right of obstacle
+            entity.x = obstacle.x + obstacle.width;
+        }
+    } else {
+        // Vertical movement: adjust y position
+        if (dy > 0) {
+            // Moving down, place entity above the obstacle
+            entity.y = obstacle.y - entity.height;
+        } else {
+            // Moving up, place entity below the obstacle
+            entity.y = obstacle.y + obstacle.height;
+        }
+    }
+}
+

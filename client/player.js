@@ -3,7 +3,7 @@ import { MovingEntity } from "./MovingEntity.js"
 class Player extends MovingEntity {
     canvasX;
     canvasY;
-    type = "player";
+    tags = ["Entity", "MovingEntity", "Player",];
     keyboard;
     constructor({ keyboard, x, y, width, height }) {
         super({ x, y, width, height });
@@ -18,38 +18,37 @@ class Player extends MovingEntity {
         this.canvasY = window.gameCanvasHeight / 2;
     }
     draw() {
-        
+
         globalThis.context.fillRect(this.canvasX, this.canvasY, this.width, this.height);
         return;
     }
     adjustMovementDirectionBasedOnKeyboardState() {
         if (this.keyboard.currentlyPressedKeys.includes("ArrowLeft")) {
-           this.addMovementDirection({directionName: "left"})
+            this.velocityX = this.speedX * -1;
         } else {
-            this.removeMovementDirection({directionName: "left"})
+            this.velocityX = 0;
         }
 
         if (this.keyboard.currentlyPressedKeys.includes("ArrowRight")) {
-            this.addMovementDirection({directionName: "right"})
-         } else {
-             this.removeMovementDirection({directionName: "right"})
-         }
+            this.velocityX = this.speedX;
+        } else {
+            this.velocityX = 0;
+        }
 
-         if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
-            this.addMovementDirection({directionName: "down"})
-         } else {
-             this.removeMovementDirection({directionName: "down"})
-         }
+        if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
+            this.velocityY = this.speedY;
+        } else {
+            this.velocityY = 0;
+        }
 
-         if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
-            this.addMovementDirection({directionName: "up"})
-         } else {
-             this.removeMovementDirection({directionName: "up"})
-         }
+        if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
+            this.velocityY = this.speedY * -1;
+        } else {
+            this.velocityY = 0;
+        }
 
     }
     handleMovement() {
-        this.currentSpeed = this.maxSpeed
         this.adjustMovementDirectionBasedOnKeyboardState();
         super.handleMovement();
     }
