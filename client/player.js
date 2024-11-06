@@ -24,27 +24,19 @@ class Player extends MovingEntity {
     }
     adjustMovementDirectionBasedOnKeyboardState() {
         if (this.keyboard.currentlyPressedKeys.includes("ArrowLeft")) {
-            this.velocityX = this.speedX * -1;
+            this.directionX = -1;
+        } else if (this.keyboard.currentlyPressedKeys.includes("ArrowRight")) {
+            this.directionX = 1;
         } else {
-            this.velocityX = 0;
-        }
-
-        if (this.keyboard.currentlyPressedKeys.includes("ArrowRight")) {
-            this.velocityX = this.speedX;
-        } else {
-            this.velocityX = 0;
-        }
-
-        if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
-            this.velocityY = this.speedY;
-        } else {
-            this.velocityY = 0;
+            this.directionX = 0;
         }
 
         if (this.keyboard.currentlyPressedKeys.includes("ArrowUp")) {
-            this.velocityY = this.speedY * -1;
+            this.directionY = -1;
+        } else if (this.keyboard.currentlyPressedKeys.includes("ArrowDown")) {
+            this.directionY = 1;
         } else {
-            this.velocityY = 0;
+            this.directionY = 0;
         }
 
     }

@@ -5,9 +5,14 @@ class GameLoop {
         this.game = game;
     }
     start() {
-        this.tick(0);
+        globalThis.lastTime = 0;
+        globalThis.timestamp = 0;
+        globalThis.deltaTime = 0;
+        this.tick(globalThis.timestamp);
     }
     tick(timestamp) {
+        globalThis.deltaTime = timestamp - globalThis.lastTime;
+        globalThis.lastTime = timestamp;
         this.clearCanvas();
         this.game.tick();
         requestAnimationFrame((timestamp) => this.tick(timestamp));

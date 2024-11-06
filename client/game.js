@@ -5,23 +5,23 @@ class Game {
     xLimit;
     yLimit;
     entities = [];
-    constructor({yLimit, xLimit }) {
+    constructor({ yLimit, xLimit }) {
         this.yLimit = yLimit;
         this.xLimit = xLimit;
     }
     addEntity(entity) {
         this.entities.push(entity);
     }
-    makeForcefieldsAppearOnTopOfAllOtherEntitiesWhenRendered(){
+    makeForcefieldsAppearOnTopOfAllOtherEntitiesWhenRendered() {
         this.entities.sort((a, b) => {
             if (a.type === 'forcefield' && b.type !== 'forcefield') {
-              return 1;
+                return 1;
             } else if (a.type !== 'forcefield' && b.type === 'forcefield') {
-              return -1;
+                return -1;
             } else {
-              return 0;
+                return 0;
             }
-          });
+        });
     }
     tick() {
         this.makeForcefieldsAppearOnTopOfAllOtherEntitiesWhenRendered();
@@ -30,29 +30,24 @@ class Game {
         });
 
         this.entities.forEach(entity => {
-            let anyCollisionOccurred = false;
             this.entities.forEach(otherEntity => {
-                if(otherEntity === entity) {
+                if (otherEntity === entity) {
                     return;
                 }
-                if(entity.hasTag("Wall")) {
+                if (entity.hasTag("Wall")) {
                     return;
-                }
-                
-                const thisCollisionOccurred = handleCollision(entity, otherEntity);
-                if(thisCollisionOccurred) {
-                    anyCollisionOccurred = true;
                 }
 
-            })
-            if(entity.hasTag("Player")){
-                console.log(anyCollisionOccurred);
+                const collisionInfo = handleCollision(entity, otherEntity);
+                console.log(collisionInfo);
+                if (!collisionInfo.collisionOccurred) {
+                    entity.x += (entity.directionX * entity.speedX) * globalThis.deltaTime;
+                    entity.y += (entity.directionY * entity.speedY) * globalThis.deltaTime;
+                    return;
+                }
                 
-            }
-            if(!anyCollisionOccurred && !entity.hasTag("Wall")) {
-                entity.x += entity.velocityX;
-                entity.y += entity.velocityY;
-            }
+
+            })
         })
 
         this.entities.forEach(entity => {
@@ -80,7 +75,7 @@ class Game {
         }
 
     }
-    
+
 }
 
 export {

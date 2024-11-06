@@ -2,16 +2,13 @@ import { equalizePositionSteps, getPositionsPerTick } from "./entityMovementImpl
 export { handleCollision }
 // Collision handling function
 function handleCollision(entity, otherEntity) {
+    const info = {};
     let anyCollisionOccurred = false;
     // Generate equalized subpositions for both entities.
     const { entity1Pos: entityPosArray, entity2Pos: otherEntityPosArray } = equalizePositionSteps(
         entity.getPositionsPerTick(),
         otherEntity.getPositionsPerTick()
     );
-if(entity.hasTag("Player")) {
-    console.log(entityPosArray, otherEntityPosArray);
-    
-}
     // Loop through each subposition to check for collision
     for (let i = 0; i < entityPosArray.length; i++) {
         const entityPos = entityPosArray[i];
@@ -22,34 +19,10 @@ if(entity.hasTag("Player")) {
 
         if (isColliding) {
             anyCollisionOccurred = true;
-            // Condition: Wall collision
-            if (otherEntity.type === 'wall' && entity.type !== 'forcefield') {
-                // Position entity just outside the wall
-                positionAtEdge(entity, otherEntity);
-                return anyCollisionOccurred; // Stop further checks as we’ve adjusted entity’s position
-            }
-
-            // Condition: Forcefield and Projectile collision
-            if ((entity.type === 'forcefield' && otherEntity.type === 'projectile') ||
-                (entity.type === 'projectile' && otherEntity.type === 'forcefield')) {
-
-                // Move forcefield to its last position, as instructed
-                const forcefield = entity.type === 'forcefield' ? entity : otherEntity;
-                const projectile = entity.type === 'projectile' ? entity : otherEntity;
-
-                forcefield.x = entityPosArray[entityPosArray.length - 1].x;
-                forcefield.y = entityPosArray[entityPosArray.length - 1].y;
-
-                // Place projectile just outside the forcefield on the entry side
-                positionAtEdge(projectile, forcefield);
-
-                // Flip the projectile's direction
-                projectile.flipMovementDirection();
-                return anyCollisionOccurred; // Stop further checks
-            }
         }
     }
-    return anyCollisionOccurred;
+    info.collisionOccurred = anyCollisionOccurred;
+    return info;
 }
 
 // Helper function to check collision

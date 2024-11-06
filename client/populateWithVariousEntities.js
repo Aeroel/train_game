@@ -7,15 +7,15 @@ import { Projectile } from "./projectile.js";
 import { Forcefield } from "./Forcefield.js";
 
 function populateWithVariousEntities() {
-    globalThis.thePlayer = new Player({ keyboard, x: 50, y: 50, width: 10, height: 10 });
-    globalThis.game.addEntity(globalThis.thePlayer);
-    const playerForcefield = new Forcefield({ entityThatGeneratesIt: globalThis.thePlayer });
-    globalThis.game.addEntity(playerForcefield);
+    addAPlayer();
+    //addAPlayerForcefield();
 
-    const projectile = new Projectile({ x: 300, y: 50, width: 4, height: 4 });
-    projectile.velocityX = projectile.speedX * -1;
-    globalThis.game.addEntity(projectile);
+   // addAProjectile();
 
+    addVariousWalls();
+}
+
+function addVariousWalls() {
     const leftWall = new Wall({ x: 0, y: 0, width: 20, height: globalThis.gameWorldHeight });
     const topWall = new Wall({ x: 20, y: 0, width: -20 + globalThis.gameWorldWidth, height: 20 });
     const bottomWall = new Wall({ x: 20, y: globalThis.gameWorldHeight, width: -20 + globalThis.gameWorldWidth, height: 20 });
@@ -32,5 +32,21 @@ function populateWithVariousEntities() {
     globalThis.game.addEntity(thinWall2);
     globalThis.game.addEntity(thinWall3);
     globalThis.game.addEntity(thickerWall);
+}
+
+function addAProjectile() {
+    const projectile = new Projectile({ x: 300, y: 50, width: 4, height: 4 });
+    projectile.velocityX = projectile.speedX * -1;
+    globalThis.game.addEntity(projectile);
+}
+
+function addAPlayer() {
+    globalThis.thePlayer = new Player({ keyboard, x: 50, y: 50, width: 10, height: 10 });
+    globalThis.game.addEntity(globalThis.thePlayer);
+}
+
+function addAPlayerForcefield() {
+    const playerForcefield = new Forcefield({ entityThatGeneratesIt: globalThis.thePlayer });
+    globalThis.game.addEntity(playerForcefield);
 }
 

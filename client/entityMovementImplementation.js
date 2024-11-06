@@ -20,6 +20,9 @@ function getPositionsPerTick(entity) {
     return positions;
 }
 function equalizePositionSteps(positions1, positions2) {
+    if(positions1.length === positions2.length) {
+        return { entity1Pos: positions1, entity2Pos: positions2 };
+    }
     // Determine which array is shorter and which is longer.
     const [shorter, longer] = positions1.length < positions2.length
         ? [positions1, positions2]
