@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Loop Game</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loop game client</title>
 </head>
 <body>
-<canvas id ="gameCanvas"></canvas>
-<script type="module">
-    import { initialStartupScript } from "./initialStartupScript.js";
-    initialStartupScript();
-</script>
+    <canvas id="game"></canvas>
+    <script type="module">
+        import { App } from "./App.js";
+        App.init();
+    </script>
 </body>
 </html>

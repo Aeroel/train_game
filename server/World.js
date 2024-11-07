@@ -1,0 +1,4 @@
+export { World }
+class World {
+    
+}
