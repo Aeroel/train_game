@@ -1,15 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loop game client</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loop game client</title>
+  <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <canvas id="game"></canvas>
-    <script type="module">
-        import { App } from "./App.js";
-        App.init();
-    </script>
+    
+  <div id="gameContainer">
+    <canvas id="gameCanvas"></canvas>
+    <button id="fullscreenButton"><img src=".\images\Fullscreen_icon.jpg" alt="[FS]" width="50" height="50"></button>
+    <div id="joystickContainer">
+      <div id="joystick"></div>
+    </div>
+  </div>  
+
+  <script type="module">
+    import {
+      App
+    } from "./App.js";
+    App.init();
+  </script>
 </body>
+
 </html>
