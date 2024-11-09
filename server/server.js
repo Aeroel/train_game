@@ -6,9 +6,11 @@ import { Server } from "socket.io";
 const app = express();
 const httpServer = createServer(app);
 
+const allowAnyOrigin = true;
 const options = {
     cors: {
-      origin: "http://127.0.0.1:5500"
+      origin: 
+      allowAnyOrigin
     }
   }
 const io = new Server(httpServer, options);

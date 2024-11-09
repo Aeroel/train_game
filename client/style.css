@@ -15,6 +15,15 @@
     height: 100%;
   }
 
+
+    /* serverMessage box positioned relative to canvas top-left */
+  #serverMessage {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+  }
+
   /* Fullscreen button positioned relative to canvas top-right */
   #fullscreenButton {
     position: absolute;
