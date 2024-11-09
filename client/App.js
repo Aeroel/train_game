@@ -1,16 +1,17 @@
 export { App }
 import { io } from "./externalScripts/socket.io.esm.min.js";
 class App {
+    static controlKeys = new Set();
     static isMobile() {
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
     static init() {
         document.addEventListener("DOMContentLoaded", () => {
-            App.oncePageFullyLoaded();
+            App.runThisOncePageFullyLoaded();
         })
         
     }
-    static oncePageFullyLoaded() {
+    static runThisOncePageFullyLoaded() {
         
         const socket = io("http://127.0.0.1:3000");
         socket.on("welcome", (message) => {
@@ -47,10 +48,7 @@ class App {
             screen.orientation.unlock();
         }
         });
-      
-        // Joystick control states
-        const controlKeys = new Set();
-      
+    
         // Track joystick movements
         joystickContainer.addEventListener("touchmove", (e) => {
           const touch = e.touches[0];
@@ -60,21 +58,21 @@ class App {
       
           // Determine direction based on dx, dy
           const threshold = 10; // Threshold to avoid minor movements
-          controlKeys.clear();
+          App.controlKeys.clear();
       
-          if (dy < -threshold) controlKeys.add("up");
-          if (dy > threshold) controlKeys.add("down");
-          if (dx < -threshold) controlKeys.add("left");
-          if (dx > threshold) controlKeys.add("right");
+          if (dy < -threshold) App.controlKeys.add("up");
+          if (dy > threshold) App.controlKeys.add("down");
+          if (dx < -threshold) App.controlKeys.add("left");
+          if (dx > threshold) App.controlKeys.add("right");
       
           // Ensure no conflicting directions
-          if (controlKeys.has("up") && controlKeys.has("down")) {
-            controlKeys.delete("up");
-            controlKeys.delete("down");
+          if (App.controlKeys.has("up") && App.controlKeys.has("down")) {
+            App.controlKeys.delete("up");
+            App.controlKeys.delete("down");
           }
-          if (controlKeys.has("left") && controlKeys.has("right")) {
-            controlKeys.delete("left");
-            controlKeys.delete("right");
+          if (App.controlKeys.has("left") && App.controlKeys.has("right")) {
+            App.controlKeys.delete("left");
+            App.controlKeys.delete("right");
           }
       
           // Position joystick element within container
@@ -86,14 +84,14 @@ class App {
       
         // Reset joystick on touchend
         joystickContainer.addEventListener("touchend", () => {
-          controlKeys.clear();
+          App.controlKeys.clear();
           joystick.style.top = "50%";
           joystick.style.left = "50%";
         });
       
-        // Example usage of controlKeys
+        // Example usage of App.controlKeys
         setInterval(() => {
-          const directionsArray = Array.from(controlKeys);
+          const directionsArray = Array.from(App.controlKeys);
           console.log(directionsArray); // Logs the active directions
         }, 100);
       
