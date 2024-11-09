@@ -1,7 +1,17 @@
 export { App }
 import { io } from "./externalScripts/socket.io.esm.min.js";
 class App {
+    static isMobile() {
+        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
     static init() {
+        document.addEventListener("DOMContentLoaded", () => {
+            App.oncePageFullyLoaded();
+        })
+        
+    }
+    static oncePageFullyLoaded() {
+        
         const socket = io("http://127.0.0.1:3000");
         socket.on("welcome", (message) => {
             console.log(message);
@@ -13,6 +23,10 @@ class App {
         const canvas = document.getElementById("gameCanvas");
         const fullscreenButton = document.getElementById("fullscreenButton");
         const joystickContainer = document.getElementById("joystickContainer");
+        joystickContainer.style.display = "none";
+        if(App.isMobile()) {
+            joystickContainer.style.display = "block";
+        } 
         const joystick = document.getElementById("joystick");
         
         // Fullscreen function
