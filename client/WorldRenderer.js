@@ -3,8 +3,16 @@ class WorldRenderer {
     static worldState = null;
     static receiveWorldState(worldState) {
         WorldRenderer.worldState = worldState;
+        console.log(worldState)
     }
     static render() {
         // render whatever is in static prop WorldRenderer.worldState
+        const canvas = document.getElementById("gameCanvas");
+        const context = canvas.getContext("2d")
+        context.clearRect(0, 0,  canvas.width, canvas.height)
+        worldState.entities.forEach(entity => {
+          context.fillStyle = "white";
+          context.fillRect(entity.x, entity.y, entity.width, entity.height)
+        })
     };
 }

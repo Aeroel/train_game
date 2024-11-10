@@ -11,7 +11,7 @@ class AppSetup {
         socket.on("welcome", (message) => {
             console.log(message);
         });
-        socket.on("worldUpdate", (newWorldState) => {
+        socket.on("newWorldState", (newWorldState) => {
             WorldRenderer.receiveWorldState(newWorldState);
         })
         const serverMessage = document.getElementById("serverMessage");
@@ -75,7 +75,19 @@ class AppSetup {
 
         // Track joystick movements
         joystickContainer.addEventListener("touchmove", (e) => {
-            const touch = e.touches[0];
+            AppSetup.runComplicatedJoystickMovementSetupCodeIDoNotCompletelyUnderstand(e, joystickContainer, joystick)
+        });
+
+        // Reset joystick on touchend
+        joystickContainer.addEventListener("touchend", () => {
+            App.controlKeys.clear();
+            joystick.style.top = "50%";
+            joystick.style.left = "50%";
+        });
+
+    }
+    static runComplicatedJoystickMovementSetupCodeIDoNotCompletelyUnderstand(e, joystickContainer, joystick) {
+                  const touch = e.touches[0];
             const rect = joystickContainer.getBoundingClientRect();
             const dx = touch.clientX - (rect.left + rect.width / 2);
             const dy = touch.clientY - (rect.top + rect.height / 2);
@@ -104,14 +116,5 @@ class AppSetup {
             joystick.style.left = `${Math.min(Math.max(touch.clientX - rect.left, 0), rect.width) - 20}px`;
 
             e.preventDefault();
-        });
-
-        // Reset joystick on touchend
-        joystickContainer.addEventListener("touchend", () => {
-            App.controlKeys.clear();
-            joystick.style.top = "50%";
-            joystick.style.left = "50%";
-        });
-
     }
 }

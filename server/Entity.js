@@ -4,10 +4,22 @@ class Entity {
     y;
     width;
     height;
-    constructor({x, y, width, height}) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    color;
+    constructor() {
+    }
+    setX(x) {
+       this.x = x;
+    }
+    setY(y) {
+      this.y = y;
+    }
+    setWidth(width) {
+      this.width = width;
+    }
+    setHeight(height) {
+      this.height = height;
+    }
+    setColor(color) {
+      this.color = color;
     }
 }
