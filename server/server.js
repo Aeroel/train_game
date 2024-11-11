@@ -19,8 +19,8 @@ io.on("connection", async (socket) => {
   console.log("A socket connected");
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
-  newPlayerEntity.setX(100);
-  newPlayerEntity.setY(100);
+  newPlayerEntity.setX(0);
+  newPlayerEntity.setY(0);
   newPlayerEntity.setWidth(50);
   newPlayerEntity.setHeight(40);
   newPlayerEntity.setColor(`black`);
@@ -52,10 +52,10 @@ function loop() {
     return;
   }
   elapsedTimeMs = 0;
-    World.state.entities.forEach(entity => {
-      entity.y += 1
-      entity.x += 1
-    })
+  World.state.entities.forEach(entity => {
+    entity.y += 1
+    entity.x += 1
+  })
 
   io.emit("newWorldState", World.state)
 

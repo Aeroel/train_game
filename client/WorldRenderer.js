@@ -2,11 +2,10 @@ export { WorldRenderer }
 class WorldRenderer {
     static worldState = {
         entities: new Array(),
-        
+
     };
     static receiveWorldState(worldState) {
         WorldRenderer.worldState = worldState;
-        console.log(worldState)
     }
     static render() {
         // render whatever is in static prop WorldRenderer.worldState
