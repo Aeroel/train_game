@@ -1,6 +1,7 @@
 export { App }
 import { AppSetup } from "./AppSetup.js";
 import { AnimationLoop } from "./AnimationLoop.js"
+import { Socket } from "./Socket.js";
 class App {
     static controlKeys = new Set();
     static isMobile() {
@@ -22,7 +23,7 @@ class App {
         // Example usage of App.controlKeys
         setInterval(() => {
             const directionsArray = Array.from(App.controlKeys);
-
+            Socket.get().emit("movement", directionsArray);
         }, 100);
 
     }

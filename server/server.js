@@ -15,7 +15,7 @@ const options = {
   }
 }
 const io = new Server(httpServer, options);
-io.on("connection", async (socket) => {
+io.on("connection", (socket) => {
   console.log("A socket connected");
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
@@ -28,8 +28,16 @@ io.on("connection", async (socket) => {
   newPlayerEntity.setAssociatedSocketConnectionId(socket.id);
   World.addEntity(newPlayerEntity);
 
-});
 
+  socket.on("movement", (movement) => {
+    const playerAssociatedWithSocket = World.state.entities.find((entity) => {
+      return entity.socketConnectionId === socket.id
+    })
+    if (movement.includes("right")) {
+      playerAssociatedWithSocket.forces.right = 1;
+    }
+  })
+});
 const port = 3000;
 httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
@@ -53,8 +61,9 @@ function loop() {
   }
   elapsedTimeMs = 0;
   World.state.entities.forEach(entity => {
-    entity.y += 1
-    entity.x += 1
+    entity.x += entity.forces.right;
+    entity.forces.right = 0;
+
   })
 
   io.emit("newWorldState", World.state)
