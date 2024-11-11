@@ -39,6 +39,7 @@ let lastTimeMs = currTimeMs;
 let elapsedTimeMs = 0;
 let timeToTick = false;
 const tickEveryMs = 20;
+const loopEveryMs = 20;
 function loop() {
   currTimeMs = Date.now();
   elapsedTimeMs += (currTimeMs - lastTimeMs);
@@ -47,7 +48,7 @@ function loop() {
   if (!timeToTick) {
     setTimeout(function () {
       loop();
-    }, 100);
+    }, loopEveryMs);
     return;
   }
   elapsedTimeMs = 0;
@@ -57,11 +58,10 @@ function loop() {
     })
 
   io.emit("newWorldState", World.state)
-console.log("em");
 
   setTimeout(function () {
     loop();
-  }, 100);
+  }, loopEveryMs);
 
 }
 loop()
