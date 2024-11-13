@@ -4,6 +4,7 @@ import { Server } from "socket.io";
 import { Player } from "./Player.js"
 import { World } from "./World.js"
 import { SocketStorage } from "./SocketStorage.js";
+import { Movable_Entity } from "./Movable_Entity.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -15,6 +16,12 @@ const options = {
       allowAnyOrigin
   }
 }
+const newEntity = new Movable_Entity();
+newEntity.setX(0);
+newEntity.setY(0);
+newEntity.setWidth(50);
+newEntity.setHeight(40);
+World.addEntity(newEntity);
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
   console.log("A socket connected");
@@ -42,7 +49,6 @@ io.on("connection", (socket) => {
     const playerAssociatedWithSocket = World.state.entities.find((entity) => {
       return entity.socketId === socket.id
     })
-    console.log(playerAssociatedWithSocket);
     
     if (movement.includes("right")) {
       playerAssociatedWithSocket.forces.right = 1;
@@ -53,7 +59,7 @@ const port = 3000;
 httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
 
-const virtualCanvasWidth = 1000;
+const virtualCanvasWidth = 2000;
 const virtualCanvasHeight = 1000;
 
 let currTimeMs = Date.now();
@@ -84,8 +90,10 @@ function gameLoop() {
   players.forEach(player => {
     const playerSocket = SocketStorage.find(socket => socket.id === player.socketId);
     const visibleEntities = [];
-    const playerCenterX = player.x + player.width / 2
-    const playerCenterY = player.y + player.height / 2
+    const playerCenterX = (player.x + player.width) / 2
+    const playerCenterY = (player.y + player.height) / 2
+    const offsetX = (virtualCanvasWidth / 2) - playerCenterX;
+    const offsetY = (virtualCanvasHeight / 2) - playerCenterY;
     World.getCurrentEntities().forEach(entity => {
       if (!isEntityVisible(playerCenterX, playerCenterY, player.visionRange, entity)) {
         return;
@@ -95,9 +103,18 @@ function gameLoop() {
       const visibleWidth = Math.min(playerCenterX + player.visionRange, entity.x + entity.width) - visibleX;
       const visibleHeight = Math.min(playerCenterY + player.visionRange, entity.y + entity.height) - visibleY;
 
+
+      const relativeX = ((visibleX + visibleWidth) / 2) + offsetX;
+      const relativeY = ((visibleY + visibleHeight) / 2) + offsetY;
+      console.log({relativeX, relativeY});
+      
       visibleEntities.push({
-        x: (visibleX - playerCenterX + player.visionRange) / virtualCanvasWidth,
-        y: (visibleY - playerCenterY + player.visionRange) / virtualCanvasHeight,
+        x: relativeX 
+       // / virtualCanvasWidth
+        ,
+        y: relativeY
+        // / virtualCanvasHeight
+        ,
         width: visibleWidth / virtualCanvasWidth,
         height: visibleHeight / virtualCanvasHeight,
         color: entity.color
