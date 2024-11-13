@@ -9,5 +9,6 @@ class Movable_Entity extends Entity {
     };
     constructor() {
         super();
+        this.addTag("Movable_Entity");
     }
 }

@@ -1,16 +1,17 @@
 import { Movable_Entity } from "./Movable_Entity.js";
 export { Player}
 class Player extends Movable_Entity {
-  socketConnectionId = null;
+  socketId = null;
   defaultVisionRange = 100
   visionRange = this.defaultVisionRange;
     constructor() {
-        super()
+        super();
+        this.addTag("Player");
     }
     setVisionRange(visionRange) {
       this.visionRange = visionRange;
     }
-    setAssociatedSocketConnectionId(id) {
-      this.socketConnectionId = id;
+    setSocketId(id) {
+      this.socketId = id;
     }
 }

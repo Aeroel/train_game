@@ -7,5 +7,11 @@ class World {
     static addEntity(entity) {
       World.state.entities.push(entity)
     }
+    static getCurrentState() {
+      return World.state;
+    }
+    static getCurrentEntities() {
+      return World.state.entities;
+    }
     
 }

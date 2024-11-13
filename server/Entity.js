@@ -4,8 +4,24 @@ class Entity {
     y;
     width;
     height;
-    color;
+    color = "white";
     constructor() {
+      this.tags = ["Entity"];
+    }
+    addTag(tag) {
+      this.tags.push(tag);
+    }
+    removeTag(tag) {
+      const tagIndex = this.tags.indexOf(tag);
+      const tagExistsInArray = (tagIndex !== -1);
+      if(!tagExistsInArray) {
+        return false;
+      }
+      this.tags.splice(tagIndex, 1);
+    }
+    hasTag(tag) {
+      const answer = (this.tags.includes(tag))
+      return answer;
     }
     setX(x) {
        this.x = x;
