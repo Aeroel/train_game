@@ -5,6 +5,7 @@ import { Player } from "./Player.js"
 import { World } from "./World.js"
 import { SocketStorage } from "./SocketStorage.js";
 import { Movable_Entity } from "./Movable_Entity.js";
+import { NecessaryPreEmitProcessing } from "./NecessaryPreEmitProcessing.js"
 
 const app = express();
 const httpServer = createServer(app);
@@ -31,7 +32,7 @@ io.on("connection", (socket) => {
   newPlayerEntity.setX(0);
   newPlayerEntity.setY(0);
   newPlayerEntity.setWidth(50);
-  newPlayerEntity.setHeight(40);
+  newPlayerEntity.setHeight(50);
   newPlayerEntity.setVisionRange(200);
   newPlayerEntity.setSocketId(socket.id);
   World.addEntity(newPlayerEntity);
@@ -53,14 +54,23 @@ io.on("connection", (socket) => {
     if (movement.includes("right")) {
       playerAssociatedWithSocket.forces.right = 1;
     }
+    if (movement.includes("left")) {
+      playerAssociatedWithSocket.forces.left = 1;
+    }
+    if (movement.includes("up")) {
+      playerAssociatedWithSocket.forces.up = 1;
+    }
+    if (movement.includes("down")) {
+      playerAssociatedWithSocket.forces.down = 1;
+    }
   })
 });
 const port = 3000;
 httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
 
-const virtualCanvasWidth = 2000;
-const virtualCanvasHeight = 1000;
+const virtualWidth = 2000;
+const virtualHeight = 1000;
 
 let currTimeMs = Date.now();
 let lastTimeMs = currTimeMs;
@@ -68,13 +78,6 @@ let elapsedTimeMs = 0;
 let timeToTick = false;
 const tickEveryMs = 20;
 const loopEveryMs = 20;
-function isEntityVisible(playerCenterX, playerCenterY, playerVisionRange, entity) {
-  const visibleX = Math.max(playerCenterX - playerVisionRange, entity.x)
-  const visibleY = Math.max(playerCenterY - playerVisionRange, entity.y)
-  const visibleWidth = Math.min(playerCenterX + playerVisionRange, entity.x + entity.width) - visibleX;
-  const visibleHeight = Math.min(playerCenterY + playerVisionRange, entity.y + entity.height) - visibleY;
-  return visibleWidth > 0 && visibleHeight > 0;
-}
 function gameLoop() {
   currTimeMs = Date.now();
   elapsedTimeMs += (currTimeMs - lastTimeMs);
@@ -89,44 +92,20 @@ function gameLoop() {
   const players = World.getCurrentEntities().filter(entity => entity.hasTag("Player"));
   players.forEach(player => {
     const playerSocket = SocketStorage.find(socket => socket.id === player.socketId);
-    const visibleEntities = [];
-    const playerCenterX = (player.x + player.width) / 2
-    const playerCenterY = (player.y + player.height) / 2
-    const offsetX = (virtualCanvasWidth / 2) - playerCenterX;
-    const offsetY = (virtualCanvasHeight / 2) - playerCenterY;
-    World.getCurrentEntities().forEach(entity => {
-      if (!isEntityVisible(playerCenterX, playerCenterY, player.visionRange, entity)) {
-        return;
-      }
-      const visibleX = Math.max(playerCenterX - player.visionRange, entity.x)
-      const visibleY = Math.max(playerCenterY - player.visionRange, entity.y)
-      const visibleWidth = Math.min(playerCenterX + player.visionRange, entity.x + entity.width) - visibleX;
-      const visibleHeight = Math.min(playerCenterY + player.visionRange, entity.y + entity.height) - visibleY;
-
-
-      const relativeX = ((visibleX + visibleWidth) / 2) + offsetX;
-      const relativeY = ((visibleY + visibleHeight) / 2) + offsetY;
-      console.log({relativeX, relativeY});
-      
-      visibleEntities.push({
-        x: relativeX 
-       // / virtualCanvasWidth
-        ,
-        y: relativeY
-        // / virtualCanvasHeight
-        ,
-        width: visibleWidth / virtualCanvasWidth,
-        height: visibleHeight / virtualCanvasHeight,
-        color: entity.color
-      })
-    });
+     const entities = NecessaryPreEmitProcessing.process(player, virtualWidth, virtualHeight)
     playerSocket.emit('newWorldState', {
-      entities: visibleEntities, virtualCanvasHeight, virtualCanvasWidth
+      entities, virtualHeight, virtualWidth
     });
   })
   World.getCurrentEntities().forEach(entity => {
     entity.x += entity.forces.right;
     entity.forces.right = 0;
+    entity.x -= entity.forces.left;
+    entity.forces.left = 0;
+    entity.y += entity.forces.down;
+    entity.forces.down = 0;
+    entity.y -= entity.forces.up;
+    entity.forces.up =0;
 
   })
 

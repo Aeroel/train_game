@@ -4,13 +4,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loop game client</title>
+  <title>Loop game client 000</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
     
-  <div id="gameContainer">
+  <div id="gameContainer" height="250" width="250">
     <canvas id="gameCanvas"></canvas>
     <div id="serverMessage"></div>
     <button id="fullscreenButton"><img src=".\images\Fullscreen_icon.jpg" alt="[FS]" width="50" height="50"></button>
@@ -24,6 +24,12 @@
       App
     } from "./App.js";
     App.init();
+    const canvas = document.getElementById("gameCanvas");
+    canvas.width=250;
+    canvas.height=250;
+    console.log(canvas.width,
+    canvas.height,
+    )
   </script>
 </body>
 
