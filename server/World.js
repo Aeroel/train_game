@@ -11,7 +11,10 @@ class World {
       return World.state;
     }
     static getCurrentEntities() {
-      return World.state.entities;
+      return World.getCurrentState().entities;
+    }
+    static filterEntities(filterCriteriaFunction) {
+      return World.getCurrentEntities().filter(filterCriteriaFunction);
     }
     
 }

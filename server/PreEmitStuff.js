@@ -1,19 +1,27 @@
-export {
-  NecessaryPreEmitProcessing
-}
+
 import {
   World
 } from "./World.js"
-class NecessaryPreEmitProcessing {
-  static process(player, virtualWidth, virtualHeight) {
-    const visibleEntities = NecessaryPreEmitProcessing.getVisibleEntities(player)
-    const virtualizedEntities = NecessaryPreEmitProcessing.virtualize(visibleEntities, player, virtualWidth, virtualHeight);
-    return virtualizedEntities;
+export { PreEmitStuff }
+class PreEmitStuff {
+    static someArbitraryNumber = 2000;
+  static anotherArbitraryNumber = 1000
+  static virtualWidth = this.someArbitraryNumber;
+ static virtualHeight = this.anotherArbitraryNumber;
+  static getVisibleToPlayerEntitiesAndVirtualWidthAndVirtualHeightAndHideAllTheRealWorldXYCoordinatesByReturningVirtualOnesInstead(player) {
+    const visibleEntities = PreEmitStuff.getVisibleEntities(player)
+    const virtualizedEntities = PreEmitStuff.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
+    return {
+      entities:
+    virtualizedEntities,
+      virtualHeight: this.virtualHeight,
+      virtualWidth: this.virtualWidth,
+    };
   }
   static getVisibleEntities(player) {
     const visibleEntities = new Array();
     World.getCurrentEntities().forEach(entity => {
-      const visiblePortion = NecessaryPreEmitProcessing.getVisiblePortion(player, entity)
+      const visiblePortion = PreEmitStuff.getVisiblePortion(player, entity)
       if (!visiblePortion) {
         return;
       }
@@ -27,7 +35,7 @@ class NecessaryPreEmitProcessing {
     });
     return visibleEntities;
   }
-static virtualize(visibleEntities, player, virtW, virtH) {
+static virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, virtW, virtH) {
     // Calculate the center of the player
     const centerX = virtW / 2;
     const centerY = virtH / 2;

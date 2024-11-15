@@ -2,10 +2,10 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { Player } from "./Player.js"
-import { World } from "./World.js"
+import { World } from "./World.js";
 import { SocketStorage } from "./SocketStorage.js";
 import { Movable_Entity } from "./Movable_Entity.js";
-import { NecessaryPreEmitProcessing } from "./NecessaryPreEmitProcessing.js"
+import { EmitStuff } from "./EmitStuff.js"
 
 const app = express();
 const httpServer = createServer(app);
@@ -69,8 +69,6 @@ const port = 3000;
 httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
 
-const virtualWidth = 2000;
-const virtualHeight = 1000;
 
 let currTimeMs = Date.now();
 let lastTimeMs = currTimeMs;
@@ -89,14 +87,8 @@ function gameLoop() {
   }
   elapsedTimeMs = 0;
 
-  const players = World.getCurrentEntities().filter(entity => entity.hasTag("Player"));
-  players.forEach(player => {
-    const playerSocket = SocketStorage.find(socket => socket.id === player.socketId);
-     const entities = NecessaryPreEmitProcessing.process(player, virtualWidth, virtualHeight)
-    playerSocket.emit('newWorldState', {
-      entities, virtualHeight, virtualWidth
-    });
-  })
+EmitStuff.emitToAllPlayersWorldStateStuff()
+
   World.getCurrentEntities().forEach(entity => {
     entity.x += entity.forces.right;
     entity.forces.right = 0;
