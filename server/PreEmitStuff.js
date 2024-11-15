@@ -9,8 +9,8 @@ class PreEmitStuff {
   static virtualWidth = this.someArbitraryNumber;
  static virtualHeight = this.anotherArbitraryNumber;
   static getVisibleToPlayerEntitiesAndVirtualWidthAndVirtualHeightAndHideAllTheRealWorldXYCoordinatesByReturningVirtualOnesInstead(player) {
-    const visibleEntities = PreEmitStuff.getVisibleEntities(player)
-    const virtualizedEntities = PreEmitStuff.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
+    const visibleEntities = this.getVisibleEntities(player)
+    const virtualizedEntities = this.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
     return {
       entities:
     virtualizedEntities,
