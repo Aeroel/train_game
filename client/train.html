@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train System Game</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+            background: #222;
+        }
+    </style>
+</head>
+<body>
+<canvas id="gameCanvas"></canvas>
+<script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const mapSize = 10000;
+    const stationCount = 7;
+    const stationSpacing = 1000;
+    const trainCarCount = 7;
+    const carLength = 80;
+    const carSpacing = 20;
+    const doorWidth = 20;
+    const doorSpeed = 2; // Speed of sliding doors
+    const playerVisionRange = 500;
+
+    const player = {
+        x: stationSpacing / 2,
+        y: mapSize / 2,
+        width: 20,
+        height: 20,
+        speed: 4,
+        dx: 0,
+        dy: 0,
+        ridingTrain: false,
+        currentCar: null,
+    };
+
+    const train = {
+        cars: Array.from({ length: trainCarCount }, (_, i) => ({
+            x: i * (carLength + carSpacing),
+            y: mapSize / 2 - 100,
+            width: carLength,
+            height: 40,
+            doors: { open: false, position: 0 }, // Sliding door position (0 = closed, 1 = fully open)
+        })),
+        speed: 2,
+        stationIndex: 0,
+        aligning: false,
+        stopped: false,
+        direction: 1,
+    };
+
+    const stations = Array.from({ length: stationCount }, (_, i) => ({
+        x: i * stationSpacing,
+        y: mapSize / 2,
+        width: 200,
+        height: 100,
+        doors: Array.from({ length: trainCarCount }, (_, j) => ({
+            x: i * stationSpacing - 100 + j * (carLength + carSpacing),
+            y: mapSize / 2 - 100,
+            width: doorWidth,
+            height: 40,
+            position: 0, // Sliding door position
+            open: false,
+        })),
+        timer: 5000, // Countdown timer in milliseconds
+    }));
+
+    let keys = {};
+    let previousTimestamp;
+
+    function updatePlayer() {
+        if (player.ridingTrain) {
+            const car = train.cars[player.currentCar];
+            player.x = Math.max(
+                car.x,
+                Math.min(car.x + car.width - player.width, player.x + player.dx)
+            );
+            player.y = Math.max(
+                car.y,
+                Math.min(car.y + car.height - player.height, player.y + player.dy)
+            );
+
+            // Exit train if the player moves outside the car through an open door
+            if (!train.cars[player.currentCar].doors.open) {
+                player.ridingTrain = false;
+                player.currentCar = null;
+            }
+        } else {
+            player.x += player.dx;
+            player.y += player.dy;
+
+            // Prevent leaving the map bounds
+            player.x = Math.max(0, Math.min(mapSize, player.x));
+            player.y = Math.max(0, Math.min(mapSize, player.y));
+
+            // Collision with closed station doors
+            for (const station of stations) {
+                for (const door of station.doors) {
+                    if (
+                        !door.open &&
+                        player.x < door.x + door.width &&
+                        player.x + player.width > door.x &&
+                        player.y < door.y + door.height &&
+                        player.y + player.height > door.y
+                    ) {
+                        player.x -= player.dx;
+                        player.y -= player.dy;
+                    }
+                }
+            }
+
+            // Check if the player enters a train car
+            for (let i = 0; i < train.cars.length; i++) {
+                const car = train.cars[i];
+                if (
+                    car.doors.open &&
+                    player.x < car.x + car.width &&
+                    player.x + player.width > car.x &&
+                    player.y < car.y + car.height &&
+                    player.y + player.height > car.y
+                ) {
+                    player.ridingTrain = true;
+                    player.currentCar = i;
+                    break;
+                }
+            }
+        }
+    }
+
+    function updateTrain(deltaTime) {
+        const station = stations[train.stationIndex];
+        const targetX = station.x;
+
+        if (train.stopped) {
+            // Aligning train with the station
+            if (train.aligning) {
+                const adjustment = targetX - train.cars[0].x;
+                if (Math.abs(adjustment) > 2) {
+                    train.cars.forEach((car) => (car.x += Math.sign(adjustment)));
+                } else {
+                    train.aligning = false;
+                    station.doors.forEach((door) => (door.open = true));
+                    train.cars.forEach((car) => (car.doors.open = true));
+                }
+            } else {
+                station.timer -= deltaTime;
+                if (station.timer <= 0) {
+                    // Close doors and start moving
+                    station.doors.forEach((door) => (door.open = false));
+                    train.cars.forEach((car) => (car.doors.open = false));
+                    train.stopped = false;
+                    station.timer = 5000;
+                    train.stationIndex = (train.stationIndex + train.direction) % stationCount;
+                }
+            }
+        } else {
+            train.cars.forEach((car) => (car.x += train.speed));
+            if (Math.abs(train.cars[0].x - targetX) < 10) {
+                train.stopped = true;
+                train.aligning = Math.random() < 0.2; // 20% chance of misalignment
+            }
+        }
+
+        // Update sliding door animations
+        for (const car of train.cars) {
+            if (car.doors.open && car.doors.position < 1) {
+                car.doors.position += doorSpeed * deltaTime * 0.001;
+            } else if (!car.doors.open && car.doors.position > 0) {
+                car.doors.position -= doorSpeed * deltaTime * 0.001;
+            }
+        }
+
+        for (const door of station.doors) {
+            if (door.open && door.position < 1) {
+                door.position += doorSpeed * deltaTime * 0.001;
+            } else if (!door.open && door.position > 0) {
+                door.position -= doorSpeed * deltaTime * 0.001;
+            }
+        }
+    }
+
+    function drawMap() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Draw stations
+        for (const station of stations) {
+            ctx.fillStyle = "gray";
+            ctx.fillRect(
+                station.x - player.x + canvas.width / 2 - station.width / 2,
+                station.y - player.y + canvas.height / 2 - station.height / 2,
+                station.width,
+                station.height
+            );
+
+            // Draw station doors
+            for (const door of station.doors) {
+                ctx.fillStyle = "red";
+                ctx.fillRect(
+                    door.x - player.x + canvas.width / 2,
+                    door.y - player.y + canvas.height / 2,
+                    door.width * door.position,
+                    door.height
+                );
+            }
+        }
+
+        // Draw train
+        ctx.fillStyle = "blue";
+        for (const car of train.cars) {
+            ctx.fillRect(
+                car.x - player.x + canvas.width / 2,
+                car.y - player.y + canvas.height / 2,
+                car.width,
+                car.height
+            );
+            // Draw train doors
+            ctx.fillStyle = "green";
+            ctx.fillRect(
+                car.x - player.x + canvas.width / 2,
+                car.y - player.y + canvas.height / 2,
+                car.width * car.doors.position,
+                car.height
+            );
+        }
+
+        // Draw player
+        ctx.fillStyle = "yellow";
+        ctx.fillRect(canvas.width / 2, canvas.height / 2, player.width, player.height);
+    }
+
+    function gameLoop(timestamp) {
+        const deltaTime = timestamp - (previousTimestamp || timestamp);
+        previousTimestamp = timestamp;
+
+        updatePlayer();
+        updateTrain(deltaTime);
+        drawMap();
+
+        requestAnimationFrame(gameLoop);
+    }
+
+    window.addEventListener("keydown", (e) => {
+        keys[e.key] = true;
+        if (keys["w"]) player.dy = -player.speed;
+        if (keys["s"]) player.dy = player.speed;
+        if (keys["a"]) player.dx = -player.speed;
+        if (keys["d"]) player.dx = player.speed;
+    });
+
+    window.addEventListener("keyup", (e) => {
+        keys[e.key] = false;
+        if (!keys["w"] && !keys["s"]) player.dy = 0;
+        if (!keys["a"] && !keys["d"]) player.dx = 0;
+    });
+
+    gameLoop();
+</script>
+</body>
+</html>
