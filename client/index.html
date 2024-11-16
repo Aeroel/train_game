@@ -10,8 +10,8 @@
 
 <body>
     
-  <div id="gameContainer" height="250" width="250">
-    <canvas id="gameCanvas"></canvas>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width ="1000" height="1000"></canvas>
     <div id="serverMessage"></div>
     <button id="fullscreenButton"><img src=".\images\Fullscreen_icon.jpg" alt="[FS]" width="50" height="50"></button>
     <div id="joystickContainer">
@@ -25,8 +25,6 @@
     } from "./App.js";
     App.init();
     const canvas = document.getElementById("gameCanvas");
-    canvas.width=250;
-    canvas.height=250;
     console.log(canvas.width,
     canvas.height,
     )

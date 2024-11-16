@@ -2,7 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { Player } from "./Player.js"
-import { Entity } from "./Entity.js"
+import { Ground } from "./Ground.js"
 import { World } from "./World.js";
 import { SocketStorage } from "./SocketStorage.js";
 import { Movable_Entity } from "./Movable_Entity.js";
@@ -24,12 +24,11 @@ newEntity.setY(0);
 newEntity.setWidth(50);
 newEntity.setHeight(40);
 World.addEntity(newEntity);
-const ground = new Entity();
+const ground = new Ground();
 ground.setX(0);
 ground.setY(0);
 ground.setWidth(10000);
 ground.setHeight(10000);
-ground.setColor("green")
 World.addEntity(ground);
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
@@ -41,7 +40,7 @@ io.on("connection", (socket) => {
   newPlayerEntity.setY(0);
   newPlayerEntity.setWidth(50);
   newPlayerEntity.setHeight(50);
-  newPlayerEntity.setVisionRange(200);
+  newPlayerEntity.setVisionRange(100);
   newPlayerEntity.setSocketId(socket.id);
   World.addEntity(newPlayerEntity);
 
@@ -94,9 +93,8 @@ function gameLoop() {
     return;
   }
   elapsedTimeMs = 0;
-
+World.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
 EmitStuff.emitToAllPlayersWorldStateStuff()
-
   World.getCurrentEntities().forEach(entity => {
     if(!entity.hasTag("Movable_Entity")) {
       return;

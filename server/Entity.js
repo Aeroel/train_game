@@ -5,6 +5,7 @@ class Entity {
     width;
     height;
     color = "white";
+    tags;
     constructor() {
       this.tags = ["Entity"];
     }

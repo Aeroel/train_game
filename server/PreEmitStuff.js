@@ -4,10 +4,11 @@ import {
 } from "./World.js"
 export { PreEmitStuff }
 class PreEmitStuff {
-    static someArbitraryNumber = 2000;
-  static anotherArbitraryNumber = 1000
+    static someArbitraryNumber = 5000;
+  static anotherArbitraryNumber = 5000
   static virtualWidth = this.someArbitraryNumber;
  static virtualHeight = this.anotherArbitraryNumber;
+
   static getVisibleToPlayerEntitiesAndVirtualWidthAndVirtualHeightAndHideAllTheRealWorldXYCoordinatesByReturningVirtualOnesInstead(player) {
     const visibleEntities = this.getVisibleEntities(player)
     const virtualizedEntities = this.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
