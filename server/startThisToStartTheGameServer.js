@@ -2,6 +2,7 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { Player } from "./Player.js"
+import { Entity } from "./Entity.js"
 import { World } from "./World.js";
 import { SocketStorage } from "./SocketStorage.js";
 import { Movable_Entity } from "./Movable_Entity.js";
@@ -23,6 +24,13 @@ newEntity.setY(0);
 newEntity.setWidth(50);
 newEntity.setHeight(40);
 World.addEntity(newEntity);
+const ground = new Entity();
+ground.setX(0);
+ground.setY(0);
+ground.setWidth(10000);
+ground.setHeight(10000);
+ground.setColor("green")
+World.addEntity(ground);
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
   console.log("A socket connected");
@@ -90,6 +98,9 @@ function gameLoop() {
 EmitStuff.emitToAllPlayersWorldStateStuff()
 
   World.getCurrentEntities().forEach(entity => {
+    if(!entity.hasTag("Movable_Entity")) {
+      return;
+    }
     entity.x += entity.forces.right;
     entity.forces.right = 0;
     entity.x -= entity.forces.left;
