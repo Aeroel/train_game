@@ -3,7 +3,7 @@ export { SocketDataStorage }
 
 class SocketDataStorage {
   static data = new Map();
-  static addSocketDataSlot(socketId) {
+  static newSocketDataSlot(socketId) {
     const emptyObject = new Object();
     this.data.set(socketId, emptyObject)
   }

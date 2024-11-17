@@ -7,10 +7,9 @@ import { World } from "./World.js";
 import { SocketStorage } from "./SocketStorage.js";
 import { Movable_Entity } from "./Movable_Entity.js";
 import { EmitStuff } from "./EmitStuff.js"
-import { Settings } from './Settings.js';
 import { SocketDataStorage } from "./SocketDataStorage.js";
 import { EntitySorter } from "./EntitySorter.js"
-import { log } from "console";
+import { Helper_Functions } from "./Helper_Functions.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -36,11 +35,7 @@ ground.setHeight(10000);
 World.addEntity(ground);
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
-  console.log("A socket connected");
-  SocketStorage.add(socket);
-  SocketDataStorage.addSocketDataSlot(socket.id);
-  const currTimeMs = Date.now()
-  SocketDataStorage.set(socket.id, "lastMovementRequestTimeMs", currTimeMs);
+  console.log("A socket connected");  Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
   newPlayerEntity.setX(0);
@@ -52,35 +47,23 @@ io.on("connection", (socket) => {
   World.addEntity(newPlayerEntity);
 
   socket.on("disconnect", () => {
-    SocketStorage.remove(socket);
-    SocketDataStorage.removeSocketDataSlot(socket.id);
-    const playerAssociatedWithSocket = World.state.entities.find((entity) => {
-      return entity.socketId === socket.id
-    })
-    const index = World.state.entities.indexOf(playerAssociatedWithSocket);
-    World.state.entities.splice(index, 1);
+    Helper_Functions.runThisUponSocketDisconnect(socket);
   })
   socket.on("movement", (movement) => {
-    const currTimeMs = Date.now()
-    const lastMovementRequestTimeMs = SocketDataStorage.get(socket.id, "lastMovementRequestTimeMs");
-    const howMuchTimePassedMs = (currTimeMs - lastMovementRequestTimeMs);
-    const movementRequestFunctionalityIsOnCooldown = Boolean(
-      howMuchTimePassedMs < Settings.movementRequestCooldownDurationMs
-    );
     /*
     Presumably, someone spamming movement requests does not receive any advantages. So, this cooldown is implemented mainly for fun.
     The idea is we don't want the server to process too many movement requests from a client in a short time period, that would be pointless. Although neither does this cooldown really affect much, since all that happens if no cooldown is present is flipping control key bits to true... 
     */
-    if (movementRequestFunctionalityIsOnCooldown) {
-
+    if (socket.isMovementRequestFunctionalityOnCooldown(socket)) {
       return;
     }
-    SocketDataStorage.set(socket.id, "lastMovementRequestTimeMs", currTimeMs);
+    socket.aMovementRequestHappenedJustNow(socket);
     const playerAssociatedWithSocket = World.state.entities.find((entity) => {
       return entity.socketId === socket.id
     });
 
-    Object.keys(playerAssociatedWithSocket.controls).forEach(direction => {
+    const receivedMovementDirections = Object.keys(playerAssociatedWithSocket.controls);
+    receivedMovementDirections.forEach(direction => {
       playerAssociatedWithSocket.controls[direction] = movement.includes(direction);
     });
   })
@@ -91,7 +74,8 @@ console.log(`Started a server on port ${port}`);
 
 
 let currTimeMs = Date.now();
-let lastTimeMs = currTimeMs;
+const initialValueForLastTimeMs = currTimeMs;
+let lastTimeMs = initialValueForLastTimeMs;
 let elapsedTimeMs = 0;
 let timeToTick = false;
 const tickEveryMs = 20;
