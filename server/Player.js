@@ -2,7 +2,7 @@ import { Movable_Entity } from "./Movable_Entity.js";
 export { Player}
 class Player extends Movable_Entity {
   socketId = null;
-  defaultVisionRange = 100
+  defaultVisionRange = 200
   visionRange = this.defaultVisionRange;
     constructor() {
         super();

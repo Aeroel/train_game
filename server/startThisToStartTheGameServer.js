@@ -53,23 +53,22 @@ io.on("connection", (socket) => {
     World.state.entities.splice(index, 1);
   })
   socket.on("movement", (movement) => {
-    
+    const movementRequestFunctionalityIsOnCooldown = Boolean((Date.now() - socketData.find(socket => socket.id ).lastMovementRequestTime) > movementRequestCooldownTime);
+    /*
+    Presumably, someone spamming movement requests does not receive any advantages. So, this cooldown is implemented mainly for fun.
+    The idea is we don't want the server to process too many movement requests from a client in a short time period, that would be pointless. Although neither does this cooldown really affect much, since all that happens if no cooldown is present is flipping control key bits to true... 
+    */
+    if(movementRequestFunctionalityIsOnCooldown) {
+      return;
+    }
     const playerAssociatedWithSocket = World.state.entities.find((entity) => {
       return entity.socketId === socket.id
     })
     
-    if (movement.includes("right")) {
-      playerAssociatedWithSocket.forces.right = 1;
-    }
-    if (movement.includes("left")) {
-      playerAssociatedWithSocket.forces.left = 1;
-    }
-    if (movement.includes("up")) {
-      playerAssociatedWithSocket.forces.up = 1;
-    }
-    if (movement.includes("down")) {
-      playerAssociatedWithSocket.forces.down = 1;
-    }
+      playerAssociatedWithSocket.controls.right = movement.includes("right");
+      playerAssociatedWithSocket.controls.left = movement.includes("left");
+      playerAssociatedWithSocket.controls.up = movement.includes("up");
+      playerAssociatedWithSocket.controls.down = movement.includes("down");
   })
 });
 const port = 3000;
@@ -93,7 +92,7 @@ function gameLoop() {
     return;
   }
   elapsedTimeMs = 0;
-World.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
+EntitySorter.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
 EmitStuff.emitToAllPlayersWorldStateStuff()
   World.getCurrentEntities().forEach(entity => {
     if(!entity.hasTag("Movable_Entity")) {
