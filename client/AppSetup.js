@@ -68,10 +68,7 @@ class AppSetup {
         const joystickContainer = document.getElementById("joystickContainer");
         const joystick = document.getElementById("joystick");
 
-        joystickContainer.style.display = "none";
-        if (App.isMobile()) {
-            joystickContainer.style.display = "block";
-        }
+        joystickContainer.style.display = "block";
 
         // Track joystick movements
         joystickContainer.addEventListener("touchmove", (e) => {
@@ -80,41 +77,70 @@ class AppSetup {
 
         // Reset joystick on touchend
         joystickContainer.addEventListener("touchend", () => {
-            App.controlKeys.clear();
+            App.movementControlCommands.clear();
             joystick.style.top = "50%";
             joystick.style.left = "50%";
         });
 
     }
     static runComplicatedJoystickMovementSetupCodeIDoNotCompletelyUnderstand(e, joystickContainer, joystick) {
-                  const touch = e.touches[0];
-            const rect = joystickContainer.getBoundingClientRect();
-            const dx = touch.clientX - (rect.left + rect.width / 2);
-            const dy = touch.clientY - (rect.top + rect.height / 2);
+        const touch = e.touches[0];
+        const rect = joystickContainer.getBoundingClientRect();
+        const dx = touch.clientX - (rect.left + rect.width / 2);
+        const dy = touch.clientY - (rect.top + rect.height / 2);
 
-            // Determine direction based on dx, dy
-            const threshold = 10; // Threshold to avoid minor movements
-            App.controlKeys.clear();
+        // Determine direction based on dx, dy
+        const threshold = 10; // Threshold to avoid minor movements
+        App.movementControlCommands.clear();
 
-            if (dy < -threshold) App.controlKeys.add("up");
-            if (dy > threshold) App.controlKeys.add("down");
-            if (dx < -threshold) App.controlKeys.add("left");
-            if (dx > threshold) App.controlKeys.add("right");
+        if (dy < -threshold) App.movementControlCommands.add("up");
+        if (dy > threshold) App.movementControlCommands.add("down");
+        if (dx < -threshold) App.movementControlCommands.add("left");
+        if (dx > threshold) App.movementControlCommands.add("right");
 
-            // Ensure no conflicting directions
-            if (App.controlKeys.has("up") && App.controlKeys.has("down")) {
-                App.controlKeys.delete("up");
-                App.controlKeys.delete("down");
+        // Ensure no conflicting directions
+        if (App.movementControlCommands.has("up") && App.movementControlCommands.has("down")) {
+            App.movementControlCommands.delete("up");
+            App.movementControlCommands.delete("down");
+        }
+        if (App.movementControlCommands.has("left") && App.movementControlCommands.has("right")) {
+            App.movementControlCommands.delete("left");
+            App.movementControlCommands.delete("right");
+        }
+
+        // Position joystick element within container
+        joystick.style.top = `${Math.min(Math.max(touch.clientY - rect.top, 0), rect.height) - 20}px`;
+        joystick.style.left = `${Math.min(Math.max(touch.clientX - rect.left, 0), rect.width) - 20}px`;
+
+        e.preventDefault();
+    }
+    static runKeyboardControlsSetupCode() {
+        const controlCommandsToKeyNamesMapping = {
+            up: ["KeyW", "ArrowUp"],
+            down: ["KeyS", "ArrowDown"],
+            left: ["KeyA", "ArrowLeft"],
+            right: ["KeyD", "ArrowRight"],
+        };
+    
+        document.addEventListener("keydown", event => {
+            // Iterate through the mapping to find a match for the pressed key
+            for (const [controlCommandName, keyNames] of Object.entries(controlCommandsToKeyNamesMapping)) {
+                
+                if (keyNames.includes(event.code)) {
+                    App.movementControlCommands.add(controlCommandName); // Add the control name to the active keys
+                    break; // Exit the loop once a match is found
+                }
             }
-            if (App.controlKeys.has("left") && App.controlKeys.has("right")) {
-                App.controlKeys.delete("left");
-                App.controlKeys.delete("right");
+        });
+    
+        document.addEventListener("keyup", event => {
+            // Iterate through the mapping to find a match for the released key
+            for (const [controlCommandName, keyNames] of Object.entries(controlCommandsToKeyNamesMapping)) {
+                if (keyNames.includes(event.code)) {
+                    App.movementControlCommands.delete(controlCommandName); // Remove the control name from the active keys
+                    break; // Exit the loop once a match is found
+                }
             }
-
-            // Position joystick element within container
-            joystick.style.top = `${Math.min(Math.max(touch.clientY - rect.top, 0), rect.height) - 20}px`;
-            joystick.style.left = `${Math.min(Math.max(touch.clientX - rect.left, 0), rect.width) - 20}px`;
-
-            e.preventDefault();
+        });
     }
 }

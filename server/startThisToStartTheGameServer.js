@@ -7,6 +7,10 @@ import { World } from "./World.js";
 import { SocketStorage } from "./SocketStorage.js";
 import { Movable_Entity } from "./Movable_Entity.js";
 import { EmitStuff } from "./EmitStuff.js"
+import { Settings } from './Settings.js';
+import { SocketDataStorage } from "./SocketDataStorage.js";
+import { EntitySorter } from "./EntitySorter.js"
+import { log } from "console";
 
 const app = express();
 const httpServer = createServer(app);
@@ -34,6 +38,9 @@ const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
   console.log("A socket connected");
   SocketStorage.add(socket);
+  SocketDataStorage.addSocketDataSlot(socket.id);
+  const currTimeMs = Date.now()
+  SocketDataStorage.set(socket.id, "lastMovementRequestTimeMs", currTimeMs);
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
   newPlayerEntity.setX(0);
@@ -46,6 +53,7 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     SocketStorage.remove(socket);
+    SocketDataStorage.removeSocketDataSlot(socket.id);
     const playerAssociatedWithSocket = World.state.entities.find((entity) => {
       return entity.socketId === socket.id
     })
@@ -53,22 +61,28 @@ io.on("connection", (socket) => {
     World.state.entities.splice(index, 1);
   })
   socket.on("movement", (movement) => {
-    const movementRequestFunctionalityIsOnCooldown = Boolean((Date.now() - socketData.find(socket => socket.id ).lastMovementRequestTime) > movementRequestCooldownTime);
+    const currTimeMs = Date.now()
+    const lastMovementRequestTimeMs = SocketDataStorage.get(socket.id, "lastMovementRequestTimeMs");
+    const howMuchTimePassedMs = (currTimeMs - lastMovementRequestTimeMs);
+    const movementRequestFunctionalityIsOnCooldown = Boolean(
+      howMuchTimePassedMs < Settings.movementRequestCooldownDurationMs
+    );
     /*
     Presumably, someone spamming movement requests does not receive any advantages. So, this cooldown is implemented mainly for fun.
     The idea is we don't want the server to process too many movement requests from a client in a short time period, that would be pointless. Although neither does this cooldown really affect much, since all that happens if no cooldown is present is flipping control key bits to true... 
     */
-    if(movementRequestFunctionalityIsOnCooldown) {
+    if (movementRequestFunctionalityIsOnCooldown) {
+
       return;
     }
+    SocketDataStorage.set(socket.id, "lastMovementRequestTimeMs", currTimeMs);
     const playerAssociatedWithSocket = World.state.entities.find((entity) => {
       return entity.socketId === socket.id
-    })
-    
-      playerAssociatedWithSocket.controls.right = movement.includes("right");
-      playerAssociatedWithSocket.controls.left = movement.includes("left");
-      playerAssociatedWithSocket.controls.up = movement.includes("up");
-      playerAssociatedWithSocket.controls.down = movement.includes("down");
+    });
+
+    Object.keys(playerAssociatedWithSocket.controls).forEach(direction => {
+      playerAssociatedWithSocket.controls[direction] = movement.includes(direction);
+    });
   })
 });
 const port = 3000;
@@ -92,20 +106,21 @@ function gameLoop() {
     return;
   }
   elapsedTimeMs = 0;
-EntitySorter.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
-EmitStuff.emitToAllPlayersWorldStateStuff()
+  EntitySorter.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
+  EmitStuff.emitToAllPlayersWorldStateStuff()
   World.getCurrentEntities().forEach(entity => {
-    if(!entity.hasTag("Movable_Entity")) {
+    if (!entity.hasTag("Player")) {
       return;
     }
-    entity.x += entity.forces.right;
-    entity.forces.right = 0;
-    entity.x -= entity.forces.left;
-    entity.forces.left = 0;
-    entity.y += entity.forces.down;
-    entity.forces.down = 0;
-    entity.y -= entity.forces.up;
-    entity.forces.up =0;
+
+    entity.x += Number(entity.controls.right);
+    //entity.controls.right = 0;
+    entity.x -= Number(entity.controls.left);
+    //entity.controls.left = 0;
+    entity.y += Number(entity.controls.down);
+   // entity.controls.down = 0;
+    entity.y -= Number(entity.controls.up);
+   // entity.controls.up = 0;
 
   })
 

@@ -9,25 +9,21 @@
 </head>
 
 <body>
-    
+
   <div id="gameContainer">
-    <canvas id="gameCanvas" width ="1000" height="1000"></canvas>
+    <canvas id="gameCanvas" width="1000" height="1000"></canvas>
     <div id="serverMessage"></div>
     <button id="fullscreenButton"><img src=".\images\Fullscreen_icon.jpg" alt="[FS]" width="50" height="50"></button>
     <div id="joystickContainer">
       <div id="joystick"></div>
     </div>
-  </div>  
+  </div>
 
   <script type="module">
     import {
       App
     } from "./App.js";
     App.init();
-    const canvas = document.getElementById("gameCanvas");
-    console.log(canvas.width,
-    canvas.height,
-    )
   </script>
 </body>
 

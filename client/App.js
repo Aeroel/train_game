@@ -3,7 +3,7 @@ import { AppSetup } from "./AppSetup.js";
 import { AnimationLoop } from "./AnimationLoop.js"
 import { Socket } from "./Socket.js";
 class App {
-    static controlKeys = new Set();
+    static movementControlCommands = new Set();
     static isMobile() {
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
@@ -16,13 +16,19 @@ class App {
     static runThisOncePageIsFullyLoaded() {
 
         AppSetup.serverConnectionStuff();
-        AppSetup.runJoystickSetupCode();
+        if (App.isMobile()) {
+            AppSetup.runJoystickSetupCode();
+        } else {
+            AppSetup.runKeyboardControlsSetupCode();
+        }
         AppSetup.runFullscreenButtonCode();
         AnimationLoop.start();
 
-        // Example usage of App.controlKeys
+        // Example usage of App.movementControlCommands
         setInterval(() => {
-            const directionsArray = Array.from(App.controlKeys);
+            
+            const directionsArray = Array.from(App.movementControlCommands);
+            console.log(directionsArray)
             Socket.get().emit("movement", directionsArray);
         }, 100);
 

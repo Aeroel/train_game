@@ -11,6 +11,7 @@ class EntitySorter {
     EntitySorter.groundComesFirstThenOtherEntities();
   }
   static groundComesFirstThenOtherEntities() {
+    const allEntities = World.getCurrentEntities()
     allEntities.sort((a, b) => {
       const aHasGroundTag = a.tags?.includes('Ground');
       const bHasGroundTag = b.tags?.includes('Ground');
