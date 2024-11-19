@@ -97,23 +97,29 @@ httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
 
 
-let currTimeMs = Date.now();
-const initialValueForLastTimeMs = currTimeMs;
-let lastTimeMs = initialValueForLastTimeMs;
-let elapsedTimeMs = 0;
-let timeToTick = false;
-const tickEveryMs = 20;
-const loopEveryMs = 20;
+const TICK_RATE = 60; // Updates per second
+const MS_PER_TICK = 1000 / TICK_RATE; // Duration of each update in milliseconds
+let lastUpdateTime = Date.now();
+let lag = 0;
+
 function gameLoop() {
-  currTimeMs = Date.now();
-  elapsedTimeMs += (currTimeMs - lastTimeMs);
-  lastTimeMs = currTimeMs;
-  timeToTick = (elapsedTimeMs >= tickEveryMs)
-  if (!timeToTick) {
-    setTimeout(gameLoop);
-    return;
-  }
-  elapsedTimeMs = 0;
+    const currentTime = Date.now();
+    const elapsed = currentTime - lastUpdateTime;
+    lastUpdateTime = currentTime;
+
+    lag += elapsed;
+
+    // Process game logic in fixed-size steps
+    while (lag >= MS_PER_TICK) {
+        updateGameState(MS_PER_TICK / 1000); // Convert to seconds
+        lag -= MS_PER_TICK;
+    }
+
+    // Schedule the next iteration
+    setImmediate(gameLoop); // More precise than setTimeout in Node.js
+}
+
+function updateGameState(deltaTime) {
   EntitySorter.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
   EmitStuff.emitToAllPlayersWorldStateStuff()
   World.getCurrentEntities().forEach(entity => {
@@ -131,10 +137,7 @@ function gameLoop() {
    // entity.controls.up = 0;
 
   })
-
-  setTimeout(function () {
-    gameLoop();
-  }, loopEveryMs);
-
 }
-gameLoop()
+
+// Start the loop
+gameLoop();
