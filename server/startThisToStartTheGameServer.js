@@ -10,6 +10,7 @@ import { EmitStuff } from "./EmitStuff.js"
 import { SocketDataStorage } from "./SocketDataStorage.js";
 import { EntitySorter } from "./EntitySorter.js"
 import { Helper_Functions } from "./Helper_Functions.js";
+import { Part_Of_A_Train_Railway } from "./train_stuff/Part_Of_A_Train_Railway.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -33,6 +34,29 @@ ground.setY(0);
 ground.setWidth(10000);
 ground.setHeight(10000);
 World.addEntity(ground);
+
+const aRail = new Part_Of_A_Train_Railway();
+World.addEntity(aRail);
+aRail.setX(10)
+aRail.setY(10)
+aRail.setHeight(10)
+aRail.setWidth(250);
+
+const aRail2 = new Part_Of_A_Train_Railway();
+World.addEntity(aRail2);
+aRail2.setX(250)
+aRail2.setY(20)
+aRail2.setHeight(260)
+aRail2.setWidth(10);
+
+const aRail3 = new Part_Of_A_Train_Railway();
+World.addEntity(aRail3);
+aRail3.setX(10)
+aRail3.setY(270)
+aRail3.setHeight(10)
+aRail3.setWidth(250);
+
+
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
   console.log("A socket connected");  Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);

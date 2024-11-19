@@ -8,7 +8,7 @@ class Train_Car extends Movable_Entity {
   constructor() {
     super();
     this.setColor("brown");
-    this.addTag("Train");
+    this.addTag("Train_Car");
   }
   setMovementDirective(direction) {
     this.movementDirectionDirectiveOnRailway = direction;
