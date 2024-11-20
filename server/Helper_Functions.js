@@ -62,6 +62,8 @@ class Helper_Functions {
         const rail1 = Railway_Placing_Functionality.place(10, 10, 250, 'right'); // Top horizontal rail
         const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', 250); // Right vertical rail
         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', 250); // Bottom horizontal rail
-        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'up', 250); // Left vertical rail
+        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'down', 250); // Left vertical rail
+        const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'right', 250); // 
+        const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'rightEnd', 'down', 250); 
     }
 }
