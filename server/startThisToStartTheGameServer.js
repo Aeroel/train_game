@@ -10,7 +10,7 @@ import { EmitStuff } from "./EmitStuff.js"
 import { SocketDataStorage } from "./SocketDataStorage.js";
 import { EntitySorter } from "./EntitySorter.js"
 import { Helper_Functions } from "./Helper_Functions.js";
-import { Part_Of_A_Train_Railway } from "./train_stuff/Part_Of_A_Train_Railway.js";
+import { Rail } from "./train_stuff/Rail.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -22,44 +22,12 @@ const options = {
       allowAnyOrigin
   }
 }
-const newEntity = new Movable_Entity();
-newEntity.setX(0);
-newEntity.setY(0);
-newEntity.setWidth(50);
-newEntity.setHeight(40);
-World.addEntity(newEntity);
-const ground = new Ground();
-ground.setX(0);
-ground.setY(0);
-ground.setWidth(10000);
-ground.setHeight(10000);
-World.addEntity(ground);
 
-const aRail = new Part_Of_A_Train_Railway();
-World.addEntity(aRail);
-aRail.setX(10)
-aRail.setY(10)
-aRail.setHeight(10)
-aRail.setWidth(250);
-
-const aRail2 = new Part_Of_A_Train_Railway();
-World.addEntity(aRail2);
-aRail2.setX(250)
-aRail2.setY(20)
-aRail2.setHeight(260)
-aRail2.setWidth(10);
-
-const aRail3 = new Part_Of_A_Train_Railway();
-World.addEntity(aRail3);
-aRail3.setX(10)
-aRail3.setY(270)
-aRail3.setHeight(10)
-aRail3.setWidth(250);
-
+Helper_Functions.spawnSomeEntities();
 
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
-  console.log("A socket connected");  Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);
+  console.log("A socket connected"); Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
   newPlayerEntity.setX(0);
@@ -73,7 +41,7 @@ io.on("connection", (socket) => {
   socket.on("disconnect", () => {
     Helper_Functions.runThisUponSocketDisconnect(socket);
   })
-  socket.on("movement", (movement) => {
+  socket.on("movement", (receivedMovement) => {
     /*
     Presumably, someone spamming movement requests does not receive any advantages. So, this cooldown is implemented mainly for fun.
     The idea is we don't want the server to process too many movement requests from a client in a short time period, that would be pointless. Although neither does this cooldown really affect much, since all that happens if no cooldown is present is flipping control key bits to true... 
@@ -82,13 +50,11 @@ io.on("connection", (socket) => {
       return;
     }
     socket.aMovementRequestHappenedJustNow(socket);
-    const playerAssociatedWithSocket = World.state.entities.find((entity) => {
-      return entity.socketId === socket.id
-    });
+    const playerAssociatedWithSocket = World.state.entities.find(entity => entity.socketId === socket.id);
 
-    const receivedMovementDirections = Object.keys(playerAssociatedWithSocket.controls);
-    receivedMovementDirections.forEach(direction => {
-      playerAssociatedWithSocket.controls[direction] = movement.includes(direction);
+    const playerPossibleMovementDirections = Object.keys(playerAssociatedWithSocket.controls);
+    playerPossibleMovementDirections.forEach(direction => {
+      playerAssociatedWithSocket.controls[direction] = receivedMovement.includes(direction);
     });
   })
 });
@@ -97,26 +63,26 @@ httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
 
 
-const TICK_RATE = 60; // Updates per second
-const MS_PER_TICK = 1000 / TICK_RATE; // Duration of each update in milliseconds
+const tickRate = 50; // Updates per second
+const msPerTick = 1000 / tickRate; // Duration of each update in milliseconds
 let lastUpdateTime = Date.now();
 let lag = 0;
 
 function gameLoop() {
-    const currentTime = Date.now();
-    const elapsed = currentTime - lastUpdateTime;
-    lastUpdateTime = currentTime;
+  const currentTime = Date.now();
+  const elapsed = currentTime - lastUpdateTime;
+  lastUpdateTime = currentTime;
 
-    lag += elapsed;
+  lag += elapsed;
 
-    // Process game logic in fixed-size steps
-    while (lag >= MS_PER_TICK) {
-        updateGameState(MS_PER_TICK / 1000); // Convert to seconds
-        lag -= MS_PER_TICK;
-    }
+  // Process game logic in fixed-size steps
+  while (lag >= msPerTick) {
+    updateGameState(msPerTick / 1000); // Convert to seconds
+    lag -= msPerTick;
+  }
 
-    // Schedule the next iteration
-    setImmediate(gameLoop); // More precise than setTimeout in Node.js
+  // Schedule the next iteration
+  setImmediate(gameLoop); // More precise than setTimeout in Node.js
 }
 
 function updateGameState(deltaTime) {
@@ -132,9 +98,9 @@ function updateGameState(deltaTime) {
     entity.x -= Number(entity.controls.left);
     //entity.controls.left = 0;
     entity.y += Number(entity.controls.down);
-   // entity.controls.down = 0;
+    // entity.controls.down = 0;
     entity.y -= Number(entity.controls.up);
-   // entity.controls.up = 0;
+    // entity.controls.up = 0;
 
   })
 }

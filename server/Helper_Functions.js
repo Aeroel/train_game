@@ -1,6 +1,9 @@
 import { Functions_To_Inject_Into_Socket_Instance } from "./Functions_To_Inject_Into_Socket_Instance.js";
+import { Ground } from "./Ground.js";
+import { Movable_Entity } from "./Movable_Entity.js";
 import { SocketDataStorage } from "./SocketDataStorage.js";
 import { SocketStorage } from "./SocketStorage.js";
+import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Functionality.js";
 import { World } from "./World.js";
 
 export { Helper_Functions }
@@ -27,9 +30,9 @@ class Helper_Functions {
     static removePlayerEntityFromTheWorld(socket) {
         const playerAssociatedWithSocket = World.state.entities.find((entity) => {
             return entity.socketId === socket.id
-          })
-          const index = World.state.entities.indexOf(playerAssociatedWithSocket);
-          World.state.entities.splice(index, 1);
+        })
+        const index = World.state.entities.indexOf(playerAssociatedWithSocket);
+        World.state.entities.splice(index, 1);
     }
     static removeTheInsertedFunctionsFromSocketInstance(socket) {
         this.functionsToInjectIntoAndThenToRemoveFromSocket.forEach(func => {
@@ -40,5 +43,25 @@ class Helper_Functions {
         this.functionsToInjectIntoAndThenToRemoveFromSocket.forEach(func => {
             socket[func.name] = func.bind(null, socket);
         })
+    }
+    static spawnSomeEntities() {
+        const newEntity = new Movable_Entity();
+        newEntity.setX(0);
+        newEntity.setY(0);
+        newEntity.setWidth(50);
+        newEntity.setHeight(40);
+        World.addEntity(newEntity);
+
+        const ground = new Ground();
+        ground.setX(0);
+        ground.setY(0);
+        ground.setWidth(10000);
+        ground.setHeight(10000);
+        World.addEntity(ground);
+
+        const rail1 = Railway_Placing_Functionality.place(10, 10, 250, 'right'); // Top horizontal rail
+        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', 250); // Right vertical rail
+        const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', 250); // Bottom horizontal rail
+        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'up', 250); // Left vertical rail
     }
 }
