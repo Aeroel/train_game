@@ -9,6 +9,9 @@ class Entity {
   constructor() {
     this.addTag("Entity");
   }
+  update() {
+    
+  }
   addTag(tag) {
     this.tags.push(tag);
   }

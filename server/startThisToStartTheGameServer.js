@@ -11,6 +11,7 @@ import { SocketDataStorage } from "./SocketDataStorage.js";
 import { EntitySorter } from "./EntitySorter.js"
 import { Helper_Functions } from "./Helper_Functions.js";
 import { Rail } from "./train_stuff/Rail.js";
+import { Game_Loop } from "./Game_Loop.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -63,47 +64,5 @@ httpServer.listen(port);
 console.log(`Started a server on port ${port}`);
 
 
-const tickRate = 50; // Updates per second
-const msPerTick = 1000 / tickRate; // Duration of each update in milliseconds
-let lastUpdateTime = Date.now();
-let lag = 0;
-
-function gameLoop() {
-  const currentTime = Date.now();
-  const elapsed = currentTime - lastUpdateTime;
-  lastUpdateTime = currentTime;
-
-  lag += elapsed;
-
-  // Process game logic in fixed-size steps
-  while (lag >= msPerTick) {
-    updateGameState(msPerTick / 1000); // Convert to seconds
-    lag -= msPerTick;
-  }
-
-  // Schedule the next iteration
-  setImmediate(gameLoop); // More precise than setTimeout in Node.js
-}
-
-function updateGameState(deltaTime) {
-  EntitySorter.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
-  EmitStuff.emitToAllPlayersWorldStateStuff()
-  World.getCurrentEntities().forEach(entity => {
-    if (!entity.hasTag("Player")) {
-      return;
-    }
-
-    entity.x += Number(entity.controls.right);
-    //entity.controls.right = 0;
-    entity.x -= Number(entity.controls.left);
-    //entity.controls.left = 0;
-    entity.y += Number(entity.controls.down);
-    // entity.controls.down = 0;
-    entity.y -= Number(entity.controls.up);
-    // entity.controls.up = 0;
-
-  })
-}
-
 // Start the loop
-gameLoop();
+Game_Loop.theLoop();
