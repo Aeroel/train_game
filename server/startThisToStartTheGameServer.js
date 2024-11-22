@@ -2,16 +2,10 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import { Player } from "./Player.js"
-import { Ground } from "./Ground.js"
 import { World } from "./World.js";
-import { SocketStorage } from "./SocketStorage.js";
-import { Movable_Entity } from "./Movable_Entity.js";
-import { EmitStuff } from "./EmitStuff.js"
-import { SocketDataStorage } from "./SocketDataStorage.js";
-import { EntitySorter } from "./EntitySorter.js"
 import { Helper_Functions } from "./Helper_Functions.js";
-import { Rail } from "./train_stuff/Rail.js";
 import { Game_Loop } from "./Game_Loop.js";
+import { Add_Some_Entities_To_The_World } from "./Add_Some_Entities_To_The_World.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -24,7 +18,7 @@ const options = {
   }
 }
 
-Helper_Functions.spawnSomeEntities();
+Add_Some_Entities_To_The_World.doItNow();
 
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
