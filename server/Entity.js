@@ -9,7 +9,7 @@ class Entity {
   constructor() {
     this.addTag("Entity");
   }
-  update() {
+  updateState() {
     
   }
   addTag(tag) {

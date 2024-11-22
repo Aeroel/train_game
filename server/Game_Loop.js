@@ -32,7 +32,7 @@ class Game_Loop {
       EntitySorter.sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera();
       EmitStuff.emitToAllPlayersWorldStateStuff()
       World.getCurrentEntities().forEach(entity => {
-        entity.update();
+        entity.updateState();
       })
     }
   

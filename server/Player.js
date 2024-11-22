@@ -20,7 +20,7 @@ class Player extends Movable_Entity {
   setSocketId(id) {
     this.socketId = id;
   }
-  update() {
+  updateState() {
     if (this.controls.right) {
       this.forces.right += 1;
     }
@@ -33,6 +33,6 @@ class Player extends Movable_Entity {
     if (this.controls.down) {
       this.forces.down += 1;
     }
-    super.update();
+    super.updateState();
   }
 }

@@ -1,21 +1,23 @@
 export { World }
 class World {
-    static state = {
-      entities: new Array(),
-    };
-    static pastStates = [];
-    static addEntity(entity) {
-      World.state.entities.push(entity)
-    }
-    static getCurrentState() {
-      return World.state;
-    }
-    static getCurrentEntities() {
-      return World.getCurrentState().entities;
-    }
-    static filterEntities(filterCriteriaFunction) {
-      return World.getCurrentEntities().filter(filterCriteriaFunction);
-    }
+  static width = 10_000;
+  static height = 10_000;
+  static state = {
+    entities: new Array(),
+  };
+  static pastStates = [];
+  static addEntity(entity) {
+    World.state.entities.push(entity)
+  }
+  static getCurrentState() {
+    return World.state;
+  }
+  static getCurrentEntities() {
+    return World.getCurrentState().entities;
+  }
+  static filterEntities(filterCriteriaFunction) {
+    return World.getCurrentEntities().filter(filterCriteriaFunction);
+  }
 
-    
+
 }
