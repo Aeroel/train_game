@@ -10,6 +10,7 @@ class Movable_Entity extends Entity {
     };
     speedX = 100;
     speedY = 100;
+    friction = 0.5;
     constructor() {
         super();
         this.addTag("Movable_Entity");
@@ -21,9 +22,13 @@ class Movable_Entity extends Entity {
       this.x += netHorizontalForce * (this.speedX * Game_Loop.deltaTime)
       this.y += netVerticalForce * (this.speedY * Game_Loop.deltaTime)
 
-      this.forces.right = 0;
-      this.forces.left = 0;
-      this.forces.down = 0;
-      this.forces.up = 0;
+      Object.keys(this.forces).forEach(forceName => {
+       
+        this.forces[forceName] *= this.friction;
+        if( this.forces[forceName] < 0) {
+          this.forces[forceName] = 0;
+        }
+      });
+
     }
 }
