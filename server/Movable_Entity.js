@@ -19,8 +19,8 @@ class Movable_Entity extends Entity {
     const netHorizontalForce = this.forces.right - this.forces.left;
     const netVerticalForce = this.forces.down - this.forces.up;
 
-    this.x += netHorizontalForce * (this.speedX * Game_Loop.deltaTime)
-    this.y += netVerticalForce * (this.speedY * Game_Loop.deltaTime)
+    this.x += (netHorizontalForce * Game_Loop.deltaTime)
+    this.y += (netVerticalForce * Game_Loop.deltaTime)
 
     Object.keys(this.forces).forEach(forceName => {
 

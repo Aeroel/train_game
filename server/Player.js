@@ -7,6 +7,7 @@ class Player extends Movable_Entity {
     up: false,
     down: false,
   }
+  standardMovementSpeed = 30;
   socketId = null;
   defaultVisionRange = 200
   visionRange = this.defaultVisionRange;
@@ -22,16 +23,16 @@ class Player extends Movable_Entity {
   }
   updateState() {
     if (this.controls.right) {
-      this.forces.right += 1;
+      this.forces.right += this.standardMovementSpeed;
     }
     if (this.controls.left) {
-      this.forces.left += 1;
+      this.forces.left += this.standardMovementSpeed;
     }
     if (this.controls.up) {
-      this.forces.up += 1;
+      this.forces.up += this.standardMovementSpeed;
     }
     if (this.controls.down) {
-      this.forces.down += 1;
+      this.forces.down += this.standardMovementSpeed;
     }
     super.updateState();
   }
