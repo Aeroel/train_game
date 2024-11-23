@@ -1,5 +1,5 @@
 import { Ground } from "./Ground.js";
-import { Movable_Entity } from "./Movable_Entity.js";
+import { Entity } from "./Entity.js";
 import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Functionality.js";
 import { Train_Car } from "./train_stuff/Train_Car.js";
 import { World } from "./World.js";
@@ -50,7 +50,7 @@ class Add_Some_Entities_To_The_World {
     }
 
     static addAWhiteRectangleForMovementReference() {
-        const newEntity = new Movable_Entity();
+        const newEntity = new Entity();
         newEntity.setX(0);
         newEntity.setY(0);
         newEntity.setWidth(50);

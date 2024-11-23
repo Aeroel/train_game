@@ -1,6 +1,6 @@
-import { Movable_Entity } from "./Movable_Entity.js";
+import { Entity } from "./Entity.js";
 export { Player }
-class Player extends Movable_Entity {
+class Player extends Entity {
   controls = {
     right: false,
     left: false,

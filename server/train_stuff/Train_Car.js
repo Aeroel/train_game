@@ -1,10 +1,10 @@
-import { Movable_Entity } from "../Movable_Entity.js"
+import { Entity } from "../Entity.js"
 import { Wall } from "../Wall.js";
 import { World } from "../World.js";
 
 export { Train_Car }
 
-class Train_Car extends Movable_Entity {
+class Train_Car extends Entity {
   // the train may temporarily move in the other direction to adjust alignment with station doors, but other than such exceptional cases, it will move in the specified direction, whether forward or backwards.
   whatRailAmICurrentlyStandingOn = undefined;
   lastObservedRailOrientation = undefined;

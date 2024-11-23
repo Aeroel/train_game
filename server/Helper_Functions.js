@@ -1,6 +1,6 @@
 import { Functions_To_Inject_Into_Socket_Instance } from "./Functions_To_Inject_Into_Socket_Instance.js";
 import { Ground } from "./Ground.js";
-import { Movable_Entity } from "./Movable_Entity.js";
+import { Entity } from "./Entity.js";
 import { SocketDataStorage } from "./SocketDataStorage.js";
 import { SocketStorage } from "./SocketStorage.js";
 import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Functionality.js";

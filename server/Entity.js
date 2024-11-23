@@ -1,5 +1,15 @@
+import { Game_Loop } from "./Game_Loop.js";
+
+
 export { Entity }
 class Entity {
+  forces = {
+    "up": 0,
+    "down": 0,
+    "left": 0,
+    "right": 0,
+  };
+  friction = 0.5;
   x = 0;
   y = 0;
   width = 0 ;
@@ -10,7 +20,27 @@ class Entity {
     this.addTag("Entity");
   }
   updateState() {
-    
+    const netHorizontalForce = this.forces.right - this.forces.left;
+    const netVerticalForce = this.forces.down - this.forces.up;
+
+    this.x += (netHorizontalForce * Game_Loop.deltaTime)
+    this.y += (netVerticalForce * Game_Loop.deltaTime)
+
+    Object.keys(this.forces).forEach(forceName => {
+
+      this.forces[forceName] *= (1 - this.friction);
+    });
+    this.ifAnyForceGetsBelowHundredthsPlaceSetItToZero();
+
+  }
+  // Why? Well... No reason in particular. I guess I have an irrational fear that numbers that look like 0.00001 might cause issues, often see people say something like "decimals bad, bad, bad, hehehe, hahaha"
+  ifAnyForceGetsBelowHundredthsPlaceSetItToZero() {
+    Object.keys(this.forces).forEach(forceName => {
+      if (this.forces[forceName] > 0.01) {
+        return;
+      }
+      this.forces[forceName] = 0;
+    });
   }
   addTag(tag) {
     this.tags.push(tag);
