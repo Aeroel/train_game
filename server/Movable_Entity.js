@@ -24,7 +24,7 @@ class Movable_Entity extends Entity {
 
     Object.keys(this.forces).forEach(forceName => {
 
-      this.forces[forceName] *= this.friction;
+      this.forces[forceName] *= (1 - this.friction);
     });
     this.ifAnyForceGetsBelowHundredthsPlaceSetItToZero();
 
