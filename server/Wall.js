@@ -8,5 +8,6 @@ class Wall extends Entity {
     color = "red";
     constructor() {
         super();
+        this.addTag("Wall")
     }
 }

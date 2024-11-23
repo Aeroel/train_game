@@ -12,7 +12,7 @@ class Entity {
   friction = 0.5;
   x = 0;
   y = 0;
-  width = 0 ;
+  width = 0;
   height = 0;
   color = "white";
   tags = new Array();
