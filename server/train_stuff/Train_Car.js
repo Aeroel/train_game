@@ -7,8 +7,10 @@ export { Train_Car }
 
 class Train_Car extends Entity {
   // the train may temporarily move in the other direction to adjust alignment with station doors, but other than such exceptional cases, it will move in the specified direction, whether forward or backwards.
+  defaultCarOrientation = "horizontal";
+  orientation = this.defaultCarOrientation;
+  previousRail = undefined;
   whatRailAmICurrentlyStandingOn = undefined;
-  lastObservedRailOrientation = undefined;
   // on  horizontal car placement, connectorA is left side and B is right side and entranceA is top and B is bottom
   // WallA is top and B is bottom,
   // on vertical car placement, carConnectors: A is top and B is bottom and entranceA is left and B is right
@@ -33,9 +35,7 @@ class Train_Car extends Entity {
     super();
     this.setColor("brown");
     this.addTag("Train_Car");
-    this.updateState();
     this.addCarWallsToWorld();
-    this.repositionWalls();
   }
 
   question_whatRailAmICurrentlyStandingOn() {
@@ -57,6 +57,7 @@ class Train_Car extends Entity {
 
     // Set the rail if found
     if (result) {
+      this.previousRail = this.whatRailAmICurrentlyStandingOn;
       this.whatRailAmICurrentlyStandingOn = result;
 
     }
@@ -70,28 +71,27 @@ class Train_Car extends Entity {
     if (this.whatRailAmICurrentlyStandingOn === undefined) {
       return;
     }
-
-    // based on this.rail.orientation
-    // if the orientation last observed  by the car is same as current, no need to do anything
-    // if it switched, reposition the car and it's constituent walls and doors.
-    if (this.lastObservedRailOrientation === this.whatRailAmICurrentlyStandingOn.orientation) {
+    if(((this.whatRailAmICurrentlyStandingOn === this.previousRail)) && this.whatRailAmICurrentlyStandingOn.orientation === this.orientation) {
       return;
     }
-    this.repositionWalls();
-    this.lastObservedRailOrientation = this.whatRailAmICurrentlyStandingOn.orientation;
+    if(this.walls.carConnectorAWallA.x === this.x) {
+      return;
+    }
+    this.repositionCarAndWalls();
   }
   addCarWallsToWorld() {
     Object.values(this.walls).forEach(wall => {
       World.addEntity(wall);
     })
   }
-  repositionWalls() {
-    if (this.whatRailAmICurrentlyStandingOn === undefined) {
-      return;
-    }
+  repositionCarAndWalls() {
 
     // Adjust walls according to the current dimensions (horizontal or vertical)
     if (this.whatRailAmICurrentlyStandingOn.orientation === "horizontal") {
+      const oldWidth = this.height;
+      const oldHeight = this.width;
+      this.height = oldWidth;
+      this.width = oldHeight;
       const carConnectorWallsHeight = this.height / 3;
       const carConnectorWallsWidth = 5;
       this.walls.carConnectorAWallB.setX(this.getX())
@@ -191,6 +191,10 @@ class Train_Car extends Entity {
       //bottomSide End
 
     } else if (this.whatRailAmICurrentlyStandingOn.orientation === "vertical") {
+      const oldWidth = this.height;
+      const oldHeight = this.width;
+      this.height = oldWidth;
+      this.width = oldHeight;
       const carConnectorWallsHeight = 5;
       const carConnectorWallsWidth = this.width / 3;
 
@@ -219,7 +223,7 @@ class Train_Car extends Entity {
       // top and bot walls and doors
 
       const entranceWallsAndDoorsWidth = 5;
-      const entranceWallsAndDoorsHeight = (-(carConnectorWallsWidth * 2) + this.getHeight()) / 4;
+      const entranceWallsAndDoorsHeight = (this.getHeight() - carConnectorWallsHeight - carConnectorWallsHeight)/ 4
 
       this.walls.entranceSideAWallA.setX(this.getX())
       this.walls.entranceSideAWallA.setY(this.getY() + carConnectorWallsHeight);

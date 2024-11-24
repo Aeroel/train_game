@@ -2,12 +2,12 @@ import { Entity } from "../Entity.js";
 
 export { Rail }
 class Rail extends Entity {
+    defaultInitialOrientationValue='horizontal'
+    orientation = this.defaultInitialOrientationValue;
     constructor() {
         super();
         this.addTag("Rail");
         this.setColor("purple")
-        this.defaultInitialOrientationValue='horizontal'
-        this.orientation = this.defaultInitialOrientationValue;
     }
     setWidth(width) {
         super.setWidth(width);
@@ -16,6 +16,12 @@ class Rail extends Entity {
     setHeight(height) {
         super.setHeight(height);
         this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
+    }
+    setOrientation(orientation) {
+        this.orientation = orientation;
+    }
+    getOrientation() {
+        return this.orientation;
     }
 
     getEnd(endType) {

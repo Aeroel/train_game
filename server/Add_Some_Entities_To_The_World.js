@@ -4,6 +4,7 @@ import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Fun
 import { Train_Car } from "./train_stuff/Train_Car.js";
 import { World } from "./World.js";
 import { Forcefield } from "./Forcefield.js";
+import { Rail } from "./train_stuff/Rail.js";
 
 export { Add_Some_Entities_To_The_World }
 
@@ -19,12 +20,18 @@ class Add_Some_Entities_To_The_World {
 
         World.addEntity(new Forcefield())
 
+        this.addAnotherCarAndAVerticalRailBelowIt();
+
+    }
+    static addAnotherCarAndAVerticalRailBelowIt() {
+        const verRail = Railway_Placing_Functionality.place(500,500,400,"down");
+        this.putATrainCarOnThisRail(verRail);
     }
     static putATrainCarOnThisRail(theRail) {
         const aTrainCar = new Train_Car()
         World.addEntity(aTrainCar);
         aTrainCar.setWidth(100)
-        aTrainCar.setHeight(100); 
+        aTrainCar.setHeight(150); 
 
         // Calculate the train car's position (centered on the rail)
         const carX = theRail.getX() + (theRail.getWidth() - aTrainCar.getWidth()) / 2;
