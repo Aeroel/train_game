@@ -3,6 +3,7 @@ import { Entity } from "./Entity.js";
 import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Functionality.js";
 import { Train_Car } from "./train_stuff/Train_Car.js";
 import { World } from "./World.js";
+import { Forcefield } from "./Forcefield.js";
 
 export { Add_Some_Entities_To_The_World }
 
@@ -15,6 +16,8 @@ class Add_Some_Entities_To_The_World {
         const theFirstRail = Add_Some_Entities_To_The_World.addASmallRailwayAndGetTheFirstRail();
 
         Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
+
+        World.addEntity(new Forcefield())
 
     }
     static putATrainCarOnThisRail(theRail) {

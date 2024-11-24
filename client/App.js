@@ -28,7 +28,7 @@ class App {
         setInterval(() => {
             
             const directionsArray = Array.from(App.movementControlCommands);
-            console.log(directionsArray)
+           // console.log(directionsArray)
             Socket.get().emit("movement", directionsArray);
         }, 100);
 

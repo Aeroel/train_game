@@ -119,21 +119,29 @@ class Train_Car extends Entity {
       this.walls.leftSideTopWall.setHeight(sideWallsHeight);
       this.walls.leftSideTopWall.setWidth(sideWallsWidth);
 
-      const topAndBottomWallsWidth = this.getWidth() / 4;
+      // top and bot walls and doors
+
+      const topAndBottomWallsWidth = (this.getWidth() - (2 * sideWallsWidth)) / 4;
       const topAndBottomWallsHeight = 5;
 
       this.walls.topSideLeftWall.setX(this.getX() + sideWallsWidth)
       this.walls.topSideLeftWall.setY(this.getY());
       this.walls.topSideLeftWall.setHeight(topAndBottomWallsHeight);
-      this.walls.topSideLeftWall.setWidth(topAndBottomWallsWidth - sideWallsWidth);
+      this.walls.topSideLeftWall.setWidth(topAndBottomWallsWidth);
 
-      this.walls.topSideLeftDoor.setX(this.getX() + (this.walls.topSideLeftWall.getWidth()))
+      this.walls.topSideLeftDoor.setX(this.getX()
+        + sideWallsWidth
+        + this.walls.topSideLeftWall.getWidth()
+      );
       this.walls.topSideLeftDoor.setY(this.getY());
       this.walls.topSideLeftDoor.setHeight(topAndBottomWallsHeight);
       this.walls.topSideLeftDoor.setWidth(topAndBottomWallsWidth);
 
       this.walls.topSideRightDoor.setX(
-        this.getX() + (this.walls.topSideLeftWall.getWidth()) + (this.walls.topSideLeftDoor.getWidth())
+        this.getX()
+        + sideWallsWidth
+        + this.walls.topSideLeftWall.getWidth()
+        + this.walls.topSideLeftDoor.getWidth()
       );
       this.walls.topSideRightDoor.setY(this.getY());
       this.walls.topSideRightDoor.setHeight(topAndBottomWallsHeight);
@@ -141,6 +149,7 @@ class Train_Car extends Entity {
 
       this.walls.topSideRightWall.setX(
         this.getX()
+        + sideWallsWidth
         + this.walls.topSideLeftWall.getWidth()
         + this.walls.topSideLeftDoor.getWidth()
         + this.walls.topSideRightDoor.getWidth()
@@ -152,29 +161,38 @@ class Train_Car extends Entity {
       // bottomSide
 
       this.walls.bottomSideLeftWall.setX(this.getX() + sideWallsWidth)
-      this.walls.bottomSideLeftWall.setY(this.getY() + this.getHeight() - topAndBottomWallsHeight);
+      this.walls.bottomSideLeftWall.setY(this.getY() + this.height - topAndBottomWallsHeight);
       this.walls.bottomSideLeftWall.setHeight(topAndBottomWallsHeight);
-      this.walls.bottomSideLeftWall.setWidth(topAndBottomWallsWidth - sideWallsWidth);
+      this.walls.bottomSideLeftWall.setWidth(topAndBottomWallsWidth);
 
-      this.walls.bottomSideLeftDoor.setX(this.getX() + (this.walls.bottomSideLeftWall.getWidth()))
-      this.walls.bottomSideLeftDoor.setY(this.getY() + this.getHeight() - topAndBottomWallsHeight);
+      this.walls.bottomSideLeftDoor.setX(this.getX()
+        + sideWallsWidth
+        + this.walls.bottomSideLeftWall.getWidth()
+      );
+      this.walls.bottomSideLeftDoor.setY(this.getY() + this.height - topAndBottomWallsHeight);
       this.walls.bottomSideLeftDoor.setHeight(topAndBottomWallsHeight);
       this.walls.bottomSideLeftDoor.setWidth(topAndBottomWallsWidth);
 
       this.walls.bottomSideRightDoor.setX(
-        this.getX() + (this.walls.bottomSideLeftWall.getWidth()) + (this.walls.bottomSideLeftDoor.getWidth())
+        this.getX()
+        + sideWallsWidth
+        + this.walls.bottomSideLeftWall.getWidth()
+        + this.walls.bottomSideLeftDoor.getWidth()
       );
-      this.walls.bottomSideRightDoor.setY(this.getY() + this.getHeight() - topAndBottomWallsHeight);
+      this.walls.bottomSideRightDoor.setY(this.getY() + this.height - topAndBottomWallsHeight);
       this.walls.bottomSideRightDoor.setHeight(topAndBottomWallsHeight);
       this.walls.bottomSideRightDoor.setWidth(topAndBottomWallsWidth);
 
       this.walls.bottomSideRightWall.setX(
-        this.getX() + (this.walls.bottomSideLeftWall.getWidth()) + (this.walls.bottomSideLeftDoor.getWidth()) + (this.walls.bottomSideRightDoor.getWidth())
+        this.getX()
+        + sideWallsWidth
+        + this.walls.topSideLeftWall.getWidth()
+        + this.walls.topSideLeftDoor.getWidth()
+        + this.walls.topSideRightDoor.getWidth()
       );
-      this.walls.bottomSideRightWall.setY(this.getY() + this.getHeight() - topAndBottomWallsHeight);
+      this.walls.bottomSideRightWall.setY(this.getY() + this.height - topAndBottomWallsHeight);
       this.walls.bottomSideRightWall.setHeight(topAndBottomWallsHeight);
       this.walls.bottomSideRightWall.setWidth(topAndBottomWallsWidth);
-
       //bottomSide End
 
 
