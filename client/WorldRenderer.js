@@ -51,7 +51,7 @@ class WorldRenderer {
             } else {
                 context.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
                 context.strokeStyle = "black";
-                context.lineWidth = 4;
+                context.lineWidth = 2;
                 context.beginPath();
 
                 scaledEdges.forEach(edge => {
