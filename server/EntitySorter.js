@@ -16,8 +16,11 @@ class EntitySorter {
     const allEntities = World.getCurrentEntities()
     allEntities.sort((a, b) => {
         if (a.hasTag("Rail") && b.hasTag("Train_Car")) {
+
+          
             return -1; // Rail comes before Train_Car
         } else if (a.hasTag("Train_Car") && b.hasTag("Rail")) {
+          
             return 1; // Train_Car comes after Rail
         } else {
             return 0; // Keep their relative order if neither condition applies
