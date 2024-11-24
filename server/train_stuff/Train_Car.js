@@ -9,19 +9,23 @@ class Train_Car extends Entity {
   // the train may temporarily move in the other direction to adjust alignment with station doors, but other than such exceptional cases, it will move in the specified direction, whether forward or backwards.
   whatRailAmICurrentlyStandingOn = undefined;
   lastObservedRailOrientation = undefined;
+  // on  horizontal car placement, connectorA is left side and B is right side
+  // and entranceSideA is top and B is bottom.
+  // on vertical car placement, carConnectors: A is top and B is bottom 
+  // and entranceSides: A is right and B becomes left.
   walls = {
-    leftSideBottomWall: new Wall(),
-    leftSideTopWall: new Wall(),
-    rightSideBottomWall: new Wall(),
-    rightSideTopWall: new Wall(),
-    topSideLeftWall: new Wall(),
-    topSideLeftDoor: new Sliding_Door(),
-    topSideRightDoor: new Sliding_Door(),
-    topSideRightWall: new Wall(),
-    bottomSideLeftWall: new Wall(),
-    bottomSideLeftDoor: new Sliding_Door(),
-    bottomSideRightDoor: new Sliding_Door(),
-    bottomSideRightWall: new Wall(),
+    carConnectorAWallB: new Wall(),
+    carConnectorAWallA: new Wall(),
+    carConnectorBWallB: new Wall(),
+    carConnectorBWallA: new Wall(),
+    entraceSideAWallA: new Wall(),
+    entranceSideADoorA: new Sliding_Door(),
+    entraceSideADoorB: new Sliding_Door(),
+    entraceSideAWallB: new Wall(),
+    entranceSideBWallA: new Wall(),
+    entranceSideBDoorA: new Sliding_Door(),
+    entranceSideBDoorB: new Sliding_Door(),
+    entranceSideBWallB: new Wall(),
   };
   possibleMovementDecisions = ["backwards", "forwards"];
   constructor() {
@@ -85,151 +89,207 @@ class Train_Car extends Entity {
       return;
     }
 
-    const carCenterX = this.x + this.width / 2;
-    const carCenterY = this.y + this.height / 2;
-    // Helper function to position walls based on their individual position logic
-    const placeWall = (wall, offsetX, offsetY, width, height) => {
-      wall.x = carCenterX + offsetX - width / 2;
-      wall.y = carCenterY + offsetY - height / 2;
-      wall.width = width;
-      wall.height = height;
-    };
-
     // Adjust walls according to the current dimensions (horizontal or vertical)
     if (this.whatRailAmICurrentlyStandingOn.orientation === "horizontal") {
       const sideWallsHeight = this.height / 3;
       const sideWallsWidth = 5;
-      this.walls.leftSideBottomWall.setX(this.getX())
-      this.walls.leftSideBottomWall.setY(this.getY() + (sideWallsHeight * 2));
-      this.walls.leftSideBottomWall.setHeight(sideWallsHeight);
-      this.walls.leftSideBottomWall.setWidth(sideWallsWidth);
+      this.walls.carConnectorAWallB.setX(this.getX())
+      this.walls.carConnectorAWallB.setY(this.getY() + (sideWallsHeight * 2));
+      this.walls.carConnectorAWallB.setHeight(sideWallsHeight);
+      this.walls.carConnectorAWallB.setWidth(sideWallsWidth);
 
-      this.walls.rightSideBottomWall.setX((this.getX() + this.getWidth()) - sideWallsWidth)
-      this.walls.rightSideBottomWall.setY(this.getY() + (sideWallsHeight * 2));
-      this.walls.rightSideBottomWall.setHeight(sideWallsHeight);
-      this.walls.rightSideBottomWall.setWidth(sideWallsWidth);
+      this.walls.carConnectorBWallB.setX((this.getX() + this.getWidth()) - sideWallsWidth)
+      this.walls.carConnectorBWallB.setY(this.getY() + (sideWallsHeight * 2));
+      this.walls.carConnectorBWallB.setHeight(sideWallsHeight);
+      this.walls.carConnectorBWallB.setWidth(sideWallsWidth);
 
-      this.walls.rightSideTopWall.setX((this.getX() + this.getWidth()) - sideWallsWidth)
-      this.walls.rightSideTopWall.setY(this.getY());
-      this.walls.rightSideTopWall.setHeight(sideWallsHeight);
-      this.walls.rightSideTopWall.setWidth(sideWallsWidth);
+      this.walls.carConnectorBWallA.setX((this.getX() + this.getWidth()) - sideWallsWidth)
+      this.walls.carConnectorBWallA.setY(this.getY());
+      this.walls.carConnectorBWallA.setHeight(sideWallsHeight);
+      this.walls.carConnectorBWallA.setWidth(sideWallsWidth);
 
-      this.walls.leftSideTopWall.setX(this.getX())
-      this.walls.leftSideTopWall.setY(this.getY());
-      this.walls.leftSideTopWall.setHeight(sideWallsHeight);
-      this.walls.leftSideTopWall.setWidth(sideWallsWidth);
+      this.walls.carConnectorAWallA.setX(this.getX())
+      this.walls.carConnectorAWallA.setY(this.getY());
+      this.walls.carConnectorAWallA.setHeight(sideWallsHeight);
+      this.walls.carConnectorAWallA.setWidth(sideWallsWidth);
 
       // top and bot walls and doors
 
       const topAndBottomWallsWidth = (this.getWidth() - (2 * sideWallsWidth)) / 4;
       const topAndBottomWallsHeight = 5;
 
-      this.walls.topSideLeftWall.setX(this.getX() + sideWallsWidth)
-      this.walls.topSideLeftWall.setY(this.getY());
-      this.walls.topSideLeftWall.setHeight(topAndBottomWallsHeight);
-      this.walls.topSideLeftWall.setWidth(topAndBottomWallsWidth);
+      this.walls.entraceSideAWallA.setX(this.getX() + sideWallsWidth)
+      this.walls.entraceSideAWallA.setY(this.getY());
+      this.walls.entraceSideAWallA.setHeight(topAndBottomWallsHeight);
+      this.walls.entraceSideAWallA.setWidth(topAndBottomWallsWidth);
 
-      this.walls.topSideLeftDoor.setX(this.getX()
+      this.walls.entranceSideADoorA.setX(this.getX()
         + sideWallsWidth
-        + this.walls.topSideLeftWall.getWidth()
+        + this.walls.entraceSideAWallA.getWidth()
       );
-      this.walls.topSideLeftDoor.setY(this.getY());
-      this.walls.topSideLeftDoor.setHeight(topAndBottomWallsHeight);
-      this.walls.topSideLeftDoor.setWidth(topAndBottomWallsWidth);
+      this.walls.entranceSideADoorA.setY(this.getY());
+      this.walls.entranceSideADoorA.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideADoorA.setWidth(topAndBottomWallsWidth);
 
-      this.walls.topSideRightDoor.setX(
+      this.walls.entraceSideADoorB.setX(
         this.getX()
         + sideWallsWidth
-        + this.walls.topSideLeftWall.getWidth()
-        + this.walls.topSideLeftDoor.getWidth()
+        + this.walls.entraceSideAWallA.getWidth()
+        + this.walls.entranceSideADoorA.getWidth()
       );
-      this.walls.topSideRightDoor.setY(this.getY());
-      this.walls.topSideRightDoor.setHeight(topAndBottomWallsHeight);
-      this.walls.topSideRightDoor.setWidth(topAndBottomWallsWidth);
+      this.walls.entraceSideADoorB.setY(this.getY());
+      this.walls.entraceSideADoorB.setHeight(topAndBottomWallsHeight);
+      this.walls.entraceSideADoorB.setWidth(topAndBottomWallsWidth);
 
-      this.walls.topSideRightWall.setX(
+      this.walls.entraceSideAWallB.setX(
         this.getX()
         + sideWallsWidth
-        + this.walls.topSideLeftWall.getWidth()
-        + this.walls.topSideLeftDoor.getWidth()
-        + this.walls.topSideRightDoor.getWidth()
+        + this.walls.entraceSideAWallA.getWidth()
+        + this.walls.entranceSideADoorA.getWidth()
+        + this.walls.entraceSideADoorB.getWidth()
       );
-      this.walls.topSideRightWall.setY(this.getY());
-      this.walls.topSideRightWall.setHeight(topAndBottomWallsHeight);
-      this.walls.topSideRightWall.setWidth(topAndBottomWallsWidth);
+      this.walls.entraceSideAWallB.setY(this.getY());
+      this.walls.entraceSideAWallB.setHeight(topAndBottomWallsHeight);
+      this.walls.entraceSideAWallB.setWidth(topAndBottomWallsWidth);
 
       // bottomSide
 
-      this.walls.bottomSideLeftWall.setX(this.getX() + sideWallsWidth)
-      this.walls.bottomSideLeftWall.setY(this.getY() + this.height - topAndBottomWallsHeight);
-      this.walls.bottomSideLeftWall.setHeight(topAndBottomWallsHeight);
-      this.walls.bottomSideLeftWall.setWidth(topAndBottomWallsWidth);
+      this.walls.entranceSideBWallA.setX(this.getX() + sideWallsWidth)
+      this.walls.entranceSideBWallA.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBWallA.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBWallA.setWidth(topAndBottomWallsWidth);
 
-      this.walls.bottomSideLeftDoor.setX(this.getX()
+      this.walls.entranceSideBDoorA.setX(this.getX()
         + sideWallsWidth
-        + this.walls.bottomSideLeftWall.getWidth()
+        + this.walls.entranceSideBWallA.getWidth()
       );
-      this.walls.bottomSideLeftDoor.setY(this.getY() + this.height - topAndBottomWallsHeight);
-      this.walls.bottomSideLeftDoor.setHeight(topAndBottomWallsHeight);
-      this.walls.bottomSideLeftDoor.setWidth(topAndBottomWallsWidth);
+      this.walls.entranceSideBDoorA.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorA.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorA.setWidth(topAndBottomWallsWidth);
 
-      this.walls.bottomSideRightDoor.setX(
+      this.walls.entranceSideBDoorB.setX(
         this.getX()
         + sideWallsWidth
-        + this.walls.bottomSideLeftWall.getWidth()
-        + this.walls.bottomSideLeftDoor.getWidth()
+        + this.walls.entranceSideBWallA.getWidth()
+        + this.walls.entranceSideBDoorA.getWidth()
       );
-      this.walls.bottomSideRightDoor.setY(this.getY() + this.height - topAndBottomWallsHeight);
-      this.walls.bottomSideRightDoor.setHeight(topAndBottomWallsHeight);
-      this.walls.bottomSideRightDoor.setWidth(topAndBottomWallsWidth);
+      this.walls.entranceSideBDoorB.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorB.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorB.setWidth(topAndBottomWallsWidth);
 
-      this.walls.bottomSideRightWall.setX(
+      this.walls.entranceSideBWallB.setX(
         this.getX()
         + sideWallsWidth
-        + this.walls.topSideLeftWall.getWidth()
-        + this.walls.topSideLeftDoor.getWidth()
-        + this.walls.topSideRightDoor.getWidth()
+        + this.walls.entraceSideAWallA.getWidth()
+        + this.walls.entranceSideADoorA.getWidth()
+        + this.walls.entraceSideADoorB.getWidth()
       );
-      this.walls.bottomSideRightWall.setY(this.getY() + this.height - topAndBottomWallsHeight);
-      this.walls.bottomSideRightWall.setHeight(topAndBottomWallsHeight);
-      this.walls.bottomSideRightWall.setWidth(topAndBottomWallsWidth);
+      this.walls.entranceSideBWallB.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBWallB.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBWallB.setWidth(topAndBottomWallsWidth);
       //bottomSide End
 
-
-      // Horizontal orientation (example)
-      // placeWall(this.walls.leftSideBottomWall, -this.width / 3, -this.height / 2, this.width / 3, this.height / 6);
-      // placeWall(this.walls.leftSideTopWall, -this.width / 3, this.height / 2, this.width / 3, this.height / 6);
-
-      // placeWall(this.walls.rightSideBottomWall, this.width / 3, -this.height / 2, this.width / 3, this.height / 6);
-      // placeWall(this.walls.rightSideTopWall, this.width / 3, this.height / 2, this.width / 3, this.height / 6);
-
-      // placeWall(this.walls.topSideLeftWall, -this.width / 2, -this.height / 3, this.width / 6, this.height / 3);
-      // placeWall(this.walls.topSideLeftDoor, 0, -this.height / 3, this.width / 3, this.height / 3);
-      // placeWall(this.walls.topSideRightDoor, 0, this.height / 3, this.width / 3, this.height / 3);
-      // placeWall(this.walls.topSideRightWall, this.width / 2, -this.height / 3, this.width / 6, this.height / 3);
-
-      // placeWall(this.walls.bottomSideLeftWall, -this.width / 2, this.height / 3, this.width / 6, this.height / 3);
-      // placeWall(this.walls.bottomSideLeftDoor, 0, this.height / 3, this.width / 3, this.height / 3);
-      // placeWall(this.walls.bottomSideRightDoor, 0, -this.height / 3, this.width / 3, this.height / 3);
-      // placeWall(this.walls.bottomSideRightWall, this.width / 2, this.height / 3, this.width / 6, this.height / 3);
-
     } else if (this.whatRailAmICurrentlyStandingOn.orientation === "vertical") {
-      // Vertical orientation (example)
-      placeWall(this.walls.leftSideBottomWall, -this.width / 2, -this.height / 3, this.width / 3, this.height / 6);
-      placeWall(this.walls.leftSideTopWall, -this.width / 2, this.height / 3, this.width / 3, this.height / 6);
+      const sideWallsHeight = 5;
+      const sideWallsWidth = this.width / 3;
 
-      placeWall(this.walls.rightSideBottomWall, this.width / 2, -this.height / 3, this.width / 3, this.height / 6);
-      placeWall(this.walls.rightSideTopWall, this.width / 2, this.height / 3, this.width / 3, this.height / 6);
+      
+      this.walls.carConnectorAWallA.setX(this.getX())
+      this.walls.carConnectorAWallA.setY(this.getY());
+      this.walls.carConnectorAWallA.setHeight(sideWallsHeight);
+      this.walls.carConnectorAWallA.setWidth(sideWallsWidth);
 
-      placeWall(this.walls.topSideLeftWall, -this.width / 3, -this.height / 2, this.width / 3, this.height / 6);
-      placeWall(this.walls.topSideLeftDoor, -this.width / 3, 0, this.width / 3, this.height / 3);
-      placeWall(this.walls.topSideRightDoor, this.width / 3, 0, this.width / 3, this.height / 3);
-      placeWall(this.walls.topSideRightWall, this.width / 3, -this.height / 2, this.width / 3, this.height / 6);
+      this.walls.carConnectorAWallB.setX(this.getX() + (sideWallsWidth * 2))
+      this.walls.carConnectorAWallB.setY(this.getY());
+      this.walls.carConnectorAWallB.setHeight(sideWallsHeight);
+      this.walls.carConnectorAWallB.setWidth(sideWallsWidth);
 
-      placeWall(this.walls.bottomSideLeftWall, -this.width / 3, -this.height / 2, this.width / 3, this.height / 6);
-      placeWall(this.walls.bottomSideLeftDoor, -this.width / 3, 0, this.width / 3, this.height / 3);
-      placeWall(this.walls.bottomSideRightDoor, this.width / 3, 0, this.width / 3, this.height / 3);
-      placeWall(this.walls.bottomSideRightWall, this.width / 3, -this.height / 2, this.width / 3, this.height / 6);
+      this.walls.carConnectorBWallA.setX((this.getX() + this.getWidth()) - sideWallsWidth)
+      this.walls.carConnectorBWallA.setY(this.getY());
+      this.walls.carConnectorBWallA.setHeight(sideWallsHeight);
+      this.walls.carConnectorBWallA.setWidth(sideWallsWidth);
+
+
+      this.walls.carConnectorBWallB.setX((this.getX() + this.getWidth()) - sideWallsWidth)
+      this.walls.carConnectorBWallB.setY(this.getY() + (sideWallsHeight * 2));
+      this.walls.carConnectorBWallB.setHeight(sideWallsHeight);
+      this.walls.carConnectorBWallB.setWidth(sideWallsWidth);
+
+      // top and bot walls and doors
+
+      const topAndBottomWallsWidth = (this.getWidth() - (2 * sideWallsWidth)) / 4;
+      const topAndBottomWallsHeight = 5;
+
+      this.walls.entraceSideAWallA.setX(this.getX() + sideWallsWidth)
+      this.walls.entraceSideAWallA.setY(this.getY());
+      this.walls.entraceSideAWallA.setHeight(topAndBottomWallsHeight);
+      this.walls.entraceSideAWallA.setWidth(topAndBottomWallsWidth);
+
+      this.walls.entranceSideADoorA.setX(this.getX()
+        + sideWallsWidth
+        + this.walls.entraceSideAWallA.getWidth()
+      );
+      this.walls.entranceSideADoorA.setY(this.getY());
+      this.walls.entranceSideADoorA.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideADoorA.setWidth(topAndBottomWallsWidth);
+
+      this.walls.entraceSideADoorB.setX(
+        this.getX()
+        + sideWallsWidth
+        + this.walls.entraceSideAWallA.getWidth()
+        + this.walls.entranceSideADoorA.getWidth()
+      );
+      this.walls.entraceSideADoorB.setY(this.getY());
+      this.walls.entraceSideADoorB.setHeight(topAndBottomWallsHeight);
+      this.walls.entraceSideADoorB.setWidth(topAndBottomWallsWidth);
+
+      this.walls.entraceSideAWallB.setX(
+        this.getX()
+        + sideWallsWidth
+        + this.walls.entraceSideAWallA.getWidth()
+        + this.walls.entranceSideADoorA.getWidth()
+        + this.walls.entraceSideADoorB.getWidth()
+      );
+      this.walls.entraceSideAWallB.setY(this.getY());
+      this.walls.entraceSideAWallB.setHeight(topAndBottomWallsHeight);
+      this.walls.entraceSideAWallB.setWidth(topAndBottomWallsWidth);
+
+      // bottomSide
+
+      this.walls.entranceSideBWallA.setX(this.getX() + sideWallsWidth)
+      this.walls.entranceSideBWallA.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBWallA.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBWallA.setWidth(topAndBottomWallsWidth);
+
+      this.walls.entranceSideBDoorA.setX(this.getX()
+        + sideWallsWidth
+        + this.walls.entranceSideBWallA.getWidth()
+      );
+      this.walls.entranceSideBDoorA.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorA.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorA.setWidth(topAndBottomWallsWidth);
+
+      this.walls.entranceSideBDoorB.setX(
+        this.getX()
+        + sideWallsWidth
+        + this.walls.entranceSideBWallA.getWidth()
+        + this.walls.entranceSideBDoorA.getWidth()
+      );
+      this.walls.entranceSideBDoorB.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorB.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBDoorB.setWidth(topAndBottomWallsWidth);
+
+      this.walls.entranceSideBWallB.setX(
+        this.getX()
+        + sideWallsWidth
+        + this.walls.entraceSideAWallA.getWidth()
+        + this.walls.entranceSideADoorA.getWidth()
+        + this.walls.entraceSideADoorB.getWidth()
+      );
+      this.walls.entranceSideBWallB.setY(this.getY() + this.height - topAndBottomWallsHeight);
+      this.walls.entranceSideBWallB.setHeight(topAndBottomWallsHeight);
+      this.walls.entranceSideBWallB.setWidth(topAndBottomWallsWidth);
+      //bottomSide End
     }
   }
 }
