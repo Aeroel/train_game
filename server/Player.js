@@ -7,7 +7,7 @@ class Player extends Entity {
     up: false,
     down: false,
   }
-  standardMovementSpeed = 30;
+  standardMovementSpeed = 120;
   socketId = null;
   defaultVisionRange = 200
   visionRange = this.defaultVisionRange;

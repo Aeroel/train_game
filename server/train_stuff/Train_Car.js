@@ -7,8 +7,8 @@ export { Train_Car }
 
 class Train_Car extends Entity {
   defaultOrientation = "horizontal";
-  orientation = this.defaultCarOrientation;
-  previousOrientation = null;
+  orientation = this.defaultOrientation;
+  previousOrientation = this.orientation;
   // on  horizontal car placement, connectorA is left side and B is right side and entranceA is top and B is bottom
   // WallA is top and B is bottom,
   // on vertical car placement, carConnectors: A is top and B is bottom and entranceA is left and B is right
@@ -36,41 +36,9 @@ class Train_Car extends Entity {
     this.addCarWallsToWorld();
   }
 
-  updateOrientation() {
-    // Iterate through all world entities to find the rail under the car based on positions
-    const result = World.getCurrentEntities().find(entity => {
-      // Ensure the entity is a rail
-      if (!entity.hasTag("Rail")) {
-        return false;
-      }
-
-      // Check if the car's position intersects or touches the rail's position (based on coordinates)
-      return (
-        this.x + this.width > entity.x && // Right side of the car is past the left side of the rail
-        this.x < entity.x + entity.width && // Left side of the car is before the right side of the rail
-        this.y + this.height > entity.y && // Bottom side of the car is past the top side of the rail
-        this.y < entity.y + entity.height // Top side of the car is before the bottom side of the rail
-      );
-    });
-
-    // Set the rail if found
-    if (result) {
-      this.previousOrientation = this.orientation;
-      this.orientation = result.orientation;
-
-    }
-  }
+ 
   updateState() {
-    this.updateOrientation();
-    this.adjustWallPositioningAndCarSizeIfNeeded();
 
-
-  }
-  adjustWallPositioningAndCarSizeIfNeeded() {
-    if(this.orientation === this.previousOrientation) {
-      return;
-    }
-    this.repositionCarAndWalls();
   }
   addCarWallsToWorld() {
     Object.values(this.walls).forEach(wall => {
@@ -79,25 +47,21 @@ class Train_Car extends Entity {
   }
   setX(x) {
     super.setX(x);
-    this.repositionCarAndWalls()
+    this.repositionCarWalls()
   }
   setY(y) {
     super.setY(y);
-    this.repositionCarAndWalls()
+    this.repositionCarWalls()
   }
   setWidth(width) {
     super.setWidth(width);
-    this.repositionCarAndWalls();
+    this.repositionCarWalls();
   }
   setHeight(height) {
     super.setHeight(height)
-    this.repositionCarAndWalls();
+    this.repositionCarWalls();
   }
-  repositionCarAndWalls() {
-    const oldWidth = this.height;
-    const oldHeight = this.width;
-    this.height = oldWidth;
-    this.width = oldHeight;
+  repositionCarWalls() {
 
     // Adjust walls according to the current dimensions (horizontal or vertical)
     if (this.orientation === "horizontal") {

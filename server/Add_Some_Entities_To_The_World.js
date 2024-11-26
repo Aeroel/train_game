@@ -22,6 +22,15 @@ class Add_Some_Entities_To_The_World {
 
         this.addAnotherCarAndAVerticalRailBelowIt();
 
+        const aCar = new Train_Car()
+        aCar.setX(1000)
+        aCar.setY(1000)
+        aCar.setHeight(250)
+        aCar.setWidth(250);
+        World.addEntity(aCar)
+
+        
+
     }
     static addAnotherCarAndAVerticalRailBelowIt() {
         const verRail = Railway_Placing_Functionality.place(500,500,400,"down");
