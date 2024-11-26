@@ -7,61 +7,38 @@ export {
 }
 class EntitySorter {
   static sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera() {
-    // Sort entities to place ground entities at the bottom layer
-    EntitySorter.groundComesFirstThenOtherEntities();
-    EntitySorter.makeSureACar_sWallsAreOnTopOfTheCarRatherThanBelowIt();
-    EntitySorter.carsAreToBeOnTopOfRails();
+    this.entitySort(World.getCurrentEntities())
   }
-  static carsAreToBeOnTopOfRails() {
-    const allEntities = World.getCurrentEntities()
-    allEntities.sort((a, b) => {
-        if (a.hasTag("Rail") && b.hasTag("Train_Car")) {
+  static entitySort(entities) {
+    const priority = {
+      "Ground": 0,
+      "Rail": 1,
+      "Train_Car": 2,
+      "Player": 3,
+      "Forcefield": 3,
+      "Walls": 4,
+      "Sliding_Door": 4 // Same priority as Walls
+    };
 
-          
-            return -1; // Rail comes before Train_Car
-        } else if (a.hasTag("Train_Car") && b.hasTag("Rail")) {
-          
-            return 1; // Train_Car comes after Rail
-        } else {
-            return 0; // Keep their relative order if neither condition applies
-        }
+    return entities.sort((a, b) => {
+      const tagA = this.getTagPriority(a, priority);
+      const tagB = this.getTagPriority(b, priority);
+
+      return tagA - tagB;
     });
+
+
   }
-  static makeSureACar_sWallsAreOnTopOfTheCarRatherThanBelowIt() {
-    const allEntities = World.getCurrentEntities()
-    allEntities.sort((a, b) => {
-        if (a.hasTag("Train_Car") && b.hasTag("Wall")) {
-            return -1; // Train_Car comes before wall
-        } else if (a.hasTag("Wall") && b.hasTag("Train_Car")) {
-            return 1; // Wall comes after Train_Car
-        } else {
-            return 0; // Keep their relative order if neither condition applies
-        }
-    });
+
+  static getTagPriority(entity, priority) {
+  // Find the highest-priority tag for this entity
+  for (let tag in priority) {
+    if (entity.hasTag(tag)) {
+      return priority[tag];
+    }
   }
-  static groundComesFirstThenOtherEntities() {
-    const allEntities = World.getCurrentEntities()
-    allEntities.sort((a, b) => {
-      const aHasGroundTag = a.tags?.includes('Ground');
-      const bHasGroundTag = b.tags?.includes('Ground');
+  // Default to the end if no recognized tag exists
+  return Number.MAX_VALUE;
+}
 
-      // If both are ground or neither are ground, maintain their order
-      if (aHasGroundTag === bHasGroundTag) {
-        return 0;
-      }
-
-      // If 'a' is ground, it should come first
-      if (aHasGroundTag) {
-        return -1;
-      }
-
-      // If 'b' is ground, it should come first
-      if (bHasGroundTag) {
-        return 1;
-      }
-
-      // Default case (should never happen)
-      return 0;
-    });
-  }
 }

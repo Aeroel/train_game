@@ -21,6 +21,13 @@ class PreEmitStuff {
     };
   }
   static onlyIncludeEntityPropertiesThatClientNeeds(entities) {
+    entities.forEach(en => {
+     // console.log(en.tags);
+      
+    })
+    //console.log("____");
+    
+    debugger;
     const cleanedEntities = [];
     entities.forEach(entity => {
       const tagsIAmFineWithExposing = ["Forcefield"];
