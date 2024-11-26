@@ -6,11 +6,9 @@ import { World } from "../World.js";
 export { Train_Car }
 
 class Train_Car extends Entity {
-  // the train may temporarily move in the other direction to adjust alignment with station doors, but other than such exceptional cases, it will move in the specified direction, whether forward or backwards.
-  defaultCarOrientation = "horizontal";
+  defaultOrientation = "horizontal";
   orientation = this.defaultCarOrientation;
-  previousRail = undefined;
-  whatRailAmICurrentlyStandingOn = undefined;
+  previousOrientation = null;
   // on  horizontal car placement, connectorA is left side and B is right side and entranceA is top and B is bottom
   // WallA is top and B is bottom,
   // on vertical car placement, carConnectors: A is top and B is bottom and entranceA is left and B is right
@@ -38,7 +36,7 @@ class Train_Car extends Entity {
     this.addCarWallsToWorld();
   }
 
-  question_whatRailAmICurrentlyStandingOn() {
+  updateOrientation() {
     // Iterate through all world entities to find the rail under the car based on positions
     const result = World.getCurrentEntities().find(entity => {
       // Ensure the entity is a rail
@@ -57,24 +55,19 @@ class Train_Car extends Entity {
 
     // Set the rail if found
     if (result) {
-      this.previousRail = this.whatRailAmICurrentlyStandingOn;
-      this.whatRailAmICurrentlyStandingOn = result;
+      this.previousOrientation = this.orientation;
+      this.orientation = result.orientation;
 
     }
   }
   updateState() {
-    this.question_whatRailAmICurrentlyStandingOn();
-    this.adjustPositioningBasedOnRailOrientation();
+    this.updateOrientation();
+    this.adjustWallPositioningAndCarSizeIfNeeded();
+
 
   }
-  adjustPositioningBasedOnRailOrientation() {
-    if (this.whatRailAmICurrentlyStandingOn === undefined) {
-      return;
-    }
-    if(((this.whatRailAmICurrentlyStandingOn === this.previousRail)) && this.whatRailAmICurrentlyStandingOn.orientation === this.orientation) {
-      return;
-    }
-    if(this.walls.carConnectorAWallA.x === this.x) {
+  adjustWallPositioningAndCarSizeIfNeeded() {
+    if(this.orientation === this.previousOrientation) {
       return;
     }
     this.repositionCarAndWalls();
@@ -84,35 +77,54 @@ class Train_Car extends Entity {
       World.addEntity(wall);
     })
   }
+  setX(x) {
+    super.setX(x);
+    this.repositionCarAndWalls()
+  }
+  setY(y) {
+    super.setY(y);
+    this.repositionCarAndWalls()
+  }
+  setWidth(width) {
+    super.setWidth(width);
+    this.repositionCarAndWalls();
+  }
+  setHeight(height) {
+    super.setHeight(height)
+    this.repositionCarAndWalls();
+  }
   repositionCarAndWalls() {
+    const oldWidth = this.height;
+    const oldHeight = this.width;
+    this.height = oldWidth;
+    this.width = oldHeight;
 
     // Adjust walls according to the current dimensions (horizontal or vertical)
-    if (this.whatRailAmICurrentlyStandingOn.orientation === "horizontal") {
-      const oldWidth = this.height;
-      const oldHeight = this.width;
-      this.height = oldWidth;
-      this.width = oldHeight;
+    if (this.orientation === "horizontal") {
       const carConnectorWallsHeight = this.height / 3;
       const carConnectorWallsWidth = 5;
-      this.walls.carConnectorAWallB.setX(this.getX())
-      this.walls.carConnectorAWallB.setY(this.getY() + (carConnectorWallsHeight * 2));
-      this.walls.carConnectorAWallB.setHeight(carConnectorWallsHeight);
-      this.walls.carConnectorAWallB.setWidth(carConnectorWallsWidth);
-
-      this.walls.carConnectorBWallB.setX((this.getX() + this.getWidth()) - carConnectorWallsWidth)
-      this.walls.carConnectorBWallB.setY(this.getY() + (carConnectorWallsHeight * 2));
-      this.walls.carConnectorBWallB.setHeight(carConnectorWallsHeight);
-      this.walls.carConnectorBWallB.setWidth(carConnectorWallsWidth);
-
-      this.walls.carConnectorBWallA.setX((this.getX() + this.getWidth()) - carConnectorWallsWidth)
-      this.walls.carConnectorBWallA.setY(this.getY());
-      this.walls.carConnectorBWallA.setHeight(carConnectorWallsHeight);
-      this.walls.carConnectorBWallA.setWidth(carConnectorWallsWidth);
 
       this.walls.carConnectorAWallA.setX(this.getX())
       this.walls.carConnectorAWallA.setY(this.getY());
       this.walls.carConnectorAWallA.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorAWallA.setWidth(carConnectorWallsWidth);
+
+      this.walls.carConnectorAWallB.setX(this.getX())
+      this.walls.carConnectorAWallB.setY(this.getY() + (carConnectorWallsHeight * 2));
+      this.walls.carConnectorAWallB.setHeight(carConnectorWallsHeight);
+      this.walls.carConnectorAWallB.setWidth(carConnectorWallsWidth);
+
+      this.walls.carConnectorBWallA.setX(
+        (this.getX() + this.getWidth()) - carConnectorWallsWidth
+      )
+      this.walls.carConnectorBWallA.setY(this.getY());
+      this.walls.carConnectorBWallA.setHeight(carConnectorWallsHeight);
+      this.walls.carConnectorBWallA.setWidth(carConnectorWallsWidth);
+
+      this.walls.carConnectorBWallB.setX((this.getX() + this.getWidth()) - carConnectorWallsWidth)
+      this.walls.carConnectorBWallB.setY(this.getY() + (carConnectorWallsHeight * 2));
+      this.walls.carConnectorBWallB.setHeight(carConnectorWallsHeight);
+      this.walls.carConnectorBWallB.setWidth(carConnectorWallsWidth);
 
       // top and bot walls and doors
 
@@ -126,7 +138,7 @@ class Train_Car extends Entity {
 
       this.walls.entranceSideADoorA.setX(this.getX()
         + carConnectorWallsWidth
-        + this.walls.entranceSideAWallA.getWidth()
+        + entranceWallsAndDoorsWidth
       );
       this.walls.entranceSideADoorA.setY(this.getY());
       this.walls.entranceSideADoorA.setHeight(entranceWallsAndDoorsHeight);
@@ -135,8 +147,8 @@ class Train_Car extends Entity {
       this.walls.entranceSideADoorB.setX(
         this.getX()
         + carConnectorWallsWidth
-        + this.walls.entranceSideAWallA.getWidth()
-        + this.walls.entranceSideADoorA.getWidth()
+        + entranceWallsAndDoorsWidth
+        + entranceWallsAndDoorsWidth
       );
       this.walls.entranceSideADoorB.setY(this.getY());
       this.walls.entranceSideADoorB.setHeight(entranceWallsAndDoorsHeight);
@@ -145,9 +157,9 @@ class Train_Car extends Entity {
       this.walls.entranceSideAWallB.setX(
         this.getX()
         + carConnectorWallsWidth
-        + this.walls.entranceSideAWallA.getWidth()
-        + this.walls.entranceSideADoorA.getWidth()
-        + this.walls.entranceSideADoorB.getWidth()
+        + entranceWallsAndDoorsWidth
+        + entranceWallsAndDoorsWidth
+        + entranceWallsAndDoorsWidth
       );
       this.walls.entranceSideAWallB.setY(this.getY());
       this.walls.entranceSideAWallB.setHeight(entranceWallsAndDoorsHeight);
@@ -162,7 +174,7 @@ class Train_Car extends Entity {
 
       this.walls.entranceSideBDoorA.setX(this.getX()
         + carConnectorWallsWidth
-        + this.walls.entranceSideBWallA.getWidth()
+        + entranceWallsAndDoorsWidth
       );
       this.walls.entranceSideBDoorA.setY(this.getY() + this.height - entranceWallsAndDoorsHeight);
       this.walls.entranceSideBDoorA.setHeight(entranceWallsAndDoorsHeight);
@@ -171,8 +183,8 @@ class Train_Car extends Entity {
       this.walls.entranceSideBDoorB.setX(
         this.getX()
         + carConnectorWallsWidth
-        + this.walls.entranceSideBWallA.getWidth()
-        + this.walls.entranceSideBDoorA.getWidth()
+        + entranceWallsAndDoorsWidth
+        + entranceWallsAndDoorsWidth
       );
       this.walls.entranceSideBDoorB.setY(this.getY() + this.height - entranceWallsAndDoorsHeight);
       this.walls.entranceSideBDoorB.setHeight(entranceWallsAndDoorsHeight);
@@ -181,20 +193,16 @@ class Train_Car extends Entity {
       this.walls.entranceSideBWallB.setX(
         this.getX()
         + carConnectorWallsWidth
-        + this.walls.entranceSideAWallA.getWidth()
-        + this.walls.entranceSideADoorA.getWidth()
-        + this.walls.entranceSideADoorB.getWidth()
+        + entranceWallsAndDoorsWidth
+        + entranceWallsAndDoorsWidth
+        + entranceWallsAndDoorsWidth
       );
       this.walls.entranceSideBWallB.setY(this.getY() + this.height - entranceWallsAndDoorsHeight);
       this.walls.entranceSideBWallB.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBWallB.setWidth(entranceWallsAndDoorsWidth);
       //bottomSide End
 
-    } else if (this.whatRailAmICurrentlyStandingOn.orientation === "vertical") {
-      const oldWidth = this.height;
-      const oldHeight = this.width;
-      this.height = oldWidth;
-      this.width = oldHeight;
+    } else if (this.orientation === "vertical") {
       const carConnectorWallsHeight = 5;
       const carConnectorWallsWidth = this.width / 3;
 
@@ -233,7 +241,7 @@ class Train_Car extends Entity {
       this.walls.entranceSideADoorA.setX(this.getX());
       this.walls.entranceSideADoorA.setY(this.getY()
         + carConnectorWallsHeight
-        + this.walls.entranceSideAWallA.getHeight()
+        + entranceWallsAndDoorsHeight
       );
       this.walls.entranceSideADoorA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideADoorA.setWidth(entranceWallsAndDoorsWidth);
@@ -243,8 +251,8 @@ class Train_Car extends Entity {
       );
       this.walls.entranceSideADoorB.setY(this.getY()
         + carConnectorWallsHeight
-        + this.walls.entranceSideAWallA.getHeight()
-        + this.walls.entranceSideADoorA.getHeight()
+        + entranceWallsAndDoorsHeight
+        + entranceWallsAndDoorsHeight
       );
       this.walls.entranceSideADoorB.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideADoorB.setWidth(entranceWallsAndDoorsWidth);
@@ -253,9 +261,9 @@ class Train_Car extends Entity {
       this.walls.entranceSideAWallB.setY(
         this.getY()
         + carConnectorWallsHeight
-        + this.walls.entranceSideAWallA.getHeight()
-        + this.walls.entranceSideADoorA.getHeight()
-        + this.walls.entranceSideADoorB.getHeight()
+        + entranceWallsAndDoorsHeight
+        + entranceWallsAndDoorsHeight
+        + entranceWallsAndDoorsHeight
       );
       this.walls.entranceSideAWallB.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideAWallB.setWidth(entranceWallsAndDoorsWidth);
@@ -274,7 +282,7 @@ class Train_Car extends Entity {
       this.walls.entranceSideBDoorA.setY(        
         this.getY()
       + carConnectorWallsHeight
-      + this.walls.entranceSideAWallA.getHeight()
+      + entranceWallsAndDoorsHeight
     );
       this.walls.entranceSideBDoorA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBDoorA.setWidth(entranceWallsAndDoorsWidth);
@@ -283,8 +291,8 @@ class Train_Car extends Entity {
       this.walls.entranceSideBDoorB.setY(
         this.getY()
         + carConnectorWallsHeight
-        + this.walls.entranceSideAWallA.getHeight()
-        + this.walls.entranceSideADoorA.getHeight()
+        + entranceWallsAndDoorsHeight
+        + entranceWallsAndDoorsHeight
       );
       this.walls.entranceSideBDoorB.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBDoorB.setWidth(entranceWallsAndDoorsWidth);
@@ -293,9 +301,9 @@ class Train_Car extends Entity {
       this.walls.entranceSideBWallB.setY(
         this.getY()
         + carConnectorWallsHeight
-        + this.walls.entranceSideAWallA.getHeight()
-        + this.walls.entranceSideADoorA.getHeight()
-        + this.walls.entranceSideADoorB.getHeight()
+        + entranceWallsAndDoorsHeight
+        + entranceWallsAndDoorsHeight
+        + entranceWallsAndDoorsHeight
       );
       this.walls.entranceSideBWallB.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBWallB.setWidth(entranceWallsAndDoorsWidth);
