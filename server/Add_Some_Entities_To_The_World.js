@@ -25,11 +25,11 @@ class Add_Some_Entities_To_The_World {
         const aCar = new Train_Car()
         aCar.setX(1000)
         aCar.setY(1000)
-        aCar.setHeight(250)
+        aCar.setHeight(175)
         aCar.setWidth(250);
         World.addEntity(aCar)
 
-        
+
 
     }
     static addAnotherCarAndAVerticalRailBelowIt() {
@@ -39,8 +39,8 @@ class Add_Some_Entities_To_The_World {
     static putATrainCarOnThisRail(theRail) {
         const aTrainCar = new Train_Car()
         World.addEntity(aTrainCar);
-        aTrainCar.setWidth(100)
-        aTrainCar.setHeight(150); 
+        aTrainCar.setWidth(175)
+        aTrainCar.setHeight(250); 
 
         // Calculate the train car's position (centered on the rail)
         const carX = theRail.getX() + (theRail.getWidth() - aTrainCar.getWidth()) / 2;

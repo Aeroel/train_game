@@ -47,10 +47,14 @@ class Train_Car extends Entity {
     if(this.howMuchTimePassedSeconds >= this.switchOrientationEverySeconds) {
       this.howMuchTimePassedSeconds = 0;
       this.orientation = this.orientation === "horizontal" ? "vertical" : "horizontal";
-      const oldWidth = this.height;
-      const oldHeight = this.width;
-      this.height = oldWidth;
-      this.width = oldHeight;
+     // console.log({x: this.x, y:this.y, width: this.width,height:this.height});
+      
+      const oldWidth = this.getWidth();
+      const oldHeight = this.getHeight();
+      this.setHeight(oldWidth);
+      this.setWidth(oldHeight);
+      //console.log({x: this.x, y:this.y, width: this.width,height:this.height});
+      //debugger;
       this.repositionCarWalls();
     }
   }
