@@ -1,4 +1,5 @@
 import { Entity } from "../Entity.js"
+import { Game_Loop } from "../Game_Loop.js";
 import { Sliding_Door } from "../Sliding_Door.js";
 import { Wall } from "../Wall.js";
 import { World } from "../World.js";
@@ -29,6 +30,8 @@ class Train_Car extends Entity {
     entranceSideBWallB: new Wall(),
   };
   possibleMovementDecisions = ["backwards", "forwards"];
+  switchOrientationEverySeconds = 2;
+  howMuchTimePassedSeconds = 0;
   constructor() {
     super();
     this.setColor("brown");
@@ -36,9 +39,20 @@ class Train_Car extends Entity {
     this.addCarWallsToWorld();
   }
 
- 
-  updateState() {
 
+  updateState() {
+    
+    this.howMuchTimePassedSeconds += Game_Loop.deltaTime;
+
+    if(this.howMuchTimePassedSeconds >= this.switchOrientationEverySeconds) {
+      this.howMuchTimePassedSeconds = 0;
+      this.orientation = this.orientation === "horizontal" ? "vertical" : "horizontal";
+      const oldWidth = this.height;
+      const oldHeight = this.width;
+      this.height = oldWidth;
+      this.width = oldHeight;
+      this.repositionCarWalls();
+    }
   }
   addCarWallsToWorld() {
     Object.values(this.walls).forEach(wall => {
@@ -195,7 +209,7 @@ class Train_Car extends Entity {
       // top and bot walls and doors
 
       const entranceWallsAndDoorsWidth = 5;
-      const entranceWallsAndDoorsHeight = (this.getHeight() - carConnectorWallsHeight - carConnectorWallsHeight)/ 4
+      const entranceWallsAndDoorsHeight = (this.getHeight() - carConnectorWallsHeight - carConnectorWallsHeight) / 4
 
       this.walls.entranceSideAWallA.setX(this.getX())
       this.walls.entranceSideAWallA.setY(this.getY() + carConnectorWallsHeight);
@@ -235,19 +249,19 @@ class Train_Car extends Entity {
       // bottomSide
 
       this.walls.entranceSideBWallA.setX(this.getX() + this.getWidth() - entranceWallsAndDoorsWidth)
-      this.walls.entranceSideBWallA.setY(        
+      this.walls.entranceSideBWallA.setY(
         this.getY()
-      + carConnectorWallsHeight
-    );
+        + carConnectorWallsHeight
+      );
       this.walls.entranceSideBWallA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBWallA.setWidth(entranceWallsAndDoorsWidth);
 
       this.walls.entranceSideBDoorA.setX(this.getX() + this.getWidth() - entranceWallsAndDoorsWidth);
-      this.walls.entranceSideBDoorA.setY(        
+      this.walls.entranceSideBDoorA.setY(
         this.getY()
-      + carConnectorWallsHeight
-      + entranceWallsAndDoorsHeight
-    );
+        + carConnectorWallsHeight
+        + entranceWallsAndDoorsHeight
+      );
       this.walls.entranceSideBDoorA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBDoorA.setWidth(entranceWallsAndDoorsWidth);
 
