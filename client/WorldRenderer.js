@@ -1,9 +1,11 @@
 export { WorldRenderer }
 class WorldRenderer {
+  static randomlyChoosenNumber = 1;
+  static initialVirtualCanvasPlaceholderSize = WorldRenderer.randomlyChoosenNumber;
     static worldState = {
         entities: new Array(),
-        virtualCanvasWidth: 1,
-        virtualCanvasHeight: 1,
+        virtualCanvasWidth: WorldRenderer.initialVirtualCanvasPlaceholderSize,
+        virtualCanvasHeight: WorldRenderer.initialVirtualCanvasPlaceholderSize,
     };
     static receiveWorldState(worldState) {
         WorldRenderer.worldState = worldState;
