@@ -25,6 +25,7 @@ class App {
         AnimationLoop.start();
 
         // Example usage of App.movementControlCommands
+        // send whatever keys user presses every 0.1 secs
         setInterval(() => {
             
             const directionsArray = Array.from(App.movementControlCommands);
