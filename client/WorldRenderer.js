@@ -56,6 +56,7 @@ class WorldRenderer {
                 context.lineWidth = 2;
                 context.beginPath();
 
+                // slight black border for each entity to be able to tell each apart visually
                 scaledEdges.forEach(edge => {
                     context.moveTo(edge.x1, edge.y1);
                     context.lineTo(edge.x2, edge.y2);
