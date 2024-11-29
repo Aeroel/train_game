@@ -1,6 +1,7 @@
 import { App } from "./App.js";
 import { Socket } from "./Socket.js";
 import { WorldRenderer } from "./WorldRenderer.js";
+import {FullscreenStuff} from "./FullscreenStuff.js";
 
 export { AppSetup }
 class AppSetup {
@@ -42,27 +43,11 @@ class AppSetup {
 
         // Fullscreen function
         fullscreenButton.addEventListener("click", async () => {
-            // enter fs if not in fs
-            if (!document.fullscreenElement) {
-                await gameContainer.requestFullscreen();
-                // to landscape on fs if on mobile
-                if (App.isMobile() && screen.orientation && screen.orientation.lock) {
-                    await screen.orientation.lock("landscape").catch(error => {
-                        console.log("Not on mobile but emulating mobile?");
-
-                    })
-                }
-                return;
-            }
-            // else exit fs if in fs mode
-            await document.exitFullscreen();
-            // bring orient. to whatever is default
-            if (App.isMobile() && screen.orientation && screen.orientation.unlock) {
-                await screen.orientation.unlock();
-            }
-        });
-
+            FullscreenStuff.doThisWhenTheUserClicksOnTheFullscreenButton()
+    });
+    
     }
+    
     static runJoystickSetupCode() {
 
         const joystickContainer = document.getElementById("joystickContainer");

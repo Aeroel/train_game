@@ -4,7 +4,7 @@ import { AnimationLoop } from "./AnimationLoop.js"
 import { Socket } from "./Socket.js";
 class App {
     static movementControlCommands = new Set();
-    static isMobile() {
+    static isUserUsingAPhone() {
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
     static init() {
@@ -16,7 +16,7 @@ class App {
     static runThisOncePageIsFullyLoaded() {
 
         AppSetup.serverConnectionStuff();
-        if (App.isMobile()) {
+        if (App.isUserUsingAPhone()) {
             AppSetup.runJoystickSetupCode();
         } else {
             AppSetup.runKeyboardControlsSetupCode();
