@@ -4,17 +4,14 @@ import { AnimationLoop } from "./AnimationLoop.js"
 import { Socket } from "./Socket.js";
 class App {
     static movementControlCommands = new Set();
-    static isUserUsingAPhone() {
-        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    }
-    static init() {
+    static initialize() {
         document.addEventListener("DOMContentLoaded", () => {
-            App.runThisOncePageIsFullyLoaded();
+            App.runThisCodeOncePageIsFullyLoaded();
         })
 
     }
-    static runThisOncePageIsFullyLoaded() {
-
+    static runThisCodeOncePageIsFullyLoaded() {
+        AppSetup.initialVisualCSSStyleAdjustments();
         AppSetup.serverConnectionStuff();
         if (App.isUserUsingAPhone()) {
             AppSetup.runJoystickSetupCode();
@@ -22,17 +19,22 @@ class App {
             AppSetup.runKeyboardControlsSetupCode();
         }
         AppSetup.runFullscreenButtonCode();
+
         AnimationLoop.start();
 
         // Example usage of App.movementControlCommands
         // send whatever keys user presses every 0.1 secs
         setInterval(() => {
-            
+
             const directionsArray = Array.from(App.movementControlCommands);
-           // console.log(directionsArray)
-            Socket.get().emit("movement", directionsArray);
+            // console.log(directionsArray)
+            Socket.emit("movement", directionsArray);
         }, 100);
 
+    }
+
+    static isUserUsingAPhone() {
+        return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     }
 
 }

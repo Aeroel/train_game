@@ -9,4 +9,10 @@ class Socket {
     static get() {
         return Socket.socket;
     }
+    static on(signalName, callThisCallbackFunctionUponReceivingTheSignal) {
+        return this.get().on(signalName, callThisCallbackFunctionUponReceivingTheSignal);
+    }
+    static emit(signalName, data) {
+        return this.get().emit(signalName, data);
+    }
 }

@@ -1,41 +1,74 @@
 import { App } from "./App.js";
 import { Socket } from "./Socket.js";
 import { WorldRenderer } from "./WorldRenderer.js";
-import {FullscreenStuff} from "./FullscreenStuff.js";
+import { FullscreenStuff } from "./FullscreenStuff.js";
+import { RandomFunctionsIUse } from "./RandomFunctionsIUse.js";
 
-export { AppSetup }
+export { AppSetup };
 class AppSetup {
+    static initialVisualCSSStyleAdjustments() {
+        // ensure the big fullscreen button icon is appropriately icon-sized. (Maybe I will resize the original image later instead?)
+        const FSButtonImage = document.getElementById("fullscreenButtonIcon");
+        FSButtonImage.style.width = "50px";
+        FSButtonImage.style.height = "50px";
+
+        // unless I manually set canvas size to a big number like 1000, for some reason 
+        // if I don't set it, it will cause pixelated rendering...
+        const gameCanvas = document.getElementById("gameCanvas");
+        gameCanvas.width = 1000;
+        gameCanvas.height = 1000;
+
+    }
     static serverConnectionStuff() {
         Socket.establishConnection();
         const socket = Socket.get();
-
         socket.on("welcome", (message) => {
             console.log(message);
         });
         socket.on("newWorldState", (newWorldState) => {
             WorldRenderer.receiveWorldState(newWorldState);
-        })
+        });
+
+
+        this.showConnectionStatusAndRetryTextIfConnectionTakesTooLong();
+
+
+    }
+    // this is only a visual thingie for fun, I am not doing any actual manual reconnection.
+    // I suppose socket.io does it automatically.
+    static showConnectionStatusAndRetryTextIfConnectionTakesTooLong() {
         const serverMessage = document.getElementById("serverMessage");
         serverMessage.style.color = "white";
         serverMessage.textContent = "Connecting to server ...";
 
         let retryCount = 0;
-        const waitBetweenRetriesMs = 2000;
-        let retryInterval = setInterval(() => {
+        let sayIsReconnecting = false;
+        const retryVisualInterval = 2000;
+        let lastRetryVisualCountIncreaseTime = Date.now();
+        let makeBelieveFakeRetryCount = (() => {
             if (!socket.connected) {
                 retryCount++;
-                serverMessage.textContent = `Still trying to connect... Retry #${retryCount}`;
             }
-        }, waitBetweenRetriesMs);
-
+            let retryMessage = `${retryCount > 2 ? "Still t" : "T"}rying to ${sayIsReconnecting ? "re" : ""}connect... Attempt #${retryCount}`;
+            serverMessage.textContent = retryMessage;
+        });
+        const socket = Socket.get();
+        socket.on("connect_error", () => {
+            const timeToIncreaseCount = Boolean(lastRetryVisualCountIncreaseTime + retryVisualInterval < Date.now());
+            if (timeToIncreaseCount) {
+                lastRetryVisualCountIncreaseTime = Date.now();
+                makeBelieveFakeRetryCount();
+            }
+        });
         socket.on("connect", () => {
-            clearInterval(retryInterval);
+            retryCount = 0;
             serverMessage.textContent = "Connected to server.";
-        })
+        });
         socket.on("disconnect", () => {
-            serverMessage.textContent = "Connection lost..."
-        })
-
+            serverMessage.textContent = "Connection lost...";
+            isReconnecting = true;
+            //setInterval(makeBelieveFakeRetryCount, waitBetweenRetriesMs);
+        });
     }
 
     static runFullscreenButtonCode() {
@@ -43,11 +76,11 @@ class AppSetup {
 
         // Fullscreen function
         fullscreenButton.addEventListener("click", async () => {
-            FullscreenStuff.doThisWhenTheUserClicksOnTheFullscreenButton()
-    });
-    
+            FullscreenStuff.doThisWhenTheUserClicksOnTheFullscreenButton();
+        });
+
     }
-    
+
     static runJoystickSetupCode() {
 
         const joystickContainer = document.getElementById("joystickContainer");
@@ -57,7 +90,7 @@ class AppSetup {
 
         // Track joystick movements
         joystickContainer.addEventListener("touchmove", (e) => {
-            AppSetup.runComplicatedJoystickMovementSetupCodeIDoNotCompletelyUnderstand(e, joystickContainer, joystick)
+            AppSetup.runComplicatedJoystickMovementSetupCodeIDoNotCompletelyUnderstand(e, joystickContainer, joystick);
         });
 
         // Reset joystick on touchend
@@ -106,18 +139,18 @@ class AppSetup {
             left: ["KeyA", "ArrowLeft"],
             right: ["KeyD", "ArrowRight"],
         };
-    
+
         document.addEventListener("keydown", event => {
             // Iterate through the mapping to find a match for the pressed key
             for (const [controlCommandName, keyNames] of Object.entries(controlCommandsToKeyNamesMapping)) {
-                
+
                 if (keyNames.includes(event.code)) {
                     App.movementControlCommands.add(controlCommandName); // Add the control name to the active keys
                     break; // Exit the loop once a match is found
                 }
             }
         });
-    
+
         document.addEventListener("keyup", event => {
             // Iterate through the mapping to find a match for the released key
             for (const [controlCommandName, keyNames] of Object.entries(controlCommandsToKeyNamesMapping)) {
