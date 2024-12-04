@@ -1,21 +1,30 @@
 import { App } from "./App.js";
 
-export { FullscreenStuff }
+export { FullscreenSetup };
 
-class FullscreenStuff {
+class FullscreenSetup {
+  static buttonSetupCode() {
+    const fullscreenButton = document.getElementById("fullscreenButton");
+
+    // Fullscreen function
+    fullscreenButton.addEventListener("click", async () => {
+      FullscreenSetup.doThisWhenTheUserClicksOnTheFullscreenButton();
+    });
+
+  }
   static doThisWhenTheUserClicksOnTheFullscreenButton() {
     const isFullscreenModeCurrentlyOn = Boolean(document.fullscreenElement);
     const isScreenOrientationSwitchingFunctionalityAvailable = Boolean(screen.orientation && screen.orientation.lock && screen.orientation.unlock);
     if (isFullscreenModeCurrentlyOn) {
-      FullscreenStuff.doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
+      FullscreenSetup.doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
       return;
     }
-    FullscreenStuff.doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
+    FullscreenSetup.doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
   }
   static doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable) {
 
     // css modifications for better visual experience
-    FullscreenStuff.adjustCSSFor("nonFullscreen");
+    FullscreenSetup.adjustCSSFor("nonFullscreen");
     document.exitFullscreen();
     // bring orient. to whatever is default
     if (App.isUserUsingAPhone() && isScreenOrientationSwitchingFunctionalityAvailable) {
@@ -24,7 +33,7 @@ class FullscreenStuff {
 
   }
   static doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable) {
-    FullscreenStuff.adjustCSSFor("fullscreen");
+    FullscreenSetup.adjustCSSFor("fullscreen");
     const gameContainer = document.getElementById("gameContainer");
     gameContainer.requestFullscreen();
     // to landscape on fs if on mobile
@@ -33,7 +42,7 @@ class FullscreenStuff {
       screen.orientation.lock("landscape").catch(error => {
         console.log("Not on mobile but emulating mobile?");
 
-      })
+      });
     }
   }
   static adjustCSSFor(screenMode) {
