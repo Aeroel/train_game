@@ -1,10 +1,10 @@
-import { Entity } from "../Entity.js"
+import { Entity } from "../Entity.js";
 import { Game_Loop } from "../Game_Loop.js";
 import { Sliding_Door } from "../Sliding_Door.js";
 import { Wall } from "../Wall.js";
 import { World } from "../World.js";
 
-export { Train_Car }
+export { Train_Car };
 
 class Train_Car extends Entity {
   defaultOrientation = "horizontal";
@@ -16,14 +16,17 @@ class Train_Car extends Entity {
   // and wallA is left and wallB is right
 
   walls = {
-    carConnectorAWallB: new Wall(),
     carConnectorAWallA: new Wall(),
-    carConnectorBWallB: new Wall(),
+    carConnectorAWallB: new Wall(),
+
     carConnectorBWallA: new Wall(),
+    carConnectorBWallB: new Wall(),
+
     entranceSideAWallA: new Wall(),
     entranceSideADoorA: new Sliding_Door(),
     entranceSideADoorB: new Sliding_Door(),
     entranceSideAWallB: new Wall(),
+
     entranceSideBWallA: new Wall(),
     entranceSideBDoorA: new Sliding_Door(),
     entranceSideBDoorB: new Sliding_Door(),
@@ -41,69 +44,71 @@ class Train_Car extends Entity {
 
 
   updateState() {
-    
+
+    this.temporaryBehaviour();
+  }
+  temporaryBehaviour() {
     this.howMuchTimePassedSeconds += Game_Loop.deltaTime;
 
-    if(this.howMuchTimePassedSeconds >= this.switchOrientationEverySeconds) {
+    if (this.howMuchTimePassedSeconds >= this.switchOrientationEverySeconds) {
       this.howMuchTimePassedSeconds = 0;
       this.orientation = this.orientation === "horizontal" ? "vertical" : "horizontal";
-     // console.log({x: this.x, y:this.y, width: this.width,height:this.height});
-      
+
       const oldWidth = this.getWidth();
       const oldHeight = this.getHeight();
       this.setHeight(oldWidth);
       this.setWidth(oldHeight);
-      //console.log({x: this.x, y:this.y, width: this.width,height:this.height});
-      //debugger;
-      this.repositionCarWalls();
     }
   }
   addCarWallsToWorld() {
     Object.values(this.walls).forEach(wall => {
       World.addEntity(wall);
-    })
+    });
   }
   setX(x) {
     super.setX(x);
-    this.repositionCarWalls()
+    this.repositionCarWalls();
   }
   setY(y) {
     super.setY(y);
-    this.repositionCarWalls()
+    this.repositionCarWalls();
   }
   setWidth(width) {
     super.setWidth(width);
     this.repositionCarWalls();
   }
   setHeight(height) {
-    super.setHeight(height)
+    super.setHeight(height);
     this.repositionCarWalls();
   }
+  // This switches positions of the car walls based on the car's current x, y, w, h and orientation.
+  // Probably I can structure this better to abstract away the code for calculating the actual numbers? 
+  // Maybe the four lines per wall into a separate function and call it once per wall instead?
   repositionCarWalls() {
-
+    const carWallThickness = 5;
     // Adjust walls according to the current dimensions (horizontal or vertical)
     if (this.orientation === "horizontal") {
       const carConnectorWallsHeight = this.height / 3;
-      const carConnectorWallsWidth = 5;
+      const carConnectorWallsWidth = carWallThickness;
 
-      this.walls.carConnectorAWallA.setX(this.getX())
+      this.walls.carConnectorAWallA.setX(this.getX());
       this.walls.carConnectorAWallA.setY(this.getY());
       this.walls.carConnectorAWallA.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorAWallA.setWidth(carConnectorWallsWidth);
 
-      this.walls.carConnectorAWallB.setX(this.getX())
+      this.walls.carConnectorAWallB.setX(this.getX());
       this.walls.carConnectorAWallB.setY(this.getY() + (carConnectorWallsHeight * 2));
       this.walls.carConnectorAWallB.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorAWallB.setWidth(carConnectorWallsWidth);
 
       this.walls.carConnectorBWallA.setX(
         (this.getX() + this.getWidth()) - carConnectorWallsWidth
-      )
+      );
       this.walls.carConnectorBWallA.setY(this.getY());
       this.walls.carConnectorBWallA.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorBWallA.setWidth(carConnectorWallsWidth);
 
-      this.walls.carConnectorBWallB.setX((this.getX() + this.getWidth()) - carConnectorWallsWidth)
+      this.walls.carConnectorBWallB.setX((this.getX() + this.getWidth()) - carConnectorWallsWidth);
       this.walls.carConnectorBWallB.setY(this.getY() + (carConnectorWallsHeight * 2));
       this.walls.carConnectorBWallB.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorBWallB.setWidth(carConnectorWallsWidth);
@@ -111,9 +116,9 @@ class Train_Car extends Entity {
       // top and bot walls and doors
 
       const entranceWallsAndDoorsWidth = (this.getWidth() - (2 * carConnectorWallsWidth)) / 4;
-      const entranceWallsAndDoorsHeight = 5;
+      const entranceWallsAndDoorsHeight = carWallThickness;
 
-      this.walls.entranceSideAWallA.setX(this.getX() + carConnectorWallsWidth)
+      this.walls.entranceSideAWallA.setX(this.getX() + carConnectorWallsWidth);
       this.walls.entranceSideAWallA.setY(this.getY());
       this.walls.entranceSideAWallA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideAWallA.setWidth(entranceWallsAndDoorsWidth);
@@ -149,7 +154,7 @@ class Train_Car extends Entity {
 
       // bottomSide
 
-      this.walls.entranceSideBWallA.setX(this.getX() + carConnectorWallsWidth)
+      this.walls.entranceSideBWallA.setX(this.getX() + carConnectorWallsWidth);
       this.walls.entranceSideBWallA.setY(this.getY() + this.height - entranceWallsAndDoorsHeight);
       this.walls.entranceSideBWallA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideBWallA.setWidth(entranceWallsAndDoorsWidth);
@@ -185,37 +190,37 @@ class Train_Car extends Entity {
       //bottomSide End
 
     } else if (this.orientation === "vertical") {
-      const carConnectorWallsHeight = 5;
+      const carConnectorWallsHeight = carWallThickness;
       const carConnectorWallsWidth = this.width / 3;
 
 
-      this.walls.carConnectorAWallA.setX(this.getX())
+      this.walls.carConnectorAWallA.setX(this.getX());
       this.walls.carConnectorAWallA.setY(this.getY());
       this.walls.carConnectorAWallA.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorAWallA.setWidth(carConnectorWallsWidth);
 
-      this.walls.carConnectorAWallB.setX(this.getX() + (carConnectorWallsWidth * 2))
+      this.walls.carConnectorAWallB.setX(this.getX() + (carConnectorWallsWidth * 2));
       this.walls.carConnectorAWallB.setY(this.getY());
       this.walls.carConnectorAWallB.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorAWallB.setWidth(carConnectorWallsWidth);
 
-      this.walls.carConnectorBWallA.setX(this.getX())
+      this.walls.carConnectorBWallA.setX(this.getX());
       this.walls.carConnectorBWallA.setY(this.getY() + this.getHeight() - carConnectorWallsHeight);
       this.walls.carConnectorBWallA.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorBWallA.setWidth(carConnectorWallsWidth);
 
 
-      this.walls.carConnectorBWallB.setX(this.getX() + (carConnectorWallsWidth * 2))
+      this.walls.carConnectorBWallB.setX(this.getX() + (carConnectorWallsWidth * 2));
       this.walls.carConnectorBWallB.setY(this.getY() + this.getHeight() - carConnectorWallsHeight);
       this.walls.carConnectorBWallB.setHeight(carConnectorWallsHeight);
       this.walls.carConnectorBWallB.setWidth(carConnectorWallsWidth);
 
       // top and bot walls and doors
 
-      const entranceWallsAndDoorsWidth = 5;
-      const entranceWallsAndDoorsHeight = (this.getHeight() - carConnectorWallsHeight - carConnectorWallsHeight) / 4
+      const entranceWallsAndDoorsWidth = carWallThickness;
+      const entranceWallsAndDoorsHeight = (this.getHeight() - carConnectorWallsHeight - carConnectorWallsHeight) / 4;
 
-      this.walls.entranceSideAWallA.setX(this.getX())
+      this.walls.entranceSideAWallA.setX(this.getX());
       this.walls.entranceSideAWallA.setY(this.getY() + carConnectorWallsHeight);
       this.walls.entranceSideAWallA.setHeight(entranceWallsAndDoorsHeight);
       this.walls.entranceSideAWallA.setWidth(entranceWallsAndDoorsWidth);
@@ -252,7 +257,7 @@ class Train_Car extends Entity {
 
       // bottomSide
 
-      this.walls.entranceSideBWallA.setX(this.getX() + this.getWidth() - entranceWallsAndDoorsWidth)
+      this.walls.entranceSideBWallA.setX(this.getX() + this.getWidth() - entranceWallsAndDoorsWidth);
       this.walls.entranceSideBWallA.setY(
         this.getY()
         + carConnectorWallsHeight
