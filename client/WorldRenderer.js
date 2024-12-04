@@ -1,11 +1,11 @@
-export { WorldRenderer }
+export { WorldRenderer };
 class WorldRenderer {
-  static randomlyChoosenNumber = 1;
-  static initialVirtualCanvasPlaceholderSize = WorldRenderer.randomlyChoosenNumber;
+    static arbitraryNumber = 1;
+    static initial_value_for_virtual_canvas_dimensions = WorldRenderer.arbitraryNumber;
     static worldState = {
         entities: new Array(),
-        virtualCanvasWidth: WorldRenderer.initialVirtualCanvasPlaceholderSize,
-        virtualCanvasHeight: WorldRenderer.initialVirtualCanvasPlaceholderSize,
+        virtualCanvasWidth: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
+        virtualCanvasHeight: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
     };
     static receiveWorldState(worldState) {
         WorldRenderer.worldState = worldState;
@@ -13,16 +13,17 @@ class WorldRenderer {
     static render() {
         // Get canvas and context
         const canvas = document.getElementById("gameCanvas");
-        const context = canvas.getContext("2d");
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        // Scaling factors based on virtual and canvas dimensions
+        const drawingContext = canvas.getContext("2d");
+
+        // clear to draw on blank slate
+        drawingContext.clearRect(0, 0, canvas.width, canvas.height);
+
+        // scale whatever server sent into the canvas to properly fill the whole canvas
         const scaleX = canvas.width / WorldRenderer.worldState.virtualWidth;
         const scaleY = canvas.height / WorldRenderer.worldState.virtualHeight;
 
         // Render each entity with scaled positions and sizes
         WorldRenderer.worldState.entities.forEach(entity => {
-
-            context.fillStyle = entity.color;
 
             // Scale entity position and size
             const scaledX = entity.x * scaleX;
@@ -35,38 +36,58 @@ class WorldRenderer {
                     y1: edge.y1 * scaleY,
                     x2: edge.x2 * scaleX,
                     y2: edge.y2 * scaleY,
-                }
-            })
+                };
+            });
 
-            // forcefields are just outlines
+            const scaledEntity = {
+                ...entity,
+                height: scaledHeight,
+                width: scaledWidth,
+                y: scaledY,
+                x: scaledX,
+                edges: scaledEdges,
+            };
             if (entity.tags?.includes("Forcefield")) {
-                context.strokeStyle = entity.color;
-                context.lineWidth = 4;
-                context.beginPath();
-
-                scaledEdges.forEach(edge => {
-                    context.moveTo(edge.x1, edge.y1);
-                    context.lineTo(edge.x2, edge.y2);
-                })
-                context.stroke();
-                return;
+                this.drawForcefield(scaledEntity, drawingContext);
             } else {
-                context.fillRect(scaledX, scaledY, scaledWidth, scaledHeight);
-                context.strokeStyle = "black";
-                context.lineWidth = 2;
-                context.beginPath();
-
-                // slight black border for each entity to be able to tell each apart visually
-                scaledEdges.forEach(edge => {
-                    context.moveTo(edge.x1, edge.y1);
-                    context.lineTo(edge.x2, edge.y2);
-                })
-                context.stroke();
+                this.draw_rectangular_entity_and_it_s_outline(scaledEntity, drawingContext);
             }
 
         });
     }
 
+    // forcefields are just outlines
+    static drawForcefield(scaledEntity, drawingContext) {
+        drawingContext.strokeStyle = scaledEntity.color;
+        drawingContext.lineWidth = 4;
+        drawingContext.beginPath();
+
+        scaledEntity.edges.forEach(edge => {
+            drawingContext.moveTo(edge.x1, edge.y1);
+            drawingContext.lineTo(edge.x2, edge.y2);
+        });
+        drawingContext.stroke();
+    }
+    static draw_rectangular_entity_and_it_s_outline(scaledEntity, drawingContext) {
+        this.draw_the_rectangular_entity(scaledEntity, drawingContext);
+        this.draw_the_outline(scaledEntity.edges, drawingContext);
+    }
+    static draw_the_rectangular_entity(scaledEntity, drawingContext) {
+        drawingContext.fillStyle = scaledEntity.color;
+        drawingContext.fillRect(scaledEntity.x, scaledEntity.y, scaledEntity.width, scaledEntity.height);
+    }
+    static draw_the_outline(scaledEntityEdges, drawingContext) {
+        drawingContext.strokeStyle = "black";
+        drawingContext.lineWidth = 2;
+        drawingContext.beginPath();
+
+        // slight black border for each entity to be able to tell each apart visually
+        scaledEntityEdges.forEach(edge => {
+            drawingContext.moveTo(edge.x1, edge.y1);
+            drawingContext.lineTo(edge.x2, edge.y2);
+        });
+        drawingContext.stroke();
+    }
 }
 
 
