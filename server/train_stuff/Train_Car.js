@@ -44,7 +44,8 @@ class Train_Car extends Entity {
 
 
   updateState() {
-
+    const wantToMove = "forwards";
+    
     this.temporaryBehaviour();
   }
   temporaryBehaviour() {

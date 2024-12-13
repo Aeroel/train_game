@@ -1,13 +1,29 @@
 import { Entity } from "../Entity.js";
 
-export { Rail }
+export { Rail };
 class Rail extends Entity {
-    defaultInitialOrientationValue='horizontal'
+    railConnections = { leftOrTop: null, rightOrBottom: null };
+    defaultInitialOrientationValue = 'horizontal';
     orientation = this.defaultInitialOrientationValue;
     constructor() {
         super();
         this.addTag("Rail");
-        this.setColor("purple")
+        this.setColor("purple");
+    }
+    connectEndWithRail(end, rail) {
+        switch (side) {
+            case "left":
+            case "top":
+                this.railConnections.leftOrTop = rail;
+            break;
+
+            case "right":
+            case "bottom":
+                this.railConnections.rightOrBottom = rail;
+            break;
+
+
+        }
     }
     setWidth(width) {
         super.setWidth(width);

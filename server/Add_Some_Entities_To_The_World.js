@@ -9,6 +9,9 @@ import { Rail } from "./train_stuff/Rail.js";
 export { Add_Some_Entities_To_The_World }
 
 class Add_Some_Entities_To_The_World {
+    static carH = 150;
+    static carW = 150;
+    static railLength = 500;
     static doItNow() {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
@@ -25,8 +28,8 @@ class Add_Some_Entities_To_The_World {
         const aCar = new Train_Car()
         aCar.setX(1000)
         aCar.setY(1000)
-        aCar.setHeight(175)
-        aCar.setWidth(250);
+        aCar.setHeight(this.carW)
+        aCar.setWidth(this.carH);
         World.addEntity(aCar)
 
 
@@ -39,8 +42,8 @@ class Add_Some_Entities_To_The_World {
     static putATrainCarOnThisRail(theRail) {
         const aTrainCar = new Train_Car()
         World.addEntity(aTrainCar);
-        aTrainCar.setWidth(175)
-        aTrainCar.setHeight(250); 
+        aTrainCar.setWidth(this.carW)
+        aTrainCar.setHeight(this.carH); 
 
         // Calculate the train car's position (centered on the rail)
         const carX = theRail.getX() + (theRail.getWidth() - aTrainCar.getWidth()) / 2;
@@ -50,12 +53,12 @@ class Add_Some_Entities_To_The_World {
         aTrainCar.setY(carY)
     }
     static addASmallRailwayAndGetTheFirstRail() {
-        const rail1 = Railway_Placing_Functionality.place(10, 10, 250, 'right'); // Top horizontal rail
-        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', 250); // Right vertical rail
-        const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', 250); // Bottom horizontal rail
-        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'down', 250); // Left vertical rail
-        const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'right', 250); // 
-        const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'rightEnd', 'down', 250);
+        const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
+        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength); // Right vertical rail
+        const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
+        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'down', this.railLength); // Left vertical rail
+        const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'right', this.railLength); // 
+        const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'rightEnd', 'down', this.railLength);
         return rail1;
     }
 
