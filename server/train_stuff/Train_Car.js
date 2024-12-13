@@ -67,24 +67,27 @@ class Train_Car extends Entity {
   }
   setX(x) {
     super.setX(x);
-    this.repositionCarWalls();
+    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
   }
   setY(y) {
     super.setY(y);
-    this.repositionCarWalls();
+    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
   }
   setWidth(width) {
     super.setWidth(width);
-    this.repositionCarWalls();
+    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
   }
   setHeight(height) {
     super.setHeight(height);
-    this.repositionCarWalls();
+    this.reposition_car_and_it_s_contents_according_to_current_car_orientation()
+  }
+  reposition_car_and_it_s_contents_according_to_current_car_orientation() {
+    this.reposition_car_walls_according_to_orientation();
   }
   // This switches positions of the car walls based on the car's current x, y, w, h and orientation.
   // Probably I can structure this better to abstract away the code for calculating the actual numbers? 
   // Maybe the four lines per wall into a separate function and call it once per wall instead?
-  repositionCarWalls() {
+  reposition_car_walls_according_to_orientation() {
     const carWallThickness = 5;
     // Adjust walls according to the current dimensions (horizontal or vertical)
     if (this.orientation === "horizontal") {

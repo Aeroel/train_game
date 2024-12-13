@@ -9,7 +9,7 @@ class PreEmitStuff {
   static virtualWidth = this.someArbitraryNumber;
   static virtualHeight = this.anotherArbitraryNumber;
 
-  static getVisibleToPlayerEntitiesAndVirtualWidthAndVirtualHeightAndHideAllTheRealWorldXYCoordinatesByReturningVirtualOnesInstead(player) {
+  static get_visible_to_player_entities_and_virtual_width_and_virtual_height_and_hide_all_the_real_world_xy_coordinates_by_returning_virtual_ones_instead(player) {
     const visibleEntities = this.getVisibleEntities(player)
     const virtualizedEntities = this.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
     const entitiesWithOnlyProperties = this.onlyIncludeEntityPropertiesThatClientNeeds(virtualizedEntities);
