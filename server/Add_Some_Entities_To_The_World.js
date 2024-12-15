@@ -12,6 +12,7 @@ class Add_Some_Entities_To_The_World {
     static carH = 150;
     static carW = 150;
     static railLength = 500;
+    static rails  = [];
     static doItNow() {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
@@ -25,7 +26,9 @@ class Add_Some_Entities_To_The_World {
 
         this.addAnotherCarAndAVerticalRailBelowIt();
 
-        const aCar = new Train_Car()
+        const aCar = new Train_Car();
+        aCar.setFrontSide("firstEnd")
+        aCar.setCurrentRail(this.rails[0]);
         aCar.setX(1000)
         aCar.setY(1000)
         aCar.setHeight(this.carW)
@@ -41,6 +44,8 @@ class Add_Some_Entities_To_The_World {
     }
     static putATrainCarOnThisRail(theRail) {
         const aTrainCar = new Train_Car()
+        aTrainCar.setFrontSide("firstEnd")
+        aTrainCar.setCurrentRail(theRail);
         World.addEntity(aTrainCar);
         aTrainCar.setWidth(this.carW)
         aTrainCar.setHeight(this.carH); 
@@ -59,6 +64,7 @@ class Add_Some_Entities_To_The_World {
         const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'down', this.railLength); // Left vertical rail
         const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'right', this.railLength); // 
         const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'rightEnd', 'down', this.railLength);
+        this.rails.push(rail1, rail2, rail3, rail4,rail5, rail6);
         return rail1;
     }
 

@@ -3,13 +3,46 @@ import { Entity } from "../Entity.js";
 export { Rail };
 class Rail extends Entity {
     //  left right is for hori, top bot is for vert
-    railConnections = { leftOrTop: null, rightOrBottom: null };
+    railConnections = { firstEnd: null, secondEnd: null };
     defaultInitialOrientationValue = 'horizontal';
     orientation = this.defaultInitialOrientationValue;
     constructor() {
         super();
         this.addTag("Rail");
         this.setColor("purple");
+    }
+    getCenterXAndY() {
+        const centerX = this.x + (this.width / 2);
+        const centerY = this.y + (this.height / 2);
+
+        return { x: centerX, y: centerY };
+    }
+    getCenterX() {
+        return this.getCenterXAndY().x;
+    }
+    getCenterY() {
+        return this.getCenterXAndY().y;
+    }
+    getFirstEnd() {
+        switch (this.orientation) {
+            case "vertical":
+                return { x: this.x, y: this.getCenterY() - (this.getHeight / 2) };
+                break;
+            case "horizontal":
+                return { x: this.getCenterX() - (this.getWidth / 2), y: this.y };
+                break;
+        }
+    }
+
+    getSecondEnd() {
+        switch (this.orientation) {
+            case "vertical":
+                return { x: this.x, y: this.getCenterY() + (this.getHeight / 2) };
+                break;
+            case "horizontal":
+                return { x: this.getCenterX() + (this.getWidth / 2), y: this.y };
+                break;
+        }
     }
     connectWithRail(thisEnd, otherEnd, otherRail) {
         this.railConnections[thisEnd] = otherRail;
@@ -46,4 +79,88 @@ class Rail extends Entity {
         }
         return { x: this.x, y: this.y };  // Default (if no matching end type)
     }
+    getEndClosestToCenterOf(obj) {
+        const centerOfObj = {
+            x: obj.x + obj.width / 2,
+            y: obj.y + obj.height / 2
+        };
+
+        const firstEnd = this.getFirstEnd();
+        const secondEnd = this.getSecondEnd();
+
+        const distanceToFirstEnd = Math.sqrt(
+            Math.pow(centerOfObj.x - firstEnd.x, 2) +
+            Math.pow(centerOfObj.y - firstEnd.y, 2)
+        );
+
+        const distanceToSecondEnd = Math.sqrt(
+            Math.pow(centerOfObj.x - secondEnd.x, 2) +
+            Math.pow(centerOfObj.y - secondEnd.y, 2)
+        );
+
+        let closestEnd;
+
+        if (distanceToFirstEnd < distanceToSecondEnd) {
+            closestEnd = firstEnd;
+            closestEnd.rail = this.railConnections.firstEnd || null; // Get connected rail or null
+            closestEnd.name = 'firstEnd';
+        } else {
+            closestEnd = secondEnd;
+            closestEnd.rail = this.railConnections.secondEnd || null; // Get connected rail or null
+            closestEnd.name = 'secondEnd';
+        }
+
+        return closestEnd;
+    }
+
+    findEndConnectedTo(anotherRail, anotherRailEnd = null) {
+        const firstEndConnected = this.railConnections.firstEnd === anotherRail;
+        const secondEndConnected = this.railConnections.secondEnd === anotherRail;
+
+        if (firstEndConnected && secondEndConnected) {
+            if (!anotherRailEnd) {
+                throw new Error("Both ends are connected to the same rail. Please provide anotherRailEnd.");
+            }
+            // If both ends are connected and anotherRailEnd is provided,
+            // determine which end of the current rail is closest to the specified end.
+            const targetEndCoordinates = anotherRail.getEnd(anotherRailEnd.name);
+            const currentFirstEnd = this.getFirstEnd();
+            const currentSecondEnd = this.getSecondEnd();
+
+            const distanceToFirstEnd = Math.sqrt(
+                Math.pow(currentFirstEnd.x - targetEndCoordinates.x, 2) +
+                Math.pow(currentFirstEnd.y - targetEndCoordinates.y, 2)
+            );
+
+            const distanceToSecondEnd = Math.sqrt(
+                Math.pow(currentSecondEnd.x - targetEndCoordinates.x, 2) +
+                Math.pow(currentSecondEnd.y - targetEndCoordinates.y, 2)
+            );
+
+            return distanceToFirstEnd < distanceToSecondEnd ? currentFirstEnd : currentSecondEnd;
+        } else if (firstEndConnected) {
+            return this.getFirstEnd();
+        } else if (secondEndConnected) {
+            return this.getSecondEnd();
+        }
+
+        return null; // No ends connected
+    }
+    getEndConnectedTo(anotherRail) {
+        const firstEndConnected = (this.railConnections.firstEnd === anotherRail);
+        const secondEndConnected = (this.railConnections.secondEnd === anotherRail);
+
+        if (firstEndConnected && secondEndConnected) {
+            throw new Error("Both ends are connected to the same rail.");
+        }
+
+        if (firstEndConnected) {
+            return this.getFirstEnd();
+        } else if (secondEndConnected) {
+            return this.getSecondEnd();
+        } else {
+            return null; // No connection found
+        }
+    }
+
 }
