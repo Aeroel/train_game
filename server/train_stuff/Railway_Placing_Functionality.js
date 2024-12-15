@@ -55,6 +55,9 @@ class Railway_Placing_Functionality {
         
         // Now place the next rail based on direction
         let newRail = this.place(newX, newY, length, direction);
+        rail.connectWithRail("rightOrBottom", "leftOrTop", newRail);
+        console.log({rail, newRail});
+        
         return newRail;
     }
 }

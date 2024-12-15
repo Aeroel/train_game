@@ -2,6 +2,7 @@ import { Entity } from "../Entity.js";
 
 export { Rail };
 class Rail extends Entity {
+    //  left right is for hori, top bot is for vert
     railConnections = { leftOrTop: null, rightOrBottom: null };
     defaultInitialOrientationValue = 'horizontal';
     orientation = this.defaultInitialOrientationValue;
@@ -10,20 +11,9 @@ class Rail extends Entity {
         this.addTag("Rail");
         this.setColor("purple");
     }
-    connectEndWithRail(end, rail) {
-        switch (side) {
-            case "left":
-            case "top":
-                this.railConnections.leftOrTop = rail;
-            break;
-
-            case "right":
-            case "bottom":
-                this.railConnections.rightOrBottom = rail;
-            break;
-
-
-        }
+    connectWithRail(thisEnd, otherEnd, otherRail) {
+        this.railConnections[thisEnd] = otherRail;
+        otherRail.railConnections[otherEnd] = this;
     }
     setWidth(width) {
         super.setWidth(width);
