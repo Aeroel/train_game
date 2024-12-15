@@ -59,7 +59,10 @@ class Add_Some_Entities_To_The_World {
     }
     static addASmallRailwayAndGetTheFirstRail() {
         const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
-        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength); // Right vertical rail
+        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength); 
+        rail2.connectWithRail("firstEnd", "secondEnd", rail1);
+        
+        // Right vertical rail
         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
         const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'down', this.railLength); // Left vertical rail
         const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'right', this.railLength); // 

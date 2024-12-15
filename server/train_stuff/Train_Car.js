@@ -57,6 +57,7 @@ class Train_Car extends Entity {
   setCurrentRail(rail) {
     this.previousRail = this.currentRail;
     this.currentRail = rail;
+    this.orientation = this.currentRail.orientation;
 
   }
   is_center_of_car_touching_current_rail() {
@@ -113,20 +114,28 @@ class Train_Car extends Entity {
     }
     const currentRail = this.currentRail;
     const closestEnd = currentRail.getEndClosestToCenterOf(this);
+
     const connectedRail = closestEnd.rail;
     if (!connectedRail) {
+      this.stopMovement();
       return;
     }
+
     const theNeededEnd = connectedRail.findEndConnectedTo(currentRail);
 
-    this.setX(theNeededEnd.x);
-    this.setY(theNeededEnd.y);
     this.setCurrentRail(connectedRail);
 
   }
 
   stopMovement() {
     this.currentMovementDirection = null;
+
+    for (var force in this.forces) {
+      if (!Object.prototype.hasOwnProperty.call(this.forces, force)) {
+        continue;
+      }
+      this.forces[force] = 0;
+    }
   }
 
   setFrontSide(end) {
@@ -143,12 +152,11 @@ class Train_Car extends Entity {
       return false;
     }
     if (this.isTryingToMoveBeyondTheRail()) {
-      return false;
+      this.switchRailsIfNeeded();
     }
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
-    console.log(this.getBackSide(), this.getFrontSide());
-    
-    this.forces = newForces;
+
+    this.forces = { ...newForces };
   }
   determine_new_forces_for_movement_along_the_rail() {
     const force = 30;
@@ -192,7 +200,7 @@ class Train_Car extends Entity {
   }
 
   isTryingToMoveBeyondTheRail() {
-    return (!this.is_center_of_car_touching_current_rail());
+    return (this.currentRail && !this.is_center_of_car_touching_current_rail());
   }
 
   updateState() {

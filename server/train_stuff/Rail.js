@@ -26,10 +26,10 @@ class Rail extends Entity {
     getFirstEnd() {
         switch (this.orientation) {
             case "vertical":
-                return { x: this.x, y: this.getCenterY() - (this.getHeight / 2) };
+                return { x: this.x, y: this.getCenterY() - (this.getHeight() / 2) };
                 break;
             case "horizontal":
-                return { x: this.getCenterX() - (this.getWidth / 2), y: this.y };
+                return { x: this.getCenterX() - (this.getWidth() / 2), y: this.y };
                 break;
         }
     }
@@ -37,10 +37,10 @@ class Rail extends Entity {
     getSecondEnd() {
         switch (this.orientation) {
             case "vertical":
-                return { x: this.x, y: this.getCenterY() + (this.getHeight / 2) };
+                return { x: this.x, y: this.getCenterY() + (this.getHeight() / 2) };
                 break;
             case "horizontal":
-                return { x: this.getCenterX() + (this.getWidth / 2), y: this.y };
+                return { x: this.getCenterX() + (this.getWidth() / 2), y: this.y };
                 break;
         }
     }
@@ -112,41 +112,8 @@ class Rail extends Entity {
 
         return closestEnd;
     }
-
-    findEndConnectedTo(anotherRail, anotherRailEnd = null) {
-        const firstEndConnected = this.railConnections.firstEnd === anotherRail;
-        const secondEndConnected = this.railConnections.secondEnd === anotherRail;
-
-        if (firstEndConnected && secondEndConnected) {
-            if (!anotherRailEnd) {
-                throw new Error("Both ends are connected to the same rail. Please provide anotherRailEnd.");
-            }
-            // If both ends are connected and anotherRailEnd is provided,
-            // determine which end of the current rail is closest to the specified end.
-            const targetEndCoordinates = anotherRail.getEnd(anotherRailEnd.name);
-            const currentFirstEnd = this.getFirstEnd();
-            const currentSecondEnd = this.getSecondEnd();
-
-            const distanceToFirstEnd = Math.sqrt(
-                Math.pow(currentFirstEnd.x - targetEndCoordinates.x, 2) +
-                Math.pow(currentFirstEnd.y - targetEndCoordinates.y, 2)
-            );
-
-            const distanceToSecondEnd = Math.sqrt(
-                Math.pow(currentSecondEnd.x - targetEndCoordinates.x, 2) +
-                Math.pow(currentSecondEnd.y - targetEndCoordinates.y, 2)
-            );
-
-            return distanceToFirstEnd < distanceToSecondEnd ? currentFirstEnd : currentSecondEnd;
-        } else if (firstEndConnected) {
-            return this.getFirstEnd();
-        } else if (secondEndConnected) {
-            return this.getSecondEnd();
-        }
-
-        return null; // No ends connected
-    }
-    getEndConnectedTo(anotherRail) {
+    
+    findEndConnectedTo(anotherRail) {
         const firstEndConnected = (this.railConnections.firstEnd === anotherRail);
         const secondEndConnected = (this.railConnections.secondEnd === anotherRail);
 
