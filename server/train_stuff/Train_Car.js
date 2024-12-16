@@ -1,6 +1,4 @@
-import { log } from "console";
 import { Entity } from "../Entity.js";
-import { Game_Loop } from "../Game_Loop.js";
 import { Sliding_Door } from "../Sliding_Door.js";
 import { Wall } from "../Wall.js";
 import { World } from "../World.js";
@@ -151,7 +149,6 @@ class Train_Car extends Entity {
 
     const connectedRail = closestEnd.rail;
     if (!connectedRail) {
-      console.log("44");
       placeEntitySoIt_sCenterBoxTouchesRail(this, currentRail);
       function placeEntitySoIt_sCenterBoxTouchesRail(entity, rail) {
         // Calculate center of the entity
