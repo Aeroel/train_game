@@ -24,16 +24,16 @@ class Add_Some_Entities_To_The_World {
 
         World.addEntity(new Forcefield())
 
-        this.addAnotherCarAndAVerticalRailBelowIt();
+       // this.addAnotherCarAndAVerticalRailBelowIt();
 
-        const aCar = new Train_Car();
-        aCar.setFrontSide("firstEnd")
-        aCar.setCurrentRail(this.rails[0]);
-        aCar.setX(1000)
-        aCar.setY(1000)
-        aCar.setHeight(this.carW)
-        aCar.setWidth(this.carH);
-        World.addEntity(aCar)
+        // const aCar = new Train_Car();
+        // aCar.setFrontSide("firstEnd")
+        // aCar.setCurrentRail(this.rails[0]);
+        // aCar.setX(1000)
+        // aCar.setY(1000)
+        // aCar.setHeight(this.carW)
+        // aCar.setWidth(this.carH);
+        // World.addEntity(aCar)
 
 
 
@@ -64,6 +64,7 @@ class Add_Some_Entities_To_The_World {
         
         // Right vertical rail
         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
+        rail3.connectWithRail("secondEnd", "secondEnd", rail2);
         const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'down', this.railLength); // Left vertical rail
         const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'right', this.railLength); // 
         const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'rightEnd', 'down', this.railLength);

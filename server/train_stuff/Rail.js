@@ -4,6 +4,7 @@ export { Rail };
 class Rail extends Entity {
     //  left right is for hori, top bot is for vert
     railConnections = { firstEnd: null, secondEnd: null };
+    twoPossibleEnds = ["firstEnd", "secondEnd"];
     defaultInitialOrientationValue = 'horizontal';
     orientation = this.defaultInitialOrientationValue;
     constructor() {
@@ -26,21 +27,26 @@ class Rail extends Entity {
     getFirstEnd() {
         switch (this.orientation) {
             case "vertical":
-                return { x: this.x, y: this.getCenterY() - (this.getHeight() / 2) };
+                return { x: this.getCenterX(), y: this.getCenterY() - (this.getHeight() / 2) };
                 break;
             case "horizontal":
-                return { x: this.getCenterX() - (this.getWidth() / 2), y: this.y };
+                return { x: this.getCenterX() - (this.getWidth() / 2), y: this.getCenterY() };
                 break;
         }
     }
-
+    getEnd(name) {
+        if (name === 'secondEnd') {
+            return this.getSecondEnd();
+        }
+        return this.getFirstEnd();
+    }
     getSecondEnd() {
         switch (this.orientation) {
             case "vertical":
-                return { x: this.x, y: this.getCenterY() + (this.getHeight() / 2) };
+                return { x: this.getCenterX(), y: this.getCenterY() + (this.getHeight() / 2) };
                 break;
             case "horizontal":
-                return { x: this.getCenterX() + (this.getWidth() / 2), y: this.y };
+                return { x: this.getCenterX() + (this.getWidth() / 2), y: this.getCenterY() };
                 break;
         }
     }
@@ -112,7 +118,7 @@ class Rail extends Entity {
 
         return closestEnd;
     }
-    
+
     findEndConnectedTo(anotherRail) {
         const firstEndConnected = (this.railConnections.firstEnd === anotherRail);
         const secondEndConnected = (this.railConnections.secondEnd === anotherRail);
@@ -122,9 +128,9 @@ class Rail extends Entity {
         }
 
         if (firstEndConnected) {
-            return this.getFirstEnd();
+            return { ...this.getFirstEnd(), name: "firstEnd" };
         } else if (secondEndConnected) {
-            return this.getSecondEnd();
+            return { ...this.getSecondEnd(), name: "secondEnd" };
         } else {
             return null; // No connection found
         }
