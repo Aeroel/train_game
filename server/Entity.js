@@ -1,7 +1,7 @@
 import { Game_Loop } from "./Game_Loop.js";
 
 
-export { Entity }
+export { Entity };
 class Entity {
   forces = {
     "up": 0,
@@ -23,25 +23,74 @@ class Entity {
     const netHorizontalForce = this.forces.right - this.forces.left;
     const netVerticalForce = this.forces.down - this.forces.up;
 
-    this.x += (netHorizontalForce * Game_Loop.deltaTime)
-    this.y += (netVerticalForce * Game_Loop.deltaTime)
+    this.x += (netHorizontalForce * Game_Loop.deltaTime);
+    this.y += (netVerticalForce * Game_Loop.deltaTime);
 
     Object.keys(this.forces).forEach(forceName => {
 
       this.forces[forceName] *= (1 - this.friction);
     });
-    this.ifAnyForceGetsBelowHundredthsPlaceSetItToZero();
+    this.ifAnyForceGetsBelowThisSetItToZero(0.001);
 
   }
-  // Why? Well... No reason in particular. I guess I have an irrational fear that numbers that look like 0.00001 might cause issues, often see people say something like "decimals bad, bad, bad, hehehe, hahaha"
-  ifAnyForceGetsBelowHundredthsPlaceSetItToZero() {
+  /**
+    * Sets forces that is below a threshold to zero.
+    * @param {number} threshold - Minimum force threshold.
+    */
+  ifAnyForceGetsBelowThisSetItToZero(threshold) {
     Object.keys(this.forces).forEach(forceName => {
-      if (this.forces[forceName] > 0.01) {
-        return;
+      if (this.forces[forceName] < threshold) {
+        this.forces[forceName] = 0;
       }
-      this.forces[forceName] = 0;
     });
   }
+  /**
+   * Adds calculated forces to the current forces.
+   * @param {object} forces - Forces to add {left, right, up, down}.
+   */
+  addToForces(forces) {
+    Object.keys(forces).forEach(forceName => {
+      this.forces[forceName] += forces[forceName];
+    });
+  }
+
+  /**
+   * Calculates and returns the forces required to move toward the target position.
+   * @param {number} targetX - The target x-coordinate.
+   * @param {number} targetY - The target y-coordinate.
+   * @param {string} speed - Speed behavior: 'instant', 'quick', 'slow'.
+   * @returns {object} - An object with forces {left, right, up, down}.
+   */
+  targetPos(targetX, targetY, speed = 'quick') {
+    const netHorizontalForce = this.forces.right - this.forces.left;
+    const netVerticalForce = this.forces.down - this.forces.up;
+
+    const currentVelocityX = netHorizontalForce * Game_Loop.deltaTime;
+    const currentVelocityY = netVerticalForce * Game_Loop.deltaTime;
+
+    const dx = targetX - this.x;
+    const dy = targetY - this.y;
+
+    const timeFactor = { instant: 1, quick: 2, slow: 5 }[speed] || 2; // Default to 'quick'
+    const timeToTarget = Game_Loop.deltaTime * timeFactor;
+
+    const requiredVelocityX = dx / timeToTarget;
+    const requiredVelocityY = dy / timeToTarget;
+
+    const neededForceX = requiredVelocityX / Game_Loop.deltaTime - currentVelocityX;
+    const neededForceY = requiredVelocityY / Game_Loop.deltaTime - currentVelocityY;
+
+    const newForces = {
+      left: neededForceX < 0 ? Math.abs(neededForceX) : 0,
+      right: neededForceX > 0 ? neededForceX : 0,
+      up: neededForceY < 0 ? Math.abs(neededForceY) : 0,
+      down: neededForceY > 0 ? neededForceY : 0,
+    };
+
+    return newForces;
+  }
+
+
   addTag(tag) {
     this.tags.push(tag);
   }
@@ -54,7 +103,7 @@ class Entity {
     this.tags.splice(tagIndex, 1);
   }
   hasTag(tag) {
-    const answer = (this.tags.includes(tag))
+    const answer = (this.tags.includes(tag));
     return answer;
   }
   setX(x) {
