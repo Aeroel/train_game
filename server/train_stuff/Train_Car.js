@@ -148,7 +148,7 @@ class Train_Car extends Entity {
       return;
     }
     const currentRail = this.currentRail;
-    const thisCar =  this;
+    const thisCar = this;
     const currentRailEndClosestToCar = currentRail.getEndClosestTo(thisCar);
 
     const nextRailIfAny = currentRailEndClosestToCar.rail;
@@ -166,22 +166,39 @@ class Train_Car extends Entity {
     this.setCurrentRail(nextRailIfAny);
 
 
-    this.correctlySetSidesAfterRailSwitch()
+    this.correctlySetSidesAfterRailSwitch();
+
+    this.reposition_car_riders(currentRail, nextRailIfAny);
 
   }
-correctlySetSidesAfterRailSwitch() {
-  const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
-
-  const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
-
-  if (this.currentMovementDirection === 'forwards') {
-    this.setFrontSide(car_end_closest_to_farthest_rail_end.name);
+  reposition_car_riders() {
+    // pseudo for now
+    // World.getCurrentEntities().forEach(entity => {
+    //   if(entity === this) {
+    //     return;
+    //   }
+    //   if(!Physics.areEntitiesTouching(this, entity)) {
+    //     return;
+    //   }
+    //   if(!orientationWasChanged) {
+    //     return;
+    //   }
+    // placeRiderAccordingToTurn(entity)
+    // })
   }
+  correctlySetSidesAfterRailSwitch() {
+    const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
 
-  if (this.currentMovementDirection === 'backwards') {
-    this.setBackSide(car_end_closest_to_farthest_rail_end.name);
+    const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
+
+    if (this.currentMovementDirection === 'forwards') {
+      this.setFrontSide(car_end_closest_to_farthest_rail_end.name);
+    }
+
+    if (this.currentMovementDirection === 'backwards') {
+      this.setBackSide(car_end_closest_to_farthest_rail_end.name);
+    }
   }
-}
   oppositeOf(val, vals) {
     // Check if val exists in vals
     if (vals.includes(val)) {
@@ -247,6 +264,9 @@ correctlySetSidesAfterRailSwitch() {
     }
     if (this.isTryingToMoveBeyondTheRail()) {
       this.maybeSwitchRailsOrStopAndRemainOnCurrent();
+      if (this.currentMovementDirection === null) {
+        return false;
+      }
     }
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
@@ -255,7 +275,7 @@ correctlySetSidesAfterRailSwitch() {
   determine_new_forces_for_movement_along_the_rail() {
     const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
     const newForces = { ...this.forces };
-    if(this.currentMovementDirection === null) {
+    if (this.currentMovementDirection === null) {
       return this.forces;
     }
     const backSide = this.getBackSide();
@@ -304,7 +324,7 @@ correctlySetSidesAfterRailSwitch() {
     this.move();
     this.behaviour();
     super.updateState();
-    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
+    this.reposition_car_and_it_s_contents_according_to_current_car_position();
   }
   behaviour() {
     if (this.currentMovementDirection === null) {
@@ -340,26 +360,29 @@ correctlySetSidesAfterRailSwitch() {
   }
   setX(x) {
     super.setX(x);
-    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
+    this.reposition_car_and_it_s_contents_according_to_current_car_position();
   }
   setY(y) {
     super.setY(y);
-    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
+    this.reposition_car_and_it_s_contents_according_to_current_car_position();
   }
   setWidth(width) {
     super.setWidth(width);
-    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
+    this.reposition_car_and_it_s_contents_according_to_current_car_position();
   }
   setHeight(height) {
     super.setHeight(height);
-    this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
+    this.reposition_car_and_it_s_contents_according_to_current_car_position();
   }
-  reposition_car_and_it_s_contents_according_to_current_car_orientation() {
+  reposition_car_and_it_s_contents_according_to_current_car_position() {
+    this.reposition_visual_sides();
+    this.reposition_car_walls_according_to_car_position();
+  }
+  reposition_visual_sides() {
     this.frontSideEntity.x = this.getFrontSide().x;
     this.frontSideEntity.y = this.getFrontSide().y;
     this.backSideEntity.x = this.getBackSide().x;
     this.backSideEntity.y = this.getBackSide().y;
-    this.reposition_car_walls_according_to_orientation();
   }
 
 
@@ -367,7 +390,7 @@ correctlySetSidesAfterRailSwitch() {
   // This switches positions of the car walls based on the car's current x, y, w, h and orientation.
   // Probably I can structure this better to abstract away the code for calculating the actual numbers? 
   // Maybe the four lines per wall into a separate function and call it once per wall instead?
-  reposition_car_walls_according_to_orientation() {
+  reposition_car_walls_according_to_car_position() {
     // Adjust walls according to the current dimensions (horizontal or vertical)
     if (this.orientation === "horizontal") {
       this.setHorizontalWalls();
