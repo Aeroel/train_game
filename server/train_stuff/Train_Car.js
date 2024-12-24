@@ -2,7 +2,7 @@ import { Entity } from "../Entity.js";
 import { Sliding_Door } from "../Sliding_Door.js";
 import { Wall } from "../Wall.js";
 import { World } from "../World.js";
-import Inject_Event_Handler_Functionality from "../Inject_Event_Handler_Functionality.js";
+import { Train_Car_Static } from "./Train_Car_Static.js";
 
 export { Train_Car };
 
@@ -16,31 +16,34 @@ class Train_Car extends Entity {
   twoPossibleEnds = ['firstEnd', 'secondEnd'];
   frontSide = "firstEnd"; // firstEnd or secondEnd
   walls = {};
-  force = 120;
+  defaultForceToMoveOnRail = 120;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection = "backwards";
   lastMovementDirectionBeforeNull = null;
-  events = [];
   constructor() {
     super();
-    Inject_Event_Handler_Functionality.injectEventHandlerFunctionality(this);
     this.setColor("brown");
     this.addTag("Train_Car");
     this.createCarWalls();
     this.addCarWallsToWorld();
-    this.visualSideEntities();
+    this.addVisualSideEntities();
   }
 
-  visualSideEntities() {
+  addVisualSideEntities() {
     const sideEntitySize = 25;
+
     this.backSideEntity = new Entity();
     this.frontSideEntity = new Entity();
+
     this.backSideEntity.setColor("purple");
     this.frontSideEntity.setColor("red");
+
     this.frontSideEntity.setWidth(sideEntitySize);
     this.frontSideEntity.setHeight(sideEntitySize);
+
     this.backSideEntity.setWidth(sideEntitySize);
     this.backSideEntity.setHeight(sideEntitySize);
+
     World.addEntity(this.backSideEntity);
     World.addEntity(this.frontSideEntity);
   }
@@ -60,7 +63,7 @@ class Train_Car extends Entity {
     this.previousRail = this.currentRail;
     this.currentRail = rail;
     if (this.orientation !== this.currentRail.orientation) {
-      this.orientation = this.currentRail.orientation; 
+      this.orientation = this.currentRail.orientation;
       const oldWidth = this.getWidth();
       const oldHeight = this.getHeight();
       this.setHeight(oldWidth);
@@ -138,116 +141,47 @@ class Train_Car extends Entity {
 
   is_it_time_to_potentially_switch_rails() {
     return (this.currentRail && !this.is_center_of_car_touching_current_rail());
-  } 
+  }
 
-  switchRailsIfNeeded() {
+  maybeSwitchRailsOrStopAndRemainOnCurrent() {
     if (!this.is_it_time_to_potentially_switch_rails()) {
       return;
     }
     const currentRail = this.currentRail;
-    const closestEnd = currentRail.getEndClosestToCenterOf(this);
+    const thisCar =  this;
+    const currentRailEndClosestToCar = currentRail.getEndClosestTo(thisCar);
 
-    const connectedRail = closestEnd.rail;
-    if (!connectedRail) {
-      placeEntitySoIt_sCenterBoxTouchesRail(this, currentRail);
-      function placeEntitySoIt_sCenterBoxTouchesRail(entity, rail) {
-        // Calculate center of the entity
-        const centerX = entity.x + (entity.width / 2);
-        const centerY = entity.y + (entity.height / 2);
-    
-        // Calculate area of the entity
-        const entityArea = entity.width * entity.height;
-    
-        // Calculate size of the virtual box (5% of entity's area)
-        const boxArea = entityArea * 0.05;
-    
-        // Assuming the virtual box is square for simplicity
-        const boxSize = Math.sqrt(boxArea);
-    
-        // Define virtual box dimensions
-        const boxWidth = boxSize;
-        const boxHeight = boxSize;
-    
-        // Calculate virtual box coordinates
-        const boxX = centerX - (boxWidth / 2);
-        const boxY = centerY - (boxHeight / 2);
-    
-        // Calculate new position for the entity so that its center box touches the rail
-        let newX = entity.x;
-        let newY = entity.y;
-    
-        // Check if the virtual box is already touching or overlapping with the rail
-        if (
-            !(boxX <= rail.x + rail.width &&
-              boxX + boxWidth > rail.x &&
-              boxY <= rail.y + rail.height &&
-              boxY + boxHeight > rail.y)
-        ) {
-            // If not touching, adjust position to make it touch
-            // Move to align with left edge of rail if it's to the right
-            if (boxX + boxWidth <= rail.x) {
-                newX = rail.x - (boxWidth / 2); // Center the box at the left edge of the rail
-            } 
-            // Move to align with right edge of rail if it's to the left
-            else if (boxX >= rail.x + rail.width) {
-                newX = rail.x + rail.width - (boxWidth / 2); // Center the box at the right edge of the rail
-            } 
-            // Move vertically to align with top or bottom edge of rail
-            else if (boxY + boxHeight <= rail.y) {
-                newY = rail.y - (entity.height / 2); // Position above the rail
-            } 
-            else if (boxY >= rail.y + rail.height) {
-                newY = rail.y + rail.height - (entity.height / 2); // Position below the rail
-            }
-        }
-    
-        // Update entity's position
-        entity.x = newX;
-        entity.y = newY;
-    }
+    const nextRailIfAny = currentRailEndClosestToCar.rail;
+    if (!nextRailIfAny) {
+      Train_Car_Static.placeCarBackOnCurrentRail(this, currentRail);
       this.stopMovement();
       return;
     }
 
-    const theNeededEnd = connectedRail.findEndConnectedTo(currentRail);
-    function makeEntityCenterXYTouchPointXY(entity, point) {
-      // Calculate current center of the entity
-      const currentCenterX = entity.x + (entity.width / 2);
-      const currentCenterY = entity.y + (entity.height / 2);
-
-      // Calculate the difference to move the center to the target point
-      const deltaX = point.x - currentCenterX;
-      const deltaY = point.y - currentCenterY;
-
-      // Update entity's position to make its center touch the point
-      const newX = entity.x + deltaX;
-      const newY = entity.y + deltaY;
-      entity.x = newX;
-      entity.y = newY;
-      // Return updated position of the entity
-      return { x: newX, y: newY };
-    }
+    const the_end_of_next_rail_connected_to_current_rail = nextRailIfAny.findEndConnectedTo(currentRail);
 
 
-    const newCarPos = makeEntityCenterXYTouchPointXY(this, theNeededEnd);
-    this.setCurrentRail(connectedRail);
+
+    Train_Car_Static.placeCarOnEnd(this, the_end_of_next_rail_connected_to_current_rail);
+    this.setCurrentRail(nextRailIfAny);
 
 
-    // recalc which side is which
-    const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(theNeededEnd.name, this.currentRail.twoPossibleEnds));
-
-    const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
-
-    if (this.currentMovementDirection === 'forwards') {
-      this.setFrontSide(car_end_closest_to_farthest_rail_end.name);
-    }
-
-    if (this.currentMovementDirection === 'backwards') {
-      this.setBackSide(car_end_closest_to_farthest_rail_end.name);
-    }
+    this.correctlySetSidesAfterRailSwitch()
 
   }
+correctlySetSidesAfterRailSwitch() {
+  const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
 
+  const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
+
+  if (this.currentMovementDirection === 'forwards') {
+    this.setFrontSide(car_end_closest_to_farthest_rail_end.name);
+  }
+
+  if (this.currentMovementDirection === 'backwards') {
+    this.setBackSide(car_end_closest_to_farthest_rail_end.name);
+  }
+}
   oppositeOf(val, vals) {
     // Check if val exists in vals
     if (vals.includes(val)) {
@@ -278,15 +212,9 @@ class Train_Car extends Entity {
       return Math.sqrt(Math.pow(end.x - point.x, 2) + Math.pow(end.y - point.y, 2));
     }
   }
-  eventHappened(name) {
-    if (this.events.includes(name)) {
-      this.events = this.events.filter(event => event !== name);
-      return true;
-    }
-    return false;
-  }
+
   stopMovement() {
-    this.lastMovementDirectionBeforeNull =this.currentMovementDirection;
+    this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
     this.currentMovementDirection = null;
 
     for (var force in this.forces) {
@@ -318,15 +246,18 @@ class Train_Car extends Entity {
       return false;
     }
     if (this.isTryingToMoveBeyondTheRail()) {
-      this.switchRailsIfNeeded();
+      this.maybeSwitchRailsOrStopAndRemainOnCurrent();
     }
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
     this.forces = { ...newForces };
   }
   determine_new_forces_for_movement_along_the_rail() {
-    const force = this.force;
+    const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
     const newForces = { ...this.forces };
+    if(this.currentMovementDirection === null) {
+      return this.forces;
+    }
     const backSide = this.getBackSide();
     const frontSide = this.getFrontSide();
     if (this.currentRail.orientation === 'vertical') {
@@ -337,10 +268,10 @@ class Train_Car extends Entity {
         upOrDown = frontSide.y - this.getCenterY();
       }
       if (upOrDown < 0) {
-        newForces.up = force;
+        newForces.up = defaultForceToMoveOnRail;
       }
       if (upOrDown > 0) {
-        newForces.down = force;
+        newForces.down = defaultForceToMoveOnRail;
       }
     } else if (this.currentRail.orientation === 'horizontal') {
       let leftOrRight;
@@ -350,10 +281,10 @@ class Train_Car extends Entity {
         leftOrRight = frontSide.x - this.getCenterX();
       }
       if (leftOrRight < 0) {
-        newForces.left = force;
+        newForces.left = defaultForceToMoveOnRail;
       }
       if (leftOrRight > 0) {
-        newForces.right = force;
+        newForces.right = defaultForceToMoveOnRail;
       }
     }
     return newForces;
@@ -370,14 +301,13 @@ class Train_Car extends Entity {
   }
 
   updateState() {
-    //const wantToMove = "backwards";
     this.move();
     this.behaviour();
     super.updateState();
     this.reposition_car_and_it_s_contents_according_to_current_car_orientation();
   }
   behaviour() {
-    if(this.currentMovementDirection === null) {
+    if (this.currentMovementDirection === null) {
       this.setMovementDirection(this.oppositeOf(this.lastMovementDirectionBeforeNull, this.twoPossibleMovementDirections));
     }
   }

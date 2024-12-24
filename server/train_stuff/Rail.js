@@ -85,7 +85,7 @@ class Rail extends Entity {
         }
         return { x: this.x, y: this.y };  // Default (if no matching end type)
     }
-    getEndClosestToCenterOf(obj) {
+    getEndClosestTo(obj) {
         const centerOfObj = {
             x: obj.x + obj.width / 2,
             y: obj.y + obj.height / 2
