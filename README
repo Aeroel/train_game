@@ -1,2 +1,8 @@
 **Stuff I find odd**:
 When I press left or right, the movement seems responsive, but if I press up or down, sometimes it seems like the request to move is ignored, feels kinda unresponsive and bad/meh. Why this happens, I am not sure since I do not fully understand the movement system I put in place.
+
+How to install on Windows:
+1. Clone the repo,
+2.  start node on server.js in the server folder
+3. cd to client dir, start "pnpx light-server ."
+4. Go to whatever local IP the light server starts at in browser or whatever
