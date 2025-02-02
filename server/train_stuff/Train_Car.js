@@ -165,25 +165,30 @@ class Train_Car extends Entity {
     Train_Car_Static.placeCarOnEnd(this, the_end_of_next_rail_connected_to_current_rail);
     this.setCurrentRail(nextRailIfAny);
 
+    const prevFrontSideXY = this.getFrontSide();
+    const prevBacktSideXY = this.getBacktSide();
 
     this.correctlySetSidesAfterRailSwitch();
 
-    this.reposition_car_riders(currentRail, nextRailIfAny);
+    const currentFrontSideXY = this.getFrontSide();
+    const currentBacktSideXY = this.getBacktSide();
+
+    this.reposition_car_riders(prevBacktSideXY, prevFrontSideXY, currentBacktSideXY, currentFrontSideXY);
 
   }
-  reposition_car_riders() {
+  reposition_car_riders(currentBacktSideXY, currentFrontSideXY, prevBacktSideXY, prevFrontSideXY,) {
     // pseudo for now
     // World.getCurrentEntities().forEach(entity => {
     //   if(entity === this) {
     //     return;
     //   }
-    //   if(!Physics.areEntitiesTouching(this, entity)) {
+    //   if(!Collision_Stuff.areEntitiesTouching(this, entity)) {
     //     return;
     //   }
-    //   if(!orientationWasChanged) {
-    //     return;
-    //   }
-    // placeRiderAccordingToTurn(entity)
+
+    const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(currentBacktSideXY, currentFrontSideXY, prevBacktSideXY, prevFrontSideXY, entity);
+    entity.setX(adjustedEntityXY.x);
+    entity.sexY(adjustedEntityXY.y);
     // })
   }
   correctlySetSidesAfterRailSwitch() {

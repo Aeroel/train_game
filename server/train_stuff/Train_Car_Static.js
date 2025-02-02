@@ -1,5 +1,30 @@
 export { Train_Car_Static };
 class Train_Car_Static {
+    static newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevFrontSideXY, prevBackSideXY, prevEntityXY) {
+        // Destructure input coordinates for easier access
+        const [currentBackX, currentBackY] = currentBackSideXY;
+        const [currentFrontX, currentFrontY] = currentFrontSideXY;
+        const [prevFrontX, prevFrontY] = prevFrontSideXY;
+        const [prevBackX, prevBackY] = prevBackSideXY;
+        const [prevEntityX, prevEntityY] = prevEntityXY;
+
+        // Calculate the deltas for front and back sides
+        const deltaFrontX = currentFrontX - prevFrontX;
+        const deltaFrontY = currentFrontY - prevFrontY;
+        const deltaBackX = currentBackX - prevBackX;
+        const deltaBackY = currentBackY - prevBackY;
+
+        // Calculate new Entity position based on deltas
+        const newEntityX = prevEntityX + (deltaFrontX + deltaBackX) / 2; // Average of front and back deltas
+        const newEntityY = prevEntityY + (deltaFrontY + deltaBackY) / 2; // Average of front and back deltas
+
+        // Return the new Entity coordinates as an object
+        return {
+            newEntityXY: [newEntityX, newEntityY]
+        };
+    }
+
+
     static placeCarBackOnCurrentRail(entity, rail) {
         // Calculate center of the entity
         const centerX = entity.x + (entity.width / 2);
