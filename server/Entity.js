@@ -19,12 +19,20 @@ class Entity {
   constructor() {
     this.addTag("Entity");
   }
-  updateState() {
+  calculateNextPositionBasedOnForcesAndDeltaTime() {
     const netHorizontalForce = this.forces.right - this.forces.left;
     const netVerticalForce = this.forces.down - this.forces.up;
 
-    this.x += (netHorizontalForce * Game_Loop.deltaTime);
-    this.y += (netVerticalForce * Game_Loop.deltaTime);
+    const position = {};
+    position.x += (this.x + (netHorizontalForce * Game_Loop.deltaTime));
+    position.y += (this.y + (netVerticalForce * Game_Loop.deltaTime));
+    return position;
+  }
+  updateState() {
+    const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
+
+    this.x = nextPosition.x;
+    this.y = nextPosition.y;
 
     Object.keys(this.forces).forEach(forceName => {
 
