@@ -1,29 +1,43 @@
 export { Train_Car_Static };
 class Train_Car_Static {
-    static newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevFrontSideXY, prevBackSideXY, prevEntityXY) {
-        // Destructure input coordinates for easier access
-        const {x: currentBackX, y: currentBackY }= currentBackSideXY;
-        const {x: currentFrontX, y: currentFrontY} = currentFrontSideXY;
-        const {x: prevFrontX, y: prevFrontY} = prevFrontSideXY;
-        const {x: prevBackX, y: prevBackY} = prevBackSideXY;
-        const {x: prevEntityX, y: prevEntityY} = prevEntityXY;
+   /**
+ * Calculates the new position of a passenger based on train orientation change.
+ *
+ * @param {Object} currentBackSideXY - The current x and y coordinates of the train's back side.
+ * @param {Object} currentFrontSideXY - The current x and y coordinates of the train's front side.
+ * @param {Object} prevBackSideXY - The previous x and y coordinates of the train's back side.
+ * @param {Object} prevFrontSideXY - The previous x and y coordinates of the train's front side.
+ * @param {Object} prevEntityXY - The previous x and y coordinates of the passenger.
+ *
+ * @returns {Object} The new x and y coordinates for the passenger.
+ */
+static newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, 
+                                  prevBackSideXY, prevFrontSideXY, 
+                                  prevEntityXY) {
+    // Calculate the center point of the previous train
+    const prevTrainCenterX = (prevFrontSideXY.x + prevBackSideXY.x) / 2;
+    const prevTrainCenterY = (prevFrontSideXY.y + prevBackSideXY.y) / 2;
 
-        // Calculate the deltas for front and back sides
-        const deltaFrontX = currentFrontX - prevFrontX;
-        const deltaFrontY = currentFrontY - prevFrontY;
-        const deltaBackX = currentBackX - prevBackX;
-        const deltaBackY = currentBackY - prevBackY;
+    // Calculate the relative position of the passenger within the previous train
+    const relativePassengerX = prevEntityXY.x - prevTrainCenterX;
+    const relativePassengerY = prevEntityXY.y - prevTrainCenterY;
 
-        // Calculate new Entity position based on deltas
-        const newEntityX = prevEntityX + (deltaFrontX + deltaBackX) / 2; // Average of front and back deltas
-        const newEntityY = prevEntityY + (deltaFrontY + deltaBackY) / 2; // Average of front and back deltas
+    // Calculate the center point of the current train
+    const currentTrainCenterX = (currentFrontSideXY.x + currentBackSideXY.x) / 2;
+    const currentTrainCenterY = (currentFrontSideXY.y + currentBackSideXY.y) / 2;
 
-        // Return the new Entity coordinates as an object
-        return {
-            x:newEntityX, 
-            y:newEntityY,
-        };
-    }
+    // Calculate the new passenger coordinates
+    const newPassengerX = currentTrainCenterX + relativePassengerX;
+    const newPassengerY = currentTrainCenterY + relativePassengerY;
+
+    return {
+        x: newPassengerX,
+        y: newPassengerY
+    };
+}
+
+
+
 
 
     static placeCarBackOnCurrentRail(entity, rail) {

@@ -10,26 +10,25 @@ class Collision_Stuff {
 
         const entitiesSubpositionsArrays = Collision_Stuff.getSubpositions(entityAStartingPosition, entityAEndingPosition, entityBStartingPosition, entityBEndingPosition);
 
-        entityASubpositions = entitiesSubpositionsArrays.entityA;
-        entityBSubpositions = entitiesSubpositionsArrays.entityB;
-        
+       const entityASubpositions = entitiesSubpositionsArrays.entityA;
+        const entityBSubpositions = entitiesSubpositionsArrays.entityB;
         let collHappenedAtAnyTime = false;
 
       for(let i=0;i<entitiesSubpositionsArrays.lengthOfEither;i++) {
         const subEA = {
           width: entityA.width,
           height: entityA.height,
-          x: entityASubPositions[i].x,
-          y: entityASubPositions[i].y,
+          x: entityASubpositions[i].x,
+          y: entityASubpositions[i].y,
         };
         const subEB = {
           width: entityB.width,
           height: entityB.height,
-          x: entityBSubPositions[i].x,
-          y: entityBSubPositions[i].y,
+          x: entityBSubpositions[i].x,
+          y: entityBSubpositions[i].y,
         }
         
-        if(checkTouchOrIntersect(subEA, subEB)) {
+        if(Collision_Stuff.checkTouchOrIntersect(subEA, subEB)) {
           collHappenedAtAnyTime = true;
           return collHappenedAtAnyTime;
         }
@@ -45,25 +44,22 @@ class Collision_Stuff {
       const entityADeltaX = entityAEndingPosition.x - entityAStartingPosition.x;
      const  entityADeltaY = entityAEndingPosition.y - entityAStartingPosition.y;
        
-       const entityATheoreticalLength = Math.max(Math.abs(entityADeltaX, entityADeltaY));
+       const entityATheoreticalLength = Math.max(Math.abs(entityADeltaX), Math.abs(entityADeltaY));
        
        
              const entityBDeltaX = entityBEndingPosition.x - entityBStartingPosition.x;
      const  entityBDeltaY = entityBEndingPosition.y - entityBStartingPosition.y;
        
-       const entityBTheoreticalLength = Math.max(Math.abs(entityBDeltaX, entityBDeltaY));
+       const entityBTheoreticalLength = Math.max(Math.abs(entityBDeltaX), Math.abs(entityBDeltaY));
        
-       const offsetToAccountForStartAndEndXY = 2;
-       const finalLength = ( Math.max(entityATheoreticalLength, entityBTheoreticalLength)) - offsetToAccountForStartAndEndXY;
-       
+       let finalLength = Math.round(( Math.max(entityATheoreticalLength, entityBTheoreticalLength)));
+
        // now we know the length. Make two arrays.
        
        const entityASubpositions = [{...entityAStartingPosition},
-       {...entityAEndingPosition}
        ];
        const entityBSubpositions = [
-         {...entityBStartingPosition},
-         {...entityBEndingPosition}
+         {...entityBStartingPosition}
          ];
 
          const AChangePerSubStepX = entityADeltaX / finalLength;
@@ -77,21 +73,24 @@ class Collision_Stuff {
            x:entityAStartingPosition.x + (i*AChangePerSubStepX),
            y:entityAStartingPosition.y + (i*AChangePerSubStepY),
          };
-        Collision_Stuff.insertElementJustBeforeLastElem(ASubpos, entityASubpositions);
+        entityASubpositions.push(ASubpos);
         
           const BSubpos = {
            x:entityBStartingPosition.x + (i*BChangePerSubStepX),
            y:entityBStartingPosition.y + (i*BChangePerSubStepY),
          };
-        Collision_Stuff.insertElementJustBeforeLastElem(BSubpos, entityBSubpositions);
+       entityBSubpositions.push(BSubpos);
         
        }
+       
+           entityASubpositions.push({...entityAEndingPosition});
+           entityBSubpositions.push({...entityBEndingPosition});
        
        // now subpositions are ready, send them to callee
        return {
          entityA:entityASubpositions, 
          entityB:entityBSubpositions,
-         lengthOfEither:finalLength,
+         lengthOfEither:entityBSubpositions.length,
        };
     }
     static insertElementJustBeforeLastElem(elem, targetArray) {

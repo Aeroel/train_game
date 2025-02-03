@@ -3,6 +3,7 @@ import { Sliding_Door } from "../Sliding_Door.js";
 import { Wall } from "../Wall.js";
 import { World } from "../World.js";
 import { Train_Car_Static } from "./Train_Car_Static.js";
+import { Collision_Stuff } from "../Collision_Stuff.js";
 
 export { Train_Car };
 
@@ -181,13 +182,19 @@ class Train_Car extends Entity {
        if(entity === this) {
          return;
        }
+       if(!entity.hasTag("Can_Ride_Train")) {
+         return;
+       }
        if(!Collision_Stuff.areEntitiesTouching(this, entity)) {
          return;
        }
-
     const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY, entity);
+    console.log(`
+    oldxy ${entity.x}, ${entity.y},
+    newxy ${adjustedEntityXY.x}, ${adjustedEntityXY.y}
+    `)
     entity.setX(adjustedEntityXY.x);
-    entity.sexY(adjustedEntityXY.y);
+    entity.setY(adjustedEntityXY.y);
      })
   }
   correctlySetSidesAfterRailSwitch() {

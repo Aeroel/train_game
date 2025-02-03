@@ -14,6 +14,7 @@ class Player extends Entity {
   constructor() {
     super();
     this.addTag("Player");
+    this.addTag("Can_Ride_Train");
   }
   setVisionRange(visionRange) {
     this.visionRange = visionRange;

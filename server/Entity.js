@@ -24,8 +24,8 @@ class Entity {
     const netVerticalForce = this.forces.down - this.forces.up;
 
     const position = {};
-    position.x += (this.x + (netHorizontalForce * Game_Loop.deltaTime));
-    position.y += (this.y + (netVerticalForce * Game_Loop.deltaTime));
+    position.x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
+    position.y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
     return position;
   }
   updateState() {
