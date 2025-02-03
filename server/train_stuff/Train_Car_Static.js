@@ -2,11 +2,11 @@ export { Train_Car_Static };
 class Train_Car_Static {
     static newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevFrontSideXY, prevBackSideXY, prevEntityXY) {
         // Destructure input coordinates for easier access
-        const [currentBackX, currentBackY] = currentBackSideXY;
-        const [currentFrontX, currentFrontY] = currentFrontSideXY;
-        const [prevFrontX, prevFrontY] = prevFrontSideXY;
-        const [prevBackX, prevBackY] = prevBackSideXY;
-        const [prevEntityX, prevEntityY] = prevEntityXY;
+        const {x: currentBackX, y: currentBackY }= currentBackSideXY;
+        const {x: currentFrontX, y: currentFrontY} = currentFrontSideXY;
+        const {x: prevFrontX, y: prevFrontY} = prevFrontSideXY;
+        const {x: prevBackX, y: prevBackY} = prevBackSideXY;
+        const {x: prevEntityX, y: prevEntityY} = prevEntityXY;
 
         // Calculate the deltas for front and back sides
         const deltaFrontX = currentFrontX - prevFrontX;
@@ -20,7 +20,8 @@ class Train_Car_Static {
 
         // Return the new Entity coordinates as an object
         return {
-            newEntityXY: [newEntityX, newEntityY]
+            x:newEntityX, 
+            y:newEntityY,
         };
     }
 
