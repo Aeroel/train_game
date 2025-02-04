@@ -44,7 +44,7 @@ class Add_Some_Entities_To_The_World {
     }
     static putATrainCarOnThisRail(theRail) {
         const aTrainCar = new Train_Car()
-        aTrainCar.setFrontSide("leftPoint")
+        aTrainCar.setFrontSide("firstEnd")
         aTrainCar.setCurrentRail(theRail);
         World.addEntity(aTrainCar);
         aTrainCar.setWidth(this.carW)
