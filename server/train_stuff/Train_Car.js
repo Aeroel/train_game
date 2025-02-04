@@ -185,7 +185,20 @@ class Train_Car extends Entity {
 
     const nextRailIfAny = currentRailEndClosestToCar.rail;
     if (!nextRailIfAny) {
+      const prevSides = {
+        front: this.getFrontSide(),
+        back: this.getBackSide(),
+        right: this.getRightSide(),
+        left: this.getLeftSide(),
+      };
       Train_Car_Static.placeCarBackOnCurrentRail(this, currentRail);
+      const currentSides = {
+          front: this.getFrontSide(),
+          back: this.getBackSide(),
+          right: this.getRightSide(),
+          left: this.getLeftSide(),
+      }
+      this.reposition_car_riders(prevSides,currentSides);
       this.stopMovement();
       return;
     }
