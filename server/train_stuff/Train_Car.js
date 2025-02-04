@@ -234,6 +234,8 @@ class Train_Car extends Entity {
     `);
       entity.setX(adjustedEntityXY.x);
       entity.setY(adjustedEntityXY.y);
+      entity.setX(this.getCenterX());
+      entity.setY(this.getCenterY());
     });
   }
   correctlySetSidesAfterRailSwitch() {
