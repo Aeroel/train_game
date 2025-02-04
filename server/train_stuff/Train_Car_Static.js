@@ -8,7 +8,7 @@ class Train_Car_Static {
    * @param {Object} prevEntityXY - The previous position of the passenger.
    * @returns {Object} - The new position of the passenger.
    */
-    static newEntityXYBasedOnStuff(newSidesXY, prevSidesXY, prevEntityXY) {
+    static newEntityXYBasedOnStuff(prevSidesXY, newSidesXY, prevEntityXY) {
         // Calculate the offsets based on previous side points
         const offsetX = prevEntityXY.x - prevSidesXY.left.x; // Calculate offset from left side
         const offsetY = prevEntityXY.y - prevSidesXY.front.y; // Calculate offset from front side

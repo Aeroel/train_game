@@ -120,10 +120,34 @@ class Train_Car extends Entity {
     return this.getFirstEnd();
   }
   getLeftSide() {
-    
+    if (this.currentRail.orientation === 'vertical') {
+      if (this.frontSide === 'firstEnd') {
+        return { x: this.x, y: (this.getY() + (this.getHeight() / 2)) };
+      } else {
+        return { x: this.x + this.getWidth(), y: (this.getY() + (this.getHeight() / 2)) };
+      }
+    } else {
+      if (this.frontSide === 'firstEnd') {
+        return { x: this.x + (this.getWidth() / 2), y: (this.getY() + (this.getHeight())) };
+      } else {
+        return { x: this.x + (this.getWidth() / 2), y: (this.getY()) };
+      }
+    }
   }
   getRightSide() {
-    
+    if (this.currentRail.orientation === 'vertical') {
+      if (this.frontSide === 'firstEnd') {
+        return { x: this.x + this.getWidth(), y: (this.getY() + (this.getHeight() / 2)) };
+      } else {
+        return { x: this.x, y: (this.getY() + (this.getHeight() / 2)) };
+      }
+    } else {
+      if (this.frontSide === 'firstEnd') {
+        return { x: this.x + (this.getWidth() / 2), y: (this.getY()) };
+      } else {
+        return { x: this.x + (this.getWidth() / 2), y: (this.getY() + (this.getHeight())) };
+      }
+    }
   }
   getFirstEnd() {
     switch (this.currentRail.orientation) {
@@ -173,18 +197,26 @@ class Train_Car extends Entity {
     Train_Car_Static.placeCarOnEnd(this, the_end_of_next_rail_connected_to_current_rail);
     this.setCurrentRail(nextRailIfAny);
 
-    const prevFrontSideXY = this.getFrontSide();
-    const prevBackSideXY = this.getBackSide();
+    const prevSides = {
+      front: this.getFrontSide(),
+      back: this.getBackSide(),
+      right: this.getRightSide(),
+      left: this.getLeftSide(),
+    };
 
     this.correctlySetSidesAfterRailSwitch();
 
-    const currentFrontSideXY = this.getFrontSide();
-    const currentBackSideXY = this.getBackSide();
+    const newSides = {
+      front: this.getFrontSide(),
+      back: this.getBackSide(),
+      right: this.getRightSide(),
+      left: this.getLeftSide(),
+    };
 
-    this.reposition_car_riders(prevBackSideXY, prevFrontSideXY, currentBackSideXY, currentFrontSideXY);
+    this.reposition_car_riders(prevSides, newSides);
 
   }
-  reposition_car_riders(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY,) {
+  reposition_car_riders(prevSides, newSides) {
     World.getCurrentEntities().forEach(entity => {
       if (entity === this) {
         return;
@@ -195,7 +227,7 @@ class Train_Car extends Entity {
       if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
         return;
       }
-      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY, entity);
+      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(prevSides, newSides, entity);
       console.log(`
     oldxy ${entity.x}, ${entity.y},
     newxy ${adjustedEntityXY.x}, ${adjustedEntityXY.y}
@@ -356,7 +388,7 @@ class Train_Car extends Entity {
       if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
         return;
       }
-      
+
       this.propagateForcesTo(entity);
     });
   }
