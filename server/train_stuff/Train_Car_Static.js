@@ -1,40 +1,28 @@
 export { Train_Car_Static };
 class Train_Car_Static {
-   /**
- * Calculates the new position of a passenger based on train orientation change.
- *
- * @param {Object} currentBackSideXY - The current x and y coordinates of the train's back side.
- * @param {Object} currentFrontSideXY - The current x and y coordinates of the train's front side.
- * @param {Object} prevBackSideXY - The previous x and y coordinates of the train's back side.
- * @param {Object} prevFrontSideXY - The previous x and y coordinates of the train's front side.
- * @param {Object} prevEntityXY - The previous x and y coordinates of the passenger.
- *
- * @returns {Object} The new x and y coordinates for the passenger.
- */
-static newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, 
-                                  prevBackSideXY, prevFrontSideXY, 
-                                  prevEntityXY) {
-    // Calculate the center point of the previous train
-    const prevTrainCenterX = (prevFrontSideXY.x + prevBackSideXY.x) / 2;
-    const prevTrainCenterY = (prevFrontSideXY.y + prevBackSideXY.y) / 2;
+    /**
+   * Function to calculate new positions based on rail transitions.
+   * 
+   * @param {Object} newSidesXY - The new sides of the train after teleportation.
+   * @param {Object} prevSidesXY - The previous sides of the train before teleportation.
+   * @param {Object} prevEntityXY - The previous position of the passenger.
+   * @returns {Object} - The new position of the passenger.
+   */
+    static newEntityXYBasedOnStuff(newSidesXY, prevSidesXY, prevEntityXY) {
+        // Calculate the offsets based on previous side points
+        const offsetX = prevEntityXY.x - prevSidesXY.left.x; // Calculate offset from left side
+        const offsetY = prevEntityXY.y - prevSidesXY.top.y; // Calculate offset from top side
 
-    // Calculate the relative position of the passenger within the previous train
-    const relativePassengerX = prevEntityXY.x - prevTrainCenterX;
-    const relativePassengerY = prevEntityXY.y - prevTrainCenterY;
+        // Determine new passenger position based on new side points
+        const newPassengerX = newSidesXY.left.x + offsetX;
+        const newPassengerY = newSidesXY.top.y + offsetY;
 
-    // Calculate the center point of the current train
-    const currentTrainCenterX = (currentFrontSideXY.x + currentBackSideXY.x) / 2;
-    const currentTrainCenterY = (currentFrontSideXY.y + currentBackSideXY.y) / 2;
+        // Return the new passenger coordinates
+        return { x: newPassengerX, y: newPassengerY };
+    }
 
-    // Calculate the new passenger coordinates
-    const newPassengerX = currentTrainCenterX + relativePassengerX;
-    const newPassengerY = currentTrainCenterY + relativePassengerY;
 
-    return {
-        x: newPassengerX,
-        y: newPassengerY
-    };
-}
+
 
 
 

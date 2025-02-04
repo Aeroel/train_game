@@ -61,7 +61,11 @@ class Entity {
       this.forces[forceName] += forces[forceName];
     });
   }
-
+  propagateForcesTo(target) {
+    Object.keys(this.forces).forEach(forceName => {
+      target.forces[forceName] += this.forces[forceName];
+    });
+  }
   /**
    * Calculates and returns the forces required to move toward the target position.
    * @param {number} targetX - The target x-coordinate.

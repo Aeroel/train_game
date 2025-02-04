@@ -118,6 +118,12 @@ class Train_Car extends Entity {
     }
     return this.getFirstEnd();
   }
+  getLeftSide() {
+    
+  }
+  getRightSide() {
+    
+  }
   getFirstEnd() {
     switch (this.currentRail.orientation) {
       case "vertical":
@@ -178,24 +184,24 @@ class Train_Car extends Entity {
 
   }
   reposition_car_riders(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY,) {
-     World.getCurrentEntities().forEach(entity => {
-       if(entity === this) {
-         return;
-       }
-       if(!entity.hasTag("Can_Ride_Train")) {
-         return;
-       }
-       if(!Collision_Stuff.areEntitiesTouching(this, entity)) {
-         return;
-       }
-    const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY, entity);
-    console.log(`
+    World.getCurrentEntities().forEach(entity => {
+      if (entity === this) {
+        return;
+      }
+      if (!entity.hasTag("Can_Ride_Train")) {
+        return;
+      }
+      if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
+        return;
+      }
+      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY, entity);
+      console.log(`
     oldxy ${entity.x}, ${entity.y},
     newxy ${adjustedEntityXY.x}, ${adjustedEntityXY.y}
-    `)
-    entity.setX(adjustedEntityXY.x);
-    entity.setY(adjustedEntityXY.y);
-     })
+    `);
+      entity.setX(adjustedEntityXY.x);
+      entity.setY(adjustedEntityXY.y);
+    });
   }
   correctlySetSidesAfterRailSwitch() {
     const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
@@ -335,7 +341,23 @@ class Train_Car extends Entity {
     this.move();
     this.behaviour();
     super.updateState();
-    this.reposition_car_and_it_s_contents_according_to_current_car_position();
+    this.handle_car_riders();
+    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
+  }
+  handle_car_riders() {
+    World.getCurrentEntities().forEach(entity => {
+      if (entity === this) {
+        return;
+      }
+      if (!entity.hasTag("Can_Ride_Train")) {
+        return;
+      }
+      if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
+        return;
+      }
+      
+      this.propagateForcesTo(entity);
+    });
   }
   behaviour() {
     if (this.currentMovementDirection === null) {
@@ -371,21 +393,21 @@ class Train_Car extends Entity {
   }
   setX(x) {
     super.setX(x);
-    this.reposition_car_and_it_s_contents_according_to_current_car_position();
+    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
   }
   setY(y) {
     super.setY(y);
-    this.reposition_car_and_it_s_contents_according_to_current_car_position();
+    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
   }
   setWidth(width) {
     super.setWidth(width);
-    this.reposition_car_and_it_s_contents_according_to_current_car_position();
+    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
   }
   setHeight(height) {
     super.setHeight(height);
-    this.reposition_car_and_it_s_contents_according_to_current_car_position();
+    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
   }
-  reposition_car_and_it_s_contents_according_to_current_car_position() {
+  reposition_car_and_it_s_non_rider_contents_according_to_current_car_position() {
     this.reposition_visual_sides();
     this.reposition_car_walls_according_to_car_position();
   }
