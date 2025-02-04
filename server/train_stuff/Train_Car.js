@@ -185,23 +185,15 @@ class Train_Car extends Entity {
 
     const nextRailIfAny = currentRailEndClosestToCar.rail;
     if (!nextRailIfAny) {
-      const prevSides = {
-        front: this.getFrontSide(),
-        back: this.getBackSide(),
-        right: this.getRightSide(),
-        left: this.getLeftSide(),
-      };
+      const prevSides = this.getSidesAndWH();
       Train_Car_Static.placeCarBackOnCurrentRail(this, currentRail);
-      const currentSides = {
-          front: this.getFrontSide(),
-          back: this.getBackSide(),
-          right: this.getRightSide(),
-          left: this.getLeftSide(),
-      }
-      this.reposition_car_riders(prevSides,currentSides);
+      const currentSides = this.getSidesAndWH();
+      this.reposition_car_riders(prevSides, currentSides, this.currentRail.orientation, this.currentRail.orientation);
       this.stopMovement();
       return;
     }
+
+    const previousOrientation = this.currentRail.orientation;
 
     const the_end_of_next_rail_connected_to_current_rail = nextRailIfAny.findEndConnectedTo(currentRail);
 
@@ -210,26 +202,18 @@ class Train_Car extends Entity {
     Train_Car_Static.placeCarOnEnd(this, the_end_of_next_rail_connected_to_current_rail);
     this.setCurrentRail(nextRailIfAny);
 
-    const prevSides = {
-      front: this.getFrontSide(),
-      back: this.getBackSide(),
-      right: this.getRightSide(),
-      left: this.getLeftSide(),
-    };
+    const newOrientation = this.currentRail.orientation;
+
+    const prevSides = this.getSidesAndWH();
 
     this.correctlySetSidesAfterRailSwitch();
 
-    const newSides = {
-      front: this.getFrontSide(),
-      back: this.getBackSide(),
-      right: this.getRightSide(),
-      left: this.getLeftSide(),
-    };
+    const newSides = this.getSidesAndWH();
 
-    this.reposition_car_riders(prevSides, newSides);
+    this.reposition_car_riders(prevSides, newSides, previousOrientation, newOrientation);
 
   }
-  reposition_car_riders(prevSides, newSides) {
+  reposition_car_riders(prevSides, newSides, oldOrientation, newOrientation) {
     World.getCurrentEntities().forEach(entity => {
       if (entity === this) {
         return;
@@ -240,7 +224,7 @@ class Train_Car extends Entity {
       if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
         return;
       }
-      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(prevSides, newSides, entity);
+      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(prevSides, newSides, entity, oldOrientation, newOrientation);
       console.log(`
     oldxy ${entity.x}, ${entity.y},
     newxy ${adjustedEntityXY.x}, ${adjustedEntityXY.y}
@@ -251,6 +235,17 @@ class Train_Car extends Entity {
       entity.setY(this.getCenterY());
     });
   }
+  getSidesAndWH() {
+    return {
+      width: this.getWidth(),
+      height: this.getHeight(),
+      frontSide: this.getFrontSide(),
+      backSide: this.getBackSide(),
+      rightSide: this.getRightSide(),
+      leftSide: this.getLeftSide(),
+    };
+  }
+
   correctlySetSidesAfterRailSwitch() {
     const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
 

@@ -1,26 +1,14 @@
 export { Train_Car_Static };
 class Train_Car_Static {
-    /**
-   * Function to calculate new positions based on rail transitions.
-   * 
-   * @param {Object} newSidesXY - The new sides of the train after teleportation.
-   * @param {Object} prevSidesXY - The previous sides of the train before teleportation.
-   * @param {Object} prevEntityXY - The previous position of the passenger.
-   * @returns {Object} - The new position of the passenger.
-   */
-    static newEntityXYBasedOnStuff(prevSidesXY, newSidesXY, prevEntityXY) {
-        // Calculate the offsets based on previous side points
-        const offsetX = prevEntityXY.x - prevSidesXY.left.x; // Calculate offset from left side
-        const offsetY = prevEntityXY.y - prevSidesXY.front.y; // Calculate offset from front side
-
-        // Determine new passenger position based on new side points
-        const newPassengerX = newSidesXY.left.x + offsetX;
-        const newPassengerY = newSidesXY.front.y + offsetY;
-
-        // Return the new passenger coordinates
-        return { x: newPassengerX, y: newPassengerY };
+    /* todo: implement.
+    must return appropriate new xy for entity.
+    */
+    static newEntityXYBasedOnStuff(currentSidesXY, prevSidesXY, prevEntityXY) {
+        console.log({ currentSidesXY, prevSidesXY, prevEntityXY });
+        const newEntityXY = {x:0, y:0};
+        // implement here
+        return newEntityXY;
     }
-
 
 
 
