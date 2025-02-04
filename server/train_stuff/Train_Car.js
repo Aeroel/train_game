@@ -14,8 +14,10 @@ class Train_Car extends Entity {
   defaultOrientation = "horizontal";
   orientation = this.defaultOrientation;
   previousOrientation = this.orientation;
-  twoPossibleEnds = ['firstEnd', 'secondEnd'];
-  frontSide = "firstEnd"; // firstEnd or secondEnd
+
+  fourCarPoints = ['topPoint', 'leftPoint', 'rightPoint', 'bottomPoint'];
+  // the moment we know which point is considered frontSide, we immediately know all other point's side designations. So, here for example, frontside is left, which means that back is  right and right side is top point, and left side is bottom point.
+  frontSide = "leftPoint";
   walls = {};
   defaultForceToMoveOnRail = 120;
   twoPossibleMovementDirections = ["backwards", "forwards"];
@@ -36,8 +38,14 @@ class Train_Car extends Entity {
     this.backSideEntity = new Entity();
     this.frontSideEntity = new Entity();
 
+    this.rightSideEntity = new Entity();
+    this.leftSideEntity = new Entity();
+
     this.backSideEntity.setColor("purple");
     this.frontSideEntity.setColor("red");
+
+    this.rightSideEntity.setColor("pink");
+    this.leftSideEntity.setColor("yellow");
 
     this.frontSideEntity.setWidth(sideEntitySize);
     this.frontSideEntity.setHeight(sideEntitySize);
@@ -45,8 +53,17 @@ class Train_Car extends Entity {
     this.backSideEntity.setWidth(sideEntitySize);
     this.backSideEntity.setHeight(sideEntitySize);
 
+    this.rightSideEntity.setWidth(sideEntitySize);
+    this.rightSideEntity.setHeight(sideEntitySize);
+
+    this.leftSideEntity.setWidth(sideEntitySize);
+    this.leftSideEntity.setHeight(sideEntitySize);
+
     World.addEntity(this.backSideEntity);
     World.addEntity(this.frontSideEntity);
+
+    World.addEntity(this.rightSideEntity);
+    World.addEntity(this.leftSideEntity);
   }
   getCenterXAndY() {
     const centerX = this.x + (this.width / 2);
@@ -107,43 +124,73 @@ class Train_Car extends Entity {
 
 
   getFrontSide() {
-    if (this.frontSide === 'firstEnd') {
-      return this.getFirstEnd();
+    if (this.frontSide === 'topPoint') {
+      return this.getTopPoint();
     }
-    return this.getSecondEnd();
+    if (this.frontSide === 'bottomPoint') {
+      return this.getBottomPoint();
+    }
+    if (this.frontSide === 'leftPoint') {
+      return this.getLeftPoint();
+    }
+    if (this.frontSide === 'rightPoint') {
+      return this.getRightPoint();
+    }
   }
   getBackSide() {
-    if (this.frontSide === 'firstEnd') {
-      return this.getSecondEnd();
+    if (this.frontSide === 'topPoint') {
+      return this.getBottomPoint();
     }
-    return this.getFirstEnd();
-  }
-  getLeftSide() {
-    
+    if (this.frontSide === 'bottomPoint') {
+      return this.getTopPoint();
+    }
+    if (this.frontSide === 'leftPoint') {
+      return this.getRightPoint();
+    }
+    if (this.frontSide === 'rightPoint') {
+      return this.getLeftPoint();
+    }
   }
   getRightSide() {
-    
+    if (this.frontSide === 'topPoint') {
+      return this.getRightPoint();
+    }
+    if (this.frontSide === 'bottomPoint') {
+      return this.getLeftPoint();
+    }
+    if (this.frontSide === 'leftPoint') {
+      return this.getTopPoint();
+    }
+    if (this.frontSide === 'rightPoint') {
+      return this.getBottomPoint();
+    }
   }
-  getFirstEnd() {
-    switch (this.currentRail.orientation) {
-      case "vertical":
-        return { x: this.x, y: this.getCenterY() - (this.getHeight() / 2) };
-        break;
-      case "horizontal":
-        return { x: this.getCenterX() - (this.getWidth() / 2), y: this.y };
-        break;
+  getLeftSide() {
+    if (this.frontSide === 'topPoint') {
+      return this.getLeftPoint();
+    }
+    if (this.frontSide === 'bottomPoint') {
+      return this.getRightPoint();
+    }
+    if (this.frontSide === 'leftPoint') {
+      return this.getBottomPoint();
+    }
+    if (this.frontSide === 'rightPoint') {
+      return this.getTopPoint();
     }
   }
 
-  getSecondEnd() {
-    switch (this.currentRail.orientation) {
-      case "vertical":
-        return { x: this.x, y: this.getCenterY() + (this.getHeight() / 2) };
-        break;
-      case "horizontal":
-        return { x: this.getCenterX() + (this.getWidth() / 2), y: this.y };
-        break;
-    }
+  getTopPoint() {
+    return { x: this.getCenterX(), y: this.getY() };
+  }
+  getBottomPoint() {
+    return { x: this.getCenterX(), y: (this.getY() + this.getHeight()) };
+  }
+  getLeftPoint() {
+    return { x: this.getX(), y: (this.getY() + this.getHeight()) / 2 };
+  }
+  getRightPoint() {
+    return { x: this.getX() + this.getWidth(), y: (this.getY() + this.getHeight()) / 2 };
   }
 
   is_it_time_to_potentially_switch_rails() {
@@ -172,18 +219,26 @@ class Train_Car extends Entity {
     Train_Car_Static.placeCarOnEnd(this, the_end_of_next_rail_connected_to_current_rail);
     this.setCurrentRail(nextRailIfAny);
 
-    const prevFrontSideXY = this.getFrontSide();
-    const prevBackSideXY = this.getBackSide();
+    const prevSidesXY = {
+      front: this.getFrontSide(),
+      back: this.getBackSide(),
+      right: this.getRightSide(),
+      left: this.getLeftSide(),
+    };
 
     this.correctlySetSidesAfterRailSwitch();
 
-    const currentFrontSideXY = this.getFrontSide();
-    const currentBackSideXY = this.getBackSide();
+    const currentSidesXY = {
+      front: this.getFrontSide(),
+      back: this.getBackSide(),
+      right: this.getRightSide(),
+      left: this.getLeftSide(),
+    };
 
-    this.reposition_car_riders(prevBackSideXY, prevFrontSideXY, currentBackSideXY, currentFrontSideXY);
+    this.reposition_car_riders(prevSidesXY, currentSidesXY);
 
   }
-  reposition_car_riders(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY,) {
+  reposition_car_riders(prevSidesXY, currentSidesXY) {
     World.getCurrentEntities().forEach(entity => {
       if (entity === this) {
         return;
@@ -194,7 +249,7 @@ class Train_Car extends Entity {
       if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
         return;
       }
-      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(currentBackSideXY, currentFrontSideXY, prevBackSideXY, prevFrontSideXY, entity);
+      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(prevSidesXY, currentSidesXY, entity);
       console.log(`
     oldxy ${entity.x}, ${entity.y},
     newxy ${adjustedEntityXY.x}, ${adjustedEntityXY.y}
@@ -213,8 +268,25 @@ class Train_Car extends Entity {
     }
 
     if (this.currentMovementDirection === 'backwards') {
-      this.setBackSide(car_end_closest_to_farthest_rail_end.name);
+      this.setFrontSide(this.oppositePointOf(car_end_closest_to_farthest_rail_end.name));
     }
+  }
+  oppositePointOf(pointName) {
+    let name = '';
+    if (pointName === 'leftPoint') {
+      name = 'right';
+    }
+    if (pointName === 'rightPoint') {
+      name = 'left';
+    }
+    if (pointName === 'topPoint') {
+      name = 'bottom';
+    }
+    if (pointName === 'bottomPoint') {
+      name = 'top';
+    }
+    const fullName = `${name}Point`;
+    return fullName;
   }
   oppositeOf(val, vals) {
     // Check if val exists in vals
@@ -229,22 +301,40 @@ class Train_Car extends Entity {
 
   get_car_end_closest_to(point) {
 
-    const firstEnd = this.getFirstEnd();
-    const secondEnd = this.getSecondEnd();
+    const topPoint = this.getTopPoint();
+    const bottomPoint = this.getBottomPoint();
+    const leftPoint = this.getLeftPoint();
+    const rightPoint = this.getRightPoint();
 
     // Calculate distances to the point
-    const distanceToFirst = calculateDistance(firstEnd, point);
-    const distanceToSecond = calculateDistance(secondEnd, point);
+    const distanceToTop = Train_Car.calculateDistance(topPoint, point);
+    const distanceToBottom = Train_Car.calculateDistance(bottomPoint, point);
+    const distanceToRight = Train_Car.calculateDistance(rightPoint, point);
+    const distanceToLeft = Train_Car.calculateDistance(leftPoint, point);
 
-    // Determine which end is closer
-    if (distanceToFirst < distanceToSecond) {
-      return { ...firstEnd, name: "firstEnd" };
-    } else {
-      return { ...secondEnd, name: "secondEnd" };
+    // Determine which point is closer and return an object of following format {...[unpack closest point], name: [name of the closest point, i.e., bottomPoint or topPoint, etc]}
+
+    // Create an array of points with their distances and names
+    const points = [
+      { point: topPoint, distance: distanceToTop, name: 'topPoint' },
+      { point: bottomPoint, distance: distanceToBottom, name: 'bottomPoint' },
+      { point: leftPoint, distance: distanceToLeft, name: 'leftPoint' },
+      { point: rightPoint, distance: distanceToRight, name: 'rightPoint' }
+    ];
+    // Find the closest point
+    let closest = points[0];
+    for (let i = 1; i < points.length; i++) {
+      if (points[i].distance < closest.distance) {
+        closest = points[i];
+      }
     }
-    function calculateDistance(end, point) {
-      return Math.sqrt(Math.pow(end.x - point.x, 2) + Math.pow(end.y - point.y, 2));
-    }
+
+    // Return the closest point and its name
+    return { ...closest.point, name: closest.name };
+  }
+
+  static calculateDistance(end, point) {
+    return Math.sqrt(Math.pow(end.x - point.x, 2) + Math.pow(end.y - point.y, 2));
   }
 
   stopMovement() {
@@ -259,19 +349,12 @@ class Train_Car extends Entity {
     }
   }
 
-  setFrontSide(end) {
-    if (!this.twoPossibleEnds.includes(end)) {
-      throw new Error(`Invalid end ${end}`);
+   setFrontSide(point) {
+    if (!this.fourCarPoints.includes(point)) {
+      throw new Error(`Invalid point ${point}`);
 
     }
-    this.frontSide = end;
-  }
-  setBackSide(end) {
-    if (!this.twoPossibleEnds.includes(end)) {
-      throw new Error(`Invalid end ${end}`);
-
-    }
-    this.frontSide = this.oppositeOf(end, this.twoPossibleEnds);
+    this.frontSide = point;
   }
 
 
@@ -355,7 +438,7 @@ class Train_Car extends Entity {
       if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
         return;
       }
-      
+
       this.propagateForcesTo(entity);
     });
   }

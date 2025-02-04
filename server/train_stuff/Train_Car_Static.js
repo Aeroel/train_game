@@ -11,11 +11,11 @@ class Train_Car_Static {
     static newEntityXYBasedOnStuff(newSidesXY, prevSidesXY, prevEntityXY) {
         // Calculate the offsets based on previous side points
         const offsetX = prevEntityXY.x - prevSidesXY.left.x; // Calculate offset from left side
-        const offsetY = prevEntityXY.y - prevSidesXY.top.y; // Calculate offset from top side
+        const offsetY = prevEntityXY.y - prevSidesXY.front.y; // Calculate offset from front side
 
         // Determine new passenger position based on new side points
         const newPassengerX = newSidesXY.left.x + offsetX;
-        const newPassengerY = newSidesXY.top.y + offsetY;
+        const newPassengerY = newSidesXY.front.y + offsetY;
 
         // Return the new passenger coordinates
         return { x: newPassengerX, y: newPassengerY };
