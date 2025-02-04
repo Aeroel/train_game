@@ -83,8 +83,8 @@ class Train_Car extends Entity {
     // Calculate area of the car
     const carArea = car.width * car.height;
 
-    // Calculate size of the virtual box (5% of car's area)
-    const boxArea = carArea * 0.05;
+    // Calculate size of the virtual box 
+    const boxArea = carArea * 0.050;
 
     // Assuming the virtual box is square for simplicity
     const boxSize = Math.sqrt(boxArea);
@@ -224,13 +224,7 @@ class Train_Car extends Entity {
       if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
         return;
       }
-      const adjustedEntityXY = Train_Car_Static.newEntityXYBasedOnStuff(prevSides, newSides, entity, oldOrientation, newOrientation);
-      console.log(`
-    oldxy ${entity.x}, ${entity.y},
-    newxy ${adjustedEntityXY.x}, ${adjustedEntityXY.y}
-    `);
-      entity.setX(adjustedEntityXY.x);
-      entity.setY(adjustedEntityXY.y);
+
       entity.setX(this.getCenterX());
       entity.setY(this.getCenterY());
     });
@@ -294,12 +288,24 @@ class Train_Car extends Entity {
     this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
     this.currentMovementDirection = null;
 
+    const tempForces = {};
     for (var force in this.forces) {
       if (!Object.prototype.hasOwnProperty.call(this.forces, force)) {
         continue;
       }
+      tempForces[force] = this.forces[force];
       this.forces[force] = 0;
     }
+    this.subtract_from_riders_forces(tempForces);
+
+  }
+  subtract_from_riders_forces(forces) {
+    World.getCurrentEntities().forEach(entity => {
+      if(!this.carHasTheEntityForAPassenger(entity)) {
+        return;
+      }
+      entity.subtractFromForces(forces);
+    });
   }
 
   setFrontSide(end) {
@@ -320,6 +326,9 @@ class Train_Car extends Entity {
 
   move() {
     if (!this.currentRail) {
+      return false;
+    }
+    if(this.currentMovementDirection === null) {
       return false;
     }
     if (this.isTryingToMoveBeyondTheRail()) {
@@ -389,23 +398,26 @@ class Train_Car extends Entity {
   }
   handle_car_riders() {
     World.getCurrentEntities().forEach(entity => {
-      if (entity === this) {
-        return;
-      }
-      if (!entity.hasTag("Can_Ride_Train")) {
-        return;
-      }
-      if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
-        return;
+      if(!this.carHasTheEntityForAPassenger(entity)) {
+        return
       }
 
       this.propagateForcesTo(entity);
     });
   }
-  behaviour() {
-    if (this.currentMovementDirection === null) {
-      this.setMovementDirection(this.oppositeOf(this.lastMovementDirectionBeforeNull, this.twoPossibleMovementDirections));
+  carHasTheEntityForAPassenger(entity) {
+    if (entity === this) {
+      return false;
     }
+    if (!entity.hasTag("Can_Ride_Train")) {
+      return false;
+    }
+    if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
+      return false;
+    }
+    return true;
+  } 
+  behaviour() {
   }
   // on  horizontal car placement, connectorA is left side and B is right side and entranceA is top and B is bottom
   // WallA is top and B is bottom,

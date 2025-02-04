@@ -61,6 +61,11 @@ class Entity {
       this.forces[forceName] += forces[forceName];
     });
   }
+  subtractFromForces(forces) {
+    Object.keys(forces).forEach(forceName => {
+      this.forces[forceName] -= forces[forceName];
+    });
+  }
   propagateForcesTo(target) {
     Object.keys(this.forces).forEach(forceName => {
       target.forces[forceName] += this.forces[forceName];
