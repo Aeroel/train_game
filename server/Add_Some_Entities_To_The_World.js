@@ -33,6 +33,8 @@ class Add_Some_Entities_To_The_World {
         World.addEntity(stSS);
         
         const stSS_2 = new Station_Stop_Spot();
+        
+        // this comment is for  commit test, remove later
         stSS_2.setX(400);
         stSS_2.setY(50);
         stSS_2.setWidth(10);
