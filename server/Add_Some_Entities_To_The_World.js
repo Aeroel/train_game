@@ -5,6 +5,7 @@ import { Train_Car } from "./train_stuff/Train_Car.js";
 import { World } from "./World.js";
 import { Forcefield } from "./Forcefield.js";
 import { Rail } from "./train_stuff/Rail.js";
+import { Station_Stop_Spot } from "./Station_Stop_Spot.js";
 
 export { Add_Some_Entities_To_The_World }
 
@@ -23,6 +24,13 @@ class Add_Some_Entities_To_The_World {
         Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
 
         World.addEntity(new Forcefield())
+
+        const stSS = new Station_Stop_Spot();
+        stSS.setX(400);
+        stSS.setY(500);
+        stSS.setWidth(10);
+        stSS.setHeight(20);
+        World.addEntity(stSS);
 
        // this.addAnotherCarAndAVerticalRailBelowIt();
 

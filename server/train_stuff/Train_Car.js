@@ -301,7 +301,7 @@ class Train_Car extends Entity {
   }
   subtract_from_riders_forces(forces) {
     World.getCurrentEntities().forEach(entity => {
-      if(!this.carHasTheEntityForAPassenger(entity)) {
+      if (!this.carHasTheEntityForAPassenger(entity)) {
         return;
       }
       entity.subtractFromForces(forces);
@@ -324,11 +324,11 @@ class Train_Car extends Entity {
   }
 
 
-  move() {
+  move_handler() {
     if (!this.currentRail) {
       return false;
     }
-    if(this.currentMovementDirection === null) {
+    if (this.currentMovementDirection === null) {
       return false;
     }
     if (this.isTryingToMoveBeyondTheRail()) {
@@ -390,7 +390,7 @@ class Train_Car extends Entity {
   }
 
   updateState() {
-    this.move();
+    this.move_handler();
     this.behaviour();
     super.updateState();
     this.handle_car_riders();
@@ -398,8 +398,8 @@ class Train_Car extends Entity {
   }
   handle_car_riders() {
     World.getCurrentEntities().forEach(entity => {
-      if(!this.carHasTheEntityForAPassenger(entity)) {
-        return
+      if (!this.carHasTheEntityForAPassenger(entity)) {
+        return;
       }
 
       this.propagateForcesTo(entity);
@@ -416,9 +416,51 @@ class Train_Car extends Entity {
       return false;
     }
     return true;
-  } 
-  behaviour() {
   }
+  behaviour() {
+    /*
+      when a train touches station stop spot, it slows down and stops. It waits for 5 seconds before continuing to move it same direction as before.
+ */
+    const spotOrNull = this.Get_Touching_Stop_Spot();
+    if (spotOrNull !== null && spotOrNull !== this.lastSpot) {
+      this.Pause_Movement();
+      this.lastSpot = this.spotOrNull;
+      this.Is_Waiting_For_Five_Seconds = true;
+    }
+    if (this.Is_Waiting_For_Five_Seconds && this.Did_Five_Seconds_Pass()) {
+      this.Continue_Moving();
+      this.Is_Waiting_For_Five_Seconds = false;
+    }
+
+
+  }
+
+  Pause_Movement() {
+    this.storedMovementDirection = this.currentMovementDirection;
+    this.pauseBegunAt = Date.now();
+    this.currentMovementDirection = null;
+
+  }
+
+  Did_Five_Seconds_Pass() {
+    const currTimestamp = Date.now();
+    return (currTimestamp > (5 * 60) + this.pauseBegunAt);
+  }
+
+  Continue_Moving() {
+    this.currentMovementDirection = this.storedMovementDirection;
+  }
+  Get_Touching_Stop_Spot() {
+    let spotOrNull = null;
+    World.getCurrentEntities().forEach(entity => {
+      if (this === entity) return;
+      if (!entity.hasTag("Station_Stop_Spot")) return;
+      if (!Collision_Stuff.areEntitiesTouching(this, entity)) return;
+      spotOrNull = entity;
+    });
+    return spotOrNull;
+  }
+
   // on  horizontal car placement, connectorA is left side and B is right side and entranceA is top and B is bottom
   // WallA is top and B is bottom,
   // on vertical car placement, carConnectors: A is top and B is bottom and entranceA is left and B is right
