@@ -422,9 +422,9 @@ class Train_Car extends Entity {
       when a train touches station stop spot, it slows down and stops. It waits for 5 seconds before continuing to move it same direction as before.
  */
     const spotOrNull = this.Get_Touching_Stop_Spot();
-    if (spotOrNull !== null && spotOrNull !== this.lastSpot) {
+    if (!(spotOrNull === null) && !(spotOrNull === this.lastSpot)) {
       this.Pause_Movement();
-      this.lastSpot = this.spotOrNull;
+      this.lastSpot = spotOrNull;
       this.Is_Waiting_For_Five_Seconds = true;
     }
     if (this.Is_Waiting_For_Five_Seconds && this.Did_Five_Seconds_Pass()) {
@@ -444,11 +444,13 @@ class Train_Car extends Entity {
 
   Did_Five_Seconds_Pass() {
     const currTimestamp = Date.now();
-    return (currTimestamp > ((5 * 1000) + this.pauseBegunAt));
+    const answer = (currTimestamp > ((5 * 1000) + this.pauseBegunAt));
+    return answer;
   }
 
   Continue_Moving() {
     this.currentMovementDirection = this.storedMovementDirection;
+          this.Is_Waiting_For_Five_Seconds = false;
   }
   Get_Touching_Stop_Spot() {
     let spotOrNull = null;

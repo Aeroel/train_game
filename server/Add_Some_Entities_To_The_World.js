@@ -31,6 +31,13 @@ class Add_Some_Entities_To_The_World {
         stSS.setWidth(10);
         stSS.setHeight(20);
         World.addEntity(stSS);
+        
+        const stSS_2 = new Station_Stop_Spot();
+        stSS_2.setX(400);
+        stSS_2.setY(50);
+        stSS_2.setWidth(10);
+        stSS_2.setHeight(20);
+        World.addEntity(stSS_2);
 
        // this.addAnotherCarAndAVerticalRailBelowIt();
 
