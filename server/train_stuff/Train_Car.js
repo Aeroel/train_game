@@ -444,7 +444,7 @@ class Train_Car extends Entity {
 
   Did_Five_Seconds_Pass() {
     const currTimestamp = Date.now();
-    return (currTimestamp > (5 * 60) + this.pauseBegunAt);
+    return (currTimestamp > ((5 * 1000) + this.pauseBegunAt));
   }
 
   Continue_Moving() {
@@ -453,9 +453,17 @@ class Train_Car extends Entity {
   Get_Touching_Stop_Spot() {
     let spotOrNull = null;
     World.getCurrentEntities().forEach(entity => {
-      if (this === entity) return;
-      if (!entity.hasTag("Station_Stop_Spot")) return;
-      if (!Collision_Stuff.areEntitiesTouching(this, entity)) return;
+      if (this === entity) {
+        return null;
+      }
+      if (!entity.hasTag("Station_Stop_Spot")){
+        return null;
+        
+      }
+      if (!Collision_Stuff.areEntitiesTouching(this, entity)) { 
+        return null;
+        
+      }
       spotOrNull = entity;
     });
     return spotOrNull;
