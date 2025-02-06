@@ -71,41 +71,6 @@ class Entity {
       target.forces[forceName] += this.forces[forceName];
     });
   }
-  /**
-   * Calculates and returns the forces required to move toward the target position.
-   * @param {number} targetX - The target x-coordinate.
-   * @param {number} targetY - The target y-coordinate.
-   * @param {string} speed - Speed behavior: 'instant', 'quick', 'slow'.
-   * @returns {object} - An object with forces {left, right, up, down}.
-   */
-  targetPos(targetX, targetY, speed = 'quick') {
-    const netHorizontalForce = this.forces.right - this.forces.left;
-    const netVerticalForce = this.forces.down - this.forces.up;
-
-    const currentVelocityX = netHorizontalForce * Game_Loop.deltaTime;
-    const currentVelocityY = netVerticalForce * Game_Loop.deltaTime;
-
-    const dx = targetX - this.x;
-    const dy = targetY - this.y;
-
-    const timeFactor = { instant: 1, quick: 2, slow: 5 }[speed] || 2; // Default to 'quick'
-    const timeToTarget = Game_Loop.deltaTime * timeFactor;
-
-    const requiredVelocityX = dx / timeToTarget;
-    const requiredVelocityY = dy / timeToTarget;
-
-    const neededForceX = requiredVelocityX / Game_Loop.deltaTime - currentVelocityX;
-    const neededForceY = requiredVelocityY / Game_Loop.deltaTime - currentVelocityY;
-
-    const newForces = {
-      left: neededForceX < 0 ? Math.abs(neededForceX) : 0,
-      right: neededForceX > 0 ? neededForceX : 0,
-      up: neededForceY < 0 ? Math.abs(neededForceY) : 0,
-      down: neededForceY > 0 ? neededForceY : 0,
-    };
-
-    return newForces;
-  }
 
 
   addTag(tag) {
