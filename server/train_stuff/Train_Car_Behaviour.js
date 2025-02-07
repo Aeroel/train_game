@@ -65,11 +65,11 @@ class Train_Car_Behaviour {
 
     Open_Doors() {
         this.Doors_Must_Be_Skipped = true;
-        this.sideADoorA_X = this.walls.entranceSideADoorA.x;
-        this.sideADoorA_Y = this.walls.entranceSideADoorB.y;
+        this.saved_sideADoorA_X = this.walls.entranceSideADoorA.x;
+        this.saved_sideADoorA_Y = this.walls.entranceSideADoorB.y;
 
-        this.sideBDoorA_X = this.walls.entranceSideBDoorA.x;
-        this.sideBDoorA_Y = this.walls.entranceSideBDoorB.y;
+        this.saved_sideBDoorA_X = this.walls.entranceSideBDoorA.x;
+        this.saved_sideBDoorA_Y = this.walls.entranceSideBDoorB.y;
 
         if (this.currentRail.orientation === 'horizontal') {
             this.walls.entranceSideADoorA.setX(this.walls.entranceSideAWallA.x);
@@ -105,10 +105,10 @@ class Train_Car_Behaviour {
     }
 
     Close_Doors() {
-        this.walls.entranceSideADoorA.x = this.sideADoorA_X;
-        this.walls.entranceSideADoorB.y = this.sideADoorA_Y;
-        this.walls.entranceSideBDoorA.x = this.sideBDoorA_X;
-        this.walls.entranceSideBDoorB.y = this.sideBDoorA_Y;
+        this.walls.entranceSideADoorA.x = this.saved_sideADoorA_X;
+        this.walls.entranceSideADoorB.y = this.saved_sideADoorA_Y;
+        this.walls.entranceSideBDoorA.x = this.saved_sideBDoorA_X;
+        this.walls.entranceSideBDoorB.y = this.saved_sideBDoorA_Y;
 
         this.Doors_Must_Be_Skipped = false;
     }

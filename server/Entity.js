@@ -38,7 +38,7 @@ class Entity {
 
       this.forces[forceName] *= (1 - this.friction);
     });
-    this.ifAnyForceGetsBelowThisSetItToZero(0.001);
+    this.ifAnyForceGetsBelowThisSetItToZero(0.9);
 
   }
   /**
