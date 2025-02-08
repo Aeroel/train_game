@@ -6,5 +6,5 @@ class Ground extends Entity {
     this.setColor("green")
     this.addTag("Ground");
   }
-  
+
 }
