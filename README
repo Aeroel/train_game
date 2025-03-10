@@ -5,9 +5,18 @@ How to install on Windows or Android:
 First of all, for android I need termux with node installed.
 The steps are pretty much identical on windows and android
 1. Clone repo
-2. Go to server directory and start node on "startThisToStartTheGameServer.js". 
+2. Go to inside the repo directory using
+"cd repoName" 
+3. Cd into server
+4. Run pnpm installed
+5. cd ..
+6. start node on "server/startThisToStartTheGameServer.js". 
+Like this, maybe:
+"
+nodemon server/startThisToStartTheGameServer.js --watch server
+"
 The server is now started on some port that I will see in the console or even in some config file I think.
-3. Then go to client folder and do something like "pnpx light-server .". Note the dot in the quotes of the pnpx command.
+7. Then go to client folder and do something like "pnpx light-server .". Note the dot in the quotes of the pnpx command.
 Well, these are all the steps so far. Now just go to the localhost where the light-server started.
 
 Okay, so I will describe the general idea,
