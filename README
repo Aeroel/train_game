@@ -4,22 +4,32 @@ When I press left or right, the movement seems responsive, but if I press up or 
 How to install on Windows or Android:
 First of all, for android I need termux with node installed.
 The steps are pretty much identical on windows and android
+0. Nodejs needs to be installed... For dev, I use nodemon and pnpm instead of npm.
+Example of how to install in termux (on windows I guess you can just manually get nodejs from it's website or use a random package manager):
+pkg install nodejs
+then 
+npm install -g pnpm
+pnpm install -g nodemon (By the way, if you don't replace npm pnpm path with pnpm, you will have to do pn updates through npm rather than self-updating pnpm through itself)
+Okay, now
+
 1. Clone repo
 2. Go to inside the repo directory using
-"cd repoName" 
-3. Cd into server
-4. Run pnpm installed
-5. cd ..
-6. start node on "server/startThisToStartTheGameServer.js". 
+"cd repoName"
+3. Cd into server and un "pnpm install"
+4. start node on "server/startThisToStartTheGameServer.js". 
 Like this, maybe:
+"node server/startThisToStartTheGameServer.js"
+For dev I cd into repo dir (above server) and use:
 "
 nodemon server/startThisToStartTheGameServer.js --watch server
 "
-The server is now started on some port that I will see in the console or even in some config file I think.
-7. Then go to client folder and do something like "pnpx light-server .". Note the dot in the quotes of the pnpx command.
-Well, these are all the steps so far. Now just go to the localhost where the light-server started.
+The idea of using "watch server" is to prevent nodemon from restarting whole server if I update client folder code (which makes no sense to do since currently there's no connection between client and server folders in terms of server running). By default I think nodemon watches all js files in all subdirs?
+The server is now started on some port that I will see in the console. It is set in some config file I think.
+5. Then cd into client folder and do something like "pnpx http-server .". Note the dot in the quotes of the pnpx command. It will make the http-server serve from current (client) directory. 
+Well, these are all the steps so far. Now just go to the localhost where the html http-server started.
 
 Okay, so I will describe the general idea,
 there are train tracks. Trains move on them like a metro basically. They stop at train stations and so on, you get the idea.
+There are fences around train tracks so players can't get on the track, and each station has sliding doors and wall barriers next to tracks to prevent people from falling on train tracks for safety. The trains sync their stopping positions so the train cars' doors are aligned to platform's doors so the people can safely enter the train cars without ever being able to jump down to the rails. The doors of the train and the platform then close back and train goes to it's next station. You get the idea, I guess...
 
-So, this functionality isn't quite implemented yet.
+So, this full functionality described isn't quite implemented yet.
