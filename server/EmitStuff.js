@@ -1,6 +1,8 @@
-import {World} from "./World.js"
-import {PreEmitStuff} from "./PreEmitStuff.js"
-import {SocketStorage} from "./SocketStorage.js"
+import { PreEmitStuff } from "#root/PreEmitStuff.js";
+import { SocketStorage } from "#root/SocketStorage.js";
+import { World } from "#root/World.js";
+
+
 export { EmitStuff } 
 
 class EmitStuff {

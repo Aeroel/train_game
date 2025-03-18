@@ -1,6 +1,4 @@
-import {
-  World
-} from "./World.js"
+import { World } from "#root/World.js";
 
 export {
   EntitySorter

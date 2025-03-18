@@ -1,11 +1,13 @@
+
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-import { Player } from "./Player.js"
-import { World } from "./World.js";
-import { Helper_Functions } from "./Helper_Functions.js";
-import { Game_Loop } from "./Game_Loop.js";
-import { Add_Some_Entities_To_The_World } from "./Add_Some_Entities_To_The_World.js";
+
+import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.js";
+import { Player } from "#root/Entities/Player.js";
+import { Game_Loop } from "#root/Game_Loop.js";
+import { Helper_Functions } from "#root/Helper_Functions.js";
+import { World } from "#root/World.js";
 
 const app = express();
 const httpServer = createServer(app);

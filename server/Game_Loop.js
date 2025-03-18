@@ -1,6 +1,6 @@
-import { EmitStuff } from "./EmitStuff.js";
-import { EntitySorter } from "./EntitySorter.js";
-import { World } from "./World.js";
+import { EmitStuff } from "#root/EmitStuff.js";
+import { EntitySorter } from "#root/EntitySorter.js";
+import { World } from "#root/World.js";
 
 export { Game_Loop}
 

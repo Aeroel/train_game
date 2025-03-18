@@ -1,8 +1,8 @@
-import { Game_Loop } from "./Game_Loop.js";
+import { Game_Loop } from "#root/Game_Loop.js";
 
 
-export { Entity };
-class Entity {
+export { Base_Entity };
+class Base_Entity {
   forces = {
     "up": 0,
     "down": 0,

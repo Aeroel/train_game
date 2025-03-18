@@ -1,6 +1,6 @@
-import { Entity } from "./Entity.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.js";
 export { Player }
-class Player extends Entity {
+class Player extends Base_Entity {
   controls = {
     right: false,
     left: false,

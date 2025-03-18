@@ -1,10 +1,8 @@
-import { Functions_To_Inject_Into_Socket_Instance } from "./Functions_To_Inject_Into_Socket_Instance.js";
-import { Ground } from "./Ground.js";
-import { Entity } from "./Entity.js";
-import { SocketDataStorage } from "./SocketDataStorage.js";
-import { SocketStorage } from "./SocketStorage.js";
-import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Functionality.js";
-import { World } from "./World.js";
+import { Functions_To_Inject_Into_Socket_Instance } from "#root/Functions_To_Inject_Into_Socket_Instance.js";
+import { SocketDataStorage } from "#root/SocketDataStorage.js";
+import { SocketStorage } from "#root/SocketStorage.js";
+import { World } from "#root/World.js";
+
 
 export { Helper_Functions };
 class Helper_Functions {

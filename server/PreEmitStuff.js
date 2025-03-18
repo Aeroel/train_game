@@ -1,8 +1,8 @@
+import { World } from "#root/World.js";
 
-import {
-  World
-} from "./World.js"
+
 export { PreEmitStuff }
+
 class PreEmitStuff {
   static someArbitraryNumber = 5000;
   static anotherArbitraryNumber = 5000
