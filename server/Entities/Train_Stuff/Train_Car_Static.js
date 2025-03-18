@@ -1,16 +1,5 @@
 export { Train_Car_Static };
 class Train_Car_Static {
-    /* todo: implement.
-    must return appropriate new xy for entity.
-    */
-    static newEntityXYBasedOnStuff(currentSidesXY, prevSidesXY, prevEntityXY) {
-        console.log({ currentSidesXY, prevSidesXY, prevEntityXY });
-        const newEntityXY = {x:0, y:0};
-        // implement here
-        return newEntityXY;
-    }
-
-
 
 
 

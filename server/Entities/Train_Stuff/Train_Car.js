@@ -11,7 +11,7 @@ import { Helper_Functions } from "#root/Helper_Functions.js";
 export { Train_Car };
 
 class Train_Car extends Base_Entity {
-  wallThickness = 5;
+  Wall_And_Door_Thickness = 5;
   currentRail = undefined;
   previousRail = undefined;
   defaultOrientation = "horizontal";
@@ -19,18 +19,27 @@ class Train_Car extends Base_Entity {
   previousOrientation = this.orientation;
   twoPossibleEnds = ['firstEnd', 'secondEnd'];
   frontSide = "firstEnd"; // firstEnd or secondEnd
-  walls = {};
+  Walls_And_Doors = {};
   defaultForceToMoveOnRail = 120;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection = "backwards";
   lastMovementDirectionBeforeNull = null;
-  constructor() {
+  constructor({ x, y, size }) {
+    if (!Helper_Functions.isNumeric(x) || !Helper_Functions.isNumeric(y) || !Helper_Functions.isNumeric(size)) {
+      throw new Error("x and y and size must be passed and be numbers");
+    }
     super();
     this.setColor("brown");
     this.addTag("Train_Car");
+    this.setX(x);
+    this.setX(y);
+    this.setSquare(size);
+
+    this.Create_Car_Walls_And_Doors();
+    this.Add_Car_Walls_And_Doors_To_World();
+    this.Set_Car_Walls_And_Doors_Initial_Positions();
+
     this.Insert_Behaviour_Logic();
-    this.createCarWalls();
-    this.addCarWallsToWorld();
     this.addVisualSideEntities();
   }
 
@@ -425,51 +434,78 @@ class Train_Car extends Base_Entity {
   }
   behaviour() {
   }
-  /* on  horizontal car placement, connectorA is left side and B is right side and entranceA is top and B is bottom
-  // WallA is top and B is bottom,
-  // on vertical car placement, carConnectors: A is top and B is bottom
-  //  and entranceA is left and B is right
-  // and wallA is left and wallB is right
+  /* 
+  
   */
-  createCarWalls() {
-    this.walls = {
-      carConnectorAWallA: new Wall(),
-      carConnectorAWallB: new Wall(),
-      carConnectorBWallA: new Wall(),
-      carConnectorBWallB: new Wall(),
+  Create_Car_Walls_And_Doors() {
+    this.Walls_And_Doors = {
+      Top_Left_Wall: new Wall(),
+      Top_Left_Door: new Sliding_Door(),
+      Top_Right_Door: new Sliding_Door(),
+      Top_Right_Wall: new Wall(),
 
-      entranceSideAWallA: new Wall(),
-      entranceSideADoorA: new Sliding_Door(),
-      entranceSideADoorB: new Sliding_Door(),
-      entranceSideAWallB: new Wall(),
+      Left_Top_Wall: new Wall(),
+      Left_Top_Door: new Sliding_Door(),
+      Left_Bottom_Door: new Sliding_Door(),
+      Left_Bottom_Wall: new Wall(),
 
-      entranceSideBWallA: new Wall(),
-      entranceSideBDoorA: new Sliding_Door(),
-      entranceSideBDoorB: new Sliding_Door(),
-      entranceSideBWallB: new Wall(),
+      Right_Top_Wall: new Wall(),
+      Right_Top_Door: new Sliding_Door(),
+      Right_Bottom_Door: new Sliding_Door(),
+      Right_Bottom_Wall: new Wall(),
+
+      Bottom_Left_Wall: new Wall(),
+      Bottom_Left_Door: new Sliding_Door(),
+      Bottom_Right_Door: new Sliding_Door(),
+      Bottom_Right_Wall: new Wall(),
     };
   }
-  addCarWallsToWorld() {
-    Object.values(this.walls).forEach(wall => {
+  Add_Car_Walls_And_Doors_To_World() {
+    Object.values(this.Walls_And_Doors).forEach(wall => {
       World.addEntity(wall);
     });
   }
-  setX(x) {
-    super.setX(x);
-    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
+  Set_Car_Walls_And_Doors_Initial_Positions() {
+    const carX = this.getX();
+    const carY = this.getY();
+    const carWidth = this.getWidth();
+    const carHeight = this.getHeight();
+    const Top_And_Bottom_Entity_Width = carWidth / 4; // because top (and bot and left and right, too) has four entities (wall, door, door, wall)
+    const Top_And_Bottom_Entity_Height = this.Wall_And_Door_Thickness;
+
+  const TLW = {x: carX, y: carY, width: Top_And_Bottom_Entity_Width, Top_And_Bottom_Entity_Height};
+    this.Walls_And_Doors.Top_Left_Wall.setXYWH(carX, carY, Top_And_Bottom_Entity_Width, Top_And_Bottom_Entity_Height);
+
+    this.Walls_And_Doors.Top_Left_Door.setXYWH(
+      carX + Top_And_Bottom_Entity_Width,
+      carY,
+      Top_And_Bottom_Entity_Width,
+      Top_And_Bottom_Entity_Height
+    );
+
+    this.Walls_And_Doors.Top_Right_Door.setXYWH(
+      carX + Top_And_Bottom_Entity_Width + Top_And_Bottom_Entity_Width,
+      carY,
+      Top_And_Bottom_Entity_Width,
+      Top_And_Bottom_Entity_Height);
+
+
+    this.Walls_And_Doors.Top_Right_Wall.setXYWH(
+      carX + Top_And_Bottom_Entity_Width + Top_And_Bottom_Entity_Width + Top_And_Bottom_Entity_Width,
+      carY,
+      Top_And_Bottom_Entity_Width,
+      Top_And_Bottom_Entity_Height);
+
+    // now bot side
+
+    this.Walls_And_Doors.Bottom_Left_Wall.setXYWH(
+      carX,
+      carY + carHeight - Top_And_Bottom_Entity_Height,
+      Top_And_Bottom_Entity_Width,
+      Top_And_Bottom_Entity_Height);
+
   }
-  setY(y) {
-    super.setY(y);
-    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
-  }
-  setWidth(width) {
-    super.setWidth(width);
-    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
-  }
-  setHeight(height) {
-    super.setHeight(height);
-    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
-  }
+
   reposition_car_and_it_s_non_rider_contents_according_to_current_car_position() {
     this.reposition_visual_sides();
     this.reposition_car_walls_according_to_car_position();
@@ -495,81 +531,76 @@ class Train_Car extends Base_Entity {
     }
   }
   setVerticalWalls() {
-    const carConnectorWallsHeight = this.wallThickness;
+    const carConnectorWallsHeight = this.Wall_And_Door_Thickness;
     const carConnectorWallsWidth = this.width / 3;
 
 
-    Train_Car.setWall(this.walls.carConnectorAWallA, this.getX(), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallA, this.getX(), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
 
-    Train_Car.setWall(this.walls.carConnectorAWallB, this.getX() + (2 * carConnectorWallsWidth), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallB, this.getX() + (2 * carConnectorWallsWidth), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
 
-    Train_Car.setWall(this.walls.carConnectorBWallA, this.getX(), this.getY() + this.getHeight() - carConnectorWallsHeight, carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallA, this.getX(), this.getY() + this.getHeight() - carConnectorWallsHeight, carConnectorWallsWidth, carConnectorWallsHeight);
 
-    Train_Car.setWall(this.walls.carConnectorBWallB, this.getX() + (2 * carConnectorWallsWidth), this.getY() + this.getHeight() - carConnectorWallsHeight, carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallB, this.getX() + (2 * carConnectorWallsWidth), this.getY() + this.getHeight() - carConnectorWallsHeight, carConnectorWallsWidth, carConnectorWallsHeight);
 
-    const entranceWallsAndDoorsWidth = this.wallThickness;
+    const entranceWallsAndDoorsWidth = this.Wall_And_Door_Thickness;
     const entranceWallsAndDoorsHeight = (this.getHeight() - (2 * carConnectorWallsHeight)) / 4;
 
 
-    Train_Car.setWall(this.walls.entranceSideAWallA, this.getX(), this.getY() + carConnectorWallsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallA, this.getX(), this.getY() + carConnectorWallsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
     if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.walls.entranceSideADoorA, this.getX(), this.getY() + carConnectorWallsHeight + entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorA, this.getX(), this.getY() + carConnectorWallsHeight + entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
-      Train_Car.setWall(this.walls.entranceSideADoorB, this.getX(), this.getY() + carConnectorWallsHeight + (2 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorB, this.getX(), this.getY() + carConnectorWallsHeight + (2 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
     }
 
-    Train_Car.setWall(this.walls.entranceSideAWallB, this.getX(), this.getY() + carConnectorWallsHeight + (3 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallB, this.getX(), this.getY() + carConnectorWallsHeight + (3 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
 
-    Train_Car.setWall(this.walls.entranceSideBWallA, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallA, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
     if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.walls.entranceSideBDoorA, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorA, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
-      Train_Car.setWall(this.walls.entranceSideBDoorB, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + (2 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorB, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + (2 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
     }
-    Train_Car.setWall(this.walls.entranceSideBWallB, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + (3 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallB, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + (3 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
   }
   setHorizontalWalls() {
     const carConnectorWallsHeight = this.height / 3;
-    const carConnectorWallsWidth = this.wallThickness;
+    const carConnectorWallsWidth = this.Wall_And_Door_Thickness;
 
 
-    Train_Car.setWall(this.walls.carConnectorAWallA, this.getX(), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallA, this.getX(), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
 
-    Train_Car.setWall(this.walls.carConnectorAWallB, this.getX(), this.getY() + (carConnectorWallsHeight * 2), carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallB, this.getX(), this.getY() + (carConnectorWallsHeight * 2), carConnectorWallsWidth, carConnectorWallsHeight);
 
-    Train_Car.setWall(this.walls.carConnectorBWallA, (this.getX() + this.getWidth()) - carConnectorWallsWidth, this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallA, (this.getX() + this.getWidth()) - carConnectorWallsWidth, this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
 
-    Train_Car.setWall(this.walls.carConnectorBWallB, (this.getX() + this.getWidth()) - carConnectorWallsWidth, this.getY() + (carConnectorWallsHeight * 2), carConnectorWallsWidth, carConnectorWallsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallB, (this.getX() + this.getWidth()) - carConnectorWallsWidth, this.getY() + (carConnectorWallsHeight * 2), carConnectorWallsWidth, carConnectorWallsHeight);
 
     const entranceWallsAndDoorsWidth = (this.getWidth() - (2 * carConnectorWallsWidth)) / 4;
-    const entranceWallsAndDoorsHeight = this.wallThickness;
+    const entranceWallsAndDoorsHeight = this.Wall_And_Door_Thickness;
 
-    Train_Car.setWall(this.walls.entranceSideAWallA, this.getX() + carConnectorWallsWidth, this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallA, this.getX() + carConnectorWallsWidth, this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
     if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.walls.entranceSideADoorA, this.getX() + carConnectorWallsWidth + entranceWallsAndDoorsWidth, this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorA, this.getX() + carConnectorWallsWidth + entranceWallsAndDoorsWidth, this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
-      Train_Car.setWall(this.walls.entranceSideADoorB, this.getX() + carConnectorWallsWidth + (2 * entranceWallsAndDoorsWidth), this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorB, this.getX() + carConnectorWallsWidth + (2 * entranceWallsAndDoorsWidth), this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
     }
 
-    Train_Car.setWall(this.walls.entranceSideAWallB, this.getX() + carConnectorWallsWidth + (3 * entranceWallsAndDoorsWidth), this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallB, this.getX() + carConnectorWallsWidth + (3 * entranceWallsAndDoorsWidth), this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
-    Train_Car.setWall(this.walls.entranceSideBWallA, this.getX() + carConnectorWallsWidth, this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallA, this.getX() + carConnectorWallsWidth, this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
     if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.walls.entranceSideBDoorA, this.getX() + carConnectorWallsWidth + entranceWallsAndDoorsWidth, this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorA, this.getX() + carConnectorWallsWidth + entranceWallsAndDoorsWidth, this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
 
-      Train_Car.setWall(this.walls.entranceSideBDoorB, this.getX() + carConnectorWallsWidth + (2 * entranceWallsAndDoorsWidth), this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorB, this.getX() + carConnectorWallsWidth + (2 * entranceWallsAndDoorsWidth), this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
     }
-    Train_Car.setWall(this.walls.entranceSideBWallB, this.getX() + carConnectorWallsWidth + (3 * entranceWallsAndDoorsWidth), this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
+    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallB, this.getX() + carConnectorWallsWidth + (3 * entranceWallsAndDoorsWidth), this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
   }
-  static setWall(wall, x, y, w, h) {
-    wall.setX(x);
-    wall.setY(y);
-    wall.setWidth(w);
-    wall.setHeight(h);
-  }
+
 }

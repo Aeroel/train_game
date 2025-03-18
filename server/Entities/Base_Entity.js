@@ -94,11 +94,21 @@ class Base_Entity {
   setY(y) {
     this.y = y;
   }
+  setSquare(size) {
+    this.setWidth(size);
+    this.setHeight(size);
+  }
   setWidth(width) {
     this.width = width;
   }
   setHeight(height) {
     this.height = height;
+  }
+  setXYWH(x, y, w, h) {
+    this.setX(x);
+    this.setY(y);
+    this.setWidth(w);
+    this.setHeight(h);
   }
   setColor(color) {
     this.color = color;
