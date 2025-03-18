@@ -474,7 +474,7 @@ class Train_Car extends Base_Entity {
     const Top_And_Bottom_Entity_Height = this.Wall_And_Door_Thickness;
 
   const TLW = {x: carX, y: carY, width: Top_And_Bottom_Entity_Width, Top_And_Bottom_Entity_Height};
-    this.Walls_And_Doors.Top_Left_Wall.setXYWH(carX, carY, Top_And_Bottom_Entity_Width, Top_And_Bottom_Entity_Height);
+    this.Walls_And_Doors.Top_Left_Wall.setXYWH(TLW.x, TLW.y, TLW.width, TLW.height);
 
     this.Walls_And_Doors.Top_Left_Door.setXYWH(
       carX + Top_And_Bottom_Entity_Width,
