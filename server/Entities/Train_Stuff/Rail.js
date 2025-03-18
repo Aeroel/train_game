@@ -62,9 +62,6 @@ class Rail extends Base_Entity {
         super.setHeight(height);
         this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
     }
-    setOrientation(orientation) {
-        this.orientation = orientation;
-    }
     getOrientation() {
         return this.orientation;
     }
@@ -83,7 +80,8 @@ class Rail extends Base_Entity {
                 return { x: this.x, y: this.y };
             }
         }
-        return { x: this.x, y: this.y };  // Default (if no matching end type)
+         // Default (if no matching end type)
+         throw new Error(`${endType} does not match any valid value...`);
     }
     getEndClosestTo(obj) {
         const centerOfObj = {
