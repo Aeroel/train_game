@@ -1,10 +1,10 @@
-import { Entity } from "./Entity.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.js";
 
 export {
     Station_Stop_Spot
 }
 
-class Station_Stop_Spot extends Entity {
+class Station_Stop_Spot extends Base_Entity {
     color = 'black';
     constructor() {
         super();

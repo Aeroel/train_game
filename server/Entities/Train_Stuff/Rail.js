@@ -1,7 +1,7 @@
-import { Entity } from "../Entity.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.js";
 
 export { Rail };
-class Rail extends Entity {
+class Rail extends Base_Entity {
     //  left right is for hori, top bot is for vert
     railConnections = { firstEnd: null, secondEnd: null };
     twoPossibleEnds = ["firstEnd", "secondEnd"];

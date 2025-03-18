@@ -1,18 +1,18 @@
-import { Ground } from "./Ground.js";
-import { Entity } from "./Entity.js";
-import { Railway_Placing_Functionality } from "./train_stuff/Railway_Placing_Functionality.js";
-import { Train_Car } from "./train_stuff/Train_Car.js";
-import { World } from "./World.js";
-import { Forcefield } from "./Forcefield.js";
-import { Station_Stop_Spot } from "./Station_Stop_Spot.js";
+import { Ground } from "#root/Entities/Ground.js";
+import { Base_Entity } from '#root/Entities/Base_Entity.js';
+import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
+import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
+import { World } from "#root/World.js";
+import { Forcefield } from "#root/Entities/Forcefield.js";
+import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 
-export { Add_Some_Entities_To_The_World }
+export { Add_Some_Entities_To_The_World };
 
 class Add_Some_Entities_To_The_World {
     static carH = 150;
     static carW = 150;
     static railLength = 500;
-    static rails  = [];
+    static rails = [];
     static doItNow() {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
@@ -22,7 +22,7 @@ class Add_Some_Entities_To_The_World {
 
         Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
 
-        World.addEntity(new Forcefield())
+        World.addEntity(new Forcefield());
 
         const stSS = new Station_Stop_Spot();
         stSS.setX(400);
@@ -30,9 +30,9 @@ class Add_Some_Entities_To_The_World {
         stSS.setWidth(10);
         stSS.setHeight(20);
         World.addEntity(stSS);
-        
+
         const stSS_2 = new Station_Stop_Spot();
-        
+
         // this comment is for  commit test, remove later
         stSS_2.setX(400);
         stSS_2.setY(50);
@@ -40,7 +40,7 @@ class Add_Some_Entities_To_The_World {
         stSS_2.setHeight(20);
         World.addEntity(stSS_2);
 
-       // this.addAnotherCarAndAVerticalRailBelowIt();
+        // this.addAnotherCarAndAVerticalRailBelowIt();
 
         // const aCar = new Train_Car();
         // aCar.setFrontSide("firstEnd")
@@ -55,37 +55,37 @@ class Add_Some_Entities_To_The_World {
 
     }
     static addAnotherCarAndAVerticalRailBelowIt() {
-        const verRail = Railway_Placing_Functionality.place(500,500,400,"down");
+        const verRail = Railway_Placing_Functionality.place(500, 500, 400, "down");
         this.putATrainCarOnThisRail(verRail);
     }
     static putATrainCarOnThisRail(theRail) {
-        const aTrainCar = new Train_Car()
-        aTrainCar.setFrontSide("firstEnd")
+        const aTrainCar = new Train_Car();
+        aTrainCar.setFrontSide("firstEnd");
         aTrainCar.setCurrentRail(theRail);
         World.addEntity(aTrainCar);
-        aTrainCar.setWidth(this.carW)
-        aTrainCar.setHeight(this.carH); 
+        aTrainCar.setWidth(this.carW);
+        aTrainCar.setHeight(this.carH);
 
         // Calculate the train car's position (centered on the rail)
         const carX = theRail.getX() + (theRail.getWidth() - aTrainCar.getWidth()) / 2;
         const carY = theRail.getY() + (theRail.getHeight() - aTrainCar.getHeight()) / 2;
 
-        aTrainCar.setX(carX)
-        aTrainCar.setY(carY)
+        aTrainCar.setX(carX);
+        aTrainCar.setY(carY);
     }
     static addASmallRailwayAndGetTheFirstRail() {
         const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
 
-        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength); 
+        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength);
         rail2.connectWithRail("firstEnd", "secondEnd", rail1);
-        
+
         // Right vertical rail
         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
         rail3.connectWithRail("secondEnd", "secondEnd", rail2);
 
         const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'up', this.railLength); // Left vertical rail
-        rail4.connectWithRail("secondEnd", "firstEnd", rail3)
-        rail4.connectWithRail("firstEnd", "firstEnd", rail1)
+        rail4.connectWithRail("secondEnd", "firstEnd", rail3);
+        rail4.connectWithRail("firstEnd", "firstEnd", rail1);
 
         this.rails.push(rail1, rail2, rail3, rail4);
         return rail1;
@@ -101,7 +101,7 @@ class Add_Some_Entities_To_The_World {
     }
 
     static addAWhiteRectangleForMovementReference() {
-        const newEntity = new Entity();
+        const newEntity = new Base_Entity();
         newEntity.setX(0);
         newEntity.setY(0);
         newEntity.setWidth(50);

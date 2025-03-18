@@ -1,16 +1,16 @@
 
-import { Entity } from "../Entity.js";
-import { Sliding_Door } from "../Sliding_Door.js";
-import { Wall } from "../Wall.js";
-import { World } from "../World.js";
-import { Train_Car_Static } from "./Train_Car_Static.js";
-import { Collision_Stuff } from "../Collision_Stuff.js";
-import { Train_Car_Behaviour } from "./Train_Car_Behaviour.js";
-import { Helper_Functions } from "../Helper_Functions.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
+import { Wall } from "#root/Entities/Wall.js";
+import { World } from "#root/World.js";
+import { Train_Car_Static } from "#root/Entities/Train_Stuff/Train_Car_Static.js";
+import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
+import { Helper_Functions } from "#root/Helper_Functions.js";
 
 export { Train_Car };
 
-class Train_Car extends Entity {
+class Train_Car extends Base_Entity {
   wallThickness = 5;
   currentRail = undefined;
   previousRail = undefined;
@@ -40,8 +40,8 @@ class Train_Car extends Entity {
   addVisualSideEntities() {
     const sideEntitySize = 25;
 
-    this.backSideEntity = new Entity();
-    this.frontSideEntity = new Entity();
+    this.backSideEntity = new Base_Entity();
+    this.frontSideEntity = new Base_Entity();
 
     this.backSideEntity.setColor("purple");
     this.frontSideEntity.setColor("red");

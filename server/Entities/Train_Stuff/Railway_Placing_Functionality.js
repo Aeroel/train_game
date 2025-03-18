@@ -1,5 +1,5 @@
-import { World } from "../World.js";
-import { Rail } from "./Rail.js";
+import { World } from "#root/World.js";
+import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 
 export { Railway_Placing_Functionality }
 

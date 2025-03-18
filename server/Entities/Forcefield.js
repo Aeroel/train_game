@@ -1,8 +1,8 @@
-import { Entity } from "./Entity.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.js";
 
 export { Forcefield }
 
-class Forcefield extends Entity {
+class Forcefield extends Base_Entity {
     color = "lightblue"
     constructor() {
         super()
