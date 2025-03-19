@@ -444,15 +444,15 @@ class Train_Car extends Base_Entity {
       Top_Right_Door: new Sliding_Door(),
       Top_Right_Wall: new Wall(),
 
-      Left_Top_Wall: new Wall(),
-      Left_Top_Door: new Sliding_Door(),
-      Left_Bottom_Door: new Sliding_Door(),
-      Left_Bottom_Wall: new Wall(),
+      Left_Side_Top_Wall: new Wall(),
+      Left_Side_Top_Door: new Sliding_Door(),
+      Left_Side_Bottom_Door: new Sliding_Door(),
+      Left_Side_Bottom_Wall: new Wall(),
 
-      Right_Top_Wall: new Wall(),
-      Right_Top_Door: new Sliding_Door(),
-      Right_Bottom_Door: new Sliding_Door(),
-      Right_Bottom_Wall: new Wall(),
+      Right_Side_Top_Wall: new Wall(),
+      Right_Side_Top_Door: new Sliding_Door(),
+      Right_Side_Bottom_Door: new Sliding_Door(),
+      Right_Side_Bottom_Wall: new Wall(),
 
       Bottom_Left_Wall: new Wall(),
       Bottom_Left_Door: new Sliding_Door(),
@@ -471,39 +471,192 @@ class Train_Car extends Base_Entity {
     const carWidth = this.getWidth();
     const carHeight = this.getHeight();
     const Top_And_Bottom_Entity_Width = carWidth / 4; // because top (and bot and left and right, too) has four entities (wall, door, door, wall)
+    const Offset_To_The_Right_Of_One_Wall_Or_Door = Top_And_Bottom_Entity_Width;
     const Top_And_Bottom_Entity_Height = this.Wall_And_Door_Thickness;
 
-  const TLW = {x: carX, y: carY, width: Top_And_Bottom_Entity_Width, Top_And_Bottom_Entity_Height};
+    const TLW = {
+      x: carX,
+      y: carY,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height
+    };
     this.Walls_And_Doors.Top_Left_Wall.setXYWH(TLW.x, TLW.y, TLW.width, TLW.height);
 
+
+    const TLD = {
+      x: carX + Offset_To_The_Right_Of_One_Wall_Or_Door,
+      y: carY,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height
+    };
     this.Walls_And_Doors.Top_Left_Door.setXYWH(
-      carX + Top_And_Bottom_Entity_Width,
-      carY,
-      Top_And_Bottom_Entity_Width,
-      Top_And_Bottom_Entity_Height
+      TLD.x,
+      TLD.y,
+      TLD.width,
+      TLD.height
     );
 
+    const TRD = {
+      x: carX + Offset_To_The_Right_Of_One_Wall_Or_Door + Offset_To_The_Right_Of_One_Wall_Or_Door,
+      y: carY,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height
+    };
     this.Walls_And_Doors.Top_Right_Door.setXYWH(
-      carX + Top_And_Bottom_Entity_Width + Top_And_Bottom_Entity_Width,
-      carY,
-      Top_And_Bottom_Entity_Width,
-      Top_And_Bottom_Entity_Height);
+      TRD.x,
+      TRD.y,
+      TRD.width,
+      TRD.height
+    );
 
 
+    const TRW = {
+      x: carX + Offset_To_The_Right_Of_One_Wall_Or_Door + Offset_To_The_Right_Of_One_Wall_Or_Door + Offset_To_The_Right_Of_One_Wall_Or_Door,
+      y: carY,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height,
+    };
     this.Walls_And_Doors.Top_Right_Wall.setXYWH(
-      carX + Top_And_Bottom_Entity_Width + Top_And_Bottom_Entity_Width + Top_And_Bottom_Entity_Width,
-      carY,
-      Top_And_Bottom_Entity_Width,
-      Top_And_Bottom_Entity_Height);
+      TRW.x,
+      TRW.y,
+      TRW.width,
+      TRW.height
+      ,
+    );
 
     // now bot side
 
+    const Bottom_Entities_Y = ((carY + carHeight) - Top_And_Bottom_Entity_Height);
+    const BLW = {
+      x: carX,
+      y: Bottom_Entities_Y,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height,
+    };
     this.Walls_And_Doors.Bottom_Left_Wall.setXYWH(
-      carX,
-      carY + carHeight - Top_And_Bottom_Entity_Height,
-      Top_And_Bottom_Entity_Width,
-      Top_And_Bottom_Entity_Height);
+      BLW.x,
+      BLW.y,
+      BLW.width,
+      BLW.height);
 
+    const BLD = {
+      x: carX + Offset_To_The_Right_Of_One_Wall_Or_Door,
+      y: Bottom_Entities_Y,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height,
+    };
+    this.Walls_And_Doors.Bottom_Left_Door.setXYWH(
+      BLD.x,
+      BLD.y,
+      BLD.width,
+      BLD.height
+    );
+
+    const BRD = {
+      x: carX + Offset_To_The_Right_Of_One_Wall_Or_Door + Offset_To_The_Right_Of_One_Wall_Or_Door,
+      y: Bottom_Entities_Y,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height,
+    };
+    this.Walls_And_Doors.Bottom_Right_Door.setXYWH(
+      BRD.x,
+      BRD.y,
+      BRD.width,
+      BRD.height
+    );
+
+    const BRW = {
+      x: carX + Offset_To_The_Right_Of_One_Wall_Or_Door + Offset_To_The_Right_Of_One_Wall_Or_Door + Offset_To_The_Right_Of_One_Wall_Or_Door,
+      y: Bottom_Entities_Y,
+      width: Top_And_Bottom_Entity_Width,
+      height: Top_And_Bottom_Entity_Height,
+    };
+    this.Walls_And_Doors.Bottom_Right_Wall.setXYWH(BRW.x, BRW.y, BRW.width, BRW.height);
+
+    // general definitions for both left and right side walls and doors
+
+    const X_Of_Each_Left_Side_Entity = carX;
+
+    const Represents_Total_Height_That_All_Four_Left_Side_Entities_Take_Up = (carHeight - (2 * Top_And_Bottom_Entity_Height));
+    const Height_Of_Each_Left_Or_Right_Side_Entity = (Represents_Total_Height_That_All_Four_Left_Side_Entities_Take_Up / 4);
+
+    const Downwards_Offset_Due_To_The_Top_Wall = this.Wall_And_Door_Thickness;
+    const Downwards_Offset_Due_To_A_Single_Entity_Above = (1 * Height_Of_Each_Left_Or_Right_Side_Entity);
+
+    const Width_Of_Each_Left_Or_Right_Side_Entity = this.Wall_And_Door_Thickness;
+ 
+
+    // now specifically *left* side walls and doors
+    const LSTW = {
+      x: X_Of_Each_Left_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(LSTW.x, LSTW.y, LSTW.width, LSTW.height);
+
+    const LSTD = {
+      x: X_Of_Each_Left_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(LSTD.x, LSTD.y, LSTD.width, LSTD.height);
+
+    const LSBD = {
+      x: X_Of_Each_Left_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above + Downwards_Offset_Due_To_A_Single_Entity_Above,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(LSBD.x, LSBD.y, LSBD.width, LSBD.height);
+
+    const LSBW = {
+      x: X_Of_Each_Left_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above + Downwards_Offset_Due_To_A_Single_Entity_Above + Downwards_Offset_Due_To_A_Single_Entity_Above,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(LSBW.x, LSBW.y, LSBW.width, LSBW.height);
+
+
+    // now for the right side walls and doors
+
+    const X_Of_Each_Right_Side_Entity = carX + carWidth - this.Wall_And_Door_Thickness; 
+
+    const RSTW = {
+      x: X_Of_Each_Right_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(RSTW.x, RSTW.y, RSTW.width, RSTW.height);
+
+    const RSTD = {
+      x: X_Of_Each_Right_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(RSTD.x, RSTD.y, RSTD.width, RSTD.height);
+
+    const RSBD = {
+      x: X_Of_Each_Right_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above + Downwards_Offset_Due_To_A_Single_Entity_Above,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(RSBD.x, RSBD.y, RSBD.width, RSBD.height);
+
+    const RSBW = {
+      x: X_Of_Each_Right_Side_Entity,
+      y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above + Downwards_Offset_Due_To_A_Single_Entity_Above + Downwards_Offset_Due_To_A_Single_Entity_Above,
+      width: Width_Of_Each_Left_Or_Right_Side_Entity,
+      height: Height_Of_Each_Left_Or_Right_Side_Entity,
+    };
+    this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(RSBW.x, RSBW.y, RSBW.width, RSBW.height);
+
+    
   }
 
   reposition_car_and_it_s_non_rider_contents_according_to_current_car_position() {
