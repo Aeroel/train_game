@@ -1,4 +1,5 @@
 import { Game_Loop } from "#root/Game_Loop.js";
+import { Helper_Functions } from "#root/Helper_Functions.js";
 
 
 export { Base_Entity };
@@ -17,6 +18,7 @@ class Base_Entity {
   color = "white";
   tags = new Array();
   constructor() {
+
     this.addTag("Entity");
   }
   calculateNextPositionBasedOnForcesAndDeltaTime() {
@@ -58,18 +60,22 @@ class Base_Entity {
    */
   addToForces(forces) {
     Object.keys(forces).forEach(forceName => {
-      this.forces[forceName] += forces[forceName];
+     this.addToForce(forceName, forces[forceName]);
+
     });
   }
-  subtractFromForces(forces) {
-    Object.keys(forces).forEach(forceName => {
-      this.forces[forceName] -= forces[forceName];
-    });
+  addToForce(forceName, Value_To_Add) {
+     // I am currently using a system of forces.up/down/left/right. So one of the four having a negative value makes no sense, since its counterpart is the one that is supposed to hold the value, 
+      // so for example I do not want to have right -4, I would want to set left to 4.
+      //  This is why this makes setting force to negative value an error somewhere in the caller.
+      const potentialNewValue = this.forces[forceName] + Value_To_Add;
+      if(potentialNewValue < 0) {
+        throw new Error(`Attempt to set ${forceName} to a negative value "${potentialNewValue}" is invalid.`);
+      }
+      this.forces[forceName] = potentialNewValue;
   }
   propagateForcesTo(target) {
-    Object.keys(this.forces).forEach(forceName => {
-      target.forces[forceName] += this.forces[forceName];
-    });
+    target.addToForces(this.forces);
   }
 
 
@@ -94,7 +100,7 @@ class Base_Entity {
   setY(y) {
     this.y = y;
   }
-  setSquare(size) {
+  Set_To_Square_Of_Size(size) {
     this.setWidth(size);
     this.setHeight(size);
   }

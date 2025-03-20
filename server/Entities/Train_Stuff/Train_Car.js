@@ -24,6 +24,7 @@ class Train_Car extends Base_Entity {
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection = "backwards";
   lastMovementDirectionBeforeNull = null;
+  Center_Box_Entity = {};
   constructor({ x, y, size }) {
     if (!Helper_Functions.isNumeric(x) || !Helper_Functions.isNumeric(y) || !Helper_Functions.isNumeric(size)) {
       throw new Error("x and y and size must be passed and be numbers");
@@ -33,36 +34,67 @@ class Train_Car extends Base_Entity {
     this.addTag("Train_Car");
     this.setX(x);
     this.setX(y);
-    this.setSquare(size);
-
-    this.Create_Car_Walls_And_Doors();
-    this.Add_Car_Walls_And_Doors_To_World();
-    this.Set_Car_Walls_And_Doors_Initial_Positions();
+    this.Set_To_Square_Of_Size(size);
 
     this.Insert_Behaviour_Logic();
-    this.addVisualSideEntities();
+
+    this.Add_Car_Walls_And_Doors();
+
+    this.Add_Visual_Side_Entities();
+    this.Add_Center_Box_Entity();
+  }
+  Add_Center_Box_Entity() {
+    const car = this;
+    // Calculate center of the car
+    const centerX = car.x + (car.width / 2);
+    const centerY = car.y + (car.height / 2);
+
+    // Calculate area of the car
+    const carArea = car.width * car.height;
+
+    // Calculate size of the virtual box 
+    const boxArea = carArea * 0.050;
+
+    // Assuming the virtual box is square for simplicity
+    const boxSize = Math.sqrt(boxArea);
+
+    // Define virtual box dimensions
+    const boxWidth = boxSize;
+    const boxHeight = boxSize;
+
+    // Calculate virtual box coordinates
+    const boxX = centerX - (boxWidth / 2);
+    const boxY = centerY - (boxHeight / 2);
+    const boxEntity = new Base_Entity();
+    boxEntity.setX(boxX);
+    boxEntity.setY(boxY);
+    boxEntity.setWidth(boxWidth);
+    boxEntity.setHeight(boxHeight);
+    boxEntity.setColor("gray");
+    World.addEntity(boxEntity);
+    this.Center_Box_Entity = boxEntity;
   }
 
   Insert_Behaviour_Logic() {
     Helper_Functions.Apply_Mixins(this.constructor, Train_Car_Behaviour);
   }
-  addVisualSideEntities() {
+  Add_Visual_Side_Entities() {
     const sideEntitySize = 25;
 
-    this.backSideEntity = new Base_Entity();
-    this.frontSideEntity = new Base_Entity();
+    this.Back_Side_Entity = new Base_Entity();
+    this.Front_Side_Entity = new Base_Entity();
 
-    this.backSideEntity.setColor("purple");
-    this.frontSideEntity.setColor("red");
+    this.Back_Side_Entity.setColor("purple");
+    this.Front_Side_Entity.setColor("red");
 
-    this.frontSideEntity.setWidth(sideEntitySize);
-    this.frontSideEntity.setHeight(sideEntitySize);
+    this.Front_Side_Entity.setWidth(sideEntitySize);
+    this.Front_Side_Entity.setHeight(sideEntitySize);
 
-    this.backSideEntity.setWidth(sideEntitySize);
-    this.backSideEntity.setHeight(sideEntitySize);
+    this.Back_Side_Entity.setWidth(sideEntitySize);
+    this.Back_Side_Entity.setHeight(sideEntitySize);
 
-    World.addEntity(this.backSideEntity);
-    World.addEntity(this.frontSideEntity);
+    World.addEntity(this.Back_Side_Entity);
+    World.addEntity(this.Front_Side_Entity);
   }
   getCenterXAndY() {
     const centerX = this.x + (this.width / 2);
@@ -88,7 +120,7 @@ class Train_Car extends Base_Entity {
     }
 
   }
-  is_center_of_car_touching_current_rail() {
+  Get_Center_Of_Car_Virtual_Box() {
     const car = this;
     const rail = this.currentRail;
     // Calculate center of the car
@@ -111,6 +143,11 @@ class Train_Car extends Base_Entity {
     // Calculate virtual box coordinates
     const boxX = centerX - (boxWidth / 2);
     const boxY = centerY - (boxHeight / 2);
+    return {x: boxX, y: boxY, width: boxWidth, height: boxHeight, forces:this.forces};
+  }
+  is_center_of_car_touching_current_rail() {
+    const center_of_car_virtual_box = this.Get_Center_Of_Car_Virtual_Box();
+
 
     // Check for intersection with rail
     return (
@@ -200,10 +237,6 @@ class Train_Car extends Base_Entity {
 
     const nextRailIfAny = currentRailEndClosestToCar.rail;
     if (!nextRailIfAny) {
-      const prevSides = this.getSidesAndWH();
-      Train_Car_Static.placeCarBackOnCurrentRail(this, currentRail);
-      const currentSides = this.getSidesAndWH();
-      this.reposition_car_riders(prevSides, currentSides, this.currentRail.orientation, this.currentRail.orientation);
       this.stopMovement();
       return;
     }
@@ -213,69 +246,8 @@ class Train_Car extends Base_Entity {
     const the_end_of_next_rail_connected_to_current_rail = nextRailIfAny.findEndConnectedTo(currentRail);
 
 
-
-    Train_Car_Static.placeCarOnEnd(this, the_end_of_next_rail_connected_to_current_rail);
     this.setCurrentRail(nextRailIfAny);
 
-    const newOrientation = this.currentRail.orientation;
-
-    const prevSides = this.getSidesAndWH();
-
-    this.correctlySetSidesAfterRailSwitch();
-
-    const newSides = this.getSidesAndWH();
-
-    this.reposition_car_riders(prevSides, newSides, previousOrientation, newOrientation);
-
-  }
-  reposition_car_riders(prevSides, newSides, oldOrientation, newOrientation) {
-    World.getCurrentEntities().forEach(entity => {
-      if (entity === this) {
-        return;
-      }
-      if (!entity.hasTag("Can_Ride_Train")) {
-        return;
-      }
-      if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
-        return;
-      }
-
-      entity.setX(this.getCenterX());
-      entity.setY(this.getCenterY());
-    });
-  }
-  getSidesAndWH() {
-    return {
-      width: this.getWidth(),
-      height: this.getHeight(),
-      frontSide: this.getFrontSide(),
-      backSide: this.getBackSide(),
-      rightSide: this.getRightSide(),
-      leftSide: this.getLeftSide(),
-    };
-  }
-
-  correctlySetSidesAfterRailSwitch() {
-    const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
-
-    const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
-
-    if (this.currentMovementDirection === 'forwards') {
-      this.setFrontSide(car_end_closest_to_farthest_rail_end.name);
-    }
-
-    if (this.currentMovementDirection === 'backwards') {
-      this.setBackSide(car_end_closest_to_farthest_rail_end.name);
-    }
-  }
-  oppositeOf(val, vals) {
-    // Check if val exists in vals
-    if (vals.includes(val)) {
-      // Find and return the opposite value
-      return vals.find(v => v !== val);
-    }
-    // If val is not found, return undefined or any other indication
-    return undefined;
   }
 
 
@@ -303,26 +275,17 @@ class Train_Car extends Base_Entity {
     this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
     this.currentMovementDirection = null;
 
-    const tempForces = {};
+    const negForces = {};
     for (var force in this.forces) {
       if (!Object.prototype.hasOwnProperty.call(this.forces, force)) {
         continue;
       }
-      tempForces[force] = this.forces[force];
+      negForces[force] = -(this.forces[force]);
       this.forces[force] = 0;
     }
-    this.subtract_from_riders_forces(tempForces);
+    this.Subtract_Forces_From_Entities_Riding_Car_But_Not_Below_Zero(negForces);
 
   }
-  subtract_from_riders_forces(forces) {
-    World.getCurrentEntities().forEach(entity => {
-      if (!this.carHasTheEntityForAPassenger(entity)) {
-        return;
-      }
-      entity.subtractFromForces(forces);
-    });
-  }
-
   setFrontSide(end) {
     if (!this.twoPossibleEnds.includes(end)) {
       throw new Error(`Invalid end ${end}`);
@@ -406,21 +369,39 @@ class Train_Car extends Base_Entity {
 
   updateState() {
     this.move_handler();
-    this.behaviour();
+    this.Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car();
     super.updateState();
-    this.handle_car_riders();
-    this.reposition_car_and_it_s_non_rider_contents_according_to_current_car_position();
   }
-  handle_car_riders() {
+  
+  Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car() {
+    const car_forces = this.forces;
+    this.Add_Forces_To_Entities_That_Are_Located_On_The_Car(car_forces);
+  }
+  Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces) {
+    
+    // all walls and doors of the car
+    this.Walls_And_Doors.forEach(wall_or_door => {
+      wall_or_door.addToForces(forces);
+    });
+    // and visual sides
+    this.Front_Side_Entity.addToForces(forces);
+    this.Back_Side_Entity.addToForces(forces)
+    // and the central box
+    this.Center_Box_Entity.addToForces(forces);
+
+
+    // all passengers
     World.getCurrentEntities().forEach(entity => {
-      if (!this.carHasTheEntityForAPassenger(entity)) {
+      if (!this.Car_Has_Entity_For_A_Passenger(entity)) {
         return;
       }
 
-      this.propagateForcesTo(entity);
+      entity.addToForces(forces);
     });
+
+
   }
-  carHasTheEntityForAPassenger(entity) {
+  Car_Has_Entity_For_A_Passenger(entity) {
     if (entity === this) {
       return false;
     }
@@ -432,8 +413,7 @@ class Train_Car extends Base_Entity {
     }
     return true;
   }
-  behaviour() {
-  }
+
   /* 
   
   */
@@ -459,6 +439,12 @@ class Train_Car extends Base_Entity {
       Bottom_Right_Door: new Sliding_Door(),
       Bottom_Right_Wall: new Wall(),
     };
+  }
+  Add_Car_Walls_And_Doors() {
+    this.Create_Car_Walls_And_Doors();
+    this.Set_Car_Walls_And_Doors_Initial_Positions();
+    this.Add_Car_Walls_And_Doors_To_World();
+    
   }
   Add_Car_Walls_And_Doors_To_World() {
     Object.values(this.Walls_And_Doors).forEach(wall => {
@@ -659,101 +645,6 @@ class Train_Car extends Base_Entity {
     
   }
 
-  reposition_car_and_it_s_non_rider_contents_according_to_current_car_position() {
-    this.reposition_visual_sides();
-    this.reposition_car_walls_according_to_car_position();
-  }
-  reposition_visual_sides() {
-    this.frontSideEntity.x = this.getFrontSide().x;
-    this.frontSideEntity.y = this.getFrontSide().y;
-    this.backSideEntity.x = this.getBackSide().x;
-    this.backSideEntity.y = this.getBackSide().y;
-  }
 
-
-
-  // This switches positions of the car walls based on the car's current x, y, w, h and orientation.
-  // Probably I can structure this better to abstract away the code for calculating the actual numbers? 
-  // Maybe the four lines per wall into a separate function and call it once per wall instead?
-  reposition_car_walls_according_to_car_position() {
-    // Adjust walls according to the current dimensions (horizontal or vertical)
-    if (this.orientation === "horizontal") {
-      this.setHorizontalWalls();
-    } else if (this.orientation === "vertical") {
-      this.setVerticalWalls();
-    }
-  }
-  setVerticalWalls() {
-    const carConnectorWallsHeight = this.Wall_And_Door_Thickness;
-    const carConnectorWallsWidth = this.width / 3;
-
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallA, this.getX(), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallB, this.getX() + (2 * carConnectorWallsWidth), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallA, this.getX(), this.getY() + this.getHeight() - carConnectorWallsHeight, carConnectorWallsWidth, carConnectorWallsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallB, this.getX() + (2 * carConnectorWallsWidth), this.getY() + this.getHeight() - carConnectorWallsHeight, carConnectorWallsWidth, carConnectorWallsHeight);
-
-    const entranceWallsAndDoorsWidth = this.Wall_And_Door_Thickness;
-    const entranceWallsAndDoorsHeight = (this.getHeight() - (2 * carConnectorWallsHeight)) / 4;
-
-
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallA, this.getX(), this.getY() + carConnectorWallsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-    if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorA, this.getX(), this.getY() + carConnectorWallsHeight + entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorB, this.getX(), this.getY() + carConnectorWallsHeight + (2 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-    }
-
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallB, this.getX(), this.getY() + carConnectorWallsHeight + (3 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallA, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-    if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorA, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorB, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + (2 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-    }
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallB, this.getX() + this.getWidth() - entranceWallsAndDoorsWidth, this.getY() + carConnectorWallsHeight + (3 * entranceWallsAndDoorsHeight), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-  }
-  setHorizontalWalls() {
-    const carConnectorWallsHeight = this.height / 3;
-    const carConnectorWallsWidth = this.Wall_And_Door_Thickness;
-
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallA, this.getX(), this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorAWallB, this.getX(), this.getY() + (carConnectorWallsHeight * 2), carConnectorWallsWidth, carConnectorWallsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallA, (this.getX() + this.getWidth()) - carConnectorWallsWidth, this.getY(), carConnectorWallsWidth, carConnectorWallsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.carConnectorBWallB, (this.getX() + this.getWidth()) - carConnectorWallsWidth, this.getY() + (carConnectorWallsHeight * 2), carConnectorWallsWidth, carConnectorWallsHeight);
-
-    const entranceWallsAndDoorsWidth = (this.getWidth() - (2 * carConnectorWallsWidth)) / 4;
-    const entranceWallsAndDoorsHeight = this.Wall_And_Door_Thickness;
-
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallA, this.getX() + carConnectorWallsWidth, this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-    if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorA, this.getX() + carConnectorWallsWidth + entranceWallsAndDoorsWidth, this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideADoorB, this.getX() + carConnectorWallsWidth + (2 * entranceWallsAndDoorsWidth), this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-    }
-
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideAWallB, this.getX() + carConnectorWallsWidth + (3 * entranceWallsAndDoorsWidth), this.getY(), entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallA, this.getX() + carConnectorWallsWidth, this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-    if (!this.Doors_Must_Be_Skipped) {
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorA, this.getX() + carConnectorWallsWidth + entranceWallsAndDoorsWidth, this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-
-      Train_Car.setWall(this.Walls_And_Doors.entranceSideBDoorB, this.getX() + carConnectorWallsWidth + (2 * entranceWallsAndDoorsWidth), this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-    }
-    Train_Car.setWall(this.Walls_And_Doors.entranceSideBWallB, this.getX() + carConnectorWallsWidth + (3 * entranceWallsAndDoorsWidth), this.getY() + this.height - entranceWallsAndDoorsHeight, entranceWallsAndDoorsWidth, entranceWallsAndDoorsHeight);
-  }
 
 }
