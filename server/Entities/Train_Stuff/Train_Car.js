@@ -105,18 +105,6 @@ class Train_Car extends Base_Entity {
     World.addEntity(this.Back_Side_Entity);
     World.addEntity(this.Front_Side_Entity);
   }
-  getCenterXAndY() {
-    const centerX = this.x + (this.width / 2);
-    const centerY = this.y + (this.height / 2);
-
-    return { x: centerX, y: centerY };
-  }
-  getCenterX() {
-    return this.getCenterXAndY().x;
-  }
-  getCenterY() {
-    return this.getCenterXAndY().y;
-  }
   setCurrentRail(rail) {
     this.previousRail = this.currentRail;
     this.currentRail = rail;
@@ -206,12 +194,40 @@ class Train_Car extends Base_Entity {
 
     const nextRailIfAny = currentRailEndClosestToCar.rail;
     if (!nextRailIfAny) {
+      
       this.stopMovement();
       return;
     }
 
 
     this.setCurrentRail(nextRailIfAny);
+    
+    const newCurrentRailEndClosestToCar = this.currentRail.getEndClosestTo(thisCar);
+
+    const deltaX = newCurrentRailEndClosestToCar.x - this.Center_Box_Entity.getX(); // 5 - 8 = -3
+    const deltaY = newCurrentRailEndClosestToCar.y - this.Center_Box_Entity.getY(); // 7 - 5 = 2
+    const absDX = Math.abs(deltaX);
+    const absDY = Math.abs(deltaY);
+
+    let carLeftOrRight = 'right';
+    let XZeroForce = 'left';
+    if (deltaX < 0) {
+      carLeftOrRight = 'left';
+      XZeroForce = 'right';
+    }
+    let carUpOrDown = 'down';
+    let YZeroForce = 'up';
+    if (deltaY < 0) {
+      carUpOrDown = 'up';
+      YZeroForce = 'down';
+    }
+    const newForces = {};
+    newForces[XZeroForce] = 0;
+    newForces[YZeroForce] = 0;
+    newForces[carLeftOrRight] = absDX;
+    newForces[carUpOrDown] = absDY;
+    this.setForces(newForces);
+    
 
   }
 
@@ -237,6 +253,7 @@ class Train_Car extends Base_Entity {
   }
 
   stopMovement() {
+    
     this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
     this.currentMovementDirection = null;
 
@@ -272,14 +289,17 @@ class Train_Car extends Base_Entity {
       return false;
     }
     if (this.isTryingToMoveBeyondTheRail()) {
+      console.log("true");
+      
       this.maybeSwitchRailsOrStopAndRemainOnCurrent();
       if (this.currentMovementDirection === null) {
         return false;
       }
+      return;
     }
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
-    this.forces = { ...newForces };
+    this.setForces(newForces);
   }
   determine_new_forces_for_movement_along_the_rail() {
     const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
@@ -342,14 +362,14 @@ class Train_Car extends Base_Entity {
   Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces) {
 
     // all walls and doors of the car
-    for(const wall_or_door of Object.values(this.Walls_And_Doors)){
-      wall_or_door.addToForces(forces);
+    for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
+      wall_or_door.setForces(forces);
     }
     // and visual sides
-    this.Front_Side_Entity.addToForces(forces);
-    this.Back_Side_Entity.addToForces(forces);
+    this.Front_Side_Entity.setForces(forces);
+    this.Back_Side_Entity.setForces(forces);
     // and the central box
-    this.Center_Box_Entity.addToForces(forces);
+    this.Center_Box_Entity.setForces(forces);
 
 
     // all passengers
@@ -358,7 +378,7 @@ class Train_Car extends Base_Entity {
         return;
       }
 
-      entity.addToForces(forces);
+      entity.setForces(forces);
     });
 
 
@@ -546,7 +566,7 @@ class Train_Car extends Base_Entity {
       height: Height_Of_Each_Left_Or_Right_Side_Entity,
     };
     this.Walls_And_Doors.Left_Side_Top_Wall.setXYWH(LSTW.x, LSTW.y, LSTW.width, LSTW.height);
-    
+
     const LSTD = {
       x: X_Of_Each_Left_Side_Entity,
       y: carY + Downwards_Offset_Due_To_The_Top_Wall + Downwards_Offset_Due_To_A_Single_Entity_Above,

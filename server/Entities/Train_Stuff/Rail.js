@@ -12,18 +12,6 @@ class Rail extends Base_Entity {
         this.addTag("Rail");
         this.setColor("purple");
     }
-    getCenterXAndY() {
-        const centerX = this.x + (this.width / 2);
-        const centerY = this.y + (this.height / 2);
-
-        return { x: centerX, y: centerY };
-    }
-    getCenterX() {
-        return this.getCenterXAndY().x;
-    }
-    getCenterY() {
-        return this.getCenterXAndY().y;
-    }
     getFirstEnd() {
         switch (this.orientation) {
             case "vertical":

@@ -10,7 +10,7 @@ class Train_Car_Behaviour {
      */
 
     behaviour() {
-
+        
         const spotOrNull = this.Get_Touching_Stop_Spot();
         if (!(spotOrNull === null) && !(spotOrNull === this.lastSpot)) {
             this.Pause_Movement();
@@ -30,7 +30,7 @@ class Train_Car_Behaviour {
     Pause_Movement() {
         this.storedMovementDirection = this.currentMovementDirection;
         this.pauseBegunAt = Date.now();
-        this.currentMovementDirection = null;
+        this.stopMovement();
 
     }
 

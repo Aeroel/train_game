@@ -1,5 +1,4 @@
 import { Game_Loop } from "#root/Game_Loop.js";
-import { Helper_Functions } from "#root/Helper_Functions.js";
 
 
 export { Base_Entity };
@@ -54,25 +53,39 @@ class Base_Entity {
       }
     });
   }
+  getCenterX() {
+    return this.x + (this.width / 2);
+  }
+  getCenterY() {
+    return this.y + (this.height / 2);
+  }
+  setForces(forces) {
+    Object.keys(forces).forEach(forceName => {
+      if (forces[forceName] < 0) {
+        throw new Error(`Trying to set force "${forceName}" to a negative value is invalid.`);
+      }
+      this.forces[forceName] = forces[forceName];
+    });
+  }
   /**
    * Adds calculated forces to the current forces.
    * @param {object} forces - Forces to add {left, right, up, down}.
    */
   addToForces(forces) {
     Object.keys(forces).forEach(forceName => {
-     this.addToForce(forceName, forces[forceName]);
+      this.addToForce(forceName, forces[forceName]);
 
     });
   }
   addToForce(forceName, Value_To_Add) {
-     // I am currently using a system of forces.up/down/left/right. So one of the four having a negative value makes no sense, since its counterpart is the one that is supposed to hold the value, 
-      // so for example I do not want to have right -4, I would want to set left to 4.
-      //  This is why this makes setting force to negative value an error somewhere in the caller.
-      const potentialNewValue = this.forces[forceName] + Value_To_Add;
-      if(potentialNewValue < 0) {
-        throw new Error(`Attempt to set ${forceName} to a negative value "${potentialNewValue}" is invalid.`);
-      }
-      this.forces[forceName] = potentialNewValue;
+    // I am currently using a system of forces.up/down/left/right. So one of the four having a negative value makes no sense, since its counterpart is the one that is supposed to hold the value, 
+    // so for example I do not want to have right -4, I would want to set left to 4.
+    //  This is why this makes setting force to negative value an error somewhere in the caller.
+    const potentialNewValue = this.forces[forceName] + Value_To_Add;
+    if (potentialNewValue < 0) {
+      throw new Error(`Attempt to set ${forceName} to a negative value "${potentialNewValue}" is invalid.`);
+    }
+    this.forces[forceName] = potentialNewValue;
   }
   propagateForcesTo(target) {
     target.addToForces(this.forces);
