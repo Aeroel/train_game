@@ -7,6 +7,10 @@ class World {
   };
   static pastStates = [];
   static addEntity(entity) {
+    if(!entity.hasTag('Entity')) {
+      throw new Error('Entity has no entity tag, check stuff');
+      
+    }
     World.state.entities.push(entity)
   }
   static getCurrentState() {
