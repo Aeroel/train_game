@@ -12,5 +12,5 @@ So two main things I guess I have to do:
 1. The split forces (the usage of "split" is found here, but not related the concept is to the above idea. Split forces are about... Well, instead of having fixed numerical values for each of the four (up, down, left, right) forces,
 I instead use an array of objects. So... these objects still have the values and are combined to be used as now, but I can tag the objects, for example a wall of a car would have tag "fromThisCar", value 35. Car can always find the exact object using tag, keep the force value what it needs to be and, the essential point, remove it at any time.
 For example, car switches rail, goes down instead of left, remove the left tagged force, push the down tagged force. So, this will be a good idea and solve the current thingie ... I guess )
-2. The percentage of distance covered from fixed rail end 1 and rail end 2 calculation to be used for rail switching once the distance is at say 95 percent.
+2. The percentage of distance covered from fixed rail end 1 and rail end 2 calculation to be used for rail switching once the distance is at say 95 percent. Something about reversing when reversing mov dir on same rail moving while I mean...
 
