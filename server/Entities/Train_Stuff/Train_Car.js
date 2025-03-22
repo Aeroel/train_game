@@ -186,7 +186,14 @@ class Train_Car extends Base_Entity {
     return (!this.is_center_of_car_touching_current_rail());
   }
 
-  maybeSwitchRailsOrStopAndRemainOnCurrent() {
+  Get_Percentage_Point_Of_Car_Location_On_Rail() {
+    
+  }
+  Rail_Handler() {
+    const percentage = this.Get_Percentage_Point_Of_Car_Location_On_Rail();
+    if(percentage < 95) {
+      return;
+    }
 
     const currentRail = this.currentRail;
     const thisCar = this;
@@ -194,40 +201,16 @@ class Train_Car extends Base_Entity {
 
     const nextRailIfAny = currentRailEndClosestToCar.rail;
     if (!nextRailIfAny) {
-      
+
       this.stopMovement();
       return;
     }
 
 
     this.setCurrentRail(nextRailIfAny);
-    
+
     const newCurrentRailEndClosestToCar = this.currentRail.getEndClosestTo(thisCar);
 
-    const deltaX = newCurrentRailEndClosestToCar.x - this.Center_Box_Entity.getX(); // 5 - 8 = -3
-    const deltaY = newCurrentRailEndClosestToCar.y - this.Center_Box_Entity.getY(); // 7 - 5 = 2
-    const absDX = Math.abs(deltaX);
-    const absDY = Math.abs(deltaY);
-
-    let carLeftOrRight = 'right';
-    let XZeroForce = 'left';
-    if (deltaX < 0) {
-      carLeftOrRight = 'left';
-      XZeroForce = 'right';
-    }
-    let carUpOrDown = 'down';
-    let YZeroForce = 'up';
-    if (deltaY < 0) {
-      carUpOrDown = 'up';
-      YZeroForce = 'down';
-    }
-    const newForces = {};
-    newForces[XZeroForce] = 0;
-    newForces[YZeroForce] = 0;
-    newForces[carLeftOrRight] = absDX;
-    newForces[carUpOrDown] = absDY;
-    this.setForces(newForces);
-    
 
   }
 
@@ -253,7 +236,7 @@ class Train_Car extends Base_Entity {
   }
 
   stopMovement() {
-    
+
     this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
     this.currentMovementDirection = null;
 
@@ -288,25 +271,21 @@ class Train_Car extends Base_Entity {
     if (this.currentMovementDirection === null) {
       return false;
     }
-    if (this.isTryingToMoveBeyondTheRail()) {
-      console.log("true");
-      
-      this.maybeSwitchRailsOrStopAndRemainOnCurrent();
-      if (this.currentMovementDirection === null) {
-        return false;
-      }
-      return;
-    }
+    this.Rail_Handler();
+
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
     this.setForces(newForces);
   }
   determine_new_forces_for_movement_along_the_rail() {
-    const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
-    const newForces = { ...this.forces };
+
     if (this.currentMovementDirection === null) {
       return this.forces;
     }
+
+    const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
+    const newForces = { ...this.forces };
+
     const backSide = this.getBackSide();
     const frontSide = this.getFrontSide();
     if (this.currentRail.orientation === 'vertical') {
