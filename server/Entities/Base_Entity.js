@@ -1,13 +1,16 @@
 import { Game_Loop } from "#root/Game_Loop.js";
+import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 
 
 export { Base_Entity };
 class Base_Entity {
+  id = Simple_Auto_Increment_Id_Generator.generateId();
+  possibleForces = ["left", "right", "up", "down"];
   forces = {
-    "up": 0,
-    "down": 0,
-    "left": 0,
-    "right": 0,
+    "up": [],
+    "down": [],
+    "left": [],
+    "right": [],
   };
   friction = 0.5;
   x = 0;
@@ -19,6 +22,12 @@ class Base_Entity {
   constructor() {
 
     this.addTag("Entity");
+  }
+  sumForceObjects(force) {
+    if(!possibleForces.includes(force)) {
+      throw new Error (`Invalid force ${force}, possible values are ${this.possibleForces.toString()}`);
+    }
+    this.forces[force].forEach(force);
   }
   calculateNextPositionBasedOnForcesAndDeltaTime() {
     const netHorizontalForce = this.forces.right - this.forces.left;

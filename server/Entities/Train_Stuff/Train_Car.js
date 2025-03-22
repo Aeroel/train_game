@@ -12,12 +12,10 @@ export { Train_Car };
 class Train_Car extends Base_Entity {
   Wall_And_Door_Thickness = 5;
   currentRail = undefined;
-  previousRail = undefined;
   defaultOrientation = "horizontal";
-  orientation = this.defaultOrientation;
-  previousOrientation = this.orientation;
   twoPossibleEnds = ['firstEnd', 'secondEnd'];
-  frontSide = "firstEnd"; // firstEnd or secondEnd
+  twoPossibleSides = ['frontSide', 'backSide'];
+  frontSide = "firstEnd"; // firstEnd or secondEnd. on hor rails , first is left, on vert rails, first is top
   Walls_And_Doors = {};
   defaultForceToMoveOnRail = 120;
   twoPossibleMovementDirections = ["backwards", "forwards"];
@@ -44,10 +42,10 @@ class Train_Car extends Base_Entity {
     this.Insert_Behaviour_Logic();
 
     this.Add_Car_Walls_And_Doors();
-
     this.Add_Visual_Side_Entities();
     this.Add_Center_Box_Entity();
   }
+
   Add_Center_Box_Entity() {
     const car = this;
     // Calculate center of the car
@@ -106,15 +104,8 @@ class Train_Car extends Base_Entity {
     World.addEntity(this.Front_Side_Entity);
   }
   setCurrentRail(rail) {
-    this.previousRail = this.currentRail;
     this.currentRail = rail;
-    this.orientation = this.currentRail.orientation;
 
-  }
-
-  is_center_of_car_touching_current_rail() {
-    const answer = Collision_Stuff.Do_Entities_Touch_Through_All_Tick_Subpositions(this.Center_Box_Entity, this.currentRail);
-    return answer;
   }
 
 
@@ -182,16 +173,59 @@ class Train_Car extends Base_Entity {
     }
   }
 
-  is_it_time_to_potentially_switch_rails() {
-    return (!this.is_center_of_car_touching_current_rail());
-  }
 
+  Get_Rail_End_Closest_To_Car_Side(side) {
+    if(!this.twoPossibleSides.includes(side)) {
+      throw new Error(`Side "${side}" invalid, not in twoPossibleSides {${this.twoPossibleSides.toString()}}`);
+    }
+    const frontSide = this.getFrontSide();
+    const backSide = this.getBackSide();
+    let sideWeAreWorkingWith;
+    if(side === 'frontSide') {
+      sideWeAreWorkingWith = frontSide;
+    } else {
+      sideWeAreWorkingWith = backSide;
+    }
+
+
+    const closest_rail_end = this.currentRail.findEndClosestTo(sideWeAreWorkingWith);
+    return closest_rail_end;
+  }
   Get_Percentage_Point_Of_Car_Location_On_Rail() {
-    
+    let startSide;
+    let finishSide;
+    if(this.currentMovementDirection === 'backwards') {
+      startSide= "frontSide";
+      finishSide = "backSide";
+    } else if(this.currentMovementDirection === 'forwards') {
+      startSide = "backSide";
+      finishSide = "frontSide";
+    }
+    const Rail_End_To_Treat_As_Start = this.Get_Rail_End_Closest_To_Car_Side(startSide);
+    const Rail_End_To_Treat_As_Finish = this.Get_Rail_End_Closest_To_Car_Side(finishSide);
+    let carCoordValue;
+    let railStartCoordValue;
+    let railFinishCoordValue;
+    if(this.currentRail.orientation === 'horizontal') {
+      carCoordValue = this.getX();
+      railStartCoordValue = Rail_End_To_Treat_As_Start.x;
+      railFinishCoordValue = Rail_End_To_Treat_As_Finish.x;
+    }  else if(this.currentRail.orientation === 'vertical') {
+      carCoordValue = this.getY();
+      railStartCoordValue = Rail_End_To_Treat_As_Start.y;
+      railFinishCoordValue = Rail_End_To_Treat_As_Finish.y;
+    }
+
+    const Distance_Covered_By_Car_From_Start_So_Far = railStartCoordValue -  carCoordValue;
+    const Distance_From_Start_To_Finish = railStartCoordValue - railFinishCoordValue;
+    const result = (Distance_Covered_By_Car_From_Start_So_Far/Distance_From_Start_To_Finish)*100;
+
+    return result;
+
   }
   Rail_Handler() {
     const percentage = this.Get_Percentage_Point_Of_Car_Location_On_Rail();
-    if(percentage < 95) {
+    if (percentage < 95) {
       return;
     }
 
@@ -208,11 +242,34 @@ class Train_Car extends Base_Entity {
 
 
     this.setCurrentRail(nextRailIfAny);
-
-    const newCurrentRailEndClosestToCar = this.currentRail.getEndClosestTo(thisCar);
+    this.correctlySetSidesAfterRailSwitch();
 
 
   }
+
+  correctlySetSidesAfterRailSwitch() {
+    const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
+
+    const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
+
+    if (this.currentMovementDirection === 'forwards') {
+      this.setFrontSide(car_end_closest_to_farthest_rail_end.name);
+    }
+
+    if (this.currentMovementDirection === 'backwards') {
+      this.setBackSide(car_end_closest_to_farthest_rail_end.name);
+    }
+  }
+  oppositeOf(val, vals) {
+    // Check if val exists in vals
+    if (vals.includes(val)) {
+      // Find and return the opposite value
+      return vals.find(v => v !== val);
+    }
+    // If val is not found, return undefined or any other indication
+    return undefined;
+  }
+
 
 
   get_car_end_closest_to(point) {
