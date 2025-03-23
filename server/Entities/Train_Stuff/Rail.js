@@ -1,4 +1,5 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { Helper_Functions } from "#root/Helper_Functions.js";
 
 export { Rail };
 class Rail extends Base_Entity {
@@ -72,34 +73,40 @@ class Rail extends Base_Entity {
          throw new Error(`${endType} does not match any valid value...`);
     }
     getEndClosestTo(obj) {
-        const centerOfObj = {
-            x: obj.x + obj.width / 2,
-            y: obj.y + obj.height / 2
-        };
-
+        if(!Helper_Functions.isNumber(obj.x) || !Helper_Functions.isNumber(obj.y)) {
+            throw new Error(`obj x and y must be numbers, given obj: ${JSON.stringify(obj)}`);
+        }
+        
+        
         const firstEnd = this.getFirstEnd();
         const secondEnd = this.getSecondEnd();
 
         const distanceToFirstEnd = Math.sqrt(
-            Math.pow(centerOfObj.x - firstEnd.x, 2) +
-            Math.pow(centerOfObj.y - firstEnd.y, 2)
+            Math.pow(obj.x - firstEnd.x, 2) +
+            Math.pow(obj.y - firstEnd.y, 2)
         );
 
         const distanceToSecondEnd = Math.sqrt(
-            Math.pow(centerOfObj.x - secondEnd.x, 2) +
-            Math.pow(centerOfObj.y - secondEnd.y, 2)
+            Math.pow(obj.x - secondEnd.x, 2) +
+            Math.pow(obj.y - secondEnd.y, 2)
         );
+        
 
         let closestEnd;
 
+        if(isNaN(distanceToFirstEnd) || isNaN(distanceToSecondEnd)) {
+            throw new Error(`DTFE and DTSE must be numbers, one or both are NaN`);
+        }
         if (distanceToFirstEnd < distanceToSecondEnd) {
             closestEnd = firstEnd;
-            closestEnd.rail = this.railConnections.firstEnd || null; // Get connected rail or null
+            closestEnd.connectedRail = this.railConnections.firstEnd || null; // Get connected rail or null
             closestEnd.name = 'firstEnd';
-        } else {
+        } else if (distanceToFirstEnd > distanceToSecondEnd) {
             closestEnd = secondEnd;
-            closestEnd.rail = this.railConnections.secondEnd || null; // Get connected rail or null
+            closestEnd.connectedRail = this.railConnections.secondEnd || null; // Get connected rail or null
             closestEnd.name = 'secondEnd';
+        } else {
+            throw new Error("Hm? ");
         }
 
         return closestEnd;

@@ -27,9 +27,8 @@ class Helper_Functions {
             }
         });
     }
-    // https://stackoverflow.com/a/175787
-    static isNumeric(str) {
-       return (typeof str === 'number');
+    static isNumber(num) {
+       return (typeof num === 'number' && isFinite(num));
     }
     static runThisFunctionUponInitiationOfASocketConnection(socket) {
         Helper_Functions.insertSomeHelperFunctionsIntoSocketInstance(socket);

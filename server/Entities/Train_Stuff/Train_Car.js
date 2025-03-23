@@ -4,7 +4,7 @@ import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
 import { Collision_Stuff } from "#root/Collision_Stuff.js";
-import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
+//import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
 
 export { Train_Car };
@@ -23,7 +23,7 @@ class Train_Car extends Base_Entity {
   lastMovementDirectionBeforeNull = null;
   Center_Box_Entity = {};
   constructor({ x, y, size, rail }) {
-    if (!Helper_Functions.isNumeric(x) || !Helper_Functions.isNumeric(y) || !Helper_Functions.isNumeric(size)) {
+    if (!Helper_Functions.isNumber(x) || !Helper_Functions.isNumber(y) || !Helper_Functions.isNumber(size)) {
       throw new Error(`x and y and size must be passed and be numbers, Passed xysize are instead: ${x} and ${y} and ${size}`);
     }
     if (!rail) {
@@ -39,7 +39,7 @@ class Train_Car extends Base_Entity {
     this.setY(y);
     this.Set_To_Square_Of_Size(size);
 
-    this.Insert_Behaviour_Logic();
+   // this.Insert_Behaviour_Logic();
 
     this.Add_Car_Walls_And_Doors();
     this.Add_Visual_Side_Entities();
@@ -180,13 +180,14 @@ class Train_Car extends Base_Entity {
 
 
   Get_Rail_End_Closest_To_Car_Side(side) {
-    if(!this.twoPossibleSides.includes(side)) {
+    if (!this.twoPossibleSides.includes(side)) {
       throw new Error(`Side "${side}" invalid, not in twoPossibleSides {${this.twoPossibleSides.toString()}}`);
     }
     const frontSide = this.getFrontSide();
     const backSide = this.getBackSide();
+
     let sideWeAreWorkingWith;
-    if(side === 'frontSide') {
+    if (side === 'frontSide') {
       sideWeAreWorkingWith = frontSide;
     } else {
       sideWeAreWorkingWith = backSide;
@@ -199,10 +200,10 @@ class Train_Car extends Base_Entity {
   Get_Percentage_Point_Of_Car_Location_On_Rail() {
     let startSide;
     let finishSide;
-    if(this.currentMovementDirection === 'backwards') {
-      startSide= "frontSide";
+    if (this.currentMovementDirection === 'backwards') {
+      startSide = "frontSide";
       finishSide = "backSide";
-    } else if(this.currentMovementDirection === 'forwards') {
+    } else if (this.currentMovementDirection === 'forwards') {
       startSide = "backSide";
       finishSide = "frontSide";
     }
@@ -211,26 +212,30 @@ class Train_Car extends Base_Entity {
     let carCoordValue;
     let railStartCoordValue;
     let railFinishCoordValue;
-    if(this.currentRail.orientation === 'horizontal') {
+    if (this.currentRail.orientation === 'horizontal') {
       carCoordValue = this.getX();
       railStartCoordValue = Rail_End_To_Treat_As_Start.x;
       railFinishCoordValue = Rail_End_To_Treat_As_Finish.x;
-    }  else if(this.currentRail.orientation === 'vertical') {
+    } else if (this.currentRail.orientation === 'vertical') {
       carCoordValue = this.getY();
       railStartCoordValue = Rail_End_To_Treat_As_Start.y;
       railFinishCoordValue = Rail_End_To_Treat_As_Finish.y;
     }
 
-    const Distance_Covered_By_Car_From_Start_So_Far = railStartCoordValue -  carCoordValue;
+    const Distance_Covered_By_Car_From_Start_So_Far = railStartCoordValue - carCoordValue;
     const Distance_From_Start_To_Finish = railStartCoordValue - railFinishCoordValue;
-    const result = (Distance_Covered_By_Car_From_Start_So_Far/Distance_From_Start_To_Finish)*100;
-
+    const result = (Distance_Covered_By_Car_From_Start_So_Far / Distance_From_Start_To_Finish) * 100;
+    
+    if(!Helper_Functions.isNumber(result)) {
+    throw new Error(`result must be number, but it became ${JSON.stringify(result)}`);
+    }
+    
     return result;
 
   }
   Rail_Handler() {
     const percentage = this.Get_Percentage_Point_Of_Car_Location_On_Rail();
-    if (percentage < 95) {
+    if (percentage < 99) {
       return;
     }
 
@@ -238,7 +243,7 @@ class Train_Car extends Base_Entity {
     const thisCar = this;
     const currentRailEndClosestToCar = currentRail.getEndClosestTo(thisCar);
 
-    const nextRailIfAny = currentRailEndClosestToCar.rail;
+    const nextRailIfAny = currentRailEndClosestToCar.connectedRail;
     if (!nextRailIfAny) {
 
       this.stopMovement();
@@ -391,6 +396,10 @@ class Train_Car extends Base_Entity {
   }
 
   updateState() {
+    //    console.log({b:this.getBackSide(), f:this.getFrontSide(), rail:this.currentRail, r1:this.Get_Rail_End_Closest_To_Car_Side("frontSide")});
+    //throw new Error("stop");
+
+
     this.move_handler();
     this.Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car();
     super.updateState();
@@ -405,13 +414,13 @@ class Train_Car extends Base_Entity {
     const forceKey = `Riding_Car_Id_${this.id}`;
     // all walls and doors of the car
     for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
-      wall_or_door.forces.setAll(forceKey,forces);
+      wall_or_door.forces.setAll(forceKey, forces);
     }
     // and visual sides
-    this.Front_Side_Entity.forces.setAll(forceKey,forces);
-    this.Back_Side_Entity.forces.setAll(forceKey,forces);
+    this.Front_Side_Entity.forces.setAll(forceKey, forces);
+    this.Back_Side_Entity.forces.setAll(forceKey, forces);
     // and the central box
-    this.Center_Box_Entity.forces.setAll(forceKey,forces);
+    this.Center_Box_Entity.forces.setAll(forceKey, forces);
 
 
     // all passengers
