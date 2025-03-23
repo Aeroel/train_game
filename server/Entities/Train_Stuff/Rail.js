@@ -56,15 +56,15 @@ class Rail extends Base_Entity {
 
     getEnd(endType) {
         if (this.orientation === 'horizontal') {
-            if (endType === 'secondEnd') {
+            if (endType === 'secondEnd' || endType === 'rightEnd') {
                 return { x: this.x + this.width, y: this.y };
-            } else if (endType === 'firstEnd') {
+            } else if (endType === 'firstEnd' || endType === 'leftEnd') {
                 return { x: this.x, y: this.y };
             }
         } else if (this.orientation === 'vertical') {
-            if (endType === 'secondEnd') {
+            if (endType === 'secondEnd' || endType === 'bottomEnd') {
                 return { x: this.x, y: this.y + this.height };
-            } else if (endType === 'firstEnd') {
+            } else if (endType === 'firstEnd' || endType === 'topEnd') {
                 return { x: this.x, y: this.y };
             }
         }

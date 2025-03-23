@@ -24,16 +24,16 @@ class Player extends Base_Entity {
   }
   updateState() {
     if (this.controls.right) {
-      this.forces.right.set("Player_Controls", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "right", this.standardMovementSpeed);
     }
     if (this.controls.left) {
-      this.forces.left.set("Player_Controls", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "left", this.standardMovementSpeed);
     }
     if (this.controls.up) {
-      this.forces.up.set("Player_Controls", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "up", this.standardMovementSpeed);
     }
     if (this.controls.down) {
-      this.forces.down.set("Player_Controls", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "down", this.standardMovementSpeed);
     }
     super.updateState();
   }

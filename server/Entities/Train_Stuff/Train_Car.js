@@ -44,6 +44,11 @@ class Train_Car extends Base_Entity {
     this.Add_Car_Walls_And_Doors();
     this.Add_Visual_Side_Entities();
     this.Add_Center_Box_Entity();
+
+    this.Init_Force_Keys();
+  }
+  Init_Force_Keys() {
+    this.forces.Init_A_Key_For_Each_Force("Rail_Movement");
   }
 
   Add_Center_Box_Entity() {
@@ -341,7 +346,7 @@ class Train_Car extends Base_Entity {
     }
 
     const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
-    const newForces = this.forces.Get_By_Key(`Rail_Movement`);
+    const newForces = this.forces.Get_All_By_Key(`Rail_Movement`);
 
     const backSide = this.getBackSide();
     const frontSide = this.getFrontSide();
@@ -392,7 +397,7 @@ class Train_Car extends Base_Entity {
   }
 
   Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car() {
-    const car_forces = this.forces.Get_By_Key("Rail_Movement");
+    const car_forces = this.forces.Get_All_By_Key("Rail_Movement");
     this.Add_Forces_To_Entities_That_Are_Located_On_The_Car(car_forces);
   }
   Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces) {
@@ -415,7 +420,7 @@ class Train_Car extends Base_Entity {
         return;
       }
 
-      entity.set(forceKey, forces);
+      entity.forces.setAll(forceKey, forces);
     });
 
 
