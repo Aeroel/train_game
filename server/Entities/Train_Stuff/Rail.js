@@ -68,20 +68,20 @@ class Rail extends Base_Entity {
 
     getEnd(endType) {
         if (this.orientation === 'horizontal') {
-            if (endType === 'rightEnd') {
+            if (endType === 'secondEnd' || endType === 'rightEnd') {
                 return { x: this.x + this.width, y: this.y };
-            } else if (endType === 'leftEnd') {
+            } else if (endType === 'firstEnd' || endType === 'leftEnd') {
                 return { x: this.x, y: this.y };
             }
         } else if (this.orientation === 'vertical') {
-            if (endType === 'bottomEnd') {
+            if (endType === 'secondEnd' || endType === 'bottomEnd') {
                 return { x: this.x, y: this.y + this.height };
-            } else if (endType === 'topEnd') {
+            } else if (endType === 'firstEnd' || endType === 'topEnd') {
                 return { x: this.x, y: this.y };
             }
         }
-         // Default (if no matching end type)
-         throw new Error(`${endType} does not match any valid value...`);
+        // Default (if no matching end type)
+        throw new Error(`${endType} does not match any valid value...`);
     }
     getEndClosestTo(obj) {
         const centerOfObj = {
