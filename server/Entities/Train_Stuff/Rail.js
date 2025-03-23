@@ -23,12 +23,6 @@ class Rail extends Base_Entity {
                 break;
         }
     }
-    getEnd(name) {
-        if (name === 'secondEnd') {
-            return this.getSecondEnd();
-        }
-        return this.getFirstEnd();
-    }
     getSecondEnd() {
         switch (this.orientation) {
             case "vertical":
@@ -72,6 +66,17 @@ class Rail extends Base_Entity {
          // Default (if no matching end type)
          throw new Error(`${endType} does not match any valid value...`);
     }
+    outOfTwoSidesGetOneClosestToSpecifiedEnd(frontSideXY, backSideXY, endName) {
+      const endInQuestion = this.getEnd(endName);
+      
+      const frontDistance = this.calculateDistance(frontSideXY, endInQuestion);
+    const backDistance = this.calculateDistance(backSideXY, endInQuestion);
+
+    return frontDistance <= backDistance ? "frontSide" : "backSide";
+    }
+    calculateDistance(point1, point2) {
+    return Math.hypot(point1.x - point2.x, point1.y - point2.y);
+  }
     getEndClosestTo(obj) {
         if(!Helper_Functions.isNumber(obj.x) || !Helper_Functions.isNumber(obj.y)) {
             throw new Error(`obj x and y must be numbers, given obj: ${JSON.stringify(obj)}`);

@@ -200,15 +200,34 @@ class Train_Car extends Base_Entity {
   Get_Percentage_Point_Of_Car_Location_On_Rail() {
     let startSide;
     let finishSide;
+    let Rail_End_To_Treat_As_Start
+    let Rail_End_To_Treat_As_Finish
+    const closestCarSideToFirstRailEnd = this.currentRail.outOfTwoSidesGetOneClosestToSpecifiedEnd(this.getFrontSide(), this.getBackSide(), "firstEnd")
+    const closestCarSideToSecondRailEnd = this.currentRail.outOfTwoSidesGetOneClosestToSpecifiedEnd(this.getFrontSide(), this.getBackSide(), "secondEnd")
+    
     if (this.currentMovementDirection === 'backwards') {
       startSide = "frontSide";
       finishSide = "backSide";
+      
     } else if (this.currentMovementDirection === 'forwards') {
       startSide = "backSide";
       finishSide = "frontSide";
     }
-    const Rail_End_To_Treat_As_Start = this.Get_Rail_End_Closest_To_Car_Side(startSide);
-    const Rail_End_To_Treat_As_Finish = this.Get_Rail_End_Closest_To_Car_Side(finishSide);
+    if(startSide === 'frontSide' && closestCarSideToFirstRailEnd==='frontSide') {
+      Rail_End_To_Treat_As_Start = this.currentRail.getFirstEnd();
+      Rail_End_To_Treat_As_Finish = this.currentRail.getSecondEnd();
+    } else if (startSide === 'backSide' && closestCarSideToFirstRailEnd ==='backSide') {
+            Rail_End_To_Treat_As_Start = this.currentRail.getSecondEnd();
+      Rail_End_To_Treat_As_Finish = this.currentRail.getFirstEnd();
+    } else if(startSide==='frontSide' && closestCarSideToFirstRailEnd==='backSide') {
+                  Rail_End_To_Treat_As_Start = this.currentRail.getSecondEnd();
+                        Rail_End_To_Treat_As_Finish = this.currentRail.getFirstEnd();
+    } else if(startSide==='backSide'&& closestCarSideToFirstRailEnd ==='frontSide' ) {
+            Rail_End_To_Treat_As_Start = this.currentRail.getSecondEnd();
+      Rail_End_To_Treat_As_Finish = this.currentRail.getFirstEnd();
+    } else {
+      throw new Error("Impossible?")
+    }
     let carCoordValue;
     let railStartCoordValue;
     let railFinishCoordValue;
