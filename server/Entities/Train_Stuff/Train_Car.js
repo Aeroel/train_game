@@ -188,7 +188,7 @@ class Train_Car extends Base_Entity {
     }
 
 
-    const closest_rail_end = this.currentRail.findEndClosestTo(sideWeAreWorkingWith);
+    const closest_rail_end = this.currentRail.getEndClosestTo(sideWeAreWorkingWith);
     return closest_rail_end;
   }
   Get_Percentage_Point_Of_Car_Location_On_Rail() {
@@ -332,7 +332,7 @@ class Train_Car extends Base_Entity {
 
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
-    this.setForces(newForces);
+    this.forces.setAll("Rail_Movement", newForces);
   }
   determine_new_forces_for_movement_along_the_rail() {
 
@@ -341,7 +341,7 @@ class Train_Car extends Base_Entity {
     }
 
     const defaultForceToMoveOnRail = this.defaultForceToMoveOnRail;
-    const newForces = { ...this.forces };
+    const newForces = this.forces.Get_By_Key(`Rail_Movement`);
 
     const backSide = this.getBackSide();
     const frontSide = this.getFrontSide();
@@ -392,20 +392,21 @@ class Train_Car extends Base_Entity {
   }
 
   Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car() {
-    const car_forces = this.forces;
+    const car_forces = this.forces.Get_By_Key("Rail_Movement");
     this.Add_Forces_To_Entities_That_Are_Located_On_The_Car(car_forces);
   }
   Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces) {
 
+    const forceKey = `Riding_Car_Id_${this.id}`;
     // all walls and doors of the car
     for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
-      wall_or_door.setForces(forces);
+      wall_or_door.forces.setAll(forceKey,forces);
     }
     // and visual sides
-    this.Front_Side_Entity.setForces(forces);
-    this.Back_Side_Entity.setForces(forces);
+    this.Front_Side_Entity.forces.setAll(forceKey,forces);
+    this.Back_Side_Entity.forces.setAll(forceKey,forces);
     // and the central box
-    this.Center_Box_Entity.setForces(forces);
+    this.Center_Box_Entity.forces.setAll(forceKey,forces);
 
 
     // all passengers
@@ -414,7 +415,7 @@ class Train_Car extends Base_Entity {
         return;
       }
 
-      entity.setForces(forces);
+      entity.set(forceKey, forces);
     });
 
 

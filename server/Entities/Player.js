@@ -1,15 +1,15 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
-export { Player }
+export { Player };
 class Player extends Base_Entity {
   controls = {
     right: false,
     left: false,
     up: false,
     down: false,
-  }
+  };
   standardMovementSpeed = 120;
   socketId = null;
-  defaultVisionRange = 200
+  defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
   constructor() {
     super();
@@ -24,16 +24,16 @@ class Player extends Base_Entity {
   }
   updateState() {
     if (this.controls.right) {
-      this.forces.right += this.standardMovementSpeed;
+      this.forces.right.set("Player_Controls", this.standardMovementSpeed);
     }
     if (this.controls.left) {
-      this.forces.left += this.standardMovementSpeed;
+      this.forces.left.set("Player_Controls", this.standardMovementSpeed);
     }
     if (this.controls.up) {
-      this.forces.up += this.standardMovementSpeed;
+      this.forces.up.set("Player_Controls", this.standardMovementSpeed);
     }
     if (this.controls.down) {
-      this.forces.down += this.standardMovementSpeed;
+      this.forces.down.set("Player_Controls", this.standardMovementSpeed);
     }
     super.updateState();
   }
