@@ -72,7 +72,17 @@ class Train_Car_Behaviour {
     }
 
     Open_Doors() {
-        
+        if(this.car.currentRail.orientation === 'horizontal') {
+            this.car.Walls_And_Doors.Top_Left_Door.open();
+            this.car.Walls_And_Doors.Top_Right_Door.open();
+            this.car.Walls_And_Doors.Bottom_Left_Door.open();
+            this.car.Walls_And_Doors.Bottom_Right_Door.open();
+        } else {
+            this.car.Walls_And_Doors.Left_Side_Top_Door.open();
+            this.car.Walls_And_Doors.Left_Side_Bottom_Door.open();
+            this.car.Walls_And_Doors.Right_Side_Top_Door_Door.open();
+            this.car.Walls_And_Doors.Right_Side_Bottom_Door_Door.open();
+        }
     }
 
     Close_Doors() {

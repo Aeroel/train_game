@@ -459,23 +459,23 @@ class Train_Car extends Base_Entity {
   Create_Car_Walls_And_Doors() {
     this.Walls_And_Doors = {
       Top_Left_Wall: new Wall(),
-      Top_Left_Door: new Sliding_Door(),
-      Top_Right_Door: new Sliding_Door(),
+      Top_Left_Door: new Sliding_Door("left"),
+      Top_Right_Door: new Sliding_Door("right"),
       Top_Right_Wall: new Wall(),
 
       Left_Side_Top_Wall: new Wall(),
-      Left_Side_Top_Door: new Sliding_Door(),
-      Left_Side_Bottom_Door: new Sliding_Door(),
+      Left_Side_Top_Door: new Sliding_Door("up"),
+      Left_Side_Bottom_Door: new Sliding_Door("down"),
       Left_Side_Bottom_Wall: new Wall(),
 
       Right_Side_Top_Wall: new Wall(),
-      Right_Side_Top_Door: new Sliding_Door(),
-      Right_Side_Bottom_Door: new Sliding_Door(),
+      Right_Side_Top_Door: new Sliding_Door("up"),
+      Right_Side_Bottom_Door: new Sliding_Door("down"),
       Right_Side_Bottom_Wall: new Wall(),
 
       Bottom_Left_Wall: new Wall(),
-      Bottom_Left_Door: new Sliding_Door(),
-      Bottom_Right_Door: new Sliding_Door(),
+      Bottom_Left_Door: new Sliding_Door("left"),
+      Bottom_Right_Door: new Sliding_Door("right"),
       Bottom_Right_Wall: new Wall(),
     };
   }
