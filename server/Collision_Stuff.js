@@ -29,6 +29,9 @@ class Collision_Stuff {
 
   }
   static areEntitiesTouching(entityA, entityB) {
+    if(!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
+      throw new Error(`Both arguments must be entities`)
+    }
     const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
 
     let collHappenedAtAnyTime = false;

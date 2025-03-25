@@ -19,6 +19,9 @@ class Base_Entity {
 
     this.addTag("Entity");
   }
+  Get_No_Movement_Forces() {
+    return {up:0,down:0, right:0,left:0};
+  }
   calculateNextPositionBasedOnForcesAndDeltaTime() {
     const netHorizontalForce = this.forces.sumComponents("right") - this.forces.sumComponents("left");
     const netVerticalForce = this.forces.sumComponents("down") - this.forces.sumComponents("up");

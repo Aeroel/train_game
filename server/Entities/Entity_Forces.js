@@ -13,6 +13,9 @@ class Entity_Forces {
         this.entity = ofEntity;
 
     }
+    Get_No_Movement_Forces() {
+        return {up:0, down:0, right:0,left:0}
+    }
     Init_A_Key_For_Each_Force(keyName) {
         this.setAll(keyName, { up: 0, down: 0, left: 0, right: 0 }, true);
     }
