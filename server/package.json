@@ -1,6 +1,8 @@
 {
     "type": "module",
     "dependencies": {
+        "@types/express": "^5.0.1",
+        "@types/node": "^22.13.13",
         "express": "^4.21.1",
         "socket.io": "^4.8.1"
     },
