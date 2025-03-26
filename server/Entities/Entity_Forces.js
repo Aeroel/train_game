@@ -77,7 +77,7 @@ class Entity_Forces {
             if(this.Entities_That_Also_Get_The_Forces_Of_This_Entity.length===0) {
         return;
       }
-      const propagationKey =`Propagated_From_${key}`
+      const propagationKey =`${key}`
       this.Entities_That_Also_Get_The_Forces_Of_This_Entity.forEach(entity => {
         entity.forces.set(propagationKey, forceName, forceValue, keepAtZero)
       })

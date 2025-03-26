@@ -47,6 +47,19 @@ class Train_Car extends Base_Entity {
 
     this.Init_Force_Keys();
     this.behaviour = new Train_Car_Behaviour(this);
+    this.Init_Propagation()
+  }
+  Init_Propagation() {
+        // all walls and doors of the car
+    for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
+        this.forces.Add_To_Propagation_List(wall_or_door);
+    }
+    // and visual sides
+    this.forces.Add_To_Propagation_List(this.Front_Side_Entity);
+    this.forces.Add_To_Propagation_List(this.Back_Side_Entity);
+    // and the central box
+    this.forces.Add_To_Propagation_List(this.Center_Box_Entity);
+
   }
   Init_Force_Keys() {
     this.forces.Rail_Movement_Key = `Rail_Movement`;
@@ -417,15 +430,6 @@ class Train_Car extends Base_Entity {
   Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces) {
 
     const forceKey = this.forces.Riding_Force_Key;
-    // all walls and doors of the car
-    for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
-      wall_or_door.forces.setAll(forceKey, forces);
-    }
-    // and visual sides
-    this.Front_Side_Entity.forces.setAll(forceKey, forces);
-    this.Back_Side_Entity.forces.setAll(forceKey, forces);
-    // and the central box
-    this.Center_Box_Entity.forces.setAll(forceKey, forces);
 
 
     // all passengers
@@ -477,6 +481,7 @@ class Train_Car extends Base_Entity {
       Bottom_Right_Door: new Sliding_Door("right"),
       Bottom_Right_Wall: new Wall(),
     };
+
   }
   Add_Car_Walls_And_Doors() {
     this.Create_Car_Walls_And_Doors();
