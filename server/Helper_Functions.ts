@@ -1,7 +1,7 @@
-import { Functions_To_Inject_Into_Socket_Instance } from "#root/Functions_To_Inject_Into_Socket_Instance.js";
-import { SocketDataStorage } from "#root/SocketDataStorage.js";
-import { SocketStorage } from "#root/SocketStorage.js";
-import { World } from "#root/World.js";
+import { Functions_To_Inject_Into_Socket_Instance } from "#root/Functions_To_Inject_Into_Socket_Instance.ts";
+import { SocketDataStorage } from "#root/SocketDataStorage.ts";
+import { SocketStorage } from "#root/SocketStorage.ts";
+import { World } from "#root/World.ts";
 
 
 export { Helper_Functions };

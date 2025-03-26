@@ -1,5 +1,5 @@
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
-import { World } from "#root/World.js";
+import { Collision_Stuff } from "#root/Collision_Stuff.ts";
+import { World } from "#root/World.ts";
 
 export { Train_Car_Behaviour };
 

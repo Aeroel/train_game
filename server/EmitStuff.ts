@@ -1,6 +1,6 @@
-import { PreEmitStuff } from "#root/PreEmitStuff.js";
-import { SocketStorage } from "#root/SocketStorage.js";
-import { World } from "#root/World.js";
+import { PreEmitStuff } from "#root/PreEmitStuff.ts";
+import { SocketStorage } from "#root/SocketStorage.ts";
+import { World } from "#root/World.ts";
 
 
 export { EmitStuff } 

@@ -1,11 +1,11 @@
 
-import { Base_Entity } from "#root/Entities/Base_Entity.js";
-import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
-import { Wall } from "#root/Entities/Wall.js";
-import { World } from "#root/World.js";
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
-import { Helper_Functions } from "#root/Helper_Functions.js";
-import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.ts";
+import { Sliding_Door } from "#root/Entities/Sliding_Door.ts";
+import { Wall } from "#root/Entities/Wall.ts";
+import { World } from "#root/World.ts";
+import { Collision_Stuff } from "#root/Collision_Stuff.ts";
+import { Helper_Functions } from "#root/Helper_Functions.ts";
+import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.ts";
 
 export { Train_Car };
 

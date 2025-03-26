@@ -1,5 +1,5 @@
-import { Settings } from "#root/Settings.js";
-import { SocketDataStorage } from "#root/SocketDataStorage.js";
+import { Settings } from "#root/Settings.ts";
+import { SocketDataStorage } from "#root/SocketDataStorage.ts";
 
 export { Functions_To_Inject_Into_Socket_Instance }
 class Functions_To_Inject_Into_Socket_Instance {

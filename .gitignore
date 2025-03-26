@@ -2,3 +2,4 @@ server/node_modules/
 .vs/
 server/pnpm-lock.yaml
 server/package-lock.json
+server/built/

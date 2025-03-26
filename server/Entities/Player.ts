@@ -1,4 +1,4 @@
-import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.ts";
 export { Player };
 class Player extends Base_Entity {
   controls = {

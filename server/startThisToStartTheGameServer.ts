@@ -3,11 +3,11 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.js";
-import { Player } from "#root/Entities/Player.js";
-import { Game_Loop } from "#root/Game_Loop.js";
-import { Helper_Functions } from "#root/Helper_Functions.js";
-import { World } from "#root/World.js";
+import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.ts";
+import { Player } from "#root/Entities/Player.ts";
+import { Game_Loop } from "#root/Game_Loop.ts";
+import { Helper_Functions } from "#root/Helper_Functions.ts";
+import { World } from "#root/World.ts";
 
 const app = express();
 const httpServer = createServer(app);

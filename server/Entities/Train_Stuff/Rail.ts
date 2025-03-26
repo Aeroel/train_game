@@ -1,5 +1,5 @@
-import { Base_Entity } from "#root/Entities/Base_Entity.js";
-import { Helper_Functions } from "#root/Helper_Functions.js";
+import { Base_Entity } from "#root/Entities/Base_Entity.ts";
+import { Helper_Functions } from "#root/Helper_Functions.ts";
 
 export { Rail };
 class Rail extends Base_Entity {

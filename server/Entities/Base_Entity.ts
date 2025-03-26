@@ -1,6 +1,6 @@
-import { Entity_Forces } from "#root/Entities/Entity_Forces.js";
-import { Game_Loop } from "#root/Game_Loop.js";
-import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
+import { Entity_Forces } from "#root/Entities/Entity_Forces.ts";
+import { Game_Loop } from "#root/Game_Loop.ts";
+import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.ts";
 
 
 export { Base_Entity };

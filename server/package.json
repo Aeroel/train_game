@@ -7,6 +7,6 @@
         "socket.io": "^4.8.1"
     },
     "imports": {
-        "#root/*": "./*"
+        "#root/*": "./built/*"
     }
 }

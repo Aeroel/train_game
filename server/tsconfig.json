@@ -1,6 +1,6 @@
 { 
   "compilerOptions": {
-    "outDir": "./TS_Built",
+    "outDir": "./built",
     "strict": true,
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
@@ -11,13 +11,13 @@
       "ESNext"
     ],
   "paths": {
-    "#root/*": ["./*"],
+    "#root/*": ["./built/*"],
   }
   },
   "exclude": [
     "node_modules",
     "**/node_modules/*",
-    "./TS_Built"
+    "./built"
   ],
   "include": ["./"]
 }
