@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "nodenext",
+    "baseUrl": ".",
+    "module": "NodeNext",
+    "target": "ES2022",
+    "lib": [
+      "ES2023"
+    ],
+  "paths": {
+    "#root/*": ["./*"],
+  }
+  },
+  "exclude": [
+    "node_modules",
+    "**/node_modules/*"
+  ]
+}

@@ -1,10 +1,10 @@
-import { Ground } from "#root/Entities/Ground.ts";
-import { Base_Entity } from '#root/Entities/Base_Entity.ts';
-import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.ts";
-import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.ts";
-import { World } from "#root/World.ts";
-import { Forcefield } from "#root/Entities/Forcefield.ts";
-import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.ts";
+import { Ground } from "#root/Entities/Ground.js";
+import { Base_Entity } from '#root/Entities/Base_Entity.js';
+import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
+import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
+import { World } from "#root/World.js";
+import { Forcefield } from "#root/Entities/Forcefield.js";
+import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 
 export { Add_Some_Entities_To_The_World };
 
