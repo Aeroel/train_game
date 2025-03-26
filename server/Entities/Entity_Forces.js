@@ -61,6 +61,7 @@ class Entity_Forces {
         this.set(key, "left", forces.left, keepAtZero);
     }
     set(key, forceName, forceValue, keepAtZero) {
+        this.propagateSet(key, forceName, forceValue, keepAtZero)
         if (!this.Key_Exists_In_Force(key, forceName)) {
             this.forces[forceName].push({ key, forceValue, keepAtZero });
             return;
@@ -68,7 +69,6 @@ class Entity_Forces {
         const existingComponent = this.forces[forceName].find(component => component.key === key);
         existingComponent.forceValue = forceValue;
         
-     this.propagateSet(key, forceName, forceValue, keepAtZero)
     }
     Add_To_Propagation_List(entity) {
       this.Entities_That_Also_Get_The_Forces_Of_This_Entity.push(entity)

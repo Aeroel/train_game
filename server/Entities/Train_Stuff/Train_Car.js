@@ -321,7 +321,6 @@ class Train_Car extends Base_Entity {
   }
 
   stopMovement() {
-
     this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
     this.currentMovementDirection = null;
     this.forces.setAll(this.forces.Rail_Movement_Key, this.forces.Get_No_Movement_Forces());

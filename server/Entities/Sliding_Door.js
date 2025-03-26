@@ -84,13 +84,6 @@ class Sliding_Door extends Base_Entity {
         this.state = state;
     }
     open() {
-        if (!this.getState() === 'opening') {
-            this.setState('opening');
-            this.forces.setAll(this.forces.Sliding_Key, this.forces.Get_No_Movement_Forces());
-            this.forces.set(this.forces.Sliding_Key, this.Which_Direction_The_Door_Slides_When_Opening, 10);
-            return;
-        }
-        this.forces.set(this.forces.Sliding_Key, this.Which_Direction_The_Door_Slides_When_Opening, 10);
         
     }
     close() {
