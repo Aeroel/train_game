@@ -15,7 +15,8 @@ class EntitySorter {
       "Player": 3,
       "Forcefield": 3,
       "Walls": 4,
-      "Sliding_Door": 4 // Same priority as Walls
+      "Sliding_Door": 4, // Same priority as Walls
+      "Sensor":5,
     };
 
     return entities.sort((a, b) => {

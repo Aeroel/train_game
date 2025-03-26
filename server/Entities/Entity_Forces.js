@@ -1,6 +1,7 @@
 export { Entity_Forces };
 class Entity_Forces {
     entity;
+    Entities_That_Also_Get_The_Forces_Of_This_Entity = new Array();
     possibleForces = ["up", "down", "left", "right"];
     forces = {
         up: [],
@@ -66,6 +67,20 @@ class Entity_Forces {
         }
         const existingComponent = this.forces[forceName].find(component => component.key === key);
         existingComponent.forceValue = forceValue;
+        
+     this.propagateSet(key, forceName, forceValue, keepAtZero)
+    }
+    Add_To_Propagation_List(entity) {
+      this.Entities_That_Also_Get_The_Forces_Of_This_Entity.push(entity)
+    }
+    propagateSet(key, forceName, forceValue, keepAtZero) {
+            if(this.Entities_That_Also_Get_The_Forces_Of_This_Entity.length===0) {
+        return;
+      }
+      const propagationKey =`Propagated_From_${key}`
+      this.Entities_That_Also_Get_The_Forces_Of_This_Entity.forEach(entity => {
+        entity.forces.set(propagationKey, forceName, forceValue, keepAtZero)
+      })
     }
     Key_Exists_In_Force(key, forceName) {
         if(!this.possibleForces.includes(forceName)) {
