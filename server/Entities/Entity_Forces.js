@@ -10,6 +10,15 @@ class Entity_Forces {
         left: []
     };
     threshold = 0.9;
+    static Get_Opposite_Force(to) {
+    const isOppositeTo = {
+      up:"down",
+      down:"up",
+      right:"left",
+      left:"right",
+    }
+    return isOppositeTo[to];
+    }
     constructor(ofEntity) {
         this.entity = ofEntity;
 

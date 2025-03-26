@@ -53,6 +53,12 @@ class Train_Car extends Base_Entity {
         // all walls and doors of the car
     for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
         this.forces.Add_To_Propagation_List(wall_or_door);
+        if(wall_or_door.hasTag("Sliding_Door")) {
+         for(const sensor of Object.values(wall_or_door.sensors)) {
+           this.forces.Add_To_Propagation_List(sensor)
+         }
+        }
+        
     }
     // and visual sides
     this.forces.Add_To_Propagation_List(this.Front_Side_Entity);

@@ -28,8 +28,20 @@ class Train_Car_Behaviour {
         }
         if (this.Is_Waiting_For_Five_Seconds && this.Did_Five_Seconds_Pass()) {
             this.Close_Doors();
-            this.Continue_Moving();
             this.Is_Waiting_For_Five_Seconds = false;
+            this.Closing_Doors=true
+        }
+        if(this.Closing_Doors) {
+        let A_Random_Representative_Door
+        if(this.car.currentRail.orientation==='vertical') {
+          A_Random_Representative_Door = this.car.Walls_And_Doors.Left_Side_Top_Door
+        } else {
+          A_Random_Representative_Door = this.car.Walls_And_Doors.Top_Left_Door
+        }
+        if(A_Random_Representative_Door.getState()==='closed') {
+        this.Continue_Moving();
+        this.Closing_Doors = false;
+        }
         }
 
 
@@ -86,7 +98,17 @@ class Train_Car_Behaviour {
     }
 
     Close_Doors() {
-
+        if(this.car.currentRail.orientation === 'horizontal') {
+            this.car.Walls_And_Doors.Top_Left_Door.close();
+            this.car.Walls_And_Doors.Top_Right_Door.close();
+            this.car.Walls_And_Doors.Bottom_Left_Door.close();
+            this.car.Walls_And_Doors.Bottom_Right_Door.close();
+        } else {
+            this.car.Walls_And_Doors.Left_Side_Top_Door.close();
+            this.car.Walls_And_Doors.Left_Side_Bottom_Door.close();
+            this.car.Walls_And_Doors.Right_Side_Top_Door_Door.close();
+            this.car.Walls_And_Doors.Right_Side_Bottom_Door_Door.close();
+        }
     }
 
 }
