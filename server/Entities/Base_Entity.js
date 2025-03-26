@@ -1,14 +1,13 @@
+import { Entity_Forces } from "#root/Entities/Entity_Forces.js";
 import { Game_Loop } from "#root/Game_Loop.js";
+import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 
 
 export { Base_Entity };
 class Base_Entity {
-  forces = {
-    "up": 0,
-    "down": 0,
-    "left": 0,
-    "right": 0,
-  };
+  id = Simple_Auto_Increment_Id_Generator.generateId();
+  possibleForces = ["left", "right", "up", "down"];
+  forces = new Entity_Forces(this);
   friction = 0.5;
   x = 0;
   y = 0;
@@ -17,12 +16,16 @@ class Base_Entity {
   color = "white";
   tags = new Array();
   constructor() {
+
     this.addTag("Entity");
   }
+  Get_No_Movement_Forces() {
+    return {up:0,down:0, right:0,left:0};
+  }
   calculateNextPositionBasedOnForcesAndDeltaTime() {
-    const netHorizontalForce = this.forces.right - this.forces.left;
-    const netVerticalForce = this.forces.down - this.forces.up;
-
+    const netHorizontalForce = this.forces.sumComponents("right") - this.forces.sumComponents("left");
+    const netVerticalForce = this.forces.sumComponents("down") - this.forces.sumComponents("up");
+    
     const position = {};
     position.x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
     position.y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
@@ -34,43 +37,16 @@ class Base_Entity {
     this.x = nextPosition.x;
     this.y = nextPosition.y;
 
-    Object.keys(this.forces).forEach(forceName => {
-
-      this.forces[forceName] *= (1 - this.friction);
-    });
-    this.ifAnyForceGetsBelowThisSetItToZero(0.9);
+    this.forces.applyFriction();
 
   }
-  /**
-    * Sets forces that is below a threshold to zero.
-    * @param {number} threshold - Minimum force threshold.
-    */
-  ifAnyForceGetsBelowThisSetItToZero(threshold) {
-    Object.keys(this.forces).forEach(forceName => {
-      if (this.forces[forceName] < threshold) {
-        this.forces[forceName] = 0;
-      }
-    });
+  getCenterX() {
+    return this.x + (this.width / 2);
   }
-  /**
-   * Adds calculated forces to the current forces.
-   * @param {object} forces - Forces to add {left, right, up, down}.
-   */
-  addToForces(forces) {
-    Object.keys(forces).forEach(forceName => {
-      this.forces[forceName] += forces[forceName];
-    });
+  getCenterY() {
+    return this.y + (this.height / 2);
   }
-  subtractFromForces(forces) {
-    Object.keys(forces).forEach(forceName => {
-      this.forces[forceName] -= forces[forceName];
-    });
-  }
-  propagateForcesTo(target) {
-    Object.keys(this.forces).forEach(forceName => {
-      target.forces[forceName] += this.forces[forceName];
-    });
-  }
+
 
 
   addTag(tag) {
@@ -94,11 +70,21 @@ class Base_Entity {
   setY(y) {
     this.y = y;
   }
+  Set_To_Square_Of_Size(size) {
+    this.setWidth(size);
+    this.setHeight(size);
+  }
   setWidth(width) {
     this.width = width;
   }
   setHeight(height) {
     this.height = height;
+  }
+  setXYWH(x, y, w, h) {
+    this.setX(x);
+    this.setY(y);
+    this.setWidth(w);
+    this.setHeight(h);
   }
   setColor(color) {
     this.color = color;

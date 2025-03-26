@@ -8,11 +8,19 @@ class Train_Car_Behaviour {
     /*
           when a train touches station stop spot, it slows down and stops. It waits for 5 seconds before continuing to move it same direction as before.
      */
-
+    car;
+    constructor(ofThisCar) {
+        if(!ofThisCar.hasTag("Train_Car")) {
+            throw new Error(`Expected train car, got '${JSON.stringify(ofThisCar)}'`);
+        }
+        this.car = ofThisCar;
+    }
     behaviour() {
-
+        
         const spotOrNull = this.Get_Touching_Stop_Spot();
-        if (!(spotOrNull === null) && !(spotOrNull === this.lastSpot)) {
+        const Touching_A_Stop_Spot = !(spotOrNull === null);
+        const Not_The_Same_One_As_Before = !(spotOrNull === this.lastSpot);
+        if (Touching_A_Stop_Spot && Not_The_Same_One_As_Before) {
             this.Pause_Movement();
             this.Open_Doors();
             this.lastSpot = spotOrNull;
@@ -20,17 +28,29 @@ class Train_Car_Behaviour {
         }
         if (this.Is_Waiting_For_Five_Seconds && this.Did_Five_Seconds_Pass()) {
             this.Close_Doors();
-            this.Continue_Moving();
             this.Is_Waiting_For_Five_Seconds = false;
+            this.Closing_Doors=true
+        }
+        if(this.Closing_Doors) {
+        let A_Random_Representative_Door
+        if(this.car.currentRail.orientation==='vertical') {
+          A_Random_Representative_Door = this.car.Walls_And_Doors.Left_Side_Top_Door
+        } else {
+          A_Random_Representative_Door = this.car.Walls_And_Doors.Top_Left_Door
+        }
+        if(A_Random_Representative_Door.getState()==='closed') {
+        this.Continue_Moving();
+        this.Closing_Doors = false;
+        }
         }
 
 
     }
 
     Pause_Movement() {
-        this.storedMovementDirection = this.currentMovementDirection;
+        this.storedMovementDirection = this.car.currentMovementDirection;
         this.pauseBegunAt = Date.now();
-        this.currentMovementDirection = null;
+        this.car.stopMovement();
 
     }
 
@@ -41,20 +61,20 @@ class Train_Car_Behaviour {
     }
 
     Continue_Moving() {
-        this.currentMovementDirection = this.storedMovementDirection;
+        this.car.setMovementDirection(this.storedMovementDirection);
         this.Is_Waiting_For_Five_Seconds = false;
     }
     Get_Touching_Stop_Spot() {
         let spotOrNull = null;
         World.getCurrentEntities().forEach(entity => {
-            if (this === entity) {
+            if (this.car === entity) {
                 return null;
             }
             if (!entity.hasTag("Station_Stop_Spot")) {
                 return null;
 
             }
-            if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
+            if (!Collision_Stuff.areEntitiesTouching(this.car, entity)) {
                 return null;
 
             }
@@ -64,53 +84,31 @@ class Train_Car_Behaviour {
     }
 
     Open_Doors() {
-        this.Doors_Must_Be_Skipped = true;
-        this.saved_sideADoorA_X = this.walls.entranceSideADoorA.x;
-        this.saved_sideADoorA_Y = this.walls.entranceSideADoorB.y;
-
-        this.saved_sideBDoorA_X = this.walls.entranceSideBDoorA.x;
-        this.saved_sideBDoorA_Y = this.walls.entranceSideBDoorB.y;
-
-        if (this.currentRail.orientation === 'horizontal') {
-            this.walls.entranceSideADoorA.setX(this.walls.entranceSideAWallA.x);
-            this.walls.entranceSideADoorA.setY(this.walls.entranceSideAWallA.y - this.wallThickness);
-
-            this.walls.entranceSideADoorB.setX(this.walls.entranceSideAWallB.x);
-            this.walls.entranceSideADoorB.setY(this.walls.entranceSideAWallB.y - this.wallThickness);
-
-
-            // bottom
-
-            this.walls.entranceSideBDoorA.setX(this.walls.entranceSideBWallA.x);
-            this.walls.entranceSideBDoorA.setY(this.walls.entranceSideBWallA.y + this.wallThickness);
-
-            this.walls.entranceSideBDoorB.setX(this.walls.entranceSideBWallB.x);
-            this.walls.entranceSideBDoorB.setY(this.walls.entranceSideBWallB.y + this.wallThickness);
-        } else if (this.currentRail.orientation === 'vertical') {
-            this.walls.entranceSideADoorA.setX(this.walls.entranceSideAWallA.x - this.wallThickness);
-            this.walls.entranceSideADoorA.setY(this.walls.entranceSideAWallA.y);
-
-            this.walls.entranceSideADoorB.setX(this.walls.entranceSideAWallB.x - this.wallThickness);
-            this.walls.entranceSideADoorB.setY(this.walls.entranceSideAWallB.y);
-
-
-            // right
-
-            this.walls.entranceSideBDoorA.setX(this.walls.entranceSideBWallA.x + this.wallThickness);
-            this.walls.entranceSideBDoorA.setY(this.walls.entranceSideBWallA.y - this.walls.entranceSideBDoorA.height);
-
-            this.walls.entranceSideBDoorB.setX(this.walls.entranceSideBWallB.x + this.wallThickness);
-            this.walls.entranceSideBDoorB.setY(this.walls.entranceSideBWallB.y + this.walls.entranceSideBDoorB.height);
+        if(this.car.currentRail.orientation === 'horizontal') {
+            this.car.Walls_And_Doors.Top_Left_Door.open();
+            this.car.Walls_And_Doors.Top_Right_Door.open();
+            this.car.Walls_And_Doors.Bottom_Left_Door.open();
+            this.car.Walls_And_Doors.Bottom_Right_Door.open();
+        } else {
+            this.car.Walls_And_Doors.Left_Side_Top_Door.open();
+            this.car.Walls_And_Doors.Left_Side_Bottom_Door.open();
+            this.car.Walls_And_Doors.Right_Side_Top_Door_Door.open();
+            this.car.Walls_And_Doors.Right_Side_Bottom_Door_Door.open();
         }
     }
 
     Close_Doors() {
-        this.walls.entranceSideADoorA.x = this.saved_sideADoorA_X;
-        this.walls.entranceSideADoorB.y = this.saved_sideADoorA_Y;
-        this.walls.entranceSideBDoorA.x = this.saved_sideBDoorA_X;
-        this.walls.entranceSideBDoorB.y = this.saved_sideBDoorA_Y;
-
-        this.Doors_Must_Be_Skipped = false;
+        if(this.car.currentRail.orientation === 'horizontal') {
+            this.car.Walls_And_Doors.Top_Left_Door.close();
+            this.car.Walls_And_Doors.Top_Right_Door.close();
+            this.car.Walls_And_Doors.Bottom_Left_Door.close();
+            this.car.Walls_And_Doors.Bottom_Right_Door.close();
+        } else {
+            this.car.Walls_And_Doors.Left_Side_Top_Door.close();
+            this.car.Walls_And_Doors.Left_Side_Bottom_Door.close();
+            this.car.Walls_And_Doors.Right_Side_Top_Door_Door.close();
+            this.car.Walls_And_Doors.Right_Side_Bottom_Door_Door.close();
+        }
     }
 
 }

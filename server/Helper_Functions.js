@@ -27,6 +27,9 @@ class Helper_Functions {
             }
         });
     }
+    static isNumber(num) {
+       return (typeof num === 'number' && isFinite(num));
+    }
     static runThisFunctionUponInitiationOfASocketConnection(socket) {
         Helper_Functions.insertSomeHelperFunctionsIntoSocketInstance(socket);
         SocketStorage.add(socket);

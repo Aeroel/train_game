@@ -9,8 +9,7 @@ import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 export { Add_Some_Entities_To_The_World };
 
 class Add_Some_Entities_To_The_World {
-    static carH = 150;
-    static carW = 150;
+    static carSquareSize = 150;
     static railLength = 500;
     static rails = [];
     static doItNow() {
@@ -59,19 +58,16 @@ class Add_Some_Entities_To_The_World {
         this.putATrainCarOnThisRail(verRail);
     }
     static putATrainCarOnThisRail(theRail) {
-        const aTrainCar = new Train_Car();
-        aTrainCar.setFrontSide("firstEnd");
-        aTrainCar.setCurrentRail(theRail);
-        World.addEntity(aTrainCar);
-        aTrainCar.setWidth(this.carW);
-        aTrainCar.setHeight(this.carH);
+
 
         // Calculate the train car's position (centered on the rail)
-        const carX = theRail.getX() + (theRail.getWidth() - aTrainCar.getWidth()) / 2;
-        const carY = theRail.getY() + (theRail.getHeight() - aTrainCar.getHeight()) / 2;
+        const carX = theRail.getX() + (theRail.getWidth() - this.carSquareSize) / 2;
+        const carY = theRail.getY() + (theRail.getHeight() - this.carSquareSize) / 2;
 
-        aTrainCar.setX(carX);
-        aTrainCar.setY(carY);
+        const aTrainCar = new Train_Car({rail: theRail, size: this.carSquareSize, x: carX, y:carY});
+        World.addEntity(aTrainCar);
+        aTrainCar.setFrontSide("firstEnd");
+        aTrainCar.setCurrentRail(theRail);
     }
     static addASmallRailwayAndGetTheFirstRail() {
         const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
