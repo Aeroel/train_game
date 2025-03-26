@@ -41,3 +41,24 @@ and the opposite way for endRailEnd
 (5/100)*100=5%
 
 Okay, this seems to work well...
+
+
+
+Door xy 100 100
+width 50
+needed pis xy 50 100
+100-50=50
+10 per tick
+will reach from init pos after 5 ticks
+
+Okay, two possible ways to implement this:
+1. Save distance needed (for example 50), each tick save distance covered. Once it hits 50, stop and mark as complete. If went beyond 50, adjust position using setX or setY. 
+2. Have two points for each door, the points move together with the door and the rest of the car. So, each tick I check if the door touched the opening point, if yes, the process is completed. To close the door, repeat the same but use the other point.
+ 
+Okay, so far both seem to be exactly the same.
+Question: is it possible to somehow avoid direct setX or setY? somehow to adjust instead the forces? 
+
+What are the differences between method 1 and 2?
+Well, an obvious difference is that with method twonfor each sliding door I am creating two additional entities, while for method 1 I am not creating any entities, but instead save needed distance and distance covered and compare them. In the end, both method 1 and 2 make the door stop once these conditions are true, and they both might adjust the position in case of overshooting (probably the adjustment will trigger most of the times because it seems extremely improbable that the coordinates will ever perfectly align given the fact that they are decimals. Maybe I can make them simple ints? Well, this is another question... I mean, this is a question of somewhat removed relevancy to the sliding door question, but might be worth looking into. Not that us8ng ints would remove the need for overshooting adjustments anyway, right?)
+Actually, I think that the method 1 might not work because of ... Well, I am not quite sure  but something about if train car is moving, would it work?.. 
+I am not sure. But method 2 will surely work.

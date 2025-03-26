@@ -8,6 +8,8 @@ class Sliding_Door extends Base_Entity {
     state = 'closed';
     Possible_Sliding_Open_Directions = ['right', 'left', 'up', 'down'];
     Which_Direction_The_Door_Slides_When_Opening;
+    Door_Finished_Opening_Sensor = new Base_Entity();
+    Door
     constructor(Sliding_Open_Direction) {
         super();
         this.forces.Sliding_Key = `Sliding`;
