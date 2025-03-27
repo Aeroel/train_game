@@ -1,6 +1,6 @@
-import { EmitStuff } from "#root/EmitStuff.ts";
-import { EntitySorter } from "#root/EntitySorter.ts";
-import { World } from "#root/World.ts";
+import { EmitStuff } from "#root/EmitStuff.js";
+import { EntitySorter } from "#root/EntitySorter.js";
+import { World } from "#root/World.js";
 
 export { Game_Loop}
 
@@ -25,7 +25,7 @@ class Game_Loop {
       }
   
       // Schedule the next iteration
-      setImmediate(Game_Loop.theLoop); // More precise than setTimeout in Node.ts
+      setImmediate(Game_Loop.theLoop); // More precise than setTimeout in Node.js
     }
 
     static updateGameState() {

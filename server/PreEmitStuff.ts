@@ -1,4 +1,4 @@
-import { World } from "#root/World.ts";
+import { World } from "#root/World.js";
 
 
 export { PreEmitStuff }

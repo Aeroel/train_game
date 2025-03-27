@@ -1,6 +1,6 @@
 { 
   "compilerOptions": {
-    "outDir": "./built",
+    "outDir": "./buil",
     "strict": true,
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
@@ -11,13 +11,8 @@
       "ESNext"
     ],
   "paths": {
-    "#root/*": ["./built/*"],
+    "#root/*": ["./*"],
   }
   },
-  "exclude": [
-    "node_modules",
-    "**/node_modules/*",
-    "./built"
-  ],
   "include": ["./"]
 }

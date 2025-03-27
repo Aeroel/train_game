@@ -1,4 +1,4 @@
-import {Base_Entity} from "#root/Entities/Base_Entity.ts";
+import {Base_Entity} from "#root/Entities/Base_Entity.js";
 export { Sensor }
 class Sensor extends Base_Entity {
   width=2;

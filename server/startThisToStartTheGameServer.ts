@@ -3,11 +3,11 @@ import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.ts";
-import { Player } from "#root/Entities/Player.ts";
-import { Game_Loop } from "#root/Game_Loop.ts";
-import { Helper_Functions } from "#root/Helper_Functions.ts";
-import { World } from "#root/World.ts";
+import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.js";
+import { Player } from "#root/Entities/Player.js";
+import { Game_Loop } from "#root/Game_Loop.js";
+import { Helper_Functions } from "#root/Helper_Functions.js";
+import { World } from "#root/World.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -24,7 +24,8 @@ Add_Some_Entities_To_The_World.doItNow();
 
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
-  console.log("A socket connected"); Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);
+  console.log("A socket connected"); 
+  Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
   newPlayerEntity.setX(0);
