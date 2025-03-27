@@ -10,8 +10,6 @@ class Player extends Base_Entity {
   };
   standardMovementSpeed = 120;
   socketId: Socket["id"] = "none";
-  defaultVisionRange = 200;
-  visionRange = this.defaultVisionRange;
   constructor() {
     super();
     this.addTag("Player");

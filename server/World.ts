@@ -1,12 +1,14 @@
+import type { Base_Entity } from "#root/Entities/Base_Entity.js"
+
 export { World }
 class World {
-  static width = 10_000;
-  static height = 10_000;
+  static width: number = 10_000;
+  static height: number = 10_000;
   static state = {
     entities: new Array(),
   };
   static pastStates = [];
-  static addEntity(entity) {
+  static addEntity<T extends Base_Entity>(entity: T) : void {
     if(!entity.hasTag('Entity')) {
       throw new Error('Entity has no entity tag, check stuff');
       
@@ -19,7 +21,7 @@ class World {
   static getCurrentEntities() {
     return World.getCurrentState().entities;
   }
-  static filterEntities(filterCriteriaFunction) {
+  static filterEntities<T extends Base_Entity>(filterCriteriaFunction: (entity: T)=> boolean) : T[] {
     return World.getCurrentEntities().filter(filterCriteriaFunction);
   }
 

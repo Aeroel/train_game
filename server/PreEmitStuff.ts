@@ -1,5 +1,5 @@
 import { World } from "#root/World.js";
-
+import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 
 export { PreEmitStuff }
 
@@ -99,21 +99,21 @@ class PreEmitStuff {
     });
   }
 
-  static virtualizeEntityEdges(entity, player, virtW, virtH) {
-    const scaleX = virtW / player.visionRange;
-    const scaleY = virtH / player.visionRange;
+  static virtualizeEntityEdges(entity: Base_Entity, lookingEntity: Base_Entity, virtW, virtH) {
+    const scaleX = virtW / lookingEntity.visionRange;
+    const scaleY = virtH / lookingEntity.visionRange;
 
-    // Use player center (instead of top-left) to calculate relative positions
-    const playerCenterX = player.x + player.width / 2;
-    const playerCenterY = player.y + player.height / 2;
+    // Use center (instead of top-left) to calculate relative positions
+    const lookingEntityCenterX = lookingEntity.x + lookingEntity.width / 2;
+    const lookingEntityCenterY = lookingEntity.y + lookingEntity.height / 2;
 
     // Apply scaling and center adjustments to each edge
 
     const virtualEdges = entity.edges.map(edge => {
-      const virtualX1 = virtW / 2 + (edge.x1 - playerCenterX) * scaleX;
-      const virtualY1 = virtH / 2 + (edge.y1 - playerCenterY) * scaleY;
-      const virtualX2 = virtW / 2 + (edge.x2 - playerCenterX) * scaleX;
-      const virtualY2 = virtH / 2 + (edge.y2 - playerCenterY) * scaleY;
+      const virtualX1 = virtW / 2 + (edge.x1 - lookingEntityCenterX) * scaleX;
+      const virtualY1 = virtH / 2 + (edge.y1 - lookingEntityCenterY) * scaleY;
+      const virtualX2 = virtW / 2 + (edge.x2 - lookingEntityCenterX) * scaleX;
+      const virtualY2 = virtH / 2 + (edge.y2 - lookingEntityCenterY) * scaleY;
 
       return {
         x1: virtualX1,
@@ -129,8 +129,8 @@ class PreEmitStuff {
 
 
 
-  static getVisiblePortion(entityWhichIsLookingAround,
-    possiblyVisibleEntity) {
+  static getVisiblePortion(entityWhichIsLookingAround: Base_Entity,
+    possiblyVisibleEntity: Base_Entity) {
     // Calculate the player's vision area based on visionRange and centered position
     const visionCenterX = entityWhichIsLookingAround.x + entityWhichIsLookingAround.width / 2;
     const visionCenterY = entityWhichIsLookingAround.y + entityWhichIsLookingAround.height / 2;
@@ -164,8 +164,8 @@ class PreEmitStuff {
     };
   };
 
-  static getVisibleEdges(entityWhichIsLookingAround,
-    possiblyVisibleEntity) {
+  static getVisibleEdges(entityWhichIsLookingAround: Base_Entity,
+    possiblyVisibleEntity: Base_Entity) {
     // Calculate the player's vision area based on visionRange and centered position
     const visionCenterX = entityWhichIsLookingAround.x + entityWhichIsLookingAround.width / 2;
     const visionCenterY = entityWhichIsLookingAround.y + entityWhichIsLookingAround.height / 2;

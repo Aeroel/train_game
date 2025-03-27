@@ -15,6 +15,8 @@ class Base_Entity {
   height = 0;
   color = "white";
   tags = new Array();
+  defaultVisionRange = 200;
+  visionRange = this.defaultVisionRange;
   constructor() {
 
     this.addTag("Entity");
