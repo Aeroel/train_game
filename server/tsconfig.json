@@ -1,7 +1,7 @@
 { 
   "compilerOptions": {
     "rootDir": "./",
-    "outDir": "./buil",
+    "outDir": "./build",
     "strict": true,
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
