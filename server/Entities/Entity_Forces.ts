@@ -1,35 +1,49 @@
+import type { Base_Entity } from "#root/Entities/Base_Entity.js";
+
 export { Entity_Forces };
+type Force_Component = {
+    key: string,
+    forceValue: number,
+    keepAtZero: boolean,
+}
+type Forces = {
+    up: Force_Component[],
+    down: Force_Component[],
+    right: Force_Component[],
+    left: Force_Component[],
+
+}
 class Entity_Forces {
-    entity;
+    entity: Base_Entity;
     Entities_That_Also_Get_The_Forces_Of_This_Entity = new Array();
     possibleForces = ["up", "down", "left", "right"];
-    forces = {
-        up: [],
-        down: [],
-        right: [],
-        left: []
-    };
+    forces: Forces = {
+       up: [], 
+       down: [], 
+       right: [], 
+       left: [], 
+    }
     threshold = 0.9;
-    static Get_Opposite_Force(to) {
+    static Get_Opposite_Force(to: keyof Entity_Forces["forces"]) {
     const isOppositeTo = {
       up:"down",
       down:"up",
       right:"left",
       left:"right",
     }
-    return isOppositeTo[to];
+    return isOppositeTo[to as keyof Entity_Forces["forces"]];
     }
-    constructor(ofEntity) {
+    constructor(ofEntity: Base_Entity) {
         this.entity = ofEntity;
 
     }
     Get_No_Movement_Forces() {
         return {up:0, down:0, right:0,left:0}
     }
-    Init_A_Key_For_Each_Force(keyName) {
+    Init_A_Key_For_Each_Force(keyName: string) {
         this.setAll(keyName, { up: 0, down: 0, left: 0, right: 0 }, true);
     }
-    Get_By_Key(key, forceName) {
+    Get_By_Key(key: string, forceName: keyof Entity_Forces["forces"]) {
         if (!this.Key_Exists_In_Force(key, forceName)) {
             throw new Error(`${key} not in ${forceName}, why?`);
         }
@@ -69,7 +83,7 @@ class Entity_Forces {
         this.set(key, "right", forces.right, keepAtZero);
         this.set(key, "left", forces.left, keepAtZero);
     }
-    set(key, forceName, forceValue, keepAtZero) {
+    set(key, forceName, forceValue, keepAtZero?: boolean) {
         this.propagateSet(key, forceName, forceValue, keepAtZero)
         if (!this.Key_Exists_In_Force(key, forceName)) {
             this.forces[forceName].push({ key, forceValue, keepAtZero });

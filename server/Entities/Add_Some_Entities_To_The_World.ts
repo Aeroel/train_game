@@ -5,13 +5,14 @@ import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
 import { World } from "#root/World.js";
 import { Forcefield } from "#root/Entities/Forcefield.js";
 import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
+import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 
 export { Add_Some_Entities_To_The_World };
 
 class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
     static railLength = 500;
-    static rails = [];
+    static rails: Rail[] = [];
     static doItNow() {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
@@ -57,7 +58,7 @@ class Add_Some_Entities_To_The_World {
         const verRail = Railway_Placing_Functionality.place(500, 500, 400, "down");
         this.putATrainCarOnThisRail(verRail);
     }
-    static putATrainCarOnThisRail(theRail) {
+    static putATrainCarOnThisRail(theRail: Rail) {
 
 
         // Calculate the train car's position (centered on the rail)

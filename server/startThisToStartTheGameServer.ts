@@ -8,6 +8,7 @@ import { Player } from "#root/Entities/Player.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
 import { World } from "#root/World.js";
+import { Socket_Functions } from "#root/Socket_Functions.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -25,7 +26,7 @@ Add_Some_Entities_To_The_World.doItNow();
 const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
   console.log("A socket connected"); 
-  Helper_Functions.runThisFunctionUponInitiationOfASocketConnection(socket);
+  Helper_Functions.Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket);
   socket.emit("welcome", "You have successfully connected to the server. Welcome!");
   const newPlayerEntity = new Player();
   newPlayerEntity.setX(0);
@@ -40,19 +41,23 @@ io.on("connection", (socket) => {
     Helper_Functions.runThisUponSocketDisconnect(socket);
   })
   socket.on("movement", (receivedMovement) => {
+    // check that receivedMovement is what we expected... If not, ignore it, I guess
+    if(!Array.isArray(receivedMovement)) {
+      return;
+    }
     /*
     Presumably, someone spamming movement requests does not receive any advantages. So, this cooldown is implemented mainly for fun.
     The idea is we don't want the server to process too many movement requests from a client in a short time period, that would be pointless. Although neither does this cooldown really affect much, since all that happens if no cooldown is present is flipping control key bits to true... 
     */
-    if (socket.isMovementRequestFunctionalityOnCooldown(socket)) {
+    if (Socket_Functions.Is_Movement_Request_Functionality_On_Cooldown(socket)) {
       return;
     }
-    socket.aMovementRequestHappenedJustNow(socket);
-    const playerAssociatedWithSocket = World.state.entities.find(entity => entity.socketId === socket.id);
+    Socket_Functions.Handle_A_Movement_Request_Happening_Just_Now(socket);
+    const playerAssociatedWithSocket : Player = World.state.entities.find(entity => entity.socketId === socket.id);
 
     const playerPossibleMovementDirections = Object.keys(playerAssociatedWithSocket.controls);
     playerPossibleMovementDirections.forEach(direction => {
-      playerAssociatedWithSocket.controls[direction] = receivedMovement.includes(direction);
+      playerAssociatedWithSocket.controls[direction as keyof Player["controls"]] = receivedMovement.includes(direction);
     });
   })
 });

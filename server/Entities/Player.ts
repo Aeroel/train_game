@@ -1,4 +1,5 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import type { Socket } from "socket.io";
 export { Player };
 class Player extends Base_Entity {
   controls = {
@@ -8,7 +9,7 @@ class Player extends Base_Entity {
     down: false,
   };
   standardMovementSpeed = 120;
-  socketId = null;
+  socketId: Socket["id"] = "none";
   defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
   constructor() {
@@ -16,10 +17,10 @@ class Player extends Base_Entity {
     this.addTag("Player");
     this.addTag("Can_Ride_Train");
   }
-  setVisionRange(visionRange) {
+  setVisionRange(visionRange: number) {
     this.visionRange = visionRange;
   }
-  setSocketId(id) {
+  setSocketId(id: Socket["id"]) {
     this.socketId = id;
   }
   updateState() {

@@ -1,22 +1,23 @@
+import type { Socket } from "socket.io";
 
 export { SocketDataStorage }
 
 class SocketDataStorage {
   static data = new Map();
-  static newSocketDataSlot(socketId) {
+  static newSocketDataSlot(socket: Socket) {
     const emptyObject = new Object();
-    this.data.set(socketId, emptyObject)
+    this.data.set(socket, emptyObject)
   }
-  static removeSocketDataSlot(socketId) {
-    this.data.delete(socketId);
+  static removeSocketDataSlot(socket: Socket) {
+    this.data.delete(socket);
   }
-  static set(socketId, nameForThePieceOfData, valueOfThePieceOfData) {
-    const theSocketDataObject = this.get(socketId);
+  static set(socket: Socket, nameForThePieceOfData: string, valueOfThePieceOfData: any) {
+    const theSocketDataObject = this.get(socket);
     theSocketDataObject[nameForThePieceOfData] = valueOfThePieceOfData;
   }
-  static get(socketId, optionalNameOfThePieceOfData = null) {
-    const socketData = this.data.get(socketId)
-    if (optionalNameOfThePieceOfData === null) {
+  static get(socket: Socket, optionalNameOfThePieceOfData?: string) {
+    const socketData = this.data.get(socket)
+    if (optionalNameOfThePieceOfData === undefined) {
       return socketData;
     }
     return socketData[optionalNameOfThePieceOfData];
