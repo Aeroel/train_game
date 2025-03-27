@@ -1,5 +1,6 @@
 { 
   "compilerOptions": {
+    "rootDir": "./",
     "outDir": "./buil",
     "strict": true,
     "moduleResolution": "nodenext",
