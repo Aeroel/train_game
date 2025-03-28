@@ -1,7 +1,8 @@
 import { Entity_Forces } from "#root/Entities/Entity_Forces.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
-
+import type { Position } from "#root/Some_Common_Types.js";
+import { Assert_That_Number_Is_Finite, Assert_That_Numbers_Are_Finite } from "#root/Type_Validation_Stuff.js";
 
 export { Base_Entity };
 class Base_Entity {
@@ -10,7 +11,7 @@ class Base_Entity {
   forces = new Entity_Forces(this);
   friction = 0.5;
   x = 0;
-  y = 0;
+  y= 0;
   width = 0;
   height = 0;
   color = "white";
@@ -28,9 +29,9 @@ class Base_Entity {
     const netHorizontalForce = this.forces.sumComponents("right") - this.forces.sumComponents("left");
     const netVerticalForce = this.forces.sumComponents("down") - this.forces.sumComponents("up");
     
-    const position = {};
-    position.x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
-    position.y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
+    const x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
+    const y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
+    const position: Position = {x, y};
     return position;
   }
   updateState() {
@@ -51,10 +52,10 @@ class Base_Entity {
 
 
 
-  addTag(tag) {
+  addTag(tag: string) {
     this.tags.push(tag);
   }
-  removeTag(tag) {
+  removeTag(tag: string) {
     const tagIndex = this.tags.indexOf(tag);
     const tagExistsInArray = (tagIndex !== -1);
     if (!tagExistsInArray) {
@@ -62,33 +63,39 @@ class Base_Entity {
     }
     this.tags.splice(tagIndex, 1);
   }
-  hasTag(tag) {
+  hasTag(tag: string) {
     const answer = (this.tags.includes(tag));
     return answer;
   }
-  setX(x) {
+  setX(x: number) {
+    Assert_That_Number_Is_Finite(x);
     this.x = x;
   }
-  setY(y) {
+  setY(y: number) {
+    Assert_That_Number_Is_Finite(y);
     this.y = y;
   }
-  Set_To_Square_Of_Size(size) {
+  Set_To_Square_Of_Size(size: number) {
+    Assert_That_Number_Is_Finite(size);
     this.setWidth(size);
     this.setHeight(size);
   }
-  setWidth(width) {
+  setWidth(width: number) {
+    Assert_That_Number_Is_Finite(width);
     this.width = width;
   }
-  setHeight(height) {
+  setHeight(height: number) {
+    Assert_That_Number_Is_Finite(height);
     this.height = height;
   }
-  setXYWH(x, y, w, h) {
+  setXYWH(x: number, y: number, w: number, h: number) {
+    Assert_That_Numbers_Are_Finite({x, y, w, h});
     this.setX(x);
     this.setY(y);
     this.setWidth(w);
     this.setHeight(h);
   }
-  setColor(color) {
+  setColor(color: string) {
     this.color = color;
   }
   getX() {

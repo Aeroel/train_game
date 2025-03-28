@@ -1,7 +1,17 @@
+import type { Base_Entity } from "./Entities/Base_Entity.js";
+import type { Position } from "./Some_Common_Types.js";
+
 export { Collision_Stuff };
 
+type Box = {
+  x: number,
+  y: number,
+  width: number,
+  height: number
+}
+
 class Collision_Stuff {
-  static Do_Entities_Touch_Through_All_Tick_Subpositions(entityA, entityB) {
+  static Do_Entities_Touch_Through_All_Tick_Subpositions(entityA: Base_Entity, entityB: Base_Entity) {
     const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
     let Do_Entities_Collide_At_All_Subpositions = true;
 
@@ -28,8 +38,8 @@ class Collision_Stuff {
 
 
   }
-  static areEntitiesTouching(entityA, entityB) {
-    if(!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
+  static areEntitiesTouching(entityA: Base_Entity, entityB: Base_Entity) {
+    if (!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
       throw new Error(`Both arguments must be entities`)
     }
     const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
@@ -61,12 +71,12 @@ class Collision_Stuff {
 
   }
 
-  static Get_Prelude_To_Subpositions_Loop(entityA, entityB) {
-    const entityAStartingPosition = { x: entityA.x, y: entityA.y };
-    const entityBStartingPosition = { x: entityB.x, y: entityB.y };
+  static Get_Prelude_To_Subpositions_Loop(entityA : Base_Entity, entityB : Base_Entity) {
+    const entityAStartingPosition: Position = { x: entityA.x, y: entityA.y };
+    const entityBStartingPosition: Position = { x: entityB.x, y: entityB.y };
 
-    const entityAEndingPosition = entityA.calculateNextPositionBasedOnForcesAndDeltaTime();
-    const entityBEndingPosition = entityB.calculateNextPositionBasedOnForcesAndDeltaTime();
+    const entityAEndingPosition: Position = entityA.calculateNextPositionBasedOnForcesAndDeltaTime();
+    const entityBEndingPosition: Position = entityB.calculateNextPositionBasedOnForcesAndDeltaTime();
 
     const entitiesSubpositionsArrays = Collision_Stuff.getSubpositions(entityAStartingPosition, entityAEndingPosition, entityBStartingPosition, entityBEndingPosition);
 
@@ -76,7 +86,7 @@ class Collision_Stuff {
     return { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions };
   }
 
-  static getSubpositions(entityAStartingPosition, entityAEndingPosition, entityBStartingPosition, entityBEndingPosition) {
+  static getSubpositions(entityAStartingPosition: Position, entityAEndingPosition: Position, entityBStartingPosition: Position, entityBEndingPosition: Position) {
 
     // here begins determination of how long each array will be. It is a single number
     const entityADeltaX = entityAEndingPosition.x - entityAStartingPosition.x;
@@ -131,13 +141,10 @@ class Collision_Stuff {
       lengthOfEither: entityBSubpositions.length,
     };
   }
-  static insertElementJustBeforeLastElem(elem, targetArray) {
-    targetArray.splice(targetArray.length - 1, 0, elem);
-  }
 
-  static checkTouchOrIntersect(entityA, entityB) {
-    const { x: x1, y: y1, width: w1, height: h1 } = entityA;
-    const { x: x2, y: y2, width: w2, height: h2 } = entityB;
+  static checkTouchOrIntersect(boxA: Box, boxB: Box) {
+    const { x: x1, y: y1, width: w1, height: h1 } = boxA;
+    const { x: x2, y: y2, width: w2, height: h2 } = boxB;
 
     return !(x1 + w1 < x2 || // Entity A is to the left of Entity B
       x2 + w2 < x1 || // Entity B is to the left of Entity A
