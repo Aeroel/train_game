@@ -1,4 +1,5 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { SocketStorage } from "#root/SocketStorage.js";
 import type { Socket } from "socket.io";
 export { Player };
 class Player extends Base_Entity {
@@ -20,6 +21,9 @@ class Player extends Base_Entity {
   }
   setSocketId(id: Socket["id"]) {
     this.socketId = id;
+  }
+  getSocket() {
+    return SocketStorage.find(socket => socket.id === this.socketId);
   }
   updateState() {
     if (this.controls.right) {
