@@ -18,10 +18,10 @@ class World {
   static getCurrentState() {
     return World.state;
   }
-  static getCurrentEntities() {
+  static getCurrentEntities() : Base_Entity[] {
     return World.getCurrentState().entities;
   }
-  static filterEntities<T extends Base_Entity>(filterCriteriaFunction: (entity: T)=> boolean) : T[] {
+  static filterEntities(filterCriteriaFunction: (entity: Base_Entity)=> boolean) : Base_Entity[] {
     return World.getCurrentEntities().filter(filterCriteriaFunction);
   }
 

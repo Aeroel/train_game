@@ -7,7 +7,7 @@ export { EmitStuff }
 
 class EmitStuff {
   static emitToAllPlayersWorldStateStuff() {
-    const allPlayers: Player[] = World.filterEntities(entity => entity.hasTag("Player"));
+    const allPlayers: Player[] = World.filterEntities(entity => entity.hasTag("Player")) as Player[];
     allPlayers.forEach(player => {
       EmitStuff.Emit_World_State_To_Player(player);
     })

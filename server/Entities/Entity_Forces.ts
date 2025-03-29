@@ -2,25 +2,25 @@ import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Assert_That_Number_Is_Positive, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Positive } from "#root/Type_Validation_Stuff.js";
 
 export { Entity_Forces };
-type Force_Component = {
+export type Force_Component = {
     key: string,
     forceValue: number,
     keepAtZero: boolean,
 }
-type Forces = {
+export type Forces = {
     up: Force_Component[],
     down: Force_Component[],
     right: Force_Component[],
     left: Force_Component[],
 
 }
-type ForcesValues = {
+export type ForcesValues = {
     up: number,
     down: number,
     right: number,
     left: number
 }
-type ForceName = "up" | "right" | "left" | "down";
+export type ForceName = "up" | "right" | "left" | "down";
 
 class Entity_Forces {
     entity: Base_Entity;

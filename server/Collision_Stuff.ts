@@ -1,5 +1,5 @@
-import type { Base_Entity } from "./Entities/Base_Entity.js";
-import type { Position } from "./Some_Common_Types.js";
+import type { Base_Entity } from "#root/Entities/Base_Entity.js";
+import type { Position } from "#root/Type_Stuff.js";
 
 export { Collision_Stuff };
 

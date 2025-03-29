@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "skipLibCheck": true,
     "rootDir": "./",
     "outDir": "./build",
     "strict": true,
@@ -15,5 +16,6 @@
     "#root/*": ["./*"],
   }
   },
-  "include": ["./"]
+  "include": ["./"],
+  "exclude": ["./node_modules/*", "./build/*"]
 }

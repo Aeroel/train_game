@@ -1,6 +1,7 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
-import type { Point } from "#root/Type_Stuff.js";
+import type { Point, Position } from "#root/Type_Stuff.js";
+import { Assert_That_Numbers_Are_Finite } from "#root/Type_Validation_Stuff.js";
 
 export { Rail };
 
@@ -10,12 +11,17 @@ export type Rail_Connection = {
     firstEnd: Rail | null;
     secondEnd: Rail | null;
 };
+export type Rail_End = {
+    name: Rail_End_Name,
+    connectedRail: Rail | null
+} & Position;
+export type Rail_Orientation = "vertical" | "horizontal";
 class Rail extends Base_Entity {
     //  left right is for hori, top bot is for vert
     railConnections: Rail_Connection = { firstEnd: null, secondEnd: null };
     twoPossibleEnds = ["firstEnd", "secondEnd"];
-    defaultInitialOrientationValue = 'horizontal';
-    orientation = this.defaultInitialOrientationValue;
+    defaultInitialOrientationValue: Rail_Orientation = 'horizontal';
+    orientation: Rail_Orientation = this.defaultInitialOrientationValue;
     constructor() {
         super();
         this.addTag("Rail");
@@ -87,39 +93,33 @@ class Rail extends Base_Entity {
         return frontDistance <= backDistance ? "frontSide" : "backSide";
     }
 
-    getEndClosestTo(obj) {
-        if (!Helper_Functions.isNumber(obj.x) || !Helper_Functions.isNumber(obj.y)) {
-            throw new Error(`obj x and y must be numbers, given obj: ${JSON.stringify(obj)}`);
-        }
-
+    getEndClosestTo(point: Point) {
+        Assert_That_Numbers_Are_Finite({pointX: point.x, pointY: point.y});
 
         const firstEnd = this.getFirstEnd();
         const secondEnd = this.getSecondEnd();
 
         const distanceToFirstEnd = Math.sqrt(
-            Math.pow(obj.x - firstEnd.x, 2) +
-            Math.pow(obj.y - firstEnd.y, 2)
+            Math.pow(point.x - firstEnd.x, 2) +
+            Math.pow(point.y - firstEnd.y, 2)
         );
 
         const distanceToSecondEnd = Math.sqrt(
-            Math.pow(obj.x - secondEnd.x, 2) +
-            Math.pow(obj.y - secondEnd.y, 2)
+            Math.pow(point.x - secondEnd.x, 2) +
+            Math.pow(point.y - secondEnd.y, 2)
         );
 
 
-        let closestEnd;
+        let closestEnd: Rail_End;
 
         if (isNaN(distanceToFirstEnd) || isNaN(distanceToSecondEnd)) {
             throw new Error(`DTFE and DTSE must be numbers, one or both are NaN`);
         }
         if (distanceToFirstEnd < distanceToSecondEnd) {
-            closestEnd = firstEnd;
-            closestEnd.connectedRail = this.railConnections.firstEnd || null; // Get connected rail or null
-            closestEnd.name = 'firstEnd';
+            closestEnd = {name: 'firstEnd' as Rail_End_Name, x: firstEnd.x, y: firstEnd.y, connectedRail: this.railConnections.firstEnd || null};
+
         } else if (distanceToFirstEnd > distanceToSecondEnd) {
-            closestEnd = secondEnd;
-            closestEnd.connectedRail = this.railConnections.secondEnd || null; // Get connected rail or null
-            closestEnd.name = 'secondEnd';
+            closestEnd = {name: 'secondEnd' as Rail_End_Name, x: secondEnd.x, y: secondEnd.y, connectedRail: this.railConnections.secondEnd || null};
         } else {
             throw new Error("Hm? ");
         }

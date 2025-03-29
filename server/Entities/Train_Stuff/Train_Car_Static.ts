@@ -1,3 +1,7 @@
+import type { Point } from "#root/Type_Stuff.js";
+import type { Rail } from "./Rail.js";
+import type { Train_Car } from "./Train_Car.js";
+
 export { Train_Car_Static };
 class Train_Car_Static {
 
@@ -5,7 +9,7 @@ class Train_Car_Static {
 
 
 
-    static placeCarBackOnCurrentRail(entity, rail) {
+    static placeCarBackOnCurrentRail(entity: Train_Car, rail: Rail) {
         // Calculate center of the entity
         const centerX = entity.x + (entity.width / 2);
         const centerY = entity.y + (entity.height / 2);
@@ -61,7 +65,7 @@ class Train_Car_Static {
         entity.setY(newY);
     }
 
-    static placeCarOnEnd(entity, point) {
+    static placeCarOnEnd(entity: Train_Car, point: Point) {
         // Calculate current center of the entity
         const currentCenterX = entity.x + (entity.width / 2);
         const currentCenterY = entity.y + (entity.height / 2);

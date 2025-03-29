@@ -1,17 +1,18 @@
 import { Entity_Forces } from "#root/Entities/Entity_Forces.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
-import type { Position } from "#root/Some_Common_Types.js";
+import type { Position } from "#root/Type_Stuff.js";
 import { Assert_That_Number_Is_Finite, Assert_That_Numbers_Are_Finite } from "#root/Type_Validation_Stuff.js";
 
 export { Base_Entity };
+
 class Base_Entity {
   id = Simple_Auto_Increment_Id_Generator.generateId();
   possibleForces = ["left", "right", "up", "down"];
   forces = new Entity_Forces(this);
   friction = 0.5;
   x = 0;
-  y= 0;
+  y = 0;
   width = 0;
   height = 0;
   color = "white";
@@ -23,15 +24,15 @@ class Base_Entity {
     this.addTag("Entity");
   }
   Get_No_Movement_Forces() {
-    return {up:0,down:0, right:0,left:0};
+    return { up: 0, down: 0, right: 0, left: 0 };
   }
   calculateNextPositionBasedOnForcesAndDeltaTime() {
     const netHorizontalForce = this.forces.sumComponents("right") - this.forces.sumComponents("left");
     const netVerticalForce = this.forces.sumComponents("down") - this.forces.sumComponents("up");
-    
+
     const x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
     const y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
-    const position: Position = {x, y};
+    const position: Position = { x, y };
     return position;
   }
   updateState() {
@@ -89,7 +90,7 @@ class Base_Entity {
     this.height = height;
   }
   setXYWH(x: number, y: number, w: number, h: number) {
-    Assert_That_Numbers_Are_Finite({x, y, w, h});
+    Assert_That_Numbers_Are_Finite({ x, y, w, h });
     this.setX(x);
     this.setY(y);
     this.setWidth(w);
