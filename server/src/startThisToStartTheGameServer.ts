@@ -63,7 +63,7 @@ io.on("connection", (socket) => {
 });
 const port = 3000;
 httpServer.listen(port);
-console.log(`Started a server on port ${port}`);
+console.log(`Started a server on port ${port}.`);
 
 
 // Start the loop

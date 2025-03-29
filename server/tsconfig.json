@@ -1,21 +1,21 @@
 {
   "compilerOptions": {
-    "skipLibCheck": true,
-    "rootDir": "./",
+    "incremental": true,
+    "rootDir": "./src",
     "outDir": "./build",
     "strict": true,
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
-    "baseUrl": ".",
+    "baseUrl": "./src",
     "module": "nodenext",
     "target": "esnext",
     "lib": [
       "ESNext"
     ],
   "paths": {
-    "#root/*": ["./*"],
+    "#root/*": ["*"],
   }
   },
   "include": ["./"],
-  "exclude": ["./node_modules/*", "./build/*"]
+  "exclude": ["node_modules", "build"]
 }

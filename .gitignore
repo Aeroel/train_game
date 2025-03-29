@@ -4,3 +4,4 @@ server/pnpm-lock.yaml
 server/package-lock.json
 server/build/*
 !server/build/.gitkeep
+tsconfig.tsbuildinfo
