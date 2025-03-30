@@ -9,6 +9,7 @@ import { Game_Loop } from "#root/Game_Loop.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
 import { World } from "#root/World.js";
 import { Socket_Functions } from "#root/Socket_Functions.js";
+import type { Direction } from "#root/Type_Stuff.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -53,9 +54,9 @@ io.on("connection", (socket) => {
       return;
     }
     Socket_Functions.Handle_A_Movement_Request_Happening_Just_Now(socket);
-    const playerAssociatedWithSocket : Player = World.state.entities.find(entity => entity.socketId === socket.id);
+    const playerAssociatedWithSocket : Player = World.state.entities.find((entity: Player) => entity.socketId === socket.id);
 
-    const playerPossibleMovementDirections = Object.keys(playerAssociatedWithSocket.controls);
+    const playerPossibleMovementDirections: string[] = Object.keys(playerAssociatedWithSocket.controls);
     playerPossibleMovementDirections.forEach(direction => {
       playerAssociatedWithSocket.controls[direction as keyof Player["controls"]] = receivedMovement.includes(direction);
     });
