@@ -52,53 +52,56 @@ export class Train extends Base_Entity {
         }
     }
     Handle_Waiting() {
-        if (this.Waiting) {
-            if (this.Waiting_Car === null) {
-                throw new Error(`Must never happen`);
-            }
-
-            const Next_Car = this.getNextCar(this.Waiting_Car);
-            const Next_Car_Orientation = Next_Car.currentRail.getOrientation();
-            let virtualWaitingCar: Box = { x: 0, y: 0, width: 0, height: 0 };
-            let virtualNextCar: Box = { x: 0, y: 0, width: 0, height: 0 };
-            if (Next_Car_Orientation === 'vertical') {
-                virtualNextCar.x = 1;
-                virtualNextCar.y = Next_Car.getY();
-                virtualNextCar.width = 1;
-                virtualNextCar.height = Next_Car.getHeight();
-
-                virtualWaitingCar.x = 1;
-                virtualWaitingCar.y = this.Waiting_Car.getY();
-                virtualWaitingCar.width = 1;
-                virtualWaitingCar.height = this.Waiting_Car.getHeight();
-            } else {
-                virtualNextCar.x = Next_Car.getX();
-                virtualNextCar.y = 1;
-                virtualNextCar.width = Next_Car.getWidth();
-                virtualNextCar.height = 1;
-
-                virtualWaitingCar.x = this.Waiting_Car.getX();
-                virtualWaitingCar.y = 1;
-                virtualWaitingCar.width = this.Waiting_Car.getWidth();
-                virtualWaitingCar.height = 1;
-            }
-            if (Collision_Stuff.checkTouchOrIntersect(virtualNextCar, virtualWaitingCar)) {
-                return;
-            }
-
-            const prevCars = this.getCarsBefore(Next_Car);
-            prevCars.forEach((car) => {
-                car.setMovementDirection(this.movDir);
-            })
-            const nextCars = this.getCarsAfter(this.Waiting_Car);
-            nextCars.forEach(car => {
-                car.stopMovement();
-            })
-            this.Waiting_To_Reach_Next_Rail = true;
-            this.Waiting_Car_Current_Rail = this.Waiting_Car.currentRail;
-            this.Waiting = false;
-
+        if (!this.Waiting) {
+            return;
         }
+        if (this.Waiting_Car === null) {
+            throw new Error(`Must never happen`);
+        }
+
+        const Next_Car = this.getNextCar(this.Waiting_Car);
+        const Next_Car_Orientation = Next_Car.currentRail.getOrientation();
+        let virtualWaitingCar: Box = { x: 0, y: 0, width: 0, height: 0 };
+        let virtualNextCar: Box = { x: 0, y: 0, width: 0, height: 0 };
+        if (Next_Car_Orientation === 'vertical') {
+            virtualNextCar.x = 1;
+            virtualNextCar.y = Next_Car.getY();
+            virtualNextCar.width = 1;
+            virtualNextCar.height = Next_Car.getHeight();
+
+            virtualWaitingCar.x = 1;
+            virtualWaitingCar.y = this.Waiting_Car.getY();
+            virtualWaitingCar.width = 1;
+            virtualWaitingCar.height = this.Waiting_Car.getHeight();
+        } else {
+            virtualNextCar.x = Next_Car.getX();
+            virtualNextCar.y = 1;
+            virtualNextCar.width = Next_Car.getWidth();
+            virtualNextCar.height = 1;
+
+            virtualWaitingCar.x = this.Waiting_Car.getX();
+            virtualWaitingCar.y = 1;
+            virtualWaitingCar.width = this.Waiting_Car.getWidth();
+            virtualWaitingCar.height = 1;
+        }
+        const collidingIn1DPlane = Collision_Stuff.checkTouchOrIntersect(virtualNextCar, virtualWaitingCar);
+        //console.log({ collidingIn1DPlane, virtualWaitingCar, idWaiting: this.Waiting_Car.debug_id, idNext: Next_Car.debug_id, virtualNextCar, Next_Car_Orientation });
+
+        if (collidingIn1DPlane) {
+            return;
+        }
+
+        const prevCars = this.getCarsBefore(Next_Car);
+        prevCars.forEach((car) => {
+            car.setMovementDirection(this.movDir);
+        })
+        const nextCars = this.getCarsAfter(this.Waiting_Car);
+        nextCars.forEach(car => {
+            car.stopMovement();
+        })
+        this.Waiting_To_Reach_Next_Rail = true;
+        this.Waiting_Car_Current_Rail = this.Waiting_Car.currentRail;
+        this.Waiting = false;
     }
     Handle_Waiting_To_Reach_Next_Rail() {
         if (!this.Waiting_To_Reach_Next_Rail) {
@@ -108,24 +111,26 @@ export class Train extends Base_Entity {
             throw new Error(`Cannot be null without an error somewhere`);
         }
         const Done = !(this.Waiting_Car.currentRail === this.Waiting_Car_Current_Rail);
-        if (Done) {
-            const nextCars = this.getCarsAfter(this.Waiting_Car);
-            nextCars.forEach(car => {
-                car.setMovementDirection(this.movDir);
-            })
-            this.Waiting_To_Reach_Next_Rail = false;
-            this.Waiting_Car = null; 
+        if (!Done) {
+            return;
         }
+        const nextCars = this.getCarsAfter(this.Waiting_Car);
+        nextCars.forEach(car => {
+            car.setMovementDirection(this.movDir);
+        })
+        this.Waiting_To_Reach_Next_Rail = false;
+        this.Waiting_Car = null;
     }
     Handle_Not_Waiting() {
         if (this.Waiting || this.Waiting_To_Reach_Next_Rail) {
             return;
         }
-        this.cars.slice().reverse().forEach((car: Train_Car, index: number) => {
-            if (this.cars.length <= index + 1) {
+        this.cars.forEach((car: Train_Car, index: number) => {
+            const nextCarIndex = index + 1;
+            if (nextCarIndex >= this.cars.length) {
                 return;
             }
-            const nextCar: Train_Car = this.cars[index + 1];
+            const nextCar: Train_Car = this.cars[nextCarIndex];
             if (car.currentRail.getOrientation() === nextCar.currentRail.getOrientation()) {
                 return;
             }

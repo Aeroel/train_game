@@ -11,6 +11,7 @@ import type { Point, Position } from "#root/Type_Stuff.js";
 import type { ForcesValues } from "../Entity_Forces.js";
 import { log } from "console";
 import { Assert_That, Assert_That_Number_Is_Positive } from "#root/Type_Validation_Stuff.js";
+import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 
 export { Train_Car };
 
@@ -33,6 +34,7 @@ export type Train_Car_Connected_Cars = {
 };
 
 class Train_Car extends Base_Entity {
+  debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
   connectedCars: Train_Car_Connected_Cars = { frontSide: null, backSide: null };
   Wall_And_Door_Thickness = 5;
   currentRail!: Rail;
