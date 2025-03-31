@@ -113,7 +113,8 @@ export class Train extends Base_Entity {
             nextCars.forEach(car => {
                 car.setMovementDirection(this.movDir);
             })
-
+            this.Waiting_To_Reach_Next_Rail = false;
+            this.Waiting_Car = null; 
         }
     }
     Handle_Not_Waiting() {
