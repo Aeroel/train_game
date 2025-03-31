@@ -34,7 +34,7 @@ io.on("connection", (socket) => {
   newPlayerEntity.setY(0);
   newPlayerEntity.setWidth(25);
   newPlayerEntity.setHeight(25);
-  newPlayerEntity.setVisionRange(1000);
+  newPlayerEntity.setVisionRange(5000);
   newPlayerEntity.setSocketId(socket.id);
   World.addEntity(newPlayerEntity);
 

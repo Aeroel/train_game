@@ -5,52 +5,52 @@ import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
 import { World } from "#root/World.js";
 import { Forcefield } from "#root/Entities/Forcefield.js";
 import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
-import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
+import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
+import type { Position } from "#root/Type_Stuff.js";
+import { Train } from "#root/Entities/Train_Stuff/Train.js";
 
 export { Add_Some_Entities_To_The_World };
 
 class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
-    static railLength = 500;
+    static railLength = 1000;
     static rails: Rail[] = [];
+    static Put_A_Train_On_Rail(rail: Rail) {
+        if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
+            throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
+        }
+        const train = new Train(rail, 4, Add_Some_Entities_To_The_World.carSquareSize);
+        World.addEntity(train)
+
+
+    }
     static doItNow() {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
 
         const theFirstRail = Add_Some_Entities_To_The_World.addASmallRailwayAndGetTheFirstRail();
+        Add_Some_Entities_To_The_World.Put_A_Train_On_Rail(theFirstRail);
 
-        Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
+        // Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
 
         World.addEntity(new Forcefield());
 
-        const stSS = new Station_Stop_Spot();
-        stSS.setX(400);
-        stSS.setY(500);
-        stSS.setWidth(10);
-        stSS.setHeight(20);
-        World.addEntity(stSS);
+        // const stSS = new Station_Stop_Spot();
+        // stSS.setX(400);
+        // stSS.setY(500);
+        // stSS.setWidth(10);
+        // stSS.setHeight(20);
+        // World.addEntity(stSS);
 
-        const stSS_2 = new Station_Stop_Spot();
+        // const stSS_2 = new Station_Stop_Spot();
 
-        // this comment is for  commit test, remove later
-        stSS_2.setX(400);
-        stSS_2.setY(50);
-        stSS_2.setWidth(10);
-        stSS_2.setHeight(20);
-        World.addEntity(stSS_2);
-
-        // this.addAnotherCarAndAVerticalRailBelowIt();
-
-        // const aCar = new Train_Car();
-        // aCar.setFrontSide("firstEnd")
-        // aCar.setCurrentRail(this.rails[0]);
-        // aCar.setX(1000)
-        // aCar.setY(1000)
-        // aCar.setHeight(this.carW)
-        // aCar.setWidth(this.carH);
-        // World.addEntity(aCar)
-
+        // // this comment is for  commit test, remove later
+        // stSS_2.setX(400);
+        // stSS_2.setY(50);
+        // stSS_2.setWidth(10);
+        // stSS_2.setHeight(20);
+        // World.addEntity(stSS_2);
 
 
     }
@@ -65,7 +65,7 @@ class Add_Some_Entities_To_The_World {
         const carX = theRail.getX() + (theRail.getWidth() - this.carSquareSize) / 2;
         const carY = theRail.getY() + (theRail.getHeight() - this.carSquareSize) / 2;
 
-        const aTrainCar = new Train_Car({rail: theRail, size: this.carSquareSize, x: carX, y:carY});
+        const aTrainCar = new Train_Car({ rail: theRail, size: this.carSquareSize, x: carX, y: carY });
         World.addEntity(aTrainCar);
         aTrainCar.setFrontSide("firstEnd");
         aTrainCar.setCurrentRail(theRail);

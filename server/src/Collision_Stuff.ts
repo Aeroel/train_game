@@ -1,14 +1,7 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Position } from "#root/Type_Stuff.js";
+import type { Box, Position } from "#root/Type_Stuff.js";
 
 export { Collision_Stuff };
-
-type Box = {
-  x: number,
-  y: number,
-  width: number,
-  height: number
-}
 
 class Collision_Stuff {
   static Do_Entities_Touch_Through_All_Tick_Subpositions(entityA: Base_Entity, entityB: Base_Entity) {
