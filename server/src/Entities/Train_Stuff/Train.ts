@@ -137,10 +137,10 @@ export class Train extends Base_Entity {
         })
     }
     updateState() {
-        
-      //  this.Handle_Not_Waiting();
-        //this.Handle_Waiting();
-        //this.Handle_Waiting_To_Reach_Next_Rail();
+
+        this.Handle_Not_Waiting();
+        this.Handle_Waiting();
+        this.Handle_Waiting_To_Reach_Next_Rail();
         super.updateState();
     }
 
