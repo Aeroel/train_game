@@ -1,4 +1,6 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { SocketStorage } from "#root/SocketStorage.js";
+import type { Socket } from "socket.io";
 export { Player };
 class Player extends Base_Entity {
   controls = {
@@ -8,19 +10,20 @@ class Player extends Base_Entity {
     down: false,
   };
   standardMovementSpeed = 120;
-  socketId = null;
-  defaultVisionRange = 200;
-  visionRange = this.defaultVisionRange;
+  socketId: Socket["id"] = "none";
   constructor() {
     super();
     this.addTag("Player");
     this.addTag("Can_Ride_Train");
   }
-  setVisionRange(visionRange) {
+  setVisionRange(visionRange: number) {
     this.visionRange = visionRange;
   }
-  setSocketId(id) {
+  setSocketId(id: Socket["id"]) {
     this.socketId = id;
+  }
+  getSocket() {
+    return SocketStorage.find(socket => socket.id === this.socketId);
   }
   updateState() {
     if (this.controls.right) {

@@ -1,10 +1,11 @@
 import { World } from "#root/World.js";
-import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
+import { Rail, type Rail_End_Name_Alternative } from "#root/Entities/Train_Stuff/Rail.js";
+import type { Direction } from "#root/Type_Stuff.js";
 
 export { Railway_Placing_Functionality }
 
 class Railway_Placing_Functionality {
-    static place(x, y, length, direction) {
+    static place(x: number, y: number, length: number, direction: Direction) {
         let rail = new Rail(); // Default empty rail
         rail.setX(x)
         rail.setY(y);
@@ -34,7 +35,7 @@ class Railway_Placing_Functionality {
     }
     
     // Place a rail next to an existing rail
-    static placeNextTo(rail, relativeEnd, direction, length) {
+    static placeNextTo(rail: Rail, relativeEnd: Rail_End_Name_Alternative, direction: Direction, length: number) {
         let newX;
         let newY;
         let end = rail.getEnd(relativeEnd); // Get position of the specified end
