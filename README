@@ -24,7 +24,7 @@ something like "cd repoName"
 5. After tsc finishes (it gives no output, like no errors but build folder gets populated with js files) start node on "build/startThisToStartTheGameServer.js". 
 Like this, maybe:
 "node build/startThisToStartTheGameServer.js"
-6. Then cd into repo folder and do something like "http-server client/." This will serve client's html contents on localhost.
+6. Then in a new terminal tab cd into repo folder and do something like "http-server client/." This will serve client's html contents on localhost.
 Well, these are all the steps so far. Now just go to the localhost where the html http-server started.
 
 For development, to start server I open two terminal tabs, in first cd into server dir and type
