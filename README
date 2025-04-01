@@ -42,9 +42,9 @@ Okay, so I will describe the general idea of the project itself:
 there are train tracks. Trains move on them like a metro basically. They stop at train stations and so on, you get the idea.
 There are fences around train tracks so players can't get on the tracks, 
 and each station has sliding doors and wall barriers next to tracks to prevent people from "falling"on /waling on train tracks for safety.
-The trains sync their stopping positions so a train cars' doors are aligned to the station platform's doors
+The trains sync their stopping positions so a train cars' doors are aligned to a station's platform's doors
 so the people can safely enter the train cars without ever being able to jump down to the rails.
-The doors of the train and the platform then close back and train goes to it's next station. You get the idea, I guess...
+The doors of the train and the platform then close back and train goes to its next station. You get the idea, I guess...
 
 So, this full functionality described isn't quite implemented yet.
 It is quite close.
