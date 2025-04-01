@@ -5,7 +5,7 @@ How to install on Windows or Android:
 First of all, for android I need termux with node installed.
 The steps are pretty much identical on windows and android
 0. Nodejs needs to be installed... I use pnpm instead of npm, so after installing node, use npm to install pnpm. For dev I use tsc and nodemon.
-Example of how to install in termux (on windows I guess you can just manually get nodejs from it's website or use a random package manager):
+Example of how to install in termux (on windows I guess you can just manually get nodejs from its website or use a random package manager):
 0.1 pkg install nodejs
 (installing nodejs will also auto-install npm)
 0.2 npm install -g pnpm
