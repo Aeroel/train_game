@@ -27,8 +27,8 @@ class Base_Entity {
     return { up: 0, down: 0, right: 0, left: 0 };
   }
   calculateNextPositionBasedOnForcesAndDeltaTime() {
-    const netHorizontalForce = this.forces.sumComponents("right") - this.forces.sumComponents("left");
-    const netVerticalForce = this.forces.sumComponents("down") - this.forces.sumComponents("up");
+    const netHorizontalForce = this.forces.Get_Net_Axis_Force("horizontal")
+    const netVerticalForce = this.forces.Get_Net_Axis_Force("vertical");
 
     const x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
     const y = (this.y + (netVerticalForce * Game_Loop.deltaTime));

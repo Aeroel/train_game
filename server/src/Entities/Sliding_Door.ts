@@ -84,7 +84,7 @@ class Sliding_Door extends Base_Entity {
       throw new Error(`Invalid opening direction "${Sliding_Open_Direction}". `);
     }
     this.Which_Direction_The_Door_Slides_When_Opening = Sliding_Open_Direction;
-    this.Which_Direction_The_Door_Slides_When_Closing = Entity_Forces.Get_Opposite_Force(this.Which_Direction_The_Door_Slides_When_Opening) as Door_Sliding_Closed_Direction;
+    this.Which_Direction_The_Door_Slides_When_Closing = this.forces.Get_Opposite_Force_Name(this.Which_Direction_The_Door_Slides_When_Opening) as Door_Sliding_Closed_Direction;
   }
   updateState() {
     if (this.getState() === 'opening') {

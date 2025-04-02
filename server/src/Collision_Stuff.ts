@@ -61,7 +61,33 @@ class Collision_Stuff {
 
   }
 
-  
+  static Which_Side_Of_Entity_Is_Facing_Another_Entity(entityA: Box, entityB: Box) {
+    const aCenterX = entityA.x + entityA.width / 2;
+    const aCenterY = entityA.y + entityA.height / 2;
+    const bCenterX = entityB.x + entityB.width / 2;
+    const bCenterY = entityB.y + entityB.height / 2;
+
+    const deltaX = bCenterX - aCenterX;
+    const deltaY = bCenterY - aCenterY;
+
+    const absX = Math.abs(deltaX);
+    const absY = Math.abs(deltaY);
+
+    if (absX > absY) {
+      if (deltaX > 0) {
+        return 'right';
+      } else {
+        return 'left';
+      }
+    }
+
+    if (deltaY > 0) {
+      return 'bottom'
+    } else {
+      return 'top';
+    }
+  }
+
   static Get_Prelude_To_Subpositions_Loop(entityA: Base_Entity, entityB: Base_Entity) {
     if (!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
       throw new Error(`Both arguments must be entities`)
