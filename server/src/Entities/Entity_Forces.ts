@@ -151,4 +151,21 @@ class Entity_Forces {
         this.forces.right = this.forces.right.filter(filterFunc);
         this.forces.left = this.forces.left.filter(filterFunc);
     }
+
+
+    Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(
+        forceName: keyof Entity_Forces["forces"],
+        anotherEntityForces: Entity_Forces
+    ): string[] {
+        const forceAComponents = this.forces[forceName];
+        const forceBComponents = anotherEntityForces.forces[forceName];
+
+        const forceBTags = new Set(forceBComponents.map((component) => component.key));
+
+        return forceAComponents
+            .filter((component) => !forceBTags.has(component.key))
+            .map((component) => component.key);
+    }
+
+
 }

@@ -1,8 +1,9 @@
 import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Entity_Forces, Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
+import { Entity_Forces, type Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
+import { log } from "console";
 import type { Socket } from "socket.io";
 export { Player };
 class Player extends Base_Entity {
@@ -41,7 +42,6 @@ class Player extends Base_Entity {
     if (this.controls.down) {
       this.forces.set("Player_Controls", "down", this.standardMovementSpeed);
     }
-
     this.Collision_Manager();
     super.updateState();
   }
@@ -62,33 +62,26 @@ class Player extends Base_Entity {
       }
 
       const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
-      let axis: "vertical" | "horizontal" = 'horizontal';
-      if (playerSide === 'right' || playerSide === 'left') {
-        axis = 'horizontal';
-      } else if (playerSide === 'top' || playerSide === 'bottom') {
-        axis = 'vertical';
-      } 
-
       let Force_Which_Caused_Collision: Force_Name = 'up';
       switch (playerSide) {
         case "bottom":
           Force_Which_Caused_Collision = 'down'
-        break;
+          break;
         case "top":
           Force_Which_Caused_Collision = 'up'
-        break;
+          break;
         case "left":
           Force_Which_Caused_Collision = 'left'
-        break;
+          break;
         case "right":
           Force_Which_Caused_Collision = 'right'
-        break;
+          break;
       }
-      const Player_Sum_Of_Axis_Forces = this.forces.Get_Net_Axis_Force(axis); 
-      const Entity_Sum_Of_Axis_Forces = wall_or_door.forces.Get_Net_Axis_Force(axis); 
-      const difference = Player_Sum_Of_Axis_Forces - Entity_Sum_Of_Axis_Forces;
-      const Abs_Difference = Math.abs(difference);
-      player.forces.set(`Push_Back_From_Wall_Or_Door_With_Id_${wall_or_door.id}`, this.forces.Get_Opposite_Force_Name(Force_Which_Caused_Collision), Abs_Difference+(this.standardMovementSpeed), false);
+      const Keys_That_Are_Not_Shared_Between_Player_And_Entity = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(Force_Which_Caused_Collision, wall_or_door.forces);
+      Keys_That_Are_Not_Shared_Between_Player_And_Entity.forEach(key => {
+        this.forces.set(key, Force_Which_Caused_Collision, 0);
+      })
+
       return;
 
     })
