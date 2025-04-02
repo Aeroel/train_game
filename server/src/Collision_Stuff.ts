@@ -32,9 +32,6 @@ class Collision_Stuff {
 
   }
   static areEntitiesTouching(entityA: Base_Entity, entityB: Base_Entity) {
-    if (!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
-      throw new Error(`Both arguments must be entities`)
-    }
     const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
 
     let collHappenedAtAnyTime = false;
@@ -64,7 +61,11 @@ class Collision_Stuff {
 
   }
 
-  static Get_Prelude_To_Subpositions_Loop(entityA : Base_Entity, entityB : Base_Entity) {
+  
+  static Get_Prelude_To_Subpositions_Loop(entityA: Base_Entity, entityB: Base_Entity) {
+    if (!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
+      throw new Error(`Both arguments must be entities`)
+    }
     const entityAStartingPosition: Position = { x: entityA.x, y: entityA.y };
     const entityBStartingPosition: Position = { x: entityB.x, y: entityB.y };
 

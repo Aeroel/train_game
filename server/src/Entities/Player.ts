@@ -1,5 +1,7 @@
+import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { SocketStorage } from "#root/SocketStorage.js";
+import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
 export { Player };
 class Player extends Base_Entity {
@@ -38,6 +40,23 @@ class Player extends Base_Entity {
     if (this.controls.down) {
       this.forces.set("Player_Controls", "down", this.standardMovementSpeed);
     }
+
+    this.Collision_Manager();
     super.updateState();
+  }
+  Collision_Manager() {
+    const player = this;
+    World.getCurrentEntities().forEach((entity: Base_Entity) => {
+      if (player === entity) {
+        return;
+      }
+      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
+      if (!Can_Collide) {
+        return;
+      }
+      const wall_or_door = entity;
+      return;
+
+    })
   }
 }
