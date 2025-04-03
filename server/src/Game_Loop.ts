@@ -1,6 +1,7 @@
 import { EmitStuff } from "#root/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
 import { World } from "#root/World.js";
+import { log } from "console";
 import type { Player } from "./Entities/Player.js";
 
 export { Game_Loop}
