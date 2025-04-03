@@ -89,6 +89,10 @@ class Base_Entity {
     Assert_That_Number_Is_Finite(height);
     this.height = height;
   }
+  setPosition(position: Position) {
+    this.setX(position.x);
+    this.setY(position.y);
+  }
   setXYWH(x: number, y: number, w: number, h: number) {
     Assert_That_Numbers_Are_Finite({ x, y, w, h });
     this.setX(x);

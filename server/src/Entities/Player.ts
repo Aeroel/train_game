@@ -2,6 +2,7 @@ import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Entity_Forces, type Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
+import type { Position } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
 import { log } from "console";
 import type { Socket } from "socket.io";
@@ -57,12 +58,15 @@ class Player extends Base_Entity {
       }
       const wall_or_door = entity;
 
-      if (!Collision_Stuff.areEntitiesTouching(player, wall_or_door)) {
+      const Answer = Collision_Stuff.Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(player, wall_or_door); 
+      if(Answer.Collision_Occurred === false) {
         return;
       }
 
+      player.setPosition(Answer.Position_Before_Collision_A);
+
       const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
-      let Force_Which_Caused_Collision: Force_Name = 'up';
+      let Force_Which_Caused_Collision: Force_Name | undefined = undefined;
       switch (playerSide) {
         case "bottom":
           Force_Which_Caused_Collision = 'down'
@@ -77,8 +81,10 @@ class Player extends Base_Entity {
           Force_Which_Caused_Collision = 'right'
           break;
       }
-      const Keys_That_Are_Not_Shared_Between_Player_And_Entity = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(Force_Which_Caused_Collision, wall_or_door.forces);
-      Keys_That_Are_Not_Shared_Between_Player_And_Entity.forEach(key => {
+
+      const Keys_That_Are_Unique_To_Player = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(Force_Which_Caused_Collision, wall_or_door.forces);
+      
+      Keys_That_Are_Unique_To_Player.forEach(key => {
         this.forces.set(key, Force_Which_Caused_Collision, 0);
       })
 

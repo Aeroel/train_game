@@ -31,7 +31,34 @@ class Collision_Stuff {
 
 
   }
-  static areEntitiesTouching(entityA: Base_Entity, entityB: Base_Entity) {
+  static Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(entityA: Base_Entity, entityB: Base_Entity) {
+
+
+    let Collision_Occurred = false;
+    let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y};
+    let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y};
+
+
+    const loop = new Subpositions_Loop(
+      entityA,
+      entityB,
+    );
+    loop.run((index: number, subA: Box, subB: Box) => {
+      if(Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
+        Collision_Occurred = true;
+        loop.stop();
+      }
+     // Position_Before_Collision_A = {x: subA.x, y: subA.y}
+      //Position_Before_Collision_B = {x: subB.x, y: subB.y}
+    })
+
+
+    const result = {Collision_Occurred, Position_Before_Collision_A, Position_Before_Collision_B};
+    return result;
+
+
+  }
+  static areEntitiesTouching(entityA: Base_Entity, entityB: Base_Entity): boolean {
     const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
 
     let collHappenedAtAnyTime = false;
@@ -57,6 +84,7 @@ class Collision_Stuff {
 
     }
 
+    return collHappenedAtAnyTime;
 
 
   }
@@ -173,4 +201,52 @@ class Collision_Stuff {
   }
 
 
+}
+
+
+class Subpositions_Loop {
+  shouldStop = false;
+  result = false;
+  entityA: Base_Entity;
+  entityB: Base_Entity;
+  entityASubpositions: Position[];
+  entityBSubpositions: Position[];
+  loopLength: number;
+
+  constructor(
+    entityA: Base_Entity,
+    entityB: Base_Entity,
+  ) {
+    this.entityA = entityA;
+    this.entityB = entityB;
+
+    const { entitiesSubpositionsArrays } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
+
+    this.entityASubpositions = entitiesSubpositionsArrays.entityA;
+    this.entityBSubpositions = entitiesSubpositionsArrays.entityB;
+    this.loopLength = entitiesSubpositionsArrays.lengthOfEither;
+  }
+
+  run(thisFunction: (current_index: number, subA: Box, subB: Box) => void): boolean {
+    for (let current_index = 0; current_index < this.loopLength && !this.shouldStop; current_index++) {
+      const subA = this.createSubEntity(this.entityA, this.entityASubpositions[current_index]);
+      const subB = this.createSubEntity(this.entityB, this.entityBSubpositions[current_index]);
+
+      thisFunction(current_index, subA, subB);
+    }
+    return this.result;
+  }
+
+  stop(result: boolean = true): void {
+    this.shouldStop = true;
+    this.result = result;
+  }
+
+  createSubEntity(entity: Base_Entity, position: Position): Box {
+    return {
+      width: entity.width,
+      height: entity.height,
+      ...position
+    };
+  }
 }
