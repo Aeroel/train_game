@@ -48,8 +48,8 @@ class Collision_Stuff {
         Collision_Occurred = true;
         loop.stop();
       }
-     // Position_Before_Collision_A = {x: subA.x, y: subA.y}
-      //Position_Before_Collision_B = {x: subB.x, y: subB.y}
+      Position_Before_Collision_A = {x: subA.x, y: subA.y}
+      Position_Before_Collision_B = {x: subB.x, y: subB.y}
     })
 
 
