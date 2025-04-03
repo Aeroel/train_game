@@ -1,6 +1,7 @@
 import { EmitStuff } from "#root/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
 import { World } from "#root/World.js";
+import type { Player } from "./Entities/Player.js";
 
 export { Game_Loop}
 
@@ -33,6 +34,10 @@ class Game_Loop {
       EmitStuff.emitToAllPlayersWorldStateStuff()
       World.getCurrentEntities().forEach(entity => {
         entity.updateState();
+      });
+      World.filterEntities(entity => entity.hasTag("Player")).forEach(entity=>{
+        const player = entity as Player;
+        player.Collision_Manager();
       })
     }
   

@@ -43,7 +43,7 @@ class Player extends Base_Entity {
     if (this.controls.down) {
       this.forces.set("Player_Controls", "down", this.standardMovementSpeed);
     }
-    this.Collision_Manager();
+   
     super.updateState();
   }
   Collision_Manager() {
