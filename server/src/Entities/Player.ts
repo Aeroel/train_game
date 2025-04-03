@@ -2,7 +2,7 @@ import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Entity_Forces, type Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
-import type { Position } from "#root/Type_Stuff.js";
+import type { Orientation, Position } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
 import { log } from "console";
 import type { Socket } from "socket.io";
@@ -58,38 +58,41 @@ class Player extends Base_Entity {
       }
       const wall_or_door = entity;
 
-      const Answer = Collision_Stuff.Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(player, wall_or_door); 
-      if(Answer.Collision_Occurred === false) {
+      const Answer = Collision_Stuff.Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(player, wall_or_door);
+      if (Answer.Collision_Occurred === false) {
         return;
       }
 
       player.setPosition(Answer.Position_Before_Collision_A);
-
-      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
-      let Force_Which_Caused_Collision: Force_Name | undefined = undefined;
-      switch (playerSide) {
-        case "bottom":
-          Force_Which_Caused_Collision = 'down'
-          break;
-        case "top":
-          Force_Which_Caused_Collision = 'up'
-          break;
-        case "left":
-          Force_Which_Caused_Collision = 'left'
-          break;
-        case "right":
-          Force_Which_Caused_Collision = 'right'
-          break;
-      }
-
-      const Keys_That_Are_Unique_To_Player = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(Force_Which_Caused_Collision, wall_or_door.forces);
-      
-      Keys_That_Are_Unique_To_Player.forEach(key => {
-        this.forces.set(key, Force_Which_Caused_Collision, 0);
-      })
+      player.Vertical_Axis_Collision_Handler(wall_or_door);
+      player.Horizontal_Axis_Collision_Handler(wall_or_door);
 
       return;
 
+    })
+  }
+  Vertical_Axis_Collision_Handler(wall_or_door: Base_Entity) {
+    const Keys_That_Are_Unique_To_Player_Up = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("up", wall_or_door.forces);
+
+    Keys_That_Are_Unique_To_Player_Up.forEach(key => {
+      this.forces.set(key, "up", 0);
+    })
+    const Keys_That_Are_Unique_To_Player_Down = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("down", wall_or_door.forces);
+
+    Keys_That_Are_Unique_To_Player_Down.forEach(key => {
+      this.forces.set(key, "down", 0);
+    })
+  }
+  Horizontal_Axis_Collision_Handler(wall_or_door: Base_Entity) {
+    const Keys_That_Are_Unique_To_Player_Left = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("left", wall_or_door.forces);
+
+    Keys_That_Are_Unique_To_Player_Left.forEach(key => {
+      this.forces.set(key, "left", 0);
+    })
+    const Keys_That_Are_Unique_To_Player_Right = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("right", wall_or_door.forces);
+
+    Keys_That_Are_Unique_To_Player_Right.forEach(key => {
+      this.forces.set(key, "right", 0);
     })
   }
 }
