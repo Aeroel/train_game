@@ -36,10 +36,6 @@ class Game_Loop {
       World.getCurrentEntities().forEach(entity => {
         entity.updateState();
       });
-      World.filterEntities(entity => entity.hasTag("Player")).forEach(entity=>{
-        const player = entity as Player;
-        player.Collision_Manager();
-      })
     }
   
   }

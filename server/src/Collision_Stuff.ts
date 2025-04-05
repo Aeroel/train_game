@@ -39,10 +39,7 @@ class Collision_Stuff {
     let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y};
 
 
-    const loop = new Subpositions_Loop(
-      entityA,
-      entityB,
-    );
+    const loop = new Subpositions_Loop(entityA,entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
       if(Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
         Collision_Occurred = true;
