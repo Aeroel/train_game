@@ -63,6 +63,7 @@ class Player extends Base_Entity {
       if (Answer.Collision_Occurred === false) {
         return;
       }
+      player.setPosition(Answer.Position_Before_Collision_A);
       
       const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
       const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;
@@ -82,30 +83,6 @@ class Player extends Base_Entity {
 
       return;
 
-    })
-  }
-  Vertical_Axis_Collision_Handler(wall_or_door: Base_Entity) {
-    const Keys_That_Are_Unique_To_Player_Up = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("up", wall_or_door.forces);
-
-    Keys_That_Are_Unique_To_Player_Up.forEach(key => {
-      this.forces.set(key, "up", 0);
-    })
-    const Keys_That_Are_Unique_To_Player_Down = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("down", wall_or_door.forces);
-
-    Keys_That_Are_Unique_To_Player_Down.forEach(key => {
-      this.forces.set(key, "down", 0);
-    })
-  }
-  Horizontal_Axis_Collision_Handler(wall_or_door: Base_Entity) {
-    const Keys_That_Are_Unique_To_Player_Left = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("left", wall_or_door.forces);
-
-    Keys_That_Are_Unique_To_Player_Left.forEach(key => {
-      this.forces.set(key, "left", 0);
-    })
-    const Keys_That_Are_Unique_To_Player_Right = this.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces("right", wall_or_door.forces);
-
-    Keys_That_Are_Unique_To_Player_Right.forEach(key => {
-      this.forces.set(key, "right", 0);
     })
   }
 }
