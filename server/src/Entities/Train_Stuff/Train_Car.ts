@@ -8,7 +8,7 @@ import { Helper_Functions } from "#root/Helper_Functions.js";
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import type { Rail } from "./Rail.js";
 import type { Point, Position } from "#root/Type_Stuff.js";
-import type { ForcesValues } from "../Entity_Forces.js";
+import type { Forces_Values } from "../Entity_Forces.js";
 import { log } from "console";
 import { Assert_That, Assert_That_Number_Is_Positive } from "#root/Type_Validation_Stuff.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
@@ -475,7 +475,7 @@ class Train_Car extends Base_Entity {
     const car_forces = this.forces.Get_All_By_Key(this.Rail_Movement_Key);
     this.Add_Forces_To_Entities_That_Are_Located_On_The_Car(car_forces);
   }
-  Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces: ForcesValues) {
+  Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces: Forces_Values) {
 
     const forceKey = this.Riding_Force_Key;
 

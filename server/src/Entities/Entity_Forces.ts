@@ -14,13 +14,13 @@ export type Forces = {
     left: Force_Component[],
 
 }
-export type ForcesValues = {
+export type Forces_Values = {
     up: number,
     down: number,
     right: number,
     left: number
 }
-export type ForceName = "up" | "right" | "left" | "down";
+export type Force_Name = "up" | "right" | "left" | "down";
 
 class Entity_Forces {
     entity: Base_Entity;
@@ -33,14 +33,14 @@ class Entity_Forces {
         left: [],
     }
     threshold = 0.9;
-    static Get_Opposite_Force(to: keyof Entity_Forces["forces"]) {
+    Get_Opposite_Force_Name(to: Force_Name): Force_Name {
         const isOppositeTo = {
             up: "down",
             down: "up",
             right: "left",
             left: "right",
         }
-        return isOppositeTo[to as keyof Entity_Forces["forces"]];
+        return isOppositeTo[to as keyof Entity_Forces["forces"]] as Force_Name;
     }
     constructor(ofEntity: Base_Entity) {
         this.entity = ofEntity;
@@ -52,7 +52,7 @@ class Entity_Forces {
     Init_A_Key_For_Each_Force(keyName: string) {
         this.setAll(keyName, { up: 0, down: 0, left: 0, right: 0 }, true);
     }
-    Get_By_Key(key: string, forceName: ForceName) {
+    Get_By_Key(key: string, forceName: Force_Name) {
         if (!this.Key_Exists_In_Force(key, forceName)) {
             throw new Error(`${key} not in ${forceName}, why?`);
         }
@@ -73,7 +73,7 @@ class Entity_Forces {
         return result;
 
     }
-    sumComponents(forceName: ForceName) {
+    sumComponents(forceName: Force_Name) {
         let sum = 0;
         this.forces[forceName].forEach(forceComponent => {
             sum += forceComponent.forceValue;
@@ -81,13 +81,13 @@ class Entity_Forces {
         });
         return sum;
     }
-    setAll(key: string, forces: ForcesValues, keepAtZero = false) {
+    setAll(key: string, forces: Forces_Values, keepAtZero = false) {
         this.set(key, "up", forces.up, keepAtZero);
         this.set(key, "down", forces.down, keepAtZero);
         this.set(key, "right", forces.right, keepAtZero);
         this.set(key, "left", forces.left, keepAtZero);
     }
-    set(key: string, forceName: ForceName, forceValue: number, keepAtZero?: boolean) {
+    set(key: string, forceName: Force_Name, forceValue: number, keepAtZero?: boolean) {
         Assert_That_Number_Is_Positive(forceValue);
         this.propagateSet(key, forceName, forceValue, keepAtZero)
         if (!this.Key_Exists_In_Force(key, forceName)) {
@@ -104,7 +104,7 @@ class Entity_Forces {
     Add_To_Propagation_List(entity: Base_Entity) {
         this.Entities_That_Also_Get_The_Forces_Of_This_Entity.push(entity)
     }
-    propagateSet(key: string, forceName: ForceName, forceValue: number, keepAtZero?: boolean) {
+    propagateSet(key: string, forceName: Force_Name, forceValue: number, keepAtZero?: boolean) {
         if (this.Entities_That_Also_Get_The_Forces_Of_This_Entity.length === 0) {
             return;
         }
@@ -113,7 +113,7 @@ class Entity_Forces {
             entity.forces.set(propagationKey, forceName, forceValue, keepAtZero)
         })
     }
-    Key_Exists_In_Force(key: string, forceName: ForceName) {
+    Key_Exists_In_Force(key: string, forceName: Force_Name) {
         if (!Entity_Forces.Possible_Forces.includes(forceName)) {
             throw new Error(`Force ${forceName} invalid`);
         }
@@ -127,17 +127,45 @@ class Entity_Forces {
         });
         this.Remove_Components_That_Have_Their_Force_Values_Below_Threshold();
     }
-    forEachComponent(doThis : (component: Force_Component) => void) {
+    forEachComponent(doThis: (component: Force_Component) => void) {
         this.forces.up.forEach(doThis);
         this.forces.down.forEach(doThis);
         this.forces.right.forEach(doThis);
         this.forces.left.forEach(doThis);
     }
+    Get_Net_Axis_Force(axis: "horizontal" | "vertical") {
+        switch (axis) {
+            case "horizontal":
+                return this.sumComponents("right") - this.sumComponents("left")
+                break;
+            case "vertical":
+                return this.sumComponents("down") - this.sumComponents("up")
+                break;
+        }
+
+    }
     Remove_Components_That_Have_Their_Force_Values_Below_Threshold() {
-        const filterFunc = (component : Force_Component) => component.forceValue > this.threshold || component.keepAtZero;
+        const filterFunc = (component: Force_Component) => component.forceValue > this.threshold || component.keepAtZero;
         this.forces.up = this.forces.up.filter(filterFunc);
         this.forces.down = this.forces.down.filter(filterFunc);
         this.forces.right = this.forces.right.filter(filterFunc);
         this.forces.left = this.forces.left.filter(filterFunc);
     }
+
+
+    Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(
+        forceName: keyof Entity_Forces["forces"],
+        anotherEntityForces: Entity_Forces
+    ): string[] {
+        const forceAComponents = this.forces[forceName];
+        const forceBComponents = anotherEntityForces.forces[forceName];
+
+        const forceBTags = new Set(forceBComponents.map((component) => component.key));
+
+        return forceAComponents
+            .filter((component) => !forceBTags.has(component.key))
+            .map((component) => component.key);
+    }
+
+
 }

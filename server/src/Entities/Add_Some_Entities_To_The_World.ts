@@ -8,6 +8,7 @@ import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
+import { Wall } from "./Wall.js";
 
 export { Add_Some_Entities_To_The_World };
 
@@ -25,6 +26,7 @@ class Add_Some_Entities_To_The_World {
 
     }
     static doItNow() {
+
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
@@ -51,6 +53,13 @@ class Add_Some_Entities_To_The_World {
         // stSS_2.setWidth(10);
         // stSS_2.setHeight(20);
         // World.addEntity(stSS_2);
+        const a_wall = new Wall();
+        a_wall.setX(400);
+        a_wall.setY(50);
+        a_wall.setWidth(10);
+        a_wall.setHeight(20);
+        World.addEntity(a_wall);
+
 
 
     }
