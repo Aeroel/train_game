@@ -2,6 +2,7 @@ import { World } from "#root/World.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 import type { Player } from "./Entities/Player.js";
 
+
 export { PreEmitStuff }
 
 
@@ -48,7 +49,7 @@ class PreEmitStuff {
         if (entity.tags.includes(tagIAmFineWithExposing)) {
           cleanedTags.push(tagIAmFineWithExposing);
         }
-      })
+      }); 
       cleanedEntities.push({
         x: entity.x,
         y: entity.y,
@@ -66,8 +67,10 @@ class PreEmitStuff {
     const visibleEntities: VisibleEntity[] = new Array();
     World.getCurrentEntities().forEach((entity: Base_Entity) => {
       const visiblePortion = PreEmitStuff.getVisiblePortion(player, entity);
-      const visibleEdges = PreEmitStuff.getVisibleEdges(player, entity)
-      if (!visiblePortion) {
+      const visibleEdges = PreEmitStuff.getVisibleEdges(player, entity);
+      
+      const entityIsVisible = visiblePortion;
+      if (!entityIsVisible) {
         return;
       }
 
@@ -83,21 +86,23 @@ class PreEmitStuff {
     });
     return visibleEntities;
   }
-  static virtualizeXYToAvoidExposingRealWorldXY(visibleEntities: VisibleEntity[], player: Player, virtW: typeof PreEmitStuff["virtualWidth"], virtH: typeof PreEmitStuff["virtualHeight"]) : VirtualizedEntity[] {
+  static virtualizeXYToAvoidExposingRealWorldXY(visibleEntities: VisibleEntity[], POVEntity: Base_Entity, virtW: typeof PreEmitStuff["virtualWidth"], virtH: typeof PreEmitStuff["virtualHeight"]) : VirtualizedEntity[] {
     // Calculate the center of the player
     const centerX = virtW / 2;
     const centerY = virtH / 2;
 
     // Calculate the scale factors for virtual canvas based on max vision range dimensions
-    const scaleX = virtW / player.visionRange;
-    const scaleY = virtH / player.visionRange;
+    const scaleX = virtW / POVEntity.visionRange;
+    const scaleY = virtH / POVEntity.visionRange;
 
-
+   /* code made using GPT below, I do not fully grasp it, though it does not seem to be complicated either 
+   
+   */
     // Adjust positions so the player is at the center and entities are scaled accordingly
     return visibleEntities.map(entity => {
       // Use player center (instead of top-left) to calculate relative positions
-      const playerCenterX = player.x + player.width / 2;
-      const playerCenterY = player.y + player.height / 2;
+      const playerCenterX = POVEntity.x + POVEntity.width / 2;
+      const playerCenterY = POVEntity.y + POVEntity.height / 2;
 
       const relX = entity.x - playerCenterX;  // Relative X position from the player's center
       const relY = entity.y - playerCenterY;  // Relative Y position from the player's center
@@ -106,7 +111,7 @@ class PreEmitStuff {
       const virtualX = centerX + (relX * scaleX);
       const virtualY = centerY + (relY * scaleY);
 
-      const virtualizedEdges = PreEmitStuff.virtualizeEntityEdges(entity, player, virtW, virtH)
+      const virtualizedEdges = PreEmitStuff.virtualizeEntityEdges(entity, POVEntity, virtW, virtH)
 
       return {
         ...entity,

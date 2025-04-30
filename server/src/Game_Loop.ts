@@ -11,19 +11,19 @@ class Game_Loop {
     static msPerTick = 1000 / Game_Loop.tickRate; // Duration of each update in milliseconds
     static deltaTime = Game_Loop.msPerTick; // Convert to seconds
     static lastUpdateTime = Date.now();
-    static lag = 0;
+    static accumulatedTime = 0;
   
     static theLoop() {
       const currentTime = Date.now();
       const elapsed = currentTime - Game_Loop.lastUpdateTime;
       Game_Loop.lastUpdateTime = currentTime;
   
-      Game_Loop.lag += elapsed;
+      Game_Loop.accumulatedTime += elapsed;
   
       // Process game logic in fixed-size steps
-      while (Game_Loop.lag >= Game_Loop.msPerTick) {
+      while (Game_Loop.accumulatedTime >= Game_Loop.msPerTick) {
         Game_Loop.updateGameState(); 
-        Game_Loop.lag -= Game_Loop.msPerTick;
+        Game_Loop.accumulatedTime -= Game_Loop.msPerTick;
       }
   
       // Schedule the next iteration
