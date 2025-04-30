@@ -53,12 +53,17 @@ class Rail extends Base_Entity {
             thisEndFinal = "secondEnd";
         } else if (thisEnd === "topEnd") {
             thisEndFinal = "firstEnd";
+        } else {
+            thisEndFinal = thisEnd as Rail_End_Name;
         }
+        
         let otherEndFinal: Rail_End_Name = "firstEnd";
         if(otherEnd === "bottomEnd") {
             otherEndFinal = "secondEnd";
         } else if (otherEnd === "topEnd") {
             otherEndFinal = "firstEnd";
+        } else {
+            otherEndFinal = otherEnd as Rail_End_Name;
         }
         this.railConnections[thisEndFinal] = otherRail;
         otherRail.railConnections[otherEndFinal] = this;
