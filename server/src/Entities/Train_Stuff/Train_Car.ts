@@ -12,6 +12,7 @@ import type { Forces_Values } from "../Entity_Forces.js";
 import { log } from "console";
 import { Assert_That, Assert_That_Number_Is_Positive } from "#root/Type_Validation_Stuff.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
+import type { Train } from "./Train.js";
 
 export { Train_Car };
 
@@ -19,7 +20,8 @@ interface Train_Car_Constructor {
   x: Base_Entity['x'],
   y: Base_Entity['y'],
   size: Base_Entity['x'] | Base_Entity['y'],
-  rail: Rail
+  rail: Rail,
+  train: Train,
 }
 
 export type Train_Car_End = {
@@ -36,8 +38,10 @@ export type Train_Car_Connected_Cars = {
 class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
   connectedCars: Train_Car_Connected_Cars = { frontSide: null, backSide: null };
+  train: Train;
   Wall_And_Door_Thickness = 5;
   currentRail!: Rail;
+  previousRail!: Rail;
   defaultOrientation = "horizontal";
   twoPossibleEnds = ['firstEnd', 'secondEnd'];
   twoPossibleSides = ['frontSide', 'backSide'];
@@ -53,7 +57,7 @@ class Train_Car extends Base_Entity {
   Rail_Movement_Key = `Rail_Movement`;
   Riding_Force_Key = `Riding_Car_Id_${this.id}`;
   behaviour;
-  constructor({ x, y, size, rail }: Train_Car_Constructor) {
+  constructor({ x, y, size, rail, train}: Train_Car_Constructor) {
     if (!Helper_Functions.isNumber(x) || !Helper_Functions.isNumber(y) || !Helper_Functions.isNumber(size)) {
       throw new Error(`x and y and size must be passed and be numbers, Passed xysize are instead: ${x} and ${y} and ${size}`);
     }
@@ -65,6 +69,8 @@ class Train_Car extends Base_Entity {
     this.setColor("brown");
     this.addTag("Train_Car");
 
+    this.train = train;
+    this.previousRail = rail;
     this.setCurrentRail(rail);
     this.setX(x);
     this.setY(y);
@@ -161,6 +167,7 @@ class Train_Car extends Base_Entity {
     World.addEntity(this.Front_Side_Entity);
   }
   setCurrentRail(rail: Rail) {
+    this.previousRail = this.currentRail;
     this.currentRail = rail;
 
   }
@@ -320,6 +327,7 @@ class Train_Car extends Base_Entity {
     if (!nextRailIfAny) {
 
       this.stopMovement();
+      this.train.stopAllCars();
       return;
     }
 
@@ -330,6 +338,9 @@ class Train_Car extends Base_Entity {
   }
 
   correctlySetSidesAfterRailSwitch() {
+    if(this.currentRail.orientation === this.previousRail.orientation) {
+      return null;
+    }
     const farthestRailEnd = this.currentRail.getEnd(this.oppositeOf(this.currentRail.getEndClosestTo(this).name, this.currentRail.twoPossibleEnds));
 
     const car_end_closest_to_farthest_rail_end = this.get_car_end_closest_to(farthestRailEnd);
@@ -434,9 +445,11 @@ class Train_Car extends Base_Entity {
       }
       if (upOrDown < 0) {
         newForces.up = defaultForceToMoveOnRail;
+        newForces.down = 0;
       }
       if (upOrDown > 0) {
         newForces.down = defaultForceToMoveOnRail;
+        newForces.up = 0;
       }
     } else if (this.currentRail.orientation === 'horizontal') {
       let leftOrRight;
@@ -449,9 +462,11 @@ class Train_Car extends Base_Entity {
       }
       if (leftOrRight < 0) {
         newForces.left = defaultForceToMoveOnRail;
+        newForces.right = 0;
       }
       if (leftOrRight > 0) {
         newForces.right = defaultForceToMoveOnRail;
+        newForces.left = 0;
       }
     }
     return newForces;

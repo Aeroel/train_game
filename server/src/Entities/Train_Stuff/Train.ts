@@ -16,6 +16,11 @@ export class Train extends Base_Entity {
     cars: Train_Car[] = new Array();
     movDir: "forwards" | "backwards" = "forwards";
     frontSide: "firstEnd" | "secondEnd" = "secondEnd";
+    stopAllCars() {
+        this.cars.forEach(car => {
+            car.stopMovement();
+        })
+    }
     constructor(rail: Rail, numberOfCars: number, carSquareSize: number) {
         super();
         let startPosition: Position;
@@ -40,7 +45,7 @@ export class Train extends Base_Entity {
                 carX = startPosition.x;
                 carY = startPosition.y + (count * carSquareSize);
             }
-            const car = new Train_Car({ rail, size: carSquareSize, x: carX, y: carY });
+            const car = new Train_Car({ rail, size: carSquareSize, x: carX, y: carY, train: this });
             car.setFrontSide(this.frontSide);
             car.setMovementDirection(this.movDir);
             World.addEntity(car);

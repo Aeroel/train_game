@@ -63,22 +63,7 @@ class Add_Some_Entities_To_The_World {
 
 
     }
-    static addAnotherCarAndAVerticalRailBelowIt() {
-        const verRail = Railway_Placing_Functionality.place(500, 500, 400, "down");
-        this.putATrainCarOnThisRail(verRail);
-    }
-    static putATrainCarOnThisRail(theRail: Rail) {
 
-
-        // Calculate the train car's position (centered on the rail)
-        const carX = theRail.getX() + (theRail.getWidth() - this.carSquareSize) / 2;
-        const carY = theRail.getY() + (theRail.getHeight() - this.carSquareSize) / 2;
-
-        const aTrainCar = new Train_Car({ rail: theRail, size: this.carSquareSize, x: carX, y: carY });
-        World.addEntity(aTrainCar);
-        aTrainCar.setFrontSide("firstEnd");
-        aTrainCar.setCurrentRail(theRail);
-    }
     static addASmallRailwayAndGetTheFirstRail() {
         /*
         new rail1({x:10, y:10}, "right", this.railLength);
@@ -86,18 +71,18 @@ class Add_Some_Entities_To_The_World {
         // */
         const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
 
-        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength);
+        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'right', this.railLength);
         rail2.connectWithRail("firstEnd", "secondEnd", rail1);
 
-        // Right vertical rail
-        const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
-        rail3.connectWithRail("secondEnd", "secondEnd", rail2);
+        // // Right vertical rail
+        // const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
+        // rail3.connectWithRail("secondEnd", "secondEnd", rail2);
 
-        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'up', this.railLength); // Left vertical rail
-        rail4.connectWithRail("secondEnd", "firstEnd", rail3);
-        rail4.connectWithRail("firstEnd", "firstEnd", rail1);
+        // const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'up', this.railLength); // Left vertical rail
+        // rail4.connectWithRail("secondEnd", "firstEnd", rail3);
+        // rail4.connectWithRail("firstEnd", "firstEnd", rail1);
 
-        this.rails.push(rail1, rail2, rail3, rail4);
+        // this.rails.push(rail1, rail2, rail3, rail4);
         return rail1;
     }
 
