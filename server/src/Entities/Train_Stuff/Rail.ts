@@ -6,7 +6,7 @@ import { Assert_That_Numbers_Are_Finite } from "#root/Type_Validation_Stuff.js";
 export { Rail };
 
 export type Rail_End_Name = "firstEnd" | "secondEnd";
-export type Rail_End_Name_Alternative = "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
+export type Rail_End_Name_Alternative = Rail_End_Name | "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
 export type Rail_Connection = {
     firstEnd: Rail | null;
     secondEnd: Rail | null;
@@ -47,9 +47,21 @@ class Rail extends Base_Entity {
                 break;
         }
     }
-    connectWithRail(thisEnd: Rail_End_Name, otherEnd: Rail_End_Name, otherRail: Rail) {
-        this.railConnections[thisEnd] = otherRail;
-        otherRail.railConnections[otherEnd] = this;
+    connectWithRail(thisEnd: Rail_End_Name_Alternative, otherEnd: Rail_End_Name_Alternative, otherRail: Rail) {
+        let thisEndFinal: Rail_End_Name = "firstEnd";
+        if(thisEnd === "bottomEnd") {
+            thisEndFinal = "secondEnd";
+        } else if (thisEnd === "topEnd") {
+            thisEndFinal = "firstEnd";
+        }
+        let otherEndFinal: Rail_End_Name = "firstEnd";
+        if(otherEnd === "bottomEnd") {
+            otherEndFinal = "secondEnd";
+        } else if (otherEnd === "topEnd") {
+            otherEndFinal = "firstEnd";
+        }
+        this.railConnections[thisEndFinal] = otherRail;
+        otherRail.railConnections[otherEndFinal] = this;
     }
     setWidth(width: number) {
         super.setWidth(width);

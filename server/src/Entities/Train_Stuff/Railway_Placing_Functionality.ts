@@ -35,10 +35,10 @@ class Railway_Placing_Functionality {
     }
     
     // Place a rail next to an existing rail
-    static placeNextTo(rail: Rail, relativeEnd: Rail_End_Name_Alternative, direction: Direction, length: number) {
+    static placeNextTo(otherRail: Rail, nextToOtherRailEnd: Rail_End_Name_Alternative, extendsInDirection: Direction, length: number) {
         let newX;
         let newY;
-        let end = rail.getEnd(relativeEnd); // Get position of the specified end
+        let end = otherRail.getEnd(nextToOtherRailEnd); // Get position of the specified end
         
         // Decide where to place the new rail based on relativeEnd and direction
         newX = end.x;
@@ -49,13 +49,13 @@ class Railway_Placing_Functionality {
         // if(direction === 'up') {
         //     newY -= length; 
         // }
-        if(relativeEnd === 'bottomEnd' && direction === 'left') {
+        if(nextToOtherRailEnd === 'bottomEnd' && extendsInDirection === 'left') {
             newX += 10;
             length += 10;
         }
         
         // Now place the next rail based on direction
-        let newRail = this.place(newX, newY, length, direction);
+        let newRail = this.place(newX, newY, length, extendsInDirection);
 
         return newRail;
     }

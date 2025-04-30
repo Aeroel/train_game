@@ -80,6 +80,10 @@ class Add_Some_Entities_To_The_World {
         aTrainCar.setCurrentRail(theRail);
     }
     static addASmallRailwayAndGetTheFirstRail() {
+        /*
+        new rail1({x:10, y:10}, "right", this.railLength);
+        rail1.place("down").place("left").place("up", rail1)
+        // */
         const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
 
         const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'down', this.railLength);
