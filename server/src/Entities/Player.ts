@@ -63,7 +63,6 @@ class Player extends Base_Entity {
       if (Answer.Collision_Occurred === false) {
         return;
       }
-      player.setPosition(Answer.Position_Before_Collision_A);
       
       const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
       const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;

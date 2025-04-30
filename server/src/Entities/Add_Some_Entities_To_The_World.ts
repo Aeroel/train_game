@@ -31,7 +31,7 @@ class Add_Some_Entities_To_The_World {
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
 
-        const theFirstRail = Add_Some_Entities_To_The_World.addASmallRailwayAndGetTheFirstRail();
+        const theFirstRail = Add_Some_Entities_To_The_World.addARailway();
         Add_Some_Entities_To_The_World.Put_A_Train_On_Rail(theFirstRail);
 
         // Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
@@ -64,27 +64,57 @@ class Add_Some_Entities_To_The_World {
 
     }
 
-    static addASmallRailwayAndGetTheFirstRail() {
-        /*
-        new rail1({x:10, y:10}, "right", this.railLength);
-        rail1.place("down").place("left").place("up", rail1)
-        // */
+    static topRails() {
         const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
 
         const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'right', this.railLength);
         rail2.connectWithRail("firstEnd", "secondEnd", rail1);
+        return {rail1, rail2};
+    }
+    static rightRails(rail2: Rail) {
+         // Right vertical rail
+         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'rightEnd', 'down', this.railLength); // Bottom horizontal rail
+         rail3.connectWithRail("firstEnd", "secondEnd", rail2);
 
-        // // Right vertical rail
-        // const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
-        // rail3.connectWithRail("secondEnd", "secondEnd", rail2);
+         const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'bottomEnd', 'down', this.railLength); // Bottom horizontal rail
+         rail4.connectWithRail("firstEnd", "secondEnd", rail3);
 
-        // const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'leftEnd', 'up', this.railLength); // Left vertical rail
-        // rail4.connectWithRail("secondEnd", "firstEnd", rail3);
-        // rail4.connectWithRail("firstEnd", "firstEnd", rail1);
+         return rail4;
+    }
+    static bottomRails(rail4: Rail) {
+        const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
+        rail5.connectWithRail("secondEnd", "secondEnd", rail4);
 
-        // this.rails.push(rail1, rail2, rail3, rail4);
+        const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'firstEnd', 'left', this.railLength); // Bottom horizontal rail
+        rail6.connectWithRail("secondEnd", "firstEnd", rail5);
+
+        
+
+        return rail6;
+    }
+    static leftRails(rail6: Rail) {
+        const rail7 = Railway_Placing_Functionality.placeNextTo(rail6, 'firstEnd', 'up', this.railLength); // Bottom horizontal rail
+        rail7.connectWithRail("secondEnd", "firstEnd", rail6);
+
+        const rail8 = Railway_Placing_Functionality.placeNextTo(rail7, 'firstEnd', 'up', this.railLength); // Bottom horizontal rail
+        rail8.connectWithRail("secondEnd", "firstEnd", rail7);
+
+        return rail8;
+    }
+    static addARailway() {
+        const {rail1, rail2 } =  this.topRails();
+
+       const rail4 = this.rightRails(rail2);
+
+       const rail6 = this.bottomRails(rail4);
+
+       const rail8 = this.leftRails(rail6);
+
+       rail8.connectWithRail("firstEnd", "firstEnd", rail1);
+
         return rail1;
     }
+
 
     static addTheGroundToTheWholeWorld() {
         const ground = new Ground();
