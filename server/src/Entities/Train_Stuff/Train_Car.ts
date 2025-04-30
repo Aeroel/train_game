@@ -47,7 +47,7 @@ class Train_Car extends Base_Entity {
   twoPossibleSides = ['frontSide', 'backSide'];
   frontSide = "firstEnd"; // firstEnd or secondEnd. on hor rails , first is left, on vert rails, first is top
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
-  defaultForceToMoveOnRail = 120;
+  defaultForceToMoveOnRail = 0.12;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
@@ -308,7 +308,7 @@ class Train_Car extends Base_Entity {
 
 //    log({Distance_Covered_By_Car_From_Start_So_Far, Distance_From_Start_To_Finish, railStartCoordValue, railFinishCoordValue, carCoordValue, Rail_End_To_Treat_As_Start, Rail_End_To_Treat_As_Finish, startSide, finishSide, result, x: this.getX(), y: this.getY(), ori:this.currentRail.getOrientation(), mov: this.currentMovementDirection, fs: this.frontSide, closestCarSideToFirstRailEnd})
     Assert_That_Number_Is_Positive(result);
-    Assert_That(result > 0 && result < 101);
+    Assert_That(result > 0 && result < 101, `Percentage result is ${result}`);
     return result;
 
   }

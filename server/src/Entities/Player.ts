@@ -14,7 +14,7 @@ class Player extends Base_Entity {
     up: false,
     down: false,
   };
-  standardMovementSpeed = 120;
+  standardMovementSpeed = 0.12;
   socketId: Socket["id"] = "none";
   constructor() {
     super();

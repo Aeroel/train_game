@@ -50,11 +50,11 @@ function Assert_That_Numbers_Are_Positive_Or_Zero(nums: Record<string, any>) {
     throw new Error(`Number must be positive or zero. Invalid values:\n${invalidEntries.join('\n')}`);
   }
 }
-function Assert_That(trueOrFalse: boolean) {
+function Assert_That(trueOrFalse: boolean, message: string) {
   if (!(typeof trueOrFalse === "boolean")) {
     throw new Error(`Parameter to Assert_That() must evaluate to true or false`);
   }
   if (trueOrFalse === false) {
-    throw new Error(`Assertion violated`);
+    throw new Error(`Assertion violated with message: ${message}`);
   }
 }

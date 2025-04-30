@@ -66,6 +66,5 @@ const port = 3000;
 httpServer.listen(port);
 console.log(`Started a server on port ${port}.`);
 
-// d
 // Start the loop
 Game_Loop.theLoop();

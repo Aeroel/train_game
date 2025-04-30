@@ -9,7 +9,7 @@ export { Game_Loop}
 class Game_Loop {
     static tickRate = 50; // Updates per second
     static msPerTick = 1000 / Game_Loop.tickRate; // Duration of each update in milliseconds
-    static deltaTime = Game_Loop.msPerTick / 1000; // Convert to seconds
+    static deltaTime = Game_Loop.msPerTick; // Convert to seconds
     static lastUpdateTime = Date.now();
     static lag = 0;
   

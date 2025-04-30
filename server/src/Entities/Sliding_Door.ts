@@ -25,7 +25,7 @@ class Sliding_Door extends Base_Entity {
     Door_Finished_Closing_Sensor: new Sensor()
 
   };
-  Door_Sliding_Speed = 10;
+  Door_Sliding_Speed = 0.01;
   Sliding_Key = 'Sliding';
   setXYWH(x: number, y: number, w: number, h: number) {
     super.setXYWH(x, y, w, h);
