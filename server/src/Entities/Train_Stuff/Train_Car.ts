@@ -26,7 +26,7 @@ interface Train_Car_Constructor {
 
 export type Train_Car_End = {
   name: Train_Car_End_Name
-} & Position
+} & Position;
 export type Train_Car_Side = "frontSide" | "backSide";
 export type Train_Car_End_Name = "firstEnd" | "secondEnd";
 export type Train_Car_Movement_Direction = null | "backwards" | "forwards";
@@ -42,6 +42,9 @@ class Train_Car extends Base_Entity {
   Wall_And_Door_Thickness = 5;
   currentRail!: Rail;
   previousRail!: Rail;
+  Center_Box_Entity!: Base_Entity;
+  Back_Side_Entity!: Base_Entity;
+  Front_Side_Entity!: Base_Entity;
   defaultOrientation = "horizontal";
   twoPossibleEnds = ['firstEnd', 'secondEnd'];
   twoPossibleSides = ['frontSide', 'backSide'];
@@ -51,9 +54,6 @@ class Train_Car extends Base_Entity {
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
-  Center_Box_Entity!: Base_Entity;
-  Back_Side_Entity!: Base_Entity;
-  Front_Side_Entity!: Base_Entity;
   Rail_Movement_Key = `Rail_Movement`;
   Riding_Force_Key = `Riding_Car_Id_${this.id}`;
   behaviour;
@@ -166,6 +166,8 @@ class Train_Car extends Base_Entity {
     World.addEntity(this.Back_Side_Entity);
     World.addEntity(this.Front_Side_Entity);
   }
+  
+  
   setCurrentRail(rail: Rail) {
     this.previousRail = this.currentRail;
     this.currentRail = rail;

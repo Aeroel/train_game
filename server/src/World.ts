@@ -7,7 +7,7 @@ class World {
   static state = {
     entities: new Array(),
   };
-  static pastStates = [];
+  static pastStates = [];  // to do save all past states? 
   static addEntity<T extends Base_Entity>(entity: T) : void {
     if(!entity.hasTag('Entity')) {
       throw new Error('Entity has no entity tag, check stuff');
