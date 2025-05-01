@@ -1,4 +1,4 @@
-import { EmitStuff } from "#root/EmitStuff.js";
+import { EmitStuff } from "#root/World_State_Emission_Stuff/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
 import { World } from "#root/World.js";
 import { log } from "console";
