@@ -13,7 +13,7 @@ class Socket_Functions {
         );
         return movementRequestFunctionalityIsOnCooldown;
     }
-    static Handle_A_Movement_Request_Happening_Just_Now(socket: Socket) {
+    static A_Movement_Request_Happened_Just_Now(socket: Socket) {
         const currTimeMs = Date.now()
         SocketDataStorage.set(socket, "lastMovementRequestTimeMs", currTimeMs);
     }

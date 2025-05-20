@@ -1,70 +1,24 @@
-
-import express from "express";
-import { createServer } from "http";
-import { Server } from "socket.io";
-
 import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.js";
-import { Player } from "#root/Entities/Player.js";
 import { Game_Loop } from "#root/Game_Loop.js";
-import { Helper_Functions } from "#root/Helper_Functions.js";
-import { World } from "#root/World.js";
-import { Socket_Functions } from "#root/Socket_Functions.js";
-import type { Direction } from "#root/Type_Stuff.js";
+import { Server_Creation } from "./Server_Creation.js";
+import { Socket_Processor } from "./Socket_Processor.js";
 
-const app = express();
-const httpServer = createServer(app);
+const { httpServer, io } = Server_Creation.getHttpServerAndIO();
 
-const allowAnyOrigin = true;
-const options = {
-  cors: {
-    origin:
-      allowAnyOrigin
-  }
-}
-
-Add_Some_Entities_To_The_World.doItNow();
-
-const io = new Server(httpServer, options);
 io.on("connection", (socket) => {
-  console.log("A socket connected"); 
-  Helper_Functions.Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket);
-  socket.emit("welcome", "You have successfully connected to the server. Welcome!");
-  const newPlayerEntity = new Player();
-  newPlayerEntity.setX(0);
-  newPlayerEntity.setY(0);
-  newPlayerEntity.setWidth(25);
-  newPlayerEntity.setHeight(25);
-  newPlayerEntity.setVisionRange(1000);
-  newPlayerEntity.setSocketId(socket.id);
-  World.addEntity(newPlayerEntity);
-
-  socket.on("disconnect", () => {
-    Helper_Functions.runThisUponSocketDisconnect(socket);
-  })
-  socket.on("movement", (receivedMovement) => {
-    // check that receivedMovement is what we expected... If not, ignore it, I guess
-    if(!Array.isArray(receivedMovement)) {
-      return;
-    }
-    /*
-    Presumably, someone spamming movement requests does not receive any advantages. So, this cooldown is implemented mainly for fun.
-    The idea is we don't want the server to process too many movement requests from a client in a short time period, that would be pointless. Although neither does this cooldown really affect much, since all that happens if no cooldown is present is flipping control key bits to true... 
-    */
-    if (Socket_Functions.Is_Movement_Request_Functionality_On_Cooldown(socket)) {
-      return;
-    }
-    Socket_Functions.Handle_A_Movement_Request_Happening_Just_Now(socket);
-    const playerAssociatedWithSocket : Player = World.state.entities.find((entity: Player) => entity.socketId === socket.id);
-
-    const playerPossibleMovementDirections: string[] = Object.keys(playerAssociatedWithSocket.controls);
-    playerPossibleMovementDirections.forEach(direction => {
-      playerAssociatedWithSocket.controls[direction as keyof Player["controls"]] = receivedMovement.includes(direction);
-    });
-  })
+  Socket_Processor.onNewConnection(socket);
+  Socket_Processor.onDisconnect(socket);
+  Socket_Processor.onMovement(socket);
 });
-const port = 3000;
+
+const arbitrary_number = 3000;
+const port = arbitrary_number;
+
 httpServer.listen(port);
 console.log(`Started a server on port ${port}.`);
+
+// add test entities
+Add_Some_Entities_To_The_World.doItNow();
 
 // Start the loop
 Game_Loop.theLoop();

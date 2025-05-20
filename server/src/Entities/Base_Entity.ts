@@ -44,14 +44,6 @@ class Base_Entity {
     this.forces.applyFriction();
 
   }
-  getCenterX() {
-    return this.x + (this.width / 2);
-  }
-  getCenterY() {
-    return this.y + (this.height / 2);
-  }
-
-
 
   addTag(tag: string) {
     this.tags.push(tag);
@@ -103,6 +95,14 @@ class Base_Entity {
   setColor(color: string) {
     this.color = color;
   }
+
+  getCenterX() {
+    return this.x + (this.width / 2);
+  }
+  getCenterY() {
+    return this.y + (this.height / 2);
+  }
+
   getX() {
     return this.x;
   }

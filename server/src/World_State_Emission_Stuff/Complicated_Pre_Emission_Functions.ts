@@ -1,91 +1,14 @@
-import { World } from "#root/World.js";
-import type { Base_Entity } from "#root/Entities/Base_Entity.js"
-import type { Player } from "./Entities/Player.js";
+import {PreEmitStuff} from "#root/World_State_Emission_Stuff/PreEmitStuff.js";
+import type {Base_Entity} from "#root/Entities/Base_Entity.js";
+import {type VisibleEdge,
+type VisibleEntity,
+type VirtualizedEntity,
+type CleanedEntity } from "#root/Type_Stuff.js";
 
 
-export { PreEmitStuff }
+export {Complicated_Pre_Emission_Functions}
 
-
-type VisibleEdge = {
-  x1: number,
-  x2: number,
-  y1: number,
-  y2: number
-}
-type VisibleEntity = {
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  color: string,
-  edges: VisibleEdge[],
-  tags: string[]
-}
-type VirtualizedEntity = VisibleEntity;
-type CleanedEntity = VisibleEntity;
-class PreEmitStuff {
-  static someArbitraryNumber = 5000;
-  static anotherArbitraryNumber = 5000
-  static virtualWidth = this.someArbitraryNumber;
-  static virtualHeight = this.anotherArbitraryNumber;
-
-  static get_visible_to_player_entities_and_virtual_width_and_virtual_height_and_hide_all_the_real_world_entities_xy_coordinates_by_returning_virtual_ones_instead(player: Player) {
-    const visibleEntities = this.getVisibleEntities(player)
-    const virtualizedEntities = this.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
-    const entitiesWithOnlyProperties = this.onlyIncludeEntityPropertiesThatClientNeeds(virtualizedEntities);
-    return {
-      visibleEntities:
-        entitiesWithOnlyProperties,
-      virtualHeight: this.virtualHeight,
-      virtualWidth: this.virtualWidth,
-    };
-  }
-  static onlyIncludeEntityPropertiesThatClientNeeds(entities: VirtualizedEntity[]) : CleanedEntity[] {
-    const cleanedEntities: CleanedEntity[] = [];
-    entities.forEach(entity => {
-      const tagsIAmFineWithExposing = ["Forcefield"];
-      const cleanedTags: string[] = [];
-      tagsIAmFineWithExposing.forEach(tagIAmFineWithExposing => {
-        if (entity.tags.includes(tagIAmFineWithExposing)) {
-          cleanedTags.push(tagIAmFineWithExposing);
-        }
-      }); 
-      cleanedEntities.push({
-        x: entity.x,
-        y: entity.y,
-        width: entity.width,
-        height: entity.height,
-        color: entity.color,
-        edges: entity.edges,
-        tags: cleanedTags,
-
-      })
-    })
-    return cleanedEntities;
-  }
-  static getVisibleEntities(player: Player) {
-    const visibleEntities: VisibleEntity[] = new Array();
-    World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      const visiblePortion = PreEmitStuff.getVisiblePortion(player, entity);
-      const visibleEdges = PreEmitStuff.getVisibleEdges(player, entity);
-      
-      const entityIsVisible = visiblePortion;
-      if (!entityIsVisible) {
-        return;
-      }
-
-      visibleEntities.push({
-        color: entity.color,
-        tags: entity.tags,
-        x: visiblePortion.x,
-        y: visiblePortion.y,
-        width: visiblePortion.width,
-        height: visiblePortion.height,
-        edges: visibleEdges,
-      })
-    });
-    return visibleEntities;
-  }
+class Complicated_Pre_Emission_Functions {
   static virtualizeXYToAvoidExposingRealWorldXY(visibleEntities: VisibleEntity[], POVEntity: Base_Entity, virtW: typeof PreEmitStuff["virtualWidth"], virtH: typeof PreEmitStuff["virtualHeight"]) : VirtualizedEntity[] {
     // Calculate the center of the player
     const centerX = virtW / 2;
@@ -111,7 +34,7 @@ class PreEmitStuff {
       const virtualX = centerX + (relX * scaleX);
       const virtualY = centerY + (relY * scaleY);
 
-      const virtualizedEdges = PreEmitStuff.virtualizeEntityEdges(entity, POVEntity, virtW, virtH)
+      const virtualizedEdges = Complicated_Pre_Emission_Functions.virtualizeEntityEdges(entity, POVEntity, virtW, virtH)
 
       return {
         ...entity,
@@ -123,8 +46,7 @@ class PreEmitStuff {
       };
     });
   }
-
-  static virtualizeEntityEdges(entity: VisibleEntity, lookingEntity: Base_Entity, virtW: typeof PreEmitStuff["virtualWidth"], virtH: typeof PreEmitStuff["virtualHeight"]) {
+    static virtualizeEntityEdges(entity: VisibleEntity, lookingEntity: Base_Entity, virtW: typeof PreEmitStuff["virtualWidth"], virtH: typeof PreEmitStuff["virtualHeight"]) {
     const scaleX = virtW / lookingEntity.visionRange;
     const scaleY = virtH / lookingEntity.visionRange;
 
@@ -151,8 +73,6 @@ class PreEmitStuff {
     return virtualEdges;
 
   }
-
-
 
   static getVisiblePortion(entityWhichIsLookingAround: Base_Entity,
     possiblyVisibleEntity: Base_Entity) {
@@ -188,7 +108,7 @@ class PreEmitStuff {
       height: visibleHeight,
     };
   };
-
+  
   static getVisibleEdges(entityWhichIsLookingAround: Base_Entity,
     possiblyVisibleEntity: Base_Entity) : VisibleEdge[] {
     // Calculate the player's vision area based on visionRange and centered position
@@ -243,4 +163,5 @@ class PreEmitStuff {
     }
     return edges;
   }
+
 }

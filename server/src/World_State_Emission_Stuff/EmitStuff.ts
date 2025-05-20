@@ -1,6 +1,6 @@
-import { PreEmitStuff } from "#root/PreEmitStuff.js";
+import { PreEmitStuff } from "#root/World_State_Emission_Stuff/PreEmitStuff.js";
 import { World } from "#root/World.js";
-import type { Player } from "./Entities/Player.js";
+import type { Player } from "#root/Entities/Player.js";
 
 
 export { EmitStuff }
