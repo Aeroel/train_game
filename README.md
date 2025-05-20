@@ -1,3 +1,4 @@
+**General**
 Okay, so I will describe the general idea of the project itself:
 there are train tracks. Trains move on them like a metro basically. They stop at train stations and so on, you get the idea.
 There are fences around train tracks so players can't get on the tracks, 
@@ -5,6 +6,9 @@ and each station has sliding doors and wall barriers next to tracks to prevent p
 The trains sync their stopping positions so a train cars' doors are aligned to a station's platform's doors
 so the people can safely enter the train cars without ever being able to jump down to the rails.
 The doors of the train and the platform then close back and train goes to its next station. You get the idea, I guess...
+
+
+**Implementation**
 
 So, this full functionality described isn't quite implemented yet.
 It is quite close.
@@ -16,7 +20,12 @@ So, this is almost done, I suppose)
 
 Once these three are done, I suppose the basic idea will be fully complete, yay!
 
+**Player control**
 
+On mobile, there is a joystick, on PC movement is accomplished using WASD and/or arrow keys.
+
+
+**Running client and server**
 How to install on Windows or Android:
 First of all, for android I need termux with node installed.
 The steps are pretty much identical on windows and android
