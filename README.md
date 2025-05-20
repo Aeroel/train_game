@@ -1,4 +1,5 @@
 **General**
+
 Okay, so I will describe the general idea of the project itself:
 there are train tracks. Trains move on them like a metro basically. They stop at train stations and so on, you get the idea.
 There are fences around train tracks so players can't get on the tracks, 
@@ -26,6 +27,7 @@ On mobile, there is a joystick, on PC movement is accomplished using WASD and/or
 
 
 **Running client and server**
+
 How to install on Windows or Android:
 First of all, for android I need termux with node installed.
 The steps are pretty much identical on windows and android
