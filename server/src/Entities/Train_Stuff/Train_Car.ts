@@ -56,13 +56,13 @@ class Train_Car extends Base_Entity {
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
   Rail_Movement_Key = `Rail_Movement`;
   Riding_Force_Key = `Riding_Car_Id_${this.id}`;
-  behaviour;
+  behaviour: Train_Car_Behaviour;
   constructor({ x, y, size, rail, train}: Train_Car_Constructor) {
-    if (!Helper_Functions.isNumber(x) || !Helper_Functions.isNumber(y) || !Helper_Functions.isNumber(size)) {
-      throw new Error(`x and y and size must be passed and be numbers, Passed xysize are instead: ${x} and ${y} and ${size}`);
+    if (!isFinite(x) || !isFinite(y) || !(size > 0)) {
+      throw new Error(`x and y and size must be passed and be finite numbers. size must be greater than 0; Passed xysize are instead: ${x} and ${y} and ${size}`);
     }
-    if (!rail) {
-      throw new Error(`Rail must be provided`);
+    if (!(rail.hasTag("Rail"))) {
+      throw new Error(`Rail entity must be provided; no Rail tag found`);
 
     }
     super();
