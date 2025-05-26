@@ -23,8 +23,8 @@ class AppSetup {
         gameCanvas.width = 1000;
         gameCanvas.height = 1000;
     }
-    static serverConnectionStuff() {
-        SocketWrapper.establishConnection();
+    static serverConnectionStuff(ip) {
+        SocketWrapper.establishConnection(ip);
         const socket = SocketWrapper.get();
         socket.on("welcome", (message) => {
             console.log(message);

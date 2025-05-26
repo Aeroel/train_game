@@ -10,8 +10,26 @@ class App {
         });
     }
     static runThisCodeOncePageIsFullyLoaded() {
+        const ip_address_button = document.getElementById("ip_address_button");
+        if (ip_address_button === null) {
+            throw new Error("ip_address_button not found");
+        }
+        ip_address_button.addEventListener("click", () => {
+            App.runThisUponIPAddressSubmit();
+        });
+    }
+    static runThisUponIPAddressSubmit() {
+        const ip_address_input = document.getElementById("ip_address_input");
+        if (ip_address_input === null) {
+            throw new Error("ip_address_input not found");
+        }
+        const ip = ip_address_input.value;
+        App.hideIPChoiceAndShowGameContainer();
+        App.runThisAfterIPAddressIsEntered(ip);
+    }
+    static runThisAfterIPAddressIsEntered(ip) {
         AppSetup.initialVisualCSSStyleAdjustments();
-        AppSetup.serverConnectionStuff();
+        AppSetup.serverConnectionStuff(ip);
         if (App.isUserUsingAPhone()) {
             AppSetup.runJoystickSetupCode();
         }
@@ -30,5 +48,17 @@ class App {
     }
     static isUserUsingAPhone() {
         return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    }
+    static hideIPChoiceAndShowGameContainer() {
+        const server_ip_choice_container = document.getElementById("server_ip_choice_container");
+        if (server_ip_choice_container === null) {
+            throw new Error("server_ip_choice_container not found");
+        }
+        const gameContainer = document.getElementById("gameContainer");
+        if (gameContainer === null) {
+            throw new Error("gameContainer not found");
+        }
+        server_ip_choice_container.style.display = "none";
+        gameContainer.style.display = "flex";
     }
 }

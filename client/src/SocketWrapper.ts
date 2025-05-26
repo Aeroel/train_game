@@ -2,8 +2,8 @@ export { SocketWrapper}
 import { io, Socket,} from "socket.io-client";
 class SocketWrapper {
     static socket: Socket | null = null;
-    static establishConnection() {
-        const serverAddress = `${location.hostname}:3000`
+    static establishConnection(ip: string) {
+        const serverAddress = ip;
         SocketWrapper.socket = io(serverAddress);
     }
     static get() {
