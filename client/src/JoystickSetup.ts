@@ -6,6 +6,14 @@ class JoystickSetup {
     static runTheSetupCode() {
         const joystickContainer = document.getElementById("joystickContainer");
         const joystick = document.getElementById("joystick");
+        if(joystickContainer === null) {
+            throw new Error("joystickContainer not found");
+        }
+        
+        if(joystick === null) {
+            throw new Error("joystick not found");
+        }
+
 
         joystickContainer.style.display = "block";
 
@@ -21,7 +29,8 @@ class JoystickSetup {
             joystick.style.left = "50%";
         });
     }
-    static update_the_current_movement_commands_based_on_how_the_user_is_dragging_the_joystick(e, joystickContainer, joystick) {
+    static update_the_current_movement_commands_based_on_how_the_user_is_dragging_the_joystick(e: TouchEvent
+, joystickContainer: HTMLElement, joystick: HTMLElement) {
         const touch = e.touches[0];
         const rect = joystickContainer.getBoundingClientRect();
         const dx = touch.clientX - (rect.left + rect.width / 2);

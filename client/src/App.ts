@@ -1,7 +1,7 @@
 export { App }
 import { AppSetup } from "./AppSetup.js";
 import { AnimationLoop } from "./AnimationLoop.js"
-import { Socket } from "./Socket.js";
+import { SocketWrapper } from "./SocketWrapper.js";
 class App {
     static movementControlCommands = new Set();
     static initialize() {
@@ -28,7 +28,7 @@ class App {
 
             const directionsArray = Array.from(App.movementControlCommands);
             // console.log(directionsArray)
-            Socket.emit("movement", directionsArray);
+            SocketWrapper.emit("movement", directionsArray);
         }, 100);
 
     }

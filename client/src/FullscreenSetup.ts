@@ -2,9 +2,14 @@ import { App } from "./App.js";
 
 export { FullscreenSetup };
 
+
 class FullscreenSetup {
   static buttonSetupCode() {
     const fullscreenButton = document.getElementById("fullscreenButton");
+    if(fullscreenButton === null) {
+      throw new Error("fullscreenButton is null");
+      
+    }
 
     // Fullscreen function
     fullscreenButton.addEventListener("click", async () => {
@@ -12,8 +17,12 @@ class FullscreenSetup {
     });
 
   }
+  
   static doThisWhenTheUserClicksOnTheFullscreenButton() {
     const isFullscreenModeCurrentlyOn = Boolean(document.fullscreenElement);
+
+    // again, ts says screen.orientation.lock is not found
+    // @ts-ignore
     const isScreenOrientationSwitchingFunctionalityAvailable = Boolean(screen.orientation && screen.orientation.lock && screen.orientation.unlock);
     if (isFullscreenModeCurrentlyOn) {
       FullscreenSetup.doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
@@ -21,7 +30,7 @@ class FullscreenSetup {
     }
     FullscreenSetup.doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
   }
-  static doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable) {
+  static doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
 
     // css modifications for better visual experience
     FullscreenSetup.adjustCSSFor("nonFullscreen");
@@ -32,24 +41,35 @@ class FullscreenSetup {
     }
 
   }
-  static doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable) {
+  static doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
     FullscreenSetup.adjustCSSFor("fullscreen");
     const gameContainer = document.getElementById("gameContainer");
+    if(gameContainer === null) {
+      throw new Error('gameContainer is null');
+    }
     gameContainer.requestFullscreen();
     // to landscape on fs if on mobile
 
     if (App.isUserUsingAPhone() && isScreenOrientationSwitchingFunctionalityAvailable) {
-      screen.orientation.lock("landscape").catch(error => {
+
+      // TS says lock method does not exist
+      // lock does not exist normally, I guess? Maybe on mobile only?
+      // @ts-ignore
+      screen.orientation.lock("landscape").catch((error: any) => {
         console.log("Not on mobile but emulating mobile?");
 
       });
     }
   }
-  static adjustCSSFor(screenMode) {
+  static adjustCSSFor(screenMode: string) {
     this.adjustJoystickPositionToBetterFitScreenMode(screenMode);
   }
-  static adjustJoystickPositionToBetterFitScreenMode(mode) {
+  static adjustJoystickPositionToBetterFitScreenMode(mode: string) {
     const joystickContainer = document.getElementById("joystickContainer");
+    if(joystickContainer === null) {
+      throw new Error("Can't find joystickContainer");
+      
+    }
     let joystickRightMargin;
     switch (mode) {
       case "fullscreen":
@@ -58,6 +78,10 @@ class FullscreenSetup {
       case 'nonFullscreen':
         joystickRightMargin = "50px";
         break;
+      default:
+        throw new Error(`Invalid mode ${mode}`);
+        
+      break;
     }
     joystickContainer.style.right = joystickRightMargin;
   }

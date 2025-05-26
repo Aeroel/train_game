@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <link rel="icon" type="image/png" href="./images/Rails_and_stations_site_icon.png"/>
+  <link rel="icon" type="image/png" href="./images/Rails_and_stations_site_icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loop game client 000</title>
   <link rel="stylesheet" href="style.css">
@@ -19,10 +19,14 @@
       <div id="joystick"></div>
     </div>
   </div>
-
-  <script type="module">
-    import { App } from "./App.js";
-    App.initialize();   
+  <script type="importmap">
+    {
+    "imports": {
+      "socket.io-client": "./externalScripts/socket.io.esm.min.js",
+    }
+  }
+</script>
+  <script src="./javascript/StartApp.js"></script>
   </script>
 </body>
 

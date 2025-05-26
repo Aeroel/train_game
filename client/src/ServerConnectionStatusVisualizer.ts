@@ -1,12 +1,16 @@
-import { Socket } from "./Socket.js";
+import { SocketWrapper } from "./SocketWrapper.js";
 
 
 export { ServerConnectionStatusVisualizer };
 
 class ServerConnectionStatusVisualizer {
     static initialize() {
-        const socket = Socket.get();
+        const socket = SocketWrapper.get();
         const serverMessage = document.getElementById("serverMessage");
+        if(serverMessage === null) {
+            throw new Error("serverMessage element not found");
+            
+        }
         serverMessage.style.color = "white";
         serverMessage.textContent = "Connecting to server ...";
 
@@ -22,7 +26,8 @@ class ServerConnectionStatusVisualizer {
             serverMessage.textContent = retryMessage;
         });
         socket.on("connect_error", () => {
-            const timeToIncreaseCount = Boolean(Date.now > (lastRetryVisualCountIncreaseTime + increaseVisualRetryCountEveryMs));
+            const now = Date.now();
+            const timeToIncreaseCount = Boolean(now > (lastRetryVisualCountIncreaseTime + increaseVisualRetryCountEveryMs));
             if (timeToIncreaseCount) {
                 visualRetryCountUpdater();
 
