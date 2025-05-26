@@ -1,22 +1,21 @@
-export { SocketWrapper} 
-import { io, Socket,} from "socket.io-client";
+export { SocketWrapper };
+import { io, Socket, } from "socket.io-client";
 class SocketWrapper {
-    static socket: Socket | null = null;
+    static socket = null;
     static establishConnection() {
-        const serverAddress = `${location.hostname}:3000`
+        const serverAddress = `${location.hostname}:3000`;
         SocketWrapper.socket = io(serverAddress);
     }
     static get() {
-        if(SocketWrapper.socket === null) {
+        if (SocketWrapper.socket === null) {
             throw new Error("Trying to get socket before setting it through establishConnection()");
-            
         }
         return SocketWrapper.socket;
     }
-    static on(signalName: string, callThisCallbackFunctionUponReceivingTheSignal: (...args: any[]) => void) {
+    static on(signalName, callThisCallbackFunctionUponReceivingTheSignal) {
         return this.get().on(signalName, callThisCallbackFunctionUponReceivingTheSignal);
     }
-    static emit(signalName: string, data: any) {
+    static emit(signalName, data) {
         return this.get().emit(signalName, data);
     }
 }

@@ -4,7 +4,7 @@
     "incremental": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
     "rootDir": "./src",
-    "outDir": "./public/javascript",
+    "outDir": "./public/build",
     "strict": true,
     "moduleResolution": "nodenext",
     "verbatimModuleSyntax": true,
