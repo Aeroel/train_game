@@ -1,23 +1,18 @@
-**General**
+**General idea**
 
-Okay, so I will describe the general idea of the project itself:
-there are train tracks. Trains move on them like a metro basically. They stop at train stations and so on, you get the idea.
-There are fences around train tracks so players can't get on the tracks, 
-and each station has sliding doors and wall barriers next to tracks to prevent people from "falling"on /waling on train tracks for safety.
-The trains sync their stopping positions so a train cars' doors are aligned to a station's platform's doors
-so the people can safely enter the train cars without ever being able to jump down to the rails.
-The doors of the train and the platform then close back and train goes to its next station. You get the idea, I guess...
+The idea is that there are metro trains moving around from station to station on two tracks (one for each direction) in a circular way.
+Each station has two platforms, of course, for each track. The tracks and stations are surrounded by walls so people cannot get on the tracks or, like, fall off the platform. 
 
+Each platform has several doors. When a train stops at the station, it aligns its doors with the platform's doors. Both open in sync, creating a safe tunnel for people to pass through without ever gaining access to the ability to fall on the rail tracks.
 
-**Implementation**
+**Implementation State**
 
-So, this full functionality described isn't quite implemented yet.
-It is quite close.
-I guess what's left is 
-1. actually turning walls/doors into solids a players can't move through and 
-2. Implementing trains and stations (this is mostly a matter of assembling all existing components in a specific way, as far as I can tell. The basic components themselves are implemented.
-So, this is almost done, I suppose)
-3. Implementing timers on each station showing approximate time of arrival of trains. Also quite simple, I suppose.
+I am quite close to implementing this general idea described above.
+
+I guess what's left is:
+
+1. Implementing trains and stations (this is mostly a matter of assembling all existing components in a specific way, as far as I can tell. The basic foundational components themselves are implemented. So, this is almost done, I suppose)
+2. Implementing timers on each station showing approximate time of arrival of trains. Also quite simple, I suppose.
 
 Once these three are done, I suppose the basic idea will be fully complete, yay!
 
