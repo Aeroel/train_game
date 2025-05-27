@@ -60,7 +60,7 @@ Regarding this field asking you to enter the IP address of the game server to co
 If you just started the server on the same local machine, then you can enter "127.0.0.1:3000" in the client's ip field. 
 (3000 is the default port of the server.)
 
-You can also connect to a server on another device on your local network. For example: If you started a server on your phone (using termux, for instance) and want to connect from another device like your PC, you could have both (or more) devices either be connected to the same WI-FI or to the same hotspot. So, then, you simply find the local IP of the device where the server is running. It could, for example, look something like "192.168.1.243".
+You can also connect to a server on another device on your local network. For example: If you started a server on your phone (using termux, for instance) and want to connect from another device like your PC, you could have both (or more) devices either be connected to the same WI-FI or to the same hotspot. So, then, you simply find the local IP of the device where the server is running. It could, for example, look something like "192.168.1.243". So, in that case, you could enter "192.168.1.243:3000" to connect.
 
 And, of course, it is possible to connect to servers running on remote devices. For example, you have started the server on a remote machine, like, for example, a random VPS, you would get the machine's global (public) IP address and enter it there.
 For example, "1.2.3.4:3000" (where 1.2.3.4 is a placeholder for your remote machine's public IP address).
