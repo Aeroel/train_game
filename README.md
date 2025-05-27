@@ -15,31 +15,33 @@ I guess what's left is:
 1. Implementing trains and stations (this is mostly a matter of assembling all existing components in a specific way, as far as I can tell. The basic foundational components themselves are implemented. So, this is almost done, I suppose)
 2. Implementing timers on each station showing approximate time of arrival of trains. Also quite simple, I suppose.
 
-Once these three are done, I suppose the basic idea will be fully complete, yay!
+Once these are done, I suppose the basic idea will be fully complete, yay!
 
-**Player control**
+**Player character movement control**
 
-On mobile, there is a joystick, on PC movement is accomplished using WASD and/or arrow keys.
+On mobile, there is a joystick.
+On PC, movement is accomplished using the typical set of WASD and/or arrow keys.
 
-**Installation**
+**Preliminary Installation**
 
 First of all, you need NODEJS installed, of course... Also, I am using PNPM.
 
-1. Install typescript and http-server globally using "pnpm install -g typescript http-server"
-"-g" means "globally"
-2. This step is done...
+Install typescript and http-server globally using "pnpm install -g typescript http-server"
+"-g" means "globally".
+Typescript is used for enabling  the use of Typescript, including in Webpack (I think).
+Http-server is used to serve client page.
 
 **Running client**
 
 1. CD into client folder.
-2. Run "pnpm install"
-3. Run "pnpm run build" to generate the Webpack bundle consisting of compressed JS (which was converted from TS in client/src folder).
-4. Run (from within client folder) "http-server public/. -c -1".
+2. Run "pnpm install" to install all required packages.
+3. Run "pnpm run build" to generate the Webpack bundle consisting (placed into public/build/bundle.js) of compressed JavaScript code (which was converted from Typescript code, which is located in client/src folder).
+4. Run (from within client folder) "http-server public/. -c -1" to serve the client page.
 Description:
 "public/." means "serve files from the public folder.
 "-c -1" means "Do not cache contents of public folder (otherwise, an annoying situation can occur whereby when you edit code or html and reload the webpage to see any changes, the content is cached by browser, causing confusion)
 
-5. Done... The client is now started. You can go on 127.0.0.1:8080.
+5. Done... The client is now started. You can go on 127.0.0.1:8080 to see the result. You will see a field asking you to enter the ip address of a server to connect to. I will describe this below, after we start the server itself.
 
 **Running Server**
 
@@ -48,6 +50,19 @@ Description:
 3. Run "tsc" (Runs typescript compiler to convert TS in server's src folder into JS which will be placed in the server's build folder)
 4. Run "node build/startThisToStartTheGameServer.js"
 5. The server is now running...
+
+**Connecting to server**
+![ip_field](https://github.com/user-attachments/assets/0f5a1518-683f-4f93-8304-534a3f5ed50a)
+
+Regarding this field asking you to enter the IP address of the game server to connect to:
+If you just started the server on the same local machine, then you can enter "127.0.0.1:3000" in the client's ip field. 
+(3000 is the default port of the server.)
+
+You can also connect to a server on another device on your local network. For example: If you started a server on your phone (using termux, for instance) and want to connect from another device like your PC, you could have both (or more) devices either be connected to the same WI-FI or to the same hotspot. So, then, you simply find the local IP of the device where the server is running. It could, for example, look something like "192.168.1.243".
+
+And, of course, it is possible to connect to servers running on remote devices. For example, you have started the server on a remote machine, like, for example, a random VPS, you would get the machine's global (public) IP address and enter it there.
+For example, "1.2.3.4:3000" (where 1.2.3.4 is a placeholder for your remote machine's public IP address).
+I think there's a possibility that you would have to open your VPS' ports or something along those lines before this would work, but I am not sure. This is beyond the scope of this text anyways, I suppose...
 
 **Development**
 
