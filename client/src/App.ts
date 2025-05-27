@@ -1,7 +1,7 @@
 export { App }
-import { AppSetup } from "./AppSetup.js";
-import { AnimationLoop } from "./AnimationLoop.js"
-import { SocketWrapper } from "./SocketWrapper.js";
+import { AppSetup } from "#root/AppSetup";
+import { AnimationLoop } from "#root/AnimationLoop"
+import { SocketWrapper } from "#root/SocketWrapper";
 class App {
     static movementControlCommands = new Set();
     static initialize() {

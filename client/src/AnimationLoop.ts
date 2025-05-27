@@ -1,5 +1,5 @@
 export { AnimationLoop }
-import {  WorldRenderer } from "./WorldRenderer.js";
+import {  WorldRenderer } from "#root/WorldRenderer";
 class AnimationLoop {
     static start() {
         AnimationLoop.loop();
