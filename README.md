@@ -52,6 +52,8 @@ Description:
 5. The server is now running...
 
 **Connecting to server**
+
+
 ![ip_field](https://github.com/user-attachments/assets/0f5a1518-683f-4f93-8304-534a3f5ed50a)
 
 Regarding this field asking you to enter the IP address of the game server to connect to:
