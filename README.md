@@ -25,14 +25,16 @@ Once these three are done, I suppose the basic idea will be fully complete, yay!
 
 On mobile, there is a joystick, on PC movement is accomplished using WASD and/or arrow keys.
 
-** Installation **
+**Installation**
+
 First of all, you need NODEJS installed, of course... Also, I am using PNPM.
 
 1. Install typescript and http-server globally using "pnpm install -g typescript http-server"
 "-g" means "globally"
 2. This step is done...
 
-** Running client **
+**Running client**
+
 1. CD into client folder.
 2. Run "pnpm install"
 3. Run "pnpm run build" to generate the Webpack bundle consisting of compressed JS (which was converted from TS in client/src folder).
@@ -51,7 +53,7 @@ Description:
 4. Run "node build/startThisToStartTheGameServer.js"
 5. The server is now running...
 
-** Development **
+**Development**
 
 Install nodemon "pnpm install -g nodemon"
 
