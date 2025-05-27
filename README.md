@@ -4,6 +4,7 @@ The idea is that there are metro trains moving around from station to station on
 Each station has two platforms, of course, for each track. The tracks and stations are surrounded by walls so people cannot get on the tracks or, like, fall off the platform. 
 
 Each platform has several doors. When a train stops at the station, it aligns its doors with the platform's doors. Both open in sync, creating a safe tunnel for people to pass through without ever gaining access to the ability to fall on the rail tracks.
+Outside the stations, the rail tracks are also fenced out.
 
 **Implementation State**
 
