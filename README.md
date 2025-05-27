@@ -25,44 +25,45 @@ Once these three are done, I suppose the basic idea will be fully complete, yay!
 
 On mobile, there is a joystick, on PC movement is accomplished using WASD and/or arrow keys.
 
+** Installation **
+First of all, you need NODEJS installed, of course... Also, I am using PNPM.
 
-**Running client and server**
+1. Install typescript and http-server globally using "pnpm install -g typescript http-server"
+"-g" means "globally"
+2. This step is done...
 
-How to install on Windows or Android:
-First of all, for android I need termux with node installed.
-The steps are pretty much identical on windows and android
-0. Nodejs needs to be installed... I use pnpm instead of npm, so after installing node, use npm to install pnpm. For dev I use tsc and nodemon.
-Example of how to install in termux (on windows I guess you can just manually get nodejs from its website or use a random package manager):
-0.1 pkg install nodejs
-(installing nodejs will also auto-install npm)
-0.2 npm install -g pnpm
-(to update pnpm easiest less bothersome thing to do is to type "npm upgrade -g pnpm". If I do pnpm self-update, it makes pnpm create it's own separate folder,
-this causes two clones of pnpm, one from npm and another from pnpm. I think it is possible to remove npm's one, leaving only pnpm's, enabling me to do pnpm self-update.
-Overall, this is a little troublesome, so maybe easier to stick to updating pnpm through npm? I dunno.)
-0.3 pnpm install -g http-server
-0.4 pnpm install -g nodemon
-0.5 pnpm install -g typescript
+** Running client **
+1. CD into client folder.
+2. Run "pnpm install"
+3. Run "pnpm run build" to generate the Webpack bundle consisting of compressed JS (which was converted from TS in client/src folder).
+4. Run (from within client folder) "http-server public/. -c -1".
+Description:
+"public/." means "serve files from the public folder.
+"-c -1" means "Do not cache contents of public folder (otherwise, an annoying situation can occur whereby when you edit code or html and reload the webpage to see any changes, the content is cached by browser, causing confusion)
 
-1. Clone repo
-2. Go inside the repo directory using
-something like "cd repoName"
-3. Cd into "server" folder and run "pnpm install"
-4. Run "tsc" command
-5. After tsc finishes (it gives no output, like no errors but build folder gets populated with js files) start node on "build/startThisToStartTheGameServer.js". 
-Like this, maybe:
-"node build/startThisToStartTheGameServer.js"
-6. Then in a new terminal tab cd into repo folder and do something like "http-server client/." This will serve client's html contents on localhost.
-Well, these are all the steps so far. Now just go to the localhost where the html http-server started.
+5. Done... The client is now started. You can go on 127.0.0.1:8080.
 
-For development, to start server I open two terminal tabs, in first cd into server dir and type
-"tsc --watch"
+**Running Server**
+
+1. CD into server folder.
+2. Run "pnpm install" 
+3. Run "tsc" (Runs typescript compiler to convert TS in server's src folder into JS which will be placed in the server's build folder)
+4. Run "node build/startThisToStartTheGameServer.js"
+5. The server is now running...
+
+** Development **
+
+Install nodemon "pnpm install -g nodemon"
+
+When working on the server I open two terminal tabs, in first I cd into the server dir and type "tsc --watch". 
 In the second tab run "nodemon --watch build/. build/startThisToStartTheGameServer.js"
 "
-So this will make tsc  watch all .ts files in server. When I, for example, write new code in some file, tsc will automatically place updated js files
-(after converting .ts files' contents into js code) in build folder; and nodemon, monitoring the build folder for changes will restart the server seeing new contents.
-Using tsc --watch seems to be faster than manually running tsc each time (I mean, I am not talking about convenience here but about the speed with which tsc compiles. For some reason,
+So this will make tsc  watch all .ts files in the server folder. 
+When I, for example, write new code in some ts file, tsc will automatically place updated js files in build folder. Then, nodemon, monitoring the build folder for changes, will restart the server seeing new/modified js content inside it.
+
+Using tsc --watch seems to be faster than manually running tsc each time (I mean, I am not only talking about convenience here but about the speed with which tsc compiles. For some reason,
 --watch'ing seems to exhibit much faster ts-to-js operations than just running tsc. Running tsc by itself is annoyingly slow, by the way, as far as I can tell, 
-though the incremental flag in tsconfig seems to make it quicker.)
+also the incremental flag in tsconfig seems to make it quicker.
 
 
 

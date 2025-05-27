@@ -1,4 +1,4 @@
-import { SocketWrapper } from "./SocketWrapper.js";
+import { SocketWrapper } from "#root/SocketWrapper";
 
 
 export { ServerConnectionStatusVisualizer };

@@ -1,9 +1,9 @@
-import { SocketWrapper } from "./SocketWrapper.js";
-import { WorldRenderer } from "./WorldRenderer.js";
-import { FullscreenSetup } from "./FullscreenSetup.js";
-import { JoystickSetup } from "./JoystickSetup.js";
-import { KeyboardControlsSetup } from "./KeyboardControlsSetup.js";
-import { ServerConnectionStatusVisualizer } from "./ServerConnectionStatusVisualizer.js";
+import { SocketWrapper } from "#root/SocketWrapper";
+import { WorldRenderer } from "#root/WorldRenderer";
+import { FullscreenSetup } from "#root/FullscreenSetup";
+import { JoystickSetup } from "#root/JoystickSetup";
+import { KeyboardControlsSetup } from "#root/KeyboardControlsSetup";
+import { ServerConnectionStatusVisualizer } from "#root/ServerConnectionStatusVisualizer";
 
 export { AppSetup };
 class AppSetup {
