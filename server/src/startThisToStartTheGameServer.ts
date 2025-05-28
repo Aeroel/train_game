@@ -1,7 +1,7 @@
 import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities_To_The_World.js";
 import { Game_Loop } from "#root/Game_Loop.js";
-import { Server_Creation } from "./Server_Creation.js";
-import { Socket_Processor } from "./Socket_Processor.js";
+import { Server_Creation } from "#root/Server_Creation.js";
+import { Socket_Processor } from "#root/Socket_Processor.js";
 
 const { httpServer, io } = Server_Creation.getHttpServerAndIO();
 

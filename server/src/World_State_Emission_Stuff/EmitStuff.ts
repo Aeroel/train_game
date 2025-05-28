@@ -6,7 +6,7 @@ import type { Player } from "#root/Entities/Player.js";
 export { EmitStuff }
 
 class EmitStuff {
-  static emitToAllPlayersWorldStateStuff() {
+  static Emit_To_All_Players_World_State_Stuff() {
     const allPlayers: Player[] = World.filterEntities(entity => entity.hasTag("Player")) as Player[];
     allPlayers.forEach(player => {
       EmitStuff.Emit_World_State_To_Player(player);

@@ -15,7 +15,7 @@ class EntitySorter {
     "Sliding_Door": 5, 
     "Sensor":6,
   };
-  static sortAllEntitiesInOrderOfAppearanceForTheTopDownCamera() {
+  static Sort_All_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera() {
     this.entitySort(World.getCurrentEntities())
   }
   static entitySort(entities: Base_Entity[]) {
