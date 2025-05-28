@@ -15,7 +15,10 @@ export type Rail_End = {
     name: Rail_End_Name,
     connectedRail: Rail | null
 } & Position;
+
 export type Rail_Orientation = "vertical" | "horizontal";
+
+
 class Rail extends Base_Entity {
     //  left right is for hori, top bot is for vert
     railConnections: Rail_Connection = { firstEnd: null, secondEnd: null };
@@ -101,7 +104,7 @@ class Rail extends Base_Entity {
         return Math.hypot(point1.x - point2.x, point1.y - point2.y);
     }
 
-    outOfTwoSidesGetOneClosestToSpecifiedEnd(frontSideXY: Point, backSideXY: Point, endName: Rail_End_Name) {
+    Out_Of_Two_Sides_Get_One_Closest_To_Specified_End(frontSideXY: Point, backSideXY: Point, endName: Rail_End_Name) {
         const endInQuestion = this.getEnd(endName);
 
         const frontDistance = this.calculateDistance(frontSideXY, endInQuestion);

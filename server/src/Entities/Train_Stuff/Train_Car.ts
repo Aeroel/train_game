@@ -4,13 +4,10 @@ import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
 import { Collision_Stuff } from "#root/Collision_Stuff.js";
-import { Helper_Functions } from "#root/Helper_Functions.js";
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import type { Rail } from "./Rail.js";
 import type { Point, Position } from "#root/Type_Stuff.js";
 import type { Forces_Values } from "../Entity_Forces.js";
-import { log } from "console";
-import { Assert_That, Assert_That_Number_Is_Positive } from "#root/Type_Validation_Stuff.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Train } from "./Train.js";
 import { Bulk_Of_Train_Car_Code } from "./Bulk_Of_Train_Car_Code.js";
@@ -39,27 +36,36 @@ export type Train_Car_Connected_Cars = {
 
 class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
+
   connectedCars: Train_Car_Connected_Cars = { frontSide: null, backSide: null };
   train: Train;
+
   Wall_And_Door_Thickness = 5;
+
   currentRail!: Rail;
   previousRail!: Rail;
+
   Center_Box_Entity!: Base_Entity;
   Back_Side_Entity!: Base_Entity;
   Front_Side_Entity!: Base_Entity;
-  defaultOrientation = "horizontal";
+
   twoPossibleEnds = ['firstEnd', 'secondEnd'];
   twoPossibleSides = ['frontSide', 'backSide'];
   frontSide = "firstEnd"; // firstEnd or secondEnd. on hor rails , first is left, on vert rails, first is top
+
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
+  
   defaultForceToMoveOnRail = 0.12;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
+  
   Rail_Movement_Key = `Rail_Movement`;
   Riding_Force_Key = `Riding_Car_Id_${this.id}`;
+  
   behaviour: Train_Car_Behaviour;
   bulk_of_code: Bulk_Of_Train_Car_Code;
+  
   constructor({ x, y, size, rail, train }: Train_Car_Constructor) {
     if (!isFinite(x) || !isFinite(y) || !(size > 0)) {
       throw new Error(`x and y and size must be passed and be finite numbers. size must be greater than 0; Passed xysize are instead: ${x} and ${y} and ${size}`);

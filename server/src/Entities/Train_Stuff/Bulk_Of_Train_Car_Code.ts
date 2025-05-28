@@ -74,7 +74,11 @@ class Bulk_Of_Train_Car_Code {
         let finishSide;
         let Rail_End_To_Treat_As_Start;
         let Rail_End_To_Treat_As_Finish;
-        const closestCarSideToFirstRailEnd = this.car.currentRail.outOfTwoSidesGetOneClosestToSpecifiedEnd(this.car.getFrontSide(), this.car.getBackSide(), "firstEnd");
+        const closestCarSideToFirstRailEnd = this.car.currentRail.Out_Of_Two_Sides_Get_One_Closest_To_Specified_End(
+            this.car.getFrontSide(), 
+            this.car.getBackSide(), 
+            "firstEnd"
+        );
 
 
         if (this.car.currentMovementDirection === 'backwards') {
