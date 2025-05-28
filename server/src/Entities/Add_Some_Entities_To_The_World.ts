@@ -63,9 +63,12 @@ class Add_Some_Entities_To_The_World {
 
 
     }
+    static addRailFences() {
+
+    }
 
     static topRails() {
-        const rail1 = Railway_Placing_Functionality.place(10, 10, this.railLength, 'right'); // Top horizontal rail
+        const rail1 = Railway_Placing_Functionality.place(270, 270, this.railLength, 'right'); // Top horizontal rail
 
         const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'right', this.railLength);
         rail2.connectWithRail("firstEnd", "secondEnd", rail1);

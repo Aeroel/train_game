@@ -15,11 +15,11 @@ class Socket_Processor {
         Helper_Functions.Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket);
         socket.emit("welcome", "You have successfully connected to the server. Welcome!");
         const newPlayerEntity = new Player();
-        newPlayerEntity.setX(0);
-        newPlayerEntity.setY(0);
+        newPlayerEntity.setX(350);
+        newPlayerEntity.setY(350);
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
-        newPlayerEntity.setVisionRange(1000);
+        newPlayerEntity.setVisionRange(5000);
         newPlayerEntity.setSocketId(socket.id);
         World.addEntity(newPlayerEntity);
     }
