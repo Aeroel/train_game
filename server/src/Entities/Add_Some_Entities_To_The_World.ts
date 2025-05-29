@@ -8,7 +8,8 @@ import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
-import { Wall } from "./Wall.js";
+import { Wall } from "#root/Entities/Wall.js";
+import {My_Assert} from "#root/My_Assertion_Functionality.js";
 
 export { Add_Some_Entities_To_The_World };
 
@@ -30,8 +31,12 @@ class Add_Some_Entities_To_The_World {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
-
-        const theFirstRail = Add_Some_Entities_To_The_World.addARailway();
+   
+        const theFirstRail = Add_Some_Entities_To_The_World.addARailway(270, 270);
+        Add_Some_Entities_To_The_World.Put_A_Train_On_Rail(theFirstRail);
+        
+        this.railLength=700;
+        const theSecondRail = Add_Some_Entities_To_The_World.addARailway(500, 500);
         Add_Some_Entities_To_The_World.Put_A_Train_On_Rail(theFirstRail);
 
         // Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
@@ -67,8 +72,10 @@ class Add_Some_Entities_To_The_World {
 
     }
 
-    static topRails() {
-        const rail1 = Railway_Placing_Functionality.place(270, 270, this.railLength, 'right'); // Top horizontal rail
+    static topRails(firstRailX: number, firstRailY: number) {
+      My_Assert(isFinite(firstRailX) && isFinite(firstRailY), `expected x and y to be finite numbers, instead got ${firstRailX} and ${firstRailY}`);
+      
+        const rail1 = Railway_Placing_Functionality.place(firstRailX, firstRailY, this.railLength, 'right'); // Top horizontal rail
 
         const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'right', this.railLength);
         rail2.connectWithRail("firstEnd", "secondEnd", rail1);
@@ -104,8 +111,8 @@ class Add_Some_Entities_To_The_World {
 
         return rail8;
     }
-    static addARailway() {
-        const {rail1, rail2 } =  this.topRails();
+    static addARailway(x:number, y: number) {
+        const {rail1, rail2 } =  this.topRails(x, y);
 
        const rail4 = this.rightRails(rail2);
 
