@@ -1,6 +1,7 @@
 import { World } from "#root/World.js";
 import { Rail, type Rail_End_Name_Alternative } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction } from "#root/Type_Stuff.js";
+import { Settings } from "#root/Settings.js";
 
 export { Railway_Placing_Functionality }
 
@@ -13,21 +14,21 @@ class Railway_Placing_Functionality {
         switch (direction) {
             case 'right':
                 rail.setWidth(length);
-                rail.setHeight(10); // Default rail height (horizontal)
+                rail.setHeight(Settings.railThickness); // Default rail height (horizontal)
                 break;
             case 'left':
                 rail.setWidth(length);
-                rail.setHeight(10); // Default rail height (horizontal)
+                rail.setHeight(Settings.railThickness); // Default rail height (horizontal)
                 rail.x = rail.x - length; // Adjust x to account for leftward movement
                 break;
             case 'up':
                 rail.setHeight(length);
-                rail.setWidth(10); // Default rail width (vertical)
+                rail.setWidth(Settings.railThickness); // Default rail width (vertical)
                 rail.y = rail.y - length;
                 break;
             case 'down':
                 rail.setHeight(length);
-                rail.setWidth(10); // Default rail width (vertical)
+                rail.setWidth(Settings.railThickness); // Default rail width (vertical)
                 break;
         }
         World.addEntity(rail); // Add the rail to the world
@@ -50,8 +51,8 @@ class Railway_Placing_Functionality {
         //     newY -= length; 
         // }
         if (nextToOtherRailEnd === 'bottomEnd' && extendsInDirection === 'left') {
-            newX += 10;
-            length += 10;
+            newX += Settings.railThickness;
+            length += Settings.railThickness;
         }
 
         // Now place the next rail based on direction

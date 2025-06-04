@@ -10,12 +10,13 @@ import type { Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
 import {My_Assert} from "#root/My_Assertion_Functionality.js";
+import { Settings } from "#root/Settings.js";
 
 export { Add_Some_Entities_To_The_World };
 
 class Add_Some_Entities_To_The_World {
-    static carSquareSize = 150;
-    static railLength = 1000;
+    static carSquareSize = Settings.trainCarSize;
+    static railLength = Settings.railThickness;
     static rails: Rail[] = [];
     static Put_A_Train_On_Rail(rail: Rail) {
         if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
@@ -115,6 +116,11 @@ class Add_Some_Entities_To_The_World {
         const rail1 = Railway_Placing_Functionality.place(x, y, this.railLength, "down");
         const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, "secondEnd", "right", this.railLength);
         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, "secondEnd", "down", this.railLength)
+        const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, "secondEnd", "left", this.railLength/3);
+        const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, "firstEnd", "down", this.railLength/3);
+        const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, "secondEnd", "right", this.railLength/3);
+        const rail7 = Railway_Placing_Functionality.placeNextTo(rail6, "secondEnd", "up", this.railLength/3);
+        
 
         return rail1;
     }
