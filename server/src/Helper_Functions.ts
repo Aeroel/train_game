@@ -14,13 +14,14 @@ class Helper_Functions {
     }
     static getLocalIP(): string {
         const nets = networkInterfaces();
-        console.log(nets);
 
         if (nets['wlan0']) {
             return nets['wlan0'][1].address;
         }
         else if (nets['Wi-Fi']) {
             return nets['Wi-Fi'][0].address;
+        } else if (nets['swlan0']) {
+            return nets['swlan0'][3].address;
         } else {
             throw new Error('Undefined WIFI');
         }

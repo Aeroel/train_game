@@ -10,13 +10,25 @@ class App {
         })
 
     }
+
     static runThisCodeOncePageIsFullyLoaded() {
       const ip_address_button = document.getElementById("ip_address_button");
       if(ip_address_button === null) {
         throw new Error("ip_address_button not found");
       }
+      const ip_address_field = document.getElementById("ip_address_field");
+      if(ip_address_field === null) {
+        throw new Error("ip_address_field not found")
+      }
       ip_address_button.addEventListener("click", () => {
 
+        App.runThisUponIPAddressSubmit();
+      })
+      ip_address_field.addEventListener("keydown", (e) => {
+
+        if(e.key !== 'Enter') {
+          return;
+        }
         App.runThisUponIPAddressSubmit();
       })
       
