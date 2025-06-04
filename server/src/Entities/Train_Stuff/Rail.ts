@@ -52,18 +52,18 @@ class Rail extends Base_Entity {
     }
     connectWithRail(thisEnd: Rail_End_Name_Alternative, otherEnd: Rail_End_Name_Alternative, otherRail: Rail) {
         let thisEndFinal: Rail_End_Name = "firstEnd";
-        if(thisEnd === "bottomEnd") {
+        if(thisEnd === "bottomEnd" || thisEnd === "rightEnd") {
             thisEndFinal = "secondEnd";
-        } else if (thisEnd === "topEnd") {
+        } else if (thisEnd === "topEnd" || thisEnd === "leftEnd") {
             thisEndFinal = "firstEnd";
         } else {
             thisEndFinal = thisEnd as Rail_End_Name;
         }
         
         let otherEndFinal: Rail_End_Name = "firstEnd";
-        if(otherEnd === "bottomEnd") {
+        if(otherEnd === "bottomEnd" || otherEnd === "rightEnd") {
             otherEndFinal = "secondEnd";
-        } else if (otherEnd === "topEnd") {
+        } else if (otherEnd === "topEnd" || otherEnd === "leftEnd")  {
             otherEndFinal = "firstEnd";
         } else {
             otherEndFinal = otherEnd as Rail_End_Name;

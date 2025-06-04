@@ -15,7 +15,7 @@ body {
 
   /* Canvas fills the container */
   #gameCanvas {
-    background-color: #000;
+    background-color: darkblue;
     width: 1000px;
     height: 1000px;
   }

@@ -9,7 +9,7 @@ import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
-import {My_Assert} from "#root/My_Assertion_Functionality.js";
+import { My_Assert } from "#root/My_Assertion_Functionality.js";
 
 export { Add_Some_Entities_To_The_World };
 
@@ -31,98 +31,60 @@ class Add_Some_Entities_To_The_World {
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
-   
-        const theFirstRail = Add_Some_Entities_To_The_World.addARailway(270, 270);
-        Add_Some_Entities_To_The_World.Put_A_Train_On_Rail(theFirstRail);
-        
-        this.railLength=700;
-        const theSecondRail = Add_Some_Entities_To_The_World.addARailway(500, 500);
-        Add_Some_Entities_To_The_World.Put_A_Train_On_Rail(theFirstRail);
 
-        // Add_Some_Entities_To_The_World.putATrainCarOnThisRail(theFirstRail);
+
 
         World.addEntity(new Forcefield());
 
-        // const stSS = new Station_Stop_Spot();
-        // stSS.setX(400);
-        // stSS.setY(500);
-        // stSS.setWidth(10);
-        // stSS.setHeight(20);
-        // World.addEntity(stSS);
+        const first_rail = Add_Some_Entities_To_The_World.addARailway(400, 200);
 
-        // const stSS_2 = new Station_Stop_Spot();
-
-        // // this comment is for  commit test, remove later
-        // stSS_2.setX(400);
-        // stSS_2.setY(50);
-        // stSS_2.setWidth(10);
-        // stSS_2.setHeight(20);
-        // World.addEntity(stSS_2);
-        const a_wall = new Wall();
-        a_wall.setX(400);
-        a_wall.setY(50);
-        a_wall.setWidth(10);
-        a_wall.setHeight(20);
-        World.addEntity(a_wall);
-
+        this.Put_A_Train_On_Rail(first_rail);
 
 
     }
-    static addRailFences() {
 
-    }
+    static addARailway(x: number, y: number) {
+       const rail1 = Railway_Placing_Functionality.place(x, y, 1000, "down");
 
-    static topRails(firstRailX: number, firstRailY: number) {
-      My_Assert(isFinite(firstRailX) && isFinite(firstRailY), `expected x and y to be finite numbers, instead got ${firstRailX} and ${firstRailY}`);
-      
-        const rail1 = Railway_Placing_Functionality.place(firstRailX, firstRailY, this.railLength, 'right'); // Top horizontal rail
+       const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, "bottomEnd", "right", 1000);
+       rail2.connectWithRail("firstEnd", "bottomEnd", rail1)
 
-        const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, 'rightEnd', 'right', this.railLength);
-        rail2.connectWithRail("firstEnd", "secondEnd", rail1);
-        return {rail1, rail2};
-    }
-    static rightRails(rail2: Rail) {
-         // Right vertical rail
-         const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, 'rightEnd', 'down', this.railLength); // Bottom horizontal rail
-         rail3.connectWithRail("firstEnd", "secondEnd", rail2);
+       const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, "rightEnd", "down", 1000);
+       rail3.connectWithRail("topEnd", "rightEnd", rail2);
 
-         const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, 'bottomEnd', 'down', this.railLength); // Bottom horizontal rail
-         rail4.connectWithRail("firstEnd", "secondEnd", rail3);
+       const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, "bottomEnd", "left", 300);
+       rail4.connectWithRail("rightEnd", "bottomEnd", rail3);
 
-         return rail4;
-    }
-    static bottomRails(rail4: Rail) {
-        const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, 'bottomEnd', 'left', this.railLength); // Bottom horizontal rail
-        rail5.connectWithRail("secondEnd", "secondEnd", rail4);
+       const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, "firstEnd", "down", 300);
+       rail5.connectWithRail("firstEnd", "firstEnd", rail4);
 
-        const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, 'firstEnd', 'left', this.railLength); // Bottom horizontal rail
-        rail6.connectWithRail("secondEnd", "firstEnd", rail5);
+       const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, "bottomEnd", "right", 500);
+       rail6.connectWithRail("leftEnd", "bottomEnd", rail5);
 
-        
+       const rail7 = Railway_Placing_Functionality.placeNextTo(rail6, "rightEnd", "up", 1500);
+       rail7.connectWithRail("bottomEnd", "rightEnd", rail6);
 
-        return rail6;
-    }
-    static leftRails(rail6: Rail) {
-        const rail7 = Railway_Placing_Functionality.placeNextTo(rail6, 'firstEnd', 'up', this.railLength); // Bottom horizontal rail
-        rail7.connectWithRail("secondEnd", "firstEnd", rail6);
+       const rail8  = Railway_Placing_Functionality.placeNextTo(rail7, "topEnd", "left", 1000);
+       rail8.connectWithRail("rightEnd", "topEnd", rail7)
 
-        const rail8 = Railway_Placing_Functionality.placeNextTo(rail7, 'firstEnd', 'up', this.railLength); // Bottom horizontal rail
-        rail8.connectWithRail("secondEnd", "firstEnd", rail7);
+       const rail9 = Railway_Placing_Functionality.placeNextTo(rail8, "leftEnd", "up", 850);
+       rail9.connectWithRail("bottomEnd", "firstEnd", rail8);
 
-        return rail8;
-    }
-    static addARailway(x:number, y: number) {
-        const {rail1, rail2 } =  this.topRails(x, y);
+       const rail10 = Railway_Placing_Functionality.placeNextTo(rail9, "topEnd", "right", 300);
+       rail10.connectWithRail("leftEnd", "topEnd", rail9);
 
-       const rail4 = this.rightRails(rail2);
+       const rail11 = Railway_Placing_Functionality.placeNextTo(rail10, "rightEnd", "up", 300);
+       rail11.connectWithRail("bottomEnd", "rightEnd", rail10);
 
-       const rail6 = this.bottomRails(rail4);
+       const rail12 = Railway_Placing_Functionality.placeNextTo(rail11, "topEnd", "left", 500);
+       rail12.connectWithRail("rightEnd", "topEnd", rail11);
 
-       const rail8 = this.leftRails(rail6);
+       const rail13 = Railway_Placing_Functionality.placeNextTo(rail12, "leftEnd", "down", 350);
+       rail13.connectWithRail("bottomEnd", "topEnd", rail1);
 
-       rail8.connectWithRail("firstEnd", "firstEnd", rail1);
 
         return rail1;
+
     }
 
 

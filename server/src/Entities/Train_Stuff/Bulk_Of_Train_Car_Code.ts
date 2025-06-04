@@ -125,7 +125,7 @@ class Bulk_Of_Train_Car_Code {
 
         //    log({Distance_Covered_By_Car_From_Start_So_Far, Distance_From_Start_To_Finish, railStartCoordValue, railFinishCoordValue, carCoordValue, Rail_End_To_Treat_As_Start, Rail_End_To_Treat_As_Finish, startSide, finishSide, result, x: this.car.getX(), y: this.car.getY(), ori:this.car.currentRail.getOrientation(), mov: this.car.currentMovementDirection, fs: this.car.frontSide, closestCarSideToFirstRailEnd})
         Assert_That_Number_Is_Positive(result);
-        Assert_That(result >= 0 && result < 101, `Percentage result is ${result}`);
+        Assert_That(result > 0 && result < 101, `Percentage result is ${result}`);
         return result;
     }
 

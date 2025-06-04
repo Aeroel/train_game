@@ -253,7 +253,8 @@ class Train_Car extends Base_Entity {
 
     const nextRailIfAny = currentRailEndClosestToCar.connectedRail;
     if (!nextRailIfAny) {
-
+      console.log(currentRailEndClosestToCar);
+      
       this.stopMovement();
       this.train.stopAllCars();
       return;
@@ -317,6 +318,7 @@ class Train_Car extends Base_Entity {
 
     this.forces.setAll(this.Rail_Movement_Key, newForces);
   }
+  
   Is_Moving(): boolean {
     const isMoving: boolean = (this.currentMovementDirection === 'backwards' || this.currentMovementDirection === 'forwards');
     return isMoving;
