@@ -14,7 +14,7 @@ class Helper_Functions {
     }
     static getLocalIP(): string {
         const nets = networkInterfaces();
-
+        console.log(nets);
         if (nets['wlan0']) {
             return nets['wlan0'][1].address;
         }
