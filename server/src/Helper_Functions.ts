@@ -14,6 +14,7 @@ class Helper_Functions {
     }
     static getLocalIP(): string {
         const nets = networkInterfaces();
+        console.log(nets);
         
         if(nets['Wi-Fi'] === undefined) {
             throw new Error('Undefined WIFI');
