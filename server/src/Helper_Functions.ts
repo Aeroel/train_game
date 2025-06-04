@@ -10,16 +10,20 @@ class Helper_Functions {
 
 
     static isNumber(num: number) {
-       return (typeof num === 'number' && isFinite(num));
+        return (typeof num === 'number' && isFinite(num));
     }
     static getLocalIP(): string {
         const nets = networkInterfaces();
         console.log(nets);
-        
-        if(nets['Wi-Fi'] === undefined) {
+
+        if (nets['wlan0']) {
+            return nets['wlan0'][1].address;
+        }
+        else if (nets['Wi-Fi']) {
+            return nets['Wi-Fi'][0].address;
+        } else {
             throw new Error('Undefined WIFI');
         }
-        return nets['Wi-Fi'][0].address;
     }
 
     static Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket: Socket) {
