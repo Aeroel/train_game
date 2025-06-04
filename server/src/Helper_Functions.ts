@@ -21,7 +21,7 @@ class Helper_Functions {
         else if (nets['Wi-Fi']) {
             return nets['Wi-Fi'][0].address;
         } else if (nets['swlan0']) {
-            return nets['swlan0'][3].address;
+            return nets['swlan0'][2].address;
         } else {
             throw new Error('Undefined WIFI');
         }
