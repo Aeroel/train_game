@@ -69,7 +69,7 @@ class Add_Some_Entities_To_The_World {
 
         // left connections
         rail1_0.connectWithRail("bottomEnd", "leftEnd", rail2_0);
-        rail2_0.connectWithRail("secondEnd", "firstEnd", rail3_0);
+        rail2_0.connectWithRail("rightEnd", "topEnd", rail3_0);
 
         // right connections
         rail1_1.connectWithRail("bottomEnd", "leftEnd", rail2_1);
