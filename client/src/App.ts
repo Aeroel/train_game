@@ -4,6 +4,7 @@ import { AnimationLoop } from "#root/AnimationLoop"
 import { SocketWrapper } from "#root/SocketWrapper";
 class App {
   static movementControlCommands = new Set();
+  static playerWantsToMoveFaster = false;
   static initialize() {
     document.addEventListener("DOMContentLoaded", () => {
       App.runThisCodeOncePageIsFullyLoaded();
@@ -58,11 +59,15 @@ class App {
     // Example usage of App.movementControlCommands
     // send whatever keys user presses every 0.1 secs
     setInterval(() => {
+      
+      const movementControlKeysArray = Array.from(App.movementControlCommands);
+       //console.log(movementControlKeysArray)
+      SocketWrapper.emit("controlKeys", {
+        movement: movementControlKeysArray,
+        speedUp: App.playerWantsToMoveFaster,
 
-      const directionsArray = Array.from(App.movementControlCommands);
-      // console.log(directionsArray)
-      SocketWrapper.emit("movement", directionsArray);
-    }, 100);
+      });
+    }, 25);
 
   }
 

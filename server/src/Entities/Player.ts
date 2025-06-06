@@ -14,6 +14,7 @@ class Player extends Base_Entity {
     up: false,
     down: false,
   };
+  speedUp = false;
   standardMovementSpeed = 0.12;
   socketId: Socket["id"] = "none";
   constructor() {
@@ -30,7 +31,16 @@ class Player extends Base_Entity {
   getSocket() {
     return SocketStorage.find(socket => socket.id === this.socketId);
   }
+  swapSpeedUp() {
+    this.speedUp = !this.speedUp;
+  }
   updateState() {
+    if(this.speedUp) {
+      this.standardMovementSpeed = 0.7;
+    } else {
+      this.standardMovementSpeed = 0.12;
+    }
+
     if (this.controls.right) {
       this.forces.set("Player_Controls", "right", this.standardMovementSpeed);
     }

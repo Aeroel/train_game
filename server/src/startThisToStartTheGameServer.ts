@@ -9,7 +9,7 @@ const { httpServer, io } = Server_Creation.getHttpServerAndIO();
 io.on("connection", (socket) => {
   Socket_Processor.onNewConnection(socket);
   Socket_Processor.onDisconnect(socket);
-  Socket_Processor.onMovement(socket);
+  Socket_Processor.onControl(socket);
 });
 
 const arbitrary_number = 3000;

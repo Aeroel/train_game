@@ -44,46 +44,39 @@ class Add_Some_Entities_To_The_World {
     }
 
     static addARailway(x: number, y: number) {
-       const rail1 = Railway_Placing_Functionality.place(x, y, 1000, "down");
+        const mainLength = 4000;
+        
+        // extension dirs
+        const firstDir = "down";
+        const secondDir = "right";
+        const thirdDir = "down";
+        
+        // ends
+        const secondEnd = "bottomEnd";
+        const thirdEnd = "rightEnd";
 
-       const rail2 = Railway_Placing_Functionality.placeNextTo(rail1, "bottomEnd", "right", 1000);
-       rail2.connectWithRail("firstEnd", "bottomEnd", rail1)
+        // offset of right 
+        const offsetOfRight = (mainLength - ( 2 *this.carSquareSize));
 
-       const rail3 = Railway_Placing_Functionality.placeNextTo(rail2, "rightEnd", "down", 1000);
-       rail3.connectWithRail("topEnd", "rightEnd", rail2);
+        // left track
+        const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
+        const rail2_0 = Railway_Placing_Functionality.placeNextTo(rail1_0, secondEnd, secondDir, mainLength);
+        const rail3_0 = Railway_Placing_Functionality.placeNextTo(rail2_0, thirdEnd, thirdDir, mainLength);
+        // right track
+        const rail1_1 = Railway_Placing_Functionality.place(x + (this.carSquareSize * 2), y, offsetOfRight, firstDir);
+        const rail2_1 = Railway_Placing_Functionality.placeNextTo(rail1_1, secondEnd, secondDir, mainLength);
+        const rail3_1 = Railway_Placing_Functionality.placeNextTo(rail2_1, thirdEnd, thirdDir, mainLength + (2 * this.carSquareSize));
 
-       const rail4 = Railway_Placing_Functionality.placeNextTo(rail3, "bottomEnd", "left", 300);
-       rail4.connectWithRail("rightEnd", "bottomEnd", rail3);
+        // left connections
+        rail1_0.connectWithRail("bottomEnd", "leftEnd", rail2_0);
+        rail2_0.connectWithRail("secondEnd", "firstEnd", rail3_0);
 
-       const rail5 = Railway_Placing_Functionality.placeNextTo(rail4, "firstEnd", "down", 300);
-       rail5.connectWithRail("firstEnd", "firstEnd", rail4);
-
-       const rail6 = Railway_Placing_Functionality.placeNextTo(rail5, "bottomEnd", "right", 500);
-       rail6.connectWithRail("leftEnd", "bottomEnd", rail5);
-
-       const rail7 = Railway_Placing_Functionality.placeNextTo(rail6, "rightEnd", "up", 1500);
-       rail7.connectWithRail("bottomEnd", "rightEnd", rail6);
-
-       const rail8  = Railway_Placing_Functionality.placeNextTo(rail7, "topEnd", "left", 1000);
-       rail8.connectWithRail("rightEnd", "topEnd", rail7)
-
-       const rail9 = Railway_Placing_Functionality.placeNextTo(rail8, "leftEnd", "up", 850);
-       rail9.connectWithRail("bottomEnd", "firstEnd", rail8);
-
-       const rail10 = Railway_Placing_Functionality.placeNextTo(rail9, "topEnd", "right", 300);
-       rail10.connectWithRail("leftEnd", "topEnd", rail9);
-
-       const rail11 = Railway_Placing_Functionality.placeNextTo(rail10, "rightEnd", "up", 300);
-       rail11.connectWithRail("bottomEnd", "rightEnd", rail10);
-
-       const rail12 = Railway_Placing_Functionality.placeNextTo(rail11, "topEnd", "left", 500);
-       rail12.connectWithRail("rightEnd", "topEnd", rail11);
-
-       const rail13 = Railway_Placing_Functionality.placeNextTo(rail12, "leftEnd", "down", 350);
-       rail13.connectWithRail("bottomEnd", "topEnd", rail1);
+        // right connections
+        rail1_1.connectWithRail("bottomEnd", "leftEnd", rail2_1);
+        rail2_1.connectWithRail("rightEnd", "topEnd", rail3_1);
 
 
-        return rail1;
+        return rail1_0;
 
     }
 
