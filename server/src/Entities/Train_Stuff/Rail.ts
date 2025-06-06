@@ -50,7 +50,11 @@ class Rail extends Base_Entity {
                 break;
         }
     }
-    connectWithRail(thisEnd: Rail_End_Name_Alternative, otherEnd: Rail_End_Name_Alternative, otherRail: Rail) {
+    connectWithRail(
+        otherRail: Rail,
+        thisEnd: Rail_End_Name_Alternative, 
+        otherEnd: Rail_End_Name_Alternative, 
+        ) {
         let thisEndFinal: Rail_End_Name = "firstEnd";
         if(thisEnd === "bottomEnd" || thisEnd === "rightEnd") {
             thisEndFinal = "secondEnd";
