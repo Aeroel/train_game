@@ -19,7 +19,9 @@ class EmitStuff {
     playerSocket.emit('newWorldState', {
       entities: visibleEntities,
       virtualHeight: virtualHeight,
-      virtualWidth: virtualWidth
+      virtualWidth: virtualWidth,
+      playerX: player.x,
+      playerY: player.y,
     });
   }
 

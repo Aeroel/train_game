@@ -28,6 +28,13 @@ body {
     left: 10px;
     z-index: 10;
   }
+    /* coordinatesLocation box positioned relative to canvas top-left */
+  #coordinatesLocation {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    z-index: 10;
+  }
 
   /* Fullscreen button positioned relative to canvas top-right */
   #fullscreenButton {

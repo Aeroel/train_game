@@ -3,12 +3,16 @@ export { WorldRenderer };
 type WorldState = {
     entities: Entity[],
     virtualCanvasWidth: number
-    virtualCanvasHeight: number
+    virtualCanvasHeight: number,
+    playerX: number,
+    playerY: number,
 }
 type ReceivedWorldState = {
     entities: Entity[],
     virtualWidth: number
-    virtualHeight: number
+    virtualHeight: number,
+    playerX: number,
+    playerY: number,
 }
 type Edge = {
     x1: number,
@@ -35,13 +39,25 @@ class WorldRenderer {
         entities: new Array(),
         virtualCanvasWidth: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
         virtualCanvasHeight: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
+        playerX: 0,
+        playerY: 0,
     };
     static receiveWorldState(worldState: ReceivedWorldState) {
         WorldRenderer.worldState.entities = worldState.entities;
         WorldRenderer.worldState.virtualCanvasHeight = worldState.virtualHeight;
         WorldRenderer.worldState.virtualCanvasWidth = worldState.virtualWidth;
+        WorldRenderer.worldState.playerX = worldState.playerX;
+        WorldRenderer.worldState.playerY = worldState.playerY;
+        
+
     }
     static render() {
+        const coordinatesBox = <HTMLDivElement>document.getElementById("coordinatesLocation");
+        if (coordinatesBox === null) {
+            throw new Error("Could not get coordinates box");
+        }
+        // Update coordinates box with player position
+        coordinatesBox.textContent = `Player Position: X: ${WorldRenderer.worldState.playerX || 0}, Y: ${WorldRenderer.worldState.playerY || 0}`;
         // Get canvas and context
         const canvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
         if (canvas === null) {
