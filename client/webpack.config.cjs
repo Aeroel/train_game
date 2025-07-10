@@ -1,6 +1,10 @@
 const path = require('path');
 
 module.exports = {
+watchOptions: {
+  poll: true,
+  ignored: /node_modules/
+},
     entry: './src/StartApp.ts',
     module: {
         rules: [

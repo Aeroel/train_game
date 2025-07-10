@@ -43,6 +43,16 @@ body {
     right: 10px;
     z-index: 10;
   }
+  #speedupButton {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    z-index: 10;
+  }
+  #speedupStateImage {
+    width:40px;
+    height:40px;
+  }
 
   /* Joystick positioned relative to canvas bottom-right */
   #joystickContainer {

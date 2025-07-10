@@ -11,7 +11,7 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "develop": "webpack-dev-server --mode development",
+        "develop": "webpack serve --mode development",
         "build": "webpack --mode production"
     }
 }

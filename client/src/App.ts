@@ -13,6 +13,23 @@ class App {
   }
 
   static runThisCodeOncePageIsFullyLoaded() {
+   const speedup_button = document.getElementById("speedupButton");
+   if(speedup_button === null) {
+     throw new Error("speedup_button not found");
+   }
+   const speedup_state_image= document.getElementById("speedupStateImage") as HTMLImageElement;
+   if(speedup_state_image === null) {
+     throw new Error("speedup_state_image not found");
+   }
+   const baseImg = "./images/Speedup";
+   speedup_button.addEventListener("click",()=> {
+     App.playerWantsToMoveFaster = !(App.playerWantsToMoveFaster)
+      let image = "False.jpg";
+     if(App.playerWantsToMoveFaster) {
+       image = "True.jpg";
+     }
+      speedup_state_image.src = `${baseImg}_${image}`;
+   })
     const ip_address_button = document.getElementById("ip_address_button");
     if (ip_address_button === null) {
       throw new Error("ip_address_button not found");
