@@ -80,6 +80,8 @@ Using tsc --watch seems to be faster than manually running tsc each time (I mean
 --watch'ing seems to exhibit much faster ts-to-js operations than just running tsc. Running tsc by itself is annoyingly slow, by the way, as far as I can tell, 
 also the incremental flag in tsconfig seems to make it quicker.
 
+Webpack:
+webpack --mode development --watch
 
 
 **Stuff I find odd**:
