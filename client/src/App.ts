@@ -11,9 +11,8 @@ class App {
     })
 
   }
-
-  static runThisCodeOncePageIsFullyLoaded() {
-   const speedup_button = document.getElementById("speedupButton");
+ static speedUpButton() {
+      const speedup_button = document.getElementById("speedupButton");
    if(speedup_button === null) {
      throw new Error("speedup_button not found");
    }
@@ -22,7 +21,7 @@ class App {
      throw new Error("speedup_state_image not found");
    }
    const baseImg = "./images/Speedup";
-   speedup_button.addEventListener("click",()=> {
+   speedup_button.addEventListener("pointerup",()=> {
      App.playerWantsToMoveFaster = !(App.playerWantsToMoveFaster)
       let image = "False.jpg";
      if(App.playerWantsToMoveFaster) {
@@ -30,6 +29,9 @@ class App {
      }
       speedup_state_image.src = `${baseImg}_${image}`;
    })
+ }
+  static runThisCodeOncePageIsFullyLoaded() {
+ this.speedUpButton();
     const ip_address_button = document.getElementById("ip_address_button");
     if (ip_address_button === null) {
       throw new Error("ip_address_button not found");
