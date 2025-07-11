@@ -58,7 +58,7 @@ class Add_Some_Entities_To_The_World {
 
         // offset of right track 
         const offsetOfRight = (mainLength - (2 * this.carSquareSize));
-        const switchLength = 100;
+        const switchLength = 400;
 
         // left track
         const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
