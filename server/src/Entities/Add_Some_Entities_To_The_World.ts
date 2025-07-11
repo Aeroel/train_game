@@ -44,11 +44,12 @@ class Add_Some_Entities_To_The_World {
     }
 
     static addARailway(x: number, y: number) {
+        
         const mainLength = 4000;
 
         // extension dirs
         const firstDir = "down";
-        const secondDir = "right";
+        const secondDir = "down";
         const thirdDir = "down";
 
         // ends
@@ -57,25 +58,19 @@ class Add_Some_Entities_To_The_World {
 
         // offset of right track 
         const offsetOfRight = (mainLength - (2 * this.carSquareSize));
+        const switchLength = 100;
 
         // left track
         const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
         const rail2_0 = Railway_Placing_Functionality.placeNextTo(rail1_0, secondEnd, secondDir, mainLength);
-        const rail3_0 = Railway_Placing_Functionality.placeNextTo(rail2_0, thirdEnd, thirdDir, mainLength);
-        const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "bottomEnd", "left", 500);
-        // right track
-        const rail1_1 = Railway_Placing_Functionality.place(x + (this.carSquareSize * 2), y, offsetOfRight, firstDir);
-        const rail2_1 = Railway_Placing_Functionality.placeNextTo(rail1_1, secondEnd, secondDir, mainLength);
-        const rail3_1 = Railway_Placing_Functionality.placeNextTo(rail2_1, thirdEnd, thirdDir, mainLength + (2 * this.carSquareSize));
-
+        const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
+        const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
+    
         // left connections
-        rail1_0.connectWithRail(rail2_0, "bottomEnd",  "leftEnd",);
+        rail1_0.connectWithRail(rail2_0, "bottomEnd",  "topEnd",);
         rail2_0.connectWithRail(rail3_0, "rightEnd",  "topEnd",);
         rail3_0.connectWithRail(rail4_0,"bottomEnd", "rightEnd")
 
-        // right connections
-        rail1_1.connectWithRail(rail2_1, "bottomEnd",  "leftEnd",);
-        rail2_1.connectWithRail(rail3_1, "rightEnd", "topEnd",);
 
 
         return rail1_0;

@@ -86,6 +86,7 @@ class Railway_Placing_Functionality {
         newRail.y = thisEnd.y + switchLength;
       }
     }
+    return newRail;
   }
   // Place a rail next to an existing rail
   static placeNextTo(otherRail: Rail, nextToOtherRailEnd: Rail_End_Name_Alternative, extendsInDirection: Direction, length: number) {
