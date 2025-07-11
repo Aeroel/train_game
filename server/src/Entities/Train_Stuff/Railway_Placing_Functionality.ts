@@ -33,7 +33,35 @@ class Railway_Placing_Functionality {
         World.addEntity(rail); // Add the rail to the world
         return rail;
     }
-    
+    static placeSwitch(
+      thisRail: Rail, 
+      thisRailEnd: Rail_End_Name_Alternative,
+      direction: Direction,
+      switchLength: number,) {
+        const thisEnd = thisRail.getEnd(thisRailEnd);
+        const newRail = new Rail();
+        World.addEntity(newRail);
+        if(thisRail.orientation === 'vertical') {
+// TODO: check if railend of old rail is top or bottom, and determine y based on that
+          newRail.y = thisEnd.y 
+          if(direction === "left") {
+            newRail.x = thisEnd.x - switchLength;
+          }
+          if(direction === "right") {
+            newRail.x = thisEnd.x + switchLength;
+          }
+        }
+        if(thisRail.orientation ==="horizontal") {
+           if(direction === "up") {
+            otherRail.y = thisEnd.y + switchLength;
+            otherRail.x = thisEnd.x - switchLength;
+          }
+          if(direction === "right") {
+            otherRail.y = thisEnd.y + switchLength;
+            otherRail.x = thisEnd.x + switchLength;
+          }
+        }
+      }
     // Place a rail next to an existing rail
     static placeNextTo(otherRail: Rail, nextToOtherRailEnd: Rail_End_Name_Alternative, extendsInDirection: Direction, length: number) {
         let newX;

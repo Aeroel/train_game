@@ -55,7 +55,7 @@ class Add_Some_Entities_To_The_World {
         const secondEnd = "bottomEnd";
         const thirdEnd = "rightEnd";
 
-        // offset of right 
+        // offset of right track 
         const offsetOfRight = (mainLength - (2 * this.carSquareSize));
 
         // left track
