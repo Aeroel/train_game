@@ -1,6 +1,7 @@
 
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
+import {Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
 import { Collision_Stuff } from "#root/Collision_Stuff.js";
@@ -55,7 +56,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
   
-  defaultForceToMoveOnRail = 0.12;
+  defaultForceToMoveOnRail = 0.12 * 4;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
@@ -312,11 +313,32 @@ class Train_Car extends Base_Entity {
     if (this.currentMovementDirection === null) {
       return false;
     }
+    this.switchHandler();
     this.Rail_Handler();
 
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
     this.forces.setAll(this.Rail_Movement_Key, newForces);
+  }
+  switchHandler() {
+    World.getCurrentEntities().forEach(entity => {
+      if(this === entity) {
+        return;
+      }
+      if(!(entity.hasTag("Rail_Switch_Wall"))) {
+        return;
+      }
+      const rail_switch_wall = entity as Rail_Switch_Wall;
+      if(!(rail_switch_wall.rail === this.currentRail)) {
+        return;
+      }
+
+      // todo: use areEntitiesIntersecting instead
+      if(Collision_Stuff.areEntitiesTouching(this, rail_switch_wall)) {
+        this.train.stopAllCars();
+      }
+
+    })
   }
   
   Is_Moving(): boolean {

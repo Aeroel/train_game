@@ -10,6 +10,7 @@ import type { Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
 import { My_Assert } from "#root/My_Assertion_Functionality.js";
+import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 
 export { Add_Some_Entities_To_The_World };
 
@@ -60,6 +61,7 @@ class Add_Some_Entities_To_The_World {
         const offsetOfRight = (mainLength - (2 * this.carSquareSize));
         const switchLength = 400;
 
+
         // left track
         const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
         const rail2_0 = Railway_Placing_Functionality.placeNextTo(rail1_0, secondEnd, secondDir, mainLength);
@@ -74,6 +76,10 @@ class Add_Some_Entities_To_The_World {
         rail4_0.connectWithRail(rail5_0,"rightEnd", "bottomEnd")
 
 
+        const rail2BotEnd = rail2_0.getEnd("secondEnd");
+        console.log("is " + JSON.stringify(rail2BotEnd))
+        const wall = new Rail_Switch_Wall(rail2BotEnd.x , rail2BotEnd.y + (Add_Some_Entities_To_The_World.carSquareSize/2), rail2_0);
+        World.addEntity(wall);
         return rail1_0;
 
     }

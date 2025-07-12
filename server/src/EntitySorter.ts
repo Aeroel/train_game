@@ -7,6 +7,7 @@ export {
 class EntitySorter {
   static readonly sortOrder = {
     "Ground": 0,
+    "Rail_Switch_Wall": 0.5,
     "Rail": 1,
     "Train_Car": 2,
     "Player": 3,
