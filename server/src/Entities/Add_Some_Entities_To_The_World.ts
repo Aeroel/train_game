@@ -65,12 +65,13 @@ class Add_Some_Entities_To_The_World {
         const rail2_0 = Railway_Placing_Functionality.placeNextTo(rail1_0, secondEnd, secondDir, mainLength);
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
+        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength )
     
         // left connections
         rail1_0.connectWithRail(rail2_0, "bottomEnd",  "topEnd",);
         rail2_0.connectWithRail(rail3_0, "rightEnd",  "topEnd",);
         rail3_0.connectWithRail(rail4_0,"bottomEnd", "rightEnd")
-
+        rail4_0.connectWithRail(rail5_0,"rightEnd", "bottomEnd")
 
 
         return rail1_0;
