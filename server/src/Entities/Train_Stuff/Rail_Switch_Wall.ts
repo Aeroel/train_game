@@ -2,7 +2,7 @@ import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Direction } from "#root/Type_Stuff.js";
 export {Rail_Switch_Wall}
 class Rail_Switch_Wall extends Base_Entity {
-    acceptsWhenDirectionsAre: Direction[] = ['up'];
+    triggersUponContactWithCarIf: Direction[] = ['up'];
     modifiesCarTo: Direction[] = ['up']
     constructor(x: number, y: number, triggersUponContactWithCarIf: Direction[], modifiesCarTo: Direction[]) {
         super();

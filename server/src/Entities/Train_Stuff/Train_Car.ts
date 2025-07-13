@@ -185,7 +185,7 @@ class Train_Car extends Base_Entity {
       }
       let identical = true;
       movementDirs.forEach((dir: Direction) => {
-        if(!(rail_switch_wall.acceptsWhenDirectionsAre.includes(dir))) {
+        if(!(rail_switch_wall.triggersUponContactWithCarIf.includes(dir))) {
           identical = false;
         }
       })
@@ -195,7 +195,7 @@ class Train_Car extends Base_Entity {
 
       // todo: use areEntitiesIntersecting instead
       if (Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall)) {
-        this.train.stopAllCars();
+        
       }
 
     })
