@@ -87,7 +87,7 @@ class Add_Some_Entities_To_The_World {
 
         const rail2BotEnd = rail2_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(rail2BotEnd))
-        const wall = new Rail_Switch_Wall(rail2BotEnd.x , rail2BotEnd.y + (Add_Some_Entities_To_The_World.carSquareSize/2), rail2_0);
+        const wall = new Rail_Switch_Wall(rail2BotEnd.x , rail2BotEnd.y + (Add_Some_Entities_To_The_World.carSquareSize/2), ["down"], ["down", "right"]);
         World.addEntity(wall);
         return rail1_0;
 
