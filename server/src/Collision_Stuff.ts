@@ -31,26 +31,54 @@ class Collision_Stuff {
 
 
   }
+  static checkForIntersection(a: Base_Entity, b: Base_Entity): boolean {
+    return (
+      a.x < b.x + b.width &&
+      a.x + a.width > b.x &&
+      a.y < b.y + b.height &&
+      a.y + a.height > b.y
+    );
+  }
+
+  static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity): boolean {
+    let Collision_Occurred = false;
+    let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
+    let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
+    const loop = new Subpositions_Loop(entityA, entityB);
+    loop.run((index: number, subA: Box, subB: Box) => {
+      if (Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
+        Collision_Occurred = true;
+        loop.stop();
+      }
+      Position_Before_Collision_A = { x: subA.x, y: subA.y }
+      Position_Before_Collision_B = { x: subB.x, y: subB.y }
+    })
+
+
+    const result = { Collision_Occurred, Position_Before_Collision_A, Position_Before_Collision_B };
+    return result;
+
+  }
   static Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(entityA: Base_Entity, entityB: Base_Entity) {
 
 
     let Collision_Occurred = false;
-    let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y};
-    let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y};
+    let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
+    let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
 
 
-    const loop = new Subpositions_Loop(entityA,entityB);
+    const loop = new Subpositions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
-      if(Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
+      if (Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
         Collision_Occurred = true;
         loop.stop();
       }
-      Position_Before_Collision_A = {x: subA.x, y: subA.y}
-      Position_Before_Collision_B = {x: subB.x, y: subB.y}
+      Position_Before_Collision_A = { x: subA.x, y: subA.y }
+      Position_Before_Collision_B = { x: subB.x, y: subB.y }
     })
 
 
-    const result = {Collision_Occurred, Position_Before_Collision_A, Position_Before_Collision_B};
+    const result = { Collision_Occurred, Position_Before_Collision_A, Position_Before_Collision_B };
     return result;
 
 

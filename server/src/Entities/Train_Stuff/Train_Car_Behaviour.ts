@@ -40,7 +40,7 @@ class Train_Car_Behaviour {
         }
         if(this.Closing_Doors) {
         let A_Random_Representative_Door
-        if(this.car.currentRail.orientation==='vertical') {
+        if(this.car.orientation==='vertical') {
           A_Random_Representative_Door = this.car.Walls_And_Doors.Left_Side_Top_Door;
         } else {
           A_Random_Representative_Door = this.car.Walls_And_Doors.Top_Left_Door;
@@ -91,7 +91,7 @@ class Train_Car_Behaviour {
     }
 
     Open_Doors() {
-        if(this.car.currentRail.orientation === 'horizontal') {
+        if(this.car.orientation === 'horizontal') {
             this.car.Walls_And_Doors.Top_Left_Door.open();
             this.car.Walls_And_Doors.Top_Right_Door.open();
             this.car.Walls_And_Doors.Bottom_Left_Door.open();
@@ -105,7 +105,7 @@ class Train_Car_Behaviour {
     }
 
     Close_Doors() {
-        if(this.car.currentRail.orientation === 'horizontal') {
+        if(this.car.orientation === 'horizontal') {
             this.car.Walls_And_Doors.Top_Left_Door.close();
             this.car.Walls_And_Doors.Top_Right_Door.close();
             this.car.Walls_And_Doors.Bottom_Left_Door.close();

@@ -6,7 +6,7 @@ import { World } from "#root/World.js";
 import { Forcefield } from "#root/Entities/Forcefield.js";
 import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
-import type { Position } from "#root/Type_Stuff.js";
+import type { Direction, Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
 import { My_Assert } from "#root/My_Assertion_Functionality.js";
@@ -14,15 +14,24 @@ import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 
 export { Add_Some_Entities_To_The_World };
 
+function AreOpposite(a: Direction, b:Direction) {
+    return (
+        (a === 'left' && b==='right') ||
+        (a === 'up' && b==='down') 
+    )
+}
 class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
     static railLength = 1000;
     static rails: Rail[] = [];
-    static Put_A_Train_On_Rail(rail: Rail) {
+    static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction) {
+        if(!AreOpposite(forwards, backwards)) {
+            throw new Error(`Directions must be opposing (left and right or up and down), but ${forwards} and ${backwards} given`);
+        }
         if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
             throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
         }
-        const train = new Train(rail, 4, Add_Some_Entities_To_The_World.carSquareSize);
+        const train = new Train(rail, forwards, backwards, 4, Add_Some_Entities_To_The_World.carSquareSize);
         World.addEntity(train)
 
 
@@ -39,7 +48,7 @@ class Add_Some_Entities_To_The_World {
 
         const first_rail = Add_Some_Entities_To_The_World.addARailway(400, 200);
 
-        this.Put_A_Train_On_Rail(first_rail);
+        this.Put_A_Train_On_Rail(first_rail, "down", "up");
 
 
     }

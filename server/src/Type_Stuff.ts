@@ -3,6 +3,7 @@ export {
   type Point,
   type Position,
   type Direction,
+  type OpposingDirections,
   type Box,
   type Orientation,
   type VisibleEdge,
@@ -19,7 +20,13 @@ declare type Position = {
   x: number,
   y: number
 }
-declare type Direction = "right" | "left" | "up" | "down"
+declare type Direction = "right" | "left" | "up" | "down";
+declare type OpposingDirections =
+  | ["up", "down"]
+  | ["down", "up"]
+  | ["left", "right"]
+  | ["right", "left"];
+  
 declare type Box = { width: number, height: number } & Position;
 declare type Orientation = "vertical" | "horizontal"
 

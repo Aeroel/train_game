@@ -2,7 +2,7 @@ import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
-import type { Box, Position } from "#root/Type_Stuff.js";
+import type { Box, Direction, Position } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
 import { log } from "console";
 
@@ -21,7 +21,7 @@ export class Train extends Base_Entity {
             car.stopMovement();
         })
     }
-    constructor(rail: Rail, numberOfCars: number, carSquareSize: number) {
+    constructor(rail: Rail, backwards: Direction, forwards: Direction, numberOfCars: number, carSquareSize: number) {
         super();
         let startPosition: Position;
         if (rail.getOrientation() === 'horizontal') {
@@ -45,8 +45,7 @@ export class Train extends Base_Entity {
                 carX = startPosition.x;
                 carY = startPosition.y + (count * carSquareSize);
             }
-            const car = new Train_Car({ rail, size: carSquareSize, x: carX, y: carY, train: this });
-            car.setFrontSide(this.frontSide);
+            const car = new Train_Car({ backwards, forwards,  size: carSquareSize, x: carX, y: carY, train: this });
             car.setMovementDirection(this.movDir);
             World.addEntity(car);
             this.cars.push(car);
