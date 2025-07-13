@@ -81,7 +81,7 @@ class Train_Car_Behaviour {
                 return null;
 
             }
-            if (!Collision_Stuff.areEntitiesTouching(this.car, entity)) {
+            if (!Collision_Stuff.areEntitiesIntersecting(this.car, entity)) {
                 return null;
 
             }

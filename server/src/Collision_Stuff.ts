@@ -31,7 +31,7 @@ class Collision_Stuff {
 
 
   }
-  static checkForIntersection(a: Base_Entity, b: Base_Entity): boolean {
+  static checkForIntersection(a: Box, b: Box): boolean {
     return (
       a.x < b.x + b.width &&
       a.x + a.width > b.x &&
@@ -40,13 +40,13 @@ class Collision_Stuff {
     );
   }
 
-  static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity): boolean {
+  static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity) {
     let Collision_Occurred = false;
     let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
     let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
     const loop = new Subpositions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
-      if (Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
+      if (Collision_Stuff.checkForIntersection(subA, subB)) {
         Collision_Occurred = true;
         loop.stop();
       }

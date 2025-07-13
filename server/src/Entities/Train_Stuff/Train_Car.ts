@@ -194,7 +194,7 @@ class Train_Car extends Base_Entity {
       }
 
       // todo: use areEntitiesIntersecting instead
-      if (Collision_Stuff.areEntitiesTouching(this, rail_switch_wall)) {
+      if (Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall)) {
         this.train.stopAllCars();
       }
 
