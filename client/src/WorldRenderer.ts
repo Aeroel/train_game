@@ -6,6 +6,7 @@ type WorldState = {
     virtualCanvasHeight: number,
     playerX: number,
     playerY: number,
+    playerSpeedUp: boolean,
 }
 type ReceivedWorldState = {
     entities: Entity[],
@@ -13,6 +14,7 @@ type ReceivedWorldState = {
     virtualHeight: number,
     playerX: number,
     playerY: number,
+    playerSpeedUp: boolean,
 }
 type Edge = {
     x1: number,
@@ -41,6 +43,7 @@ class WorldRenderer {
         virtualCanvasHeight: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
         playerX: 0,
         playerY: 0,
+        playerSpeedUp: false
     };
     static receiveWorldState(worldState: ReceivedWorldState) {
         WorldRenderer.worldState.entities = worldState.entities;
@@ -48,9 +51,22 @@ class WorldRenderer {
         WorldRenderer.worldState.virtualCanvasWidth = worldState.virtualWidth;
         WorldRenderer.worldState.playerX = worldState.playerX;
         WorldRenderer.worldState.playerY = worldState.playerY;
-        
+        this.speedUpHandler(worldState.playerSpeedUp);
 
     }
+    static speedUpHandler(speedUp: boolean) {
+              const speedup_state_image= document.getElementById("speedupStateImage") as HTMLImageElement;
+   if(speedup_state_image === null) {
+     throw new Error("speedup_state_image not found");
+   }
+        const baseImg = "./images/Speedup";
+      let image = "False.jpg";
+     if(speedUp) {
+       image = "True.jpg";
+     }
+    speedup_state_image.src = `${baseImg}_${image}`;
+    }
+    
     static render() {
         const coordinatesBox = <HTMLDivElement>document.getElementById("coordinatesLocation");
         if (coordinatesBox === null) {

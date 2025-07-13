@@ -16,18 +16,8 @@ class App {
    if(speedup_button === null) {
      throw new Error("speedup_button not found");
    }
-   const speedup_state_image= document.getElementById("speedupStateImage") as HTMLImageElement;
-   if(speedup_state_image === null) {
-     throw new Error("speedup_state_image not found");
-   }
-   const baseImg = "./images/Speedup";
    speedup_button.addEventListener("pointerup",()=> {
      App.playerWantsToMoveFaster = !(App.playerWantsToMoveFaster)
-      let image = "False.jpg";
-     if(App.playerWantsToMoveFaster) {
-       image = "True.jpg";
-     }
-      speedup_state_image.src = `${baseImg}_${image}`;
    })
  }
   static runThisCodeOncePageIsFullyLoaded() {

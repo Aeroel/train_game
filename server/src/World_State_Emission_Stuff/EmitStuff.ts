@@ -22,6 +22,7 @@ class EmitStuff {
       virtualWidth: virtualWidth,
       playerX: player.x,
       playerY: player.y,
+      playerSpeedUp: player.speedUp
     });
   }
 
