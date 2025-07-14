@@ -30,6 +30,7 @@ export type Train_Car_End = {
 } & Position;
 export type Train_Car_Side = "frontSide" | "backSide";
 export type Train_Car_End_Name = "firstEnd" | "secondEnd";
+export type Train_Car_In_Motion_Movement_Direction = "backwards" | "forwards"
 export type Train_Car_Movement_Direction = null | "backwards" | "forwards";
 export type Train_Car_Connected_Cars = {
   frontSide: null | Train_Car,
@@ -183,24 +184,59 @@ class Train_Car extends Base_Entity {
       if(movementDirs === null){
         return;
       }
-      let identical = true;
-      movementDirs.forEach((dir: Direction) => {
-        if(!(rail_switch_wall.triggersUponContactWithCarIf.includes(dir))) {
-          identical = false;
-        }
-      })
-      if (!(identical)) {
-        return;
-      }
+      const theCarMovementWillTriggerTheWall = rail_switch_wall.areDirectionsAlignedForTrigger(movementDirs);
+    if(!theCarMovementWillTriggerTheWall) {
+      return;
+    }
 
       // todo: use areEntitiesIntersecting instead
-      if (Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall)) {
-        
+      const collisionInfo = Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall);
+      if (!collisionInfo.Collision_Occurred) {
+        return;
       }
+      // Okay, so from point, we know that the wall and car need us to process the logic
+      this[this.currentMovementDirection] = new Set<Direction>(rail_switch_wall.modifiesCarTo);
+      this[this.getOppositeCarMovementDirection(this.currentMovementDirection)] = new Set<Direction>(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
+      /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
+      
+      
 
     })
   }
-
+  getOppositeCarMovementDirection(dir: Train_Car_Movement_Direction) {
+   if(dir === null) {
+    throw new Error("dir is null, but this must not happen. Check the code leading up to this.") 
+   }
+   if(dir==="backwards") {
+     return "forwards"
+   }
+   if(dir==="forwards") {
+     return "backwards"
+   }
+  }
+  getOppositeDirections(dirs: Direction[]) {
+    const oppositeDirs: Direction[] = []
+    dirs.forEach((dir: Direction) => {
+      oppositeDirs.push(this.getOppositeDirection(dir));
+    })
+    return oppositeDirs
+  }
+ getOppositeDirection(dir:Direction): Direction {
+   switch(dir) {
+     case "up":
+       return "down";
+      break;
+     case "down":
+       return "up";
+      break;
+     case "left":
+       return "right";
+      break;
+     case "right":
+       return "left";
+      break;
+   }
+ }
   currentMovementDirs() {
     if(this.currentMovementDirection === null) {
       return null;

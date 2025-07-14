@@ -36,7 +36,7 @@ class Game_Loop {
 
   static Update_States_Of_All_Entities() {
     World.getCurrentEntities().forEach(entity => {
-      entity.updateState();
+      entity.updateStateWrapper();
     });
   }
 

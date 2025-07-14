@@ -13,8 +13,17 @@ class Rail_Switch_Wall extends Base_Entity {
         this.color = "blue";
 
         this.triggersUponContactWithCarIf = triggersUponContactWithCarIf;
-        this.modifiesCarTo = modifiesCarTo
+        this.modifiesCarTo = modifiesCarTo;
         this.addTag("Rail_Switch_Wall");
+    }
+    areDirectionsAlignedForTrigger(directions: Direction[]) {
+      let identical = true;
+      directions.forEach((dir: Direction) => {
+        if(!(this.triggersUponContactWithCarIf.includes(dir))) {
+          identical = false;
+        }
+      })
+      return identical;
     }
 
 }

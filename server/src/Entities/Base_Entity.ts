@@ -19,6 +19,7 @@ class Base_Entity {
   tags = new Array();
   defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
+  lastUpdateStateCall=0;
   constructor() {
 
     this.addTag("Entity");
@@ -34,6 +35,10 @@ class Base_Entity {
     const y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
     const position: Position = { x, y };
     return position;
+  }
+  updateStateWrapper() {
+    
+    this.updateState();
   }
   updateState() {
     const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
