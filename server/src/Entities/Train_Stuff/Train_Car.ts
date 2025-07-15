@@ -207,11 +207,13 @@ class Train_Car extends Base_Entity {
    if(dir === null) {
     throw new Error("dir is null, but this must not happen. Check the code leading up to this.") 
    }
-   if(dir==="backwards") {
+   else if(dir==="backwards") {
      return "forwards"
    }
-   if(dir==="forwards") {
+   else if(dir==="forwards") {
      return "backwards"
+   } else {
+    throw new Error("Should not happen, yes?");
    }
   }
   getOppositeDirections(dirs: Direction[]) {
@@ -241,7 +243,9 @@ class Train_Car extends Base_Entity {
     if(this.currentMovementDirection === null) {
       return null;
     }
-    return this[this.currentMovementDirection];
+    const theSet= this[this.currentMovementDirection];
+    const asArray = [...theSet];
+    return asArray
   }
   Is_Moving(): boolean {
     const isMoving: boolean = (this.currentMovementDirection === 'backwards' || this.currentMovementDirection === 'forwards');

@@ -29,7 +29,6 @@ class Game_Loop {
   }
 
   static updateGameState() {
-    EntitySorter.Sort_All_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera();
     EmitStuff.Emit_To_All_Players_World_State_Stuff();
     Game_Loop.Update_States_Of_All_Entities();
   }
