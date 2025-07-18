@@ -24,7 +24,7 @@ export type Force_Name = "up" | "right" | "left" | "down";
 
 class Entity_Forces {
     entity: Base_Entity;
-    Entities_That_Also_Get_The_Forces_Of_This_Entity = new Array();
+    Entities_That_Also_Get_The_Forces_Of_This_Entity: Base_Entity[] = new Array();
     static readonly Possible_Forces = ["up", "down", "left", "right"];
     forces: Forces = {
         up: [],

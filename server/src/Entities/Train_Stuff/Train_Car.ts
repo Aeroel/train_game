@@ -4,7 +4,7 @@ import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Collision_Stuff, type Collision_Info } from "#root/Collision_Stuff.js";
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import type { Rail } from "./Rail.js";
 import type { Direction, Orientation, Point, Position } from "#root/Type_Stuff.js";
@@ -168,7 +168,10 @@ class Train_Car extends Base_Entity {
     this.forces.setAll(this.Rail_Movement_Key, newForces);
   }
   switchHandler() {
-
+      if (this.currentMovementDirection === null) {
+        return;
+      }
+    const Switch_Sensor_Collisions: Collision_Info[] = [];
     World.getCurrentEntities().forEach(entity => {
       if (this === entity) {
         return;
@@ -176,10 +179,29 @@ class Train_Car extends Base_Entity {
       if (!(entity.hasTag("Rail_Switch_Wall"))) {
         return;
       }
-      const rail_switch_wall = entity as Rail_Switch_Wall;
-      if (this.currentMovementDirection === null) {
+      const collisionInfo = Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall);
+      if (!collisionInfo.Collision_Occurred) {
         return;
       }
+      Switch_Sensor_Collisions.push(collisionInfo);
+    });
+    if(Switch_Sensor_Collisions.length ===0) {
+      return
+    }
+          const beginningPos = {x: this.x, y: this.y}
+      const nextPos = 
+        this.calculateNextPositionBasedOnForcesAndDeltaTime()
+      
+      const supposedNextPos = {
+        x:nextPos.x,
+      y:nextPos.y}
+      
+      const Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
+      let Budget_Remaining=Consumable_Budget
+      
+    let closest: Collision_Info = this.getClosest(this.x, this.y, Switch_Sensor_Collisions)
+      const rail_switch_wall = closest.entityB as Rail_Switch_Wall;
+ 
       const movementDirs = this.currentMovementDirs();
       if(movementDirs === null){
         return;
@@ -189,20 +211,50 @@ class Train_Car extends Base_Entity {
       return;
     }
 
-      // todo: use areEntitiesIntersecting instead
-      const collisionInfo = Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall);
-      if (!collisionInfo.Collision_Occurred) {
-        return;
-      }
+
       // Okay, so from point, we know that the wall and car need us to process the logic
       this[this.currentMovementDirection] = new Set<Direction>(rail_switch_wall.modifiesCarTo);
       this[this.getOppositeCarMovementDirection(this.currentMovementDirection)] = new Set<Direction>(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
-      
-      
+      const spent = this.teleportAndBringPassengers(closest.Position_Before_Collision_A.x, closest.Position_Before_Collision_A.y)
+      Budget_Remaining -= spent;
+      // now begins the budget loop
+      while(Budget_Remaining > 0) {
+        this.determine_new_forces_for_movement_along_the_rail();
+        // to do the rest
+      }
 
-    })
   }
+  teleportAndBringPassengers(toX: number, toY: number) {
+    const carDeltaX = toX - this.x;
+    const carDeltaY = toY - this.y;
+    if(!(carDeltaY ===carDeltaX)) {
+      throw new Error(`deltax and deltay Must be equal,${carDeltaX} and ${carDeltaY} given`)
+    }
+    this.x = toX;
+    this.y = toY;
+
+const carContentsAndPassengers = this.getCarContentsAndPassengers();
+    for (const entity of carContentsAndPassengers) {
+      const newX = entity.x + carDeltaX;
+      const newY = entity.y + carDeltaY;
+      entity.setXY(newX, newY);
+    }
+    return carDeltaY;
+  }
+  getCarContentsAndPassengers(): Base_Entity[] {
+    const entities: Base_Entity[] =[];
+    entities.push(...Entities_That_Also_Get_The_Forces_Of_This_Entity);
+        World.getCurrentEntities().forEach((entity: Base_Entity) => {
+      if (!this.Car_Has_Entity_For_A_Passenger(entity)) {
+        return;
+      }
+        entities.push(entity)
+    });
+    return entities
+  }
+  
+  
   getOppositeCarMovementDirection(dir: Train_Car_Movement_Direction) {
    if(dir === null) {
     throw new Error("dir is null, but this must not happen. Check the code leading up to this.") 
@@ -348,6 +400,34 @@ class Train_Car extends Base_Entity {
     return this.bulk_of_code.Set_Car_Walls_And_Doors_Initial_Positions();
 
   }
+ getClosest(
+  x: number,
+  y: number,
+  colls: Collision_Info[]
+): Collision_Info {
+  if(colls.length ===0 ) {
+    throw new Error('Call to closest with empty array')
+  }
+  
+  if(colls.length === 1) {
+    return colls[0]
+  }
+  let closest: Collision_Info = colls[0];
+  let minDistSq = Infinity;
+
+  for (const info of colls) {
+    const dx = info.Position_Before_Collision_B.x - x;
+    const dy = info.Position_Before_Collision_B.y - y;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq < minDistSq) {
+      minDistSq = distSq;
+      closest = info;
+    }
+  }
+
+  return closest;
+}
 
 
 
