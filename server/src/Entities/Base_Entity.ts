@@ -27,7 +27,7 @@ class Base_Entity {
   Get_No_Movement_Forces() {
     return { up: 0, down: 0, right: 0, left: 0 };
   }
-  calculateNextPositionBasedOnForcesAndDeltaTime() {
+  calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
     const netHorizontalForce = this.forces.Get_Net_Axis_Force("horizontal")
     const netVerticalForce = this.forces.Get_Net_Axis_Force("vertical");
 

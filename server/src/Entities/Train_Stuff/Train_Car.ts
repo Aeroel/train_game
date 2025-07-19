@@ -167,10 +167,9 @@ class Train_Car extends Base_Entity {
 
     this.forces.setAll(this.Rail_Movement_Key, newForces);
   }
-  switchHandler() {
-      if (this.currentMovementDirection === null) {
-        return;
-      }
+  
+  
+  Get_Switch_Sensor_Collisions() {
     const Switch_Sensor_Collisions: Collision_Info[] = [];
     World.getCurrentEntities().forEach(entity => {
       if (this === entity) {
@@ -185,10 +184,26 @@ class Train_Car extends Base_Entity {
       }
       Switch_Sensor_Collisions.push(collisionInfo);
     });
+    return Switch_Sensor_Collisions;
+  }
+  
+  
+  Get_Closest_Sensor_Collision() {
+    const Switch_Sensor_Collisions = Get_Switch_Sensor_Collisions();
+    const closest = this.getClosest(this.x, this.y, Switch_Sensor_Collisions);
+    return closest;
+  }
+  
+  
+  switchHandler() {
+      if (this.currentMovementDirection === null) {
+        return;
+      }
+     const Switch_Sensor_Collisions = this.Get_Switch_Sensor_Collisions();
     if(Switch_Sensor_Collisions.length ===0) {
       return
     }
-          const beginningPos = {x: this.x, y: this.y}
+      const beginningPos = {x: this.x, y: this.y}
       const nextPos = 
         this.calculateNextPositionBasedOnForcesAndDeltaTime()
       
@@ -197,12 +212,45 @@ class Train_Car extends Base_Entity {
       y:nextPos.y}
       
       const Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
-      let Budget_Remaining=Consumable_Budget
+      let Budget_Remaining=Consumable_Budget;
       
-    let closest: Collision_Info = this.getClosest(this.x, this.y, Switch_Sensor_Collisions)
+      
+    let closest: Collision_Info = this.Get_Closest_Sensor_Collision()
       const rail_switch_wall = closest.entityB as Rail_Switch_Wall;
  
-      const movementDirs = this.currentMovementDirs();
+      this.Sensor_Wall_Stuff(rail_switch_wall);
+      /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
+      let spent = this.teleportAndBringPassengers(closest.Position_Before_Collision_A.x, closest.Position_Before_Collision_A.y)
+      Budget_Remaining -= spent;
+      // now begins the budget loop
+      while(Budget_Remaining > 0) {
+        const newForces = this.determine_new_forces_for_movement_along_the_rail();
+        newForces.forEach(dir => {
+          if(dir <= 0) {
+            return;
+          }
+            dir = Budget_Remaining;
+        });
+        this.forces.setAll(this.Rail_Movement_Key, newForces);
+        const closestSensorCollision = this.Get_Closest_Sensor_Collision();
+        if(closestSensorCollision === null) {
+          const finalPos = this.calculateNextPositionBasedOnForcesAndDeltaTime();
+            return this.teleportAndBringPassengers(finalPos.x, finalPos.y);
+        }
+
+        const pos = closestSensorCollision.Position_Before_Collision_A;
+        spent  = pos.x - this.x;
+        
+        this.teleportAndBringPassengers(pos.x, pos.y)
+        
+        Budget_Remaining -= spent;
+      }
+
+  }
+
+
+Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
+        const movementDirs = this.currentMovementDirs();
       if(movementDirs === null){
         return;
       }
@@ -215,16 +263,7 @@ class Train_Car extends Base_Entity {
       // Okay, so from point, we know that the wall and car need us to process the logic
       this[this.currentMovementDirection] = new Set<Direction>(rail_switch_wall.modifiesCarTo);
       this[this.getOppositeCarMovementDirection(this.currentMovementDirection)] = new Set<Direction>(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
-      /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
-      const spent = this.teleportAndBringPassengers(closest.Position_Before_Collision_A.x, closest.Position_Before_Collision_A.y)
-      Budget_Remaining -= spent;
-      // now begins the budget loop
-      while(Budget_Remaining > 0) {
-        this.determine_new_forces_for_movement_along_the_rail();
-        // to do the rest
-      }
-
-  }
+}
   teleportAndBringPassengers(toX: number, toY: number) {
     const carDeltaX = toX - this.x;
     const carDeltaY = toY - this.y;
@@ -404,11 +443,10 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   x: number,
   y: number,
   colls: Collision_Info[]
-): Collision_Info {
-  if(colls.length ===0 ) {
-    throw new Error('Call to closest with empty array')
+): Collision_Info | null {
+  if(colls.length === 0) {
+    return null;
   }
-  
   if(colls.length === 1) {
     return colls[0]
   }
