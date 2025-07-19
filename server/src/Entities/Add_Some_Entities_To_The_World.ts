@@ -16,8 +16,10 @@ export { Add_Some_Entities_To_The_World };
 
 function AreOpposite(a: Direction, b:Direction) {
     return (
-        (a === 'left' && b==='right') ||
-        (a === 'up' && b==='down') 
+        (a === 'left' && b==='right') 
+        || (a==='right' &&b ==='left')
+        || (a==='down' && b==='up')
+        ||  (a === 'up' && b==='down') 
     )
 }
 class Add_Some_Entities_To_The_World {

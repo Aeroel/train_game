@@ -4,6 +4,7 @@ export {
   Assert_That_Number_Is_Finite,
   Assert_That_Numbers_Are_Finite,
   Assert_That_Numbers_Are_Positive_Or_Zero as Assert_That_Numbers_Are_Positive,
+  Assert_That_Numbers_Are_Positive_Or_Zero,
   Assert_That_Number_Is_Positive,
   Assert_That,
   isNumberFinite

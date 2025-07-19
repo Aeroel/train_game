@@ -37,6 +37,7 @@ export type Train_Car_Connected_Cars = {
   backSide: null | Train_Car
 };
 
+
 class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
 
@@ -131,10 +132,6 @@ class Train_Car extends Base_Entity {
 
 
 
-  Rail_Handler() {
-
-
-  }
 
   oppositeOf(val: any, vals: any) {
     // Check if val exists in vals
@@ -161,7 +158,6 @@ class Train_Car extends Base_Entity {
       return false;
     }
     this.switchHandler();
-    this.Rail_Handler();
 
     const newForces = this.determine_new_forces_for_movement_along_the_rail();
 
@@ -178,6 +174,7 @@ class Train_Car extends Base_Entity {
       if (!(entity.hasTag("Rail_Switch_Wall"))) {
         return;
       }
+      const rail_switch_wall = entity as Rail_Switch_Wall;
       const collisionInfo = Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall);
       if (!collisionInfo.Collision_Occurred) {
         return;
@@ -189,7 +186,7 @@ class Train_Car extends Base_Entity {
   
   
   Get_Closest_Sensor_Collision() {
-    const Switch_Sensor_Collisions = Get_Switch_Sensor_Collisions();
+    const Switch_Sensor_Collisions = this.Get_Switch_Sensor_Collisions();
     const closest = this.getClosest(this.x, this.y, Switch_Sensor_Collisions);
     return closest;
   }
@@ -199,10 +196,13 @@ class Train_Car extends Base_Entity {
       if (this.currentMovementDirection === null) {
         return;
       }
-     const Switch_Sensor_Collisions = this.Get_Switch_Sensor_Collisions();
-    if(Switch_Sensor_Collisions.length ===0) {
-      return
-    }
+    let closest: Collision_Info | null = this.Get_Closest_Sensor_Collision();
+
+    if(closest === null) {
+       return;
+     }
+      const rail_switch_wall = closest.entityB as Rail_Switch_Wall;
+      
       const beginningPos = {x: this.x, y: this.y}
       const nextPos = 
         this.calculateNextPositionBasedOnForcesAndDeltaTime()
@@ -213,10 +213,7 @@ class Train_Car extends Base_Entity {
       
       const Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
       let Budget_Remaining=Consumable_Budget;
-      
-      
-    let closest: Collision_Info = this.Get_Closest_Sensor_Collision()
-      const rail_switch_wall = closest.entityB as Rail_Switch_Wall;
+    
  
       this.Sensor_Wall_Stuff(rail_switch_wall);
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
@@ -225,24 +222,25 @@ class Train_Car extends Base_Entity {
       // now begins the budget loop
       while(Budget_Remaining > 0) {
         const newForces = this.determine_new_forces_for_movement_along_the_rail();
-        newForces.forEach(dir => {
-          if(dir <= 0) {
+        for(const dir in newForces) {
+          const key = dir as keyof Forces_Values
+          if(newForces[key] <= 0) {
             return;
           }
-            dir = Budget_Remaining;
-        });
+            newForces[key] = Budget_Remaining;
+        }
         this.forces.setAll(this.Rail_Movement_Key, newForces);
         const closestSensorCollision = this.Get_Closest_Sensor_Collision();
         if(closestSensorCollision === null) {
           const finalPos = this.calculateNextPositionBasedOnForcesAndDeltaTime();
-            return this.teleportAndBringPassengers(finalPos.x, finalPos.y);
+            this.teleportAndBringPassengers(finalPos.x, finalPos.y);
+            return;
         }
 
         const pos = closestSensorCollision.Position_Before_Collision_A;
+        this.teleportAndBringPassengers(pos.x, pos.y);
+        
         spent  = pos.x - this.x;
-        
-        this.teleportAndBringPassengers(pos.x, pos.y)
-        
         Budget_Remaining -= spent;
       }
 
@@ -250,6 +248,9 @@ class Train_Car extends Base_Entity {
 
 
 Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
+  if(this.currentMovementDirection === null) {
+    throw new Error("do not call sensor stuff func unless you know train is moving, bro")
+  }
         const movementDirs = this.currentMovementDirs();
       if(movementDirs === null){
         return;
@@ -283,7 +284,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   }
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];
-    entities.push(...Entities_That_Also_Get_The_Forces_Of_This_Entity);
+    entities.push(...this.forces.Entities_That_Also_Get_The_Forces_Of_This_Entity);
         World.getCurrentEntities().forEach((entity: Base_Entity) => {
       if (!this.Car_Has_Entity_For_A_Passenger(entity)) {
         return;
@@ -358,7 +359,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
 
 
   updateState() {
-    this.behaviour.behaviour();
+ //   this.behaviour.behaviour();
     this.move_handler();
     this.Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car();
     super.updateState();
