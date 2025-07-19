@@ -21,7 +21,7 @@ export class Train extends Base_Entity {
             car.stopMovement();
         })
     }
-    constructor(rail: Rail, backwards: Direction, forwards: Direction, numberOfCars: number, carSquareSize: number) {
+    constructor(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
         super();
         let startPosition: Position;
         if (rail.getOrientation() === 'horizontal') {
@@ -49,6 +49,7 @@ export class Train extends Base_Entity {
             car.setMovementDirection(this.movDir);
             World.addEntity(car);
             this.cars.push(car);
+            car.setMovementDirection(movementDirection);
             if (count > 0) {
                 const prevCar: Train_Car = this.cars[(this.cars.length - 1)];
                 car.Connect_Car_To(prevCar, "frontSide", "backSide");

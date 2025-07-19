@@ -51,7 +51,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  defaultForceToMoveOnRail = 0.12;
+  defaultForceToMoveOnRail = 0.12 * 4;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
@@ -212,7 +212,12 @@ class Train_Car extends Base_Entity {
         x:nextPos.x,
       y:nextPos.y}
       
-      const Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
+      let Consumable_Budget;
+      if(this.forwards.has('up') || this.forwards.has('down')) {
+       Consumable_Budget = Math.abs(beginningPos.y - supposedNextPos.y)
+      } else {
+         Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
+      }
       let Budget_Remaining=Consumable_Budget;
     
  
@@ -239,9 +244,7 @@ class Train_Car extends Base_Entity {
         }
 
         const pos = closestSensorCollision.Position_Before_Collision_A;
-        this.teleportAndBringPassengers(pos.x, pos.y);
-        
-        spent  = pos.x - this.x;
+        spent = this.teleportAndBringPassengers(pos.x, pos.y);
         Budget_Remaining -= spent;
       }
 
@@ -269,9 +272,7 @@ Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
   teleportAndBringPassengers(toX: number, toY: number) {
     const carDeltaX = toX - this.x;
     const carDeltaY = toY - this.y;
-    if(!(carDeltaY ===carDeltaX)) {
-      throw new Error(`deltax and deltay Must be equal,${carDeltaX} and ${carDeltaY} given`)
-    }
+
     this.x = toX;
     this.y = toY;
 
@@ -281,7 +282,11 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
       const newY = entity.y + carDeltaY;
       entity.setXY(newX, newY);
     }
+    if(this.forwards.has('up') || this.forwards.has('down')) {
     return carDeltaY;
+    } else {
+      return carDeltaX;
+    }
   }
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];

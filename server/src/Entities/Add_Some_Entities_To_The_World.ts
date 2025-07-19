@@ -26,14 +26,15 @@ class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
     static railLength = 1000;
     static rails: Rail[] = [];
-    static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction) {
+   
+    static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: "forwards" | "backwards") {
         if(!AreOpposite(forwards, backwards)) {
             throw new Error(`Directions must be opposing (left and right or up and down), but ${forwards} and ${backwards} given`);
         }
         if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
             throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
         }
-        const train = new Train(rail, forwards, backwards, 4, Add_Some_Entities_To_The_World.carSquareSize);
+        const train = new Train(rail, forwards, backwards, movementDirection, 4, Add_Some_Entities_To_The_World.carSquareSize);
         World.addEntity(train)
 
 
@@ -50,7 +51,7 @@ class Add_Some_Entities_To_The_World {
 
         const first_rail = Add_Some_Entities_To_The_World.addARailway(400, 200);
 
-        this.Put_A_Train_On_Rail(first_rail, "down", "up");
+        this.Put_A_Train_On_Rail(first_rail, "down", "up", "forwards");
 
 
     }
@@ -79,18 +80,35 @@ class Add_Some_Entities_To_The_World {
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
         const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength )
-    
-        // left connections
-        rail1_0.connectWithRail(rail2_0, "bottomEnd",  "topEnd",);
-        rail2_0.connectWithRail(rail3_0, "rightEnd",  "topEnd",);
-        rail3_0.connectWithRail(rail4_0,"bottomEnd", "rightEnd")
-        rail4_0.connectWithRail(rail5_0,"rightEnd", "bottomEnd")
 
 
+
+const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
+const thicknessWall = 10;
+const lengthWall = 150;
         const rail2BotEnd = rail2_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(rail2BotEnd))
-        const wall = new Rail_Switch_Wall(rail2BotEnd.x , rail2BotEnd.y + (Add_Some_Entities_To_The_World.carSquareSize/2), ["down"], ["down", "right"]);
+        const wall = new Rail_Switch_Wall(rail2BotEnd.x , 
+        rail2BotEnd.y + (carSquareSize / 2)
+        , ["down"], ["down", "right"], lengthWall, thicknessWall);
         World.addEntity(wall);
+        
+        const rail3LeftEnd = rail3_0.getEnd("firstEnd");
+        console.log("is " + JSON.stringify(rail3LeftEnd))
+        const wall2 = new Rail_Switch_Wall(wall.x + switchLength, wall.y + switchLength, ["down", "right"], ["right"], thicknessWall, lengthWall);
+        World.addEntity(wall2);
+        
+        
+       const three = rail4_0.getEnd("secondEnd");
+        console.log("is " + JSON.stringify(three))
+        const wall3 = new Rail_Switch_Wall(three.x +(carSquareSize/2), three.y, ["right"], ["right", "up"], thicknessWall, lengthWall);
+        World.addEntity(wall3);
+        
+       const four = rail5_0.getEnd("secondEnd");
+        console.log("is " + JSON.stringify(four))
+        const wall4 = new Rail_Switch_Wall(four.x , four.y - (carSquareSize/2), ["up", "right"], ["up"], lengthWall, thicknessWall);
+        World.addEntity(wall4);
+        
         return rail1_0;
 
     }
