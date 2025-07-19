@@ -51,7 +51,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  defaultForceToMoveOnRail = 0.12 * 4;
+  defaultForceToMoveOnRail = 0.12;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
@@ -154,6 +154,7 @@ class Train_Car extends Base_Entity {
 
 
   move_handler() {
+ //   console.log(this.x, this.y)
     if (this.currentMovementDirection === null) {
       return false;
     }
