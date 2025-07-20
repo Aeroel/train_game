@@ -86,6 +86,7 @@ class Add_Some_Entities_To_The_World {
 const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
 const thicknessWall = 10;
 const lengthWall = 150;
+const offset = carSquareSize * 2;
         const rail2BotEnd = rail2_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(rail2BotEnd))
         const wall = new Rail_Switch_Wall(rail2BotEnd.x , 
@@ -95,7 +96,7 @@ const lengthWall = 150;
         
         const rail3LeftEnd = rail3_0.getEnd("firstEnd");
         console.log("is " + JSON.stringify(rail3LeftEnd))
-        const wall2 = new Rail_Switch_Wall(wall.x + switchLength, wall.y + switchLength, ["down", "right"], ["right"], thicknessWall, lengthWall);
+        const wall2 = new Rail_Switch_Wall(wall.x + offset, wall.y + offset, ["down", "right"], ["right"], thicknessWall, lengthWall);
         World.addEntity(wall2);
         
         

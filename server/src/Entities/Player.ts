@@ -36,9 +36,9 @@ class Player extends Base_Entity {
   }
   updateState() {
     if(this.speedUp) {
-      this.standardMovementSpeed = 0.7;
+      this.standardMovementSpeed = 0.5;
     } else {
-      this.standardMovementSpeed = 0.12;
+      this.standardMovementSpeed = 0.10;
     }
 
     if (this.controls.right) {
