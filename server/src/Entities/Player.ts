@@ -163,7 +163,8 @@ orientation = "horizontal";
                         for (const force of saverArr) {
   player.forces.set(force.key, saved.choice, force.value);
 }
-// and here I have to ask again, I guess? whether a collision happens now.
+// and here I have to ask again, I guess? whether a collision happens now. I think the procedure must be the same, yes?
+// so I might be able to extract the above logic into a funtion and just call it here a second time
            }
       return;
 
