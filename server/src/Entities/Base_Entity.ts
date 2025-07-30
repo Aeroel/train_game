@@ -11,6 +11,7 @@ class Base_Entity {
   possibleForces = ["left", "right", "up", "down"];
   forces = new Entity_Forces(this);
   friction = 0.5;
+  speedPerTick = 0;
   x = 0;
   y = 0;
   width = 0;
@@ -95,6 +96,7 @@ class Base_Entity {
      this.setX(x);
      this.setY(y);
   }
+
   setXYWH(x: number, y: number, w: number, h: number) {
     Assert_That_Numbers_Are_Finite({ x, y, w, h });
     Assert_That_Numbers_Are_Positive_Or_Zero({w, h})

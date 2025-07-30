@@ -38,7 +38,50 @@ class Collision_Stuff {
       a.y + a.height > b.y
     );
   }
+ 
+ static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
+       const aEnd: Position = a.calculateNextPositionBasedOnForcesAndDeltaTime();
+    const bEnd: Position = b.calculateNextPositionBasedOnForcesAndDeltaTime();
+  // Bounding boxes
+  const aLeft = a.x;
+  const aRight = aEnd.x;
+  const aTop = a.y;
+  const aBottom = aEnd.y;
 
+  const bLeft = b.x;
+  const bRight = bEnd.x;
+  const bTop = b.y;
+  const bBottom = bEnd.y;
+
+  // Compute bounding box center points (for distance)
+  const aCenterX = (aLeft + aRight) / 2;
+  const aCenterY = (aTop + aBottom) / 2;
+  const bCenterX = (bLeft + bRight) / 2;
+  const bCenterY = (bTop + bBottom) / 2;
+
+  const dx = aCenterX - bCenterX;
+  const dy = aCenterY - bCenterY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  // Max movement possible in this tick
+  const maxSpeedThisTick = (a.speedPerTick || 0) + (b.speedPerTick || 0);
+
+  // Conservative threshold: actual bounding boxes + their max move range
+  const aWidth = aRight - aLeft;
+  const aHeight = aBottom - aTop;
+  const bWidth = bRight - bLeft;
+  const bHeight = bBottom - bTop;
+
+  const maxBoundingRadius = Math.sqrt((aWidth / 2) ** 2 + (aHeight / 2) ** 2) +
+                            Math.sqrt((bWidth / 2) ** 2 + (bHeight / 2) ** 2);
+
+  const maxReach = maxSpeedThisTick + maxBoundingRadius;
+
+  return distance <= maxReach;
+}
+ 
+
+ 
   static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity) {
     let Collision_Occurred = false;
     let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
@@ -48,8 +91,8 @@ class Collision_Stuff {
     const Starting_Position_B: Position = { x: entityB.x, y: entityB.y };
     
    const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);;
-    const Theoretical_Ending_Position_A = prelude.Theoretical_Ending_Position_A;
-    const Theoretical_Ending_Position_B = prelude.Theoretical_Ending_Position_B;
+    const Theoretical_Ending_Position_A = prelude.entityAEndingPosition;
+    const Theoretical_Ending_Position_B = prelude.entityBEndingPosition;
    
     const loop = new Subpositions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {

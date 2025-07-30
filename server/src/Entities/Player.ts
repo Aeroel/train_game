@@ -1,6 +1,6 @@
 import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
-import { Entity_Forces, type Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
+import { Entity_Forces, type Force_Name as Force_Name , type Forces} from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import type { Box, Direction, Orientation, Position, Collision_Info } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
@@ -15,7 +15,7 @@ class Player extends Base_Entity {
     down: false,
   };
   speedUp = false;
-  standardMovementSpeed = 0.10;
+  speedPerTick = 0.10;
   socketId: Socket["id"] = "none";
   constructor() {
     super();
@@ -36,25 +36,25 @@ class Player extends Base_Entity {
   }
   updateState() {
     if(this.speedUp) {
-      this.standardMovementSpeed = 1.00;
+      this.speedPerTick = 1.00;
     } else {
-      this.standardMovementSpeed = 0.50;
+      this.speedPerTick = 0.50;
     }
 
     if (this.controls.right) {
-      this.forces.set("Player_Controls", "right", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "right", this.speedPerTick);
     }
     if (this.controls.left) {
-      this.forces.set("Player_Controls", "left", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "left", this.speedPerTick);
     }
     if (this.controls.up) {
-      this.forces.set("Player_Controls", "up", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "up", this.speedPerTick);
     }
     if (this.controls.down) {
-      this.forces.set("Player_Controls", "down", this.standardMovementSpeed);
+      this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
     this.Collision_Manager();
-    super.updateState();
+  //  super.updateState();
   }
   Collision_Manager() {
     const player = this;
@@ -62,6 +62,12 @@ class Player extends Base_Entity {
       if (player === entity) {
         return;
       }
+      
+      // check if it is even close enough
+      if(!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(player, entity)) {
+        return;
+      }
+      
       const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
       if (!Can_Collide) {
         return;
@@ -90,7 +96,7 @@ class Player extends Base_Entity {
     
  
        // remove all opposite forces as well
-       const oppositeName = player.Get_Opposite_Force_Name(playerCollisionDirection);
+       const oppositeName = player.forces.Get_Opposite_Force_Name(playerCollisionDirection);
        
               const forcesOpposite = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(oppositeName, entity.forces);
        forcesOpposite.forEach(key=> {
@@ -101,19 +107,19 @@ class Player extends Base_Entity {
    const forceId = Math.random().toString();
 
  let orientation: Orientation = 'vertical';
- 
+ let remaining= 0;
    if(playerCollisionDirection ==="right" || playerCollisionDirection ==="left") {
 orientation = "horizontal";
      const budget = Math.abs(Answer.Starting_Position_B.x - Answer.Theoretical_Ending_Position_B.x);
      const spent = Math.abs(Answer. Starting_Position_B.x - Answer.Position_Before_Collision_B.x);
-     const remaining = Math.abs(
+      remaining = Math.abs(
      budget - spent
        );
    } else {
      orientation = "vertical"
         const budget = Math.abs(Answer.Starting_Position_B.y - Answer.Theoretical_Ending_Position_B.y);
      const spent = Math.abs(Answer. Starting_Position_B.y - Answer.Position_Before_Collision_B.y);
-     const remaining = Math.abs(
+      remaining = Math.abs(
      budget - spent
        );  
    }
@@ -123,6 +129,8 @@ orientation = "horizontal";
            player.forces.set(forceId, oppositeName, remaining, removeForceEntryOnceForceBecomesZero);
            let isMovingOnTheOtherAxis = false;
            let netAxis = player.forces.Get_Net_Axis_Force("vertical")
+         let savedArr = [];
+         const saved ={choice: "none", right:0,left:0,up:0,down:0};
            if(orientation==="vertical") {
                       netAxis = player.forces.Get_Net_Axis_Force("horizontal");    isMovingOnTheOtherAxis = 0 < netAxis;
            } else {
@@ -131,7 +139,7 @@ orientation = "horizontal";
            }
            let tempId2 = Math.random().toString();
            if(isMovingOnTheOtherAxis) {
-             const saved ={choice: "none", right:0,left:0,up:0,down:0};
+
            if(orientation ==="horizontal") {
              if(netAxis > 0 ) {
                saved.down = netAxis;
@@ -149,25 +157,105 @@ orientation = "horizontal";
                saved.choice = "left";
              }
            }
-           
-           const forceArray =  player.forced.forces[saved.choice];
-           const savedArr=[];
+           const savedChoice = saved.choice as keyof Forces;
+           const forceArray =  player.forces.forces[savedChoice];
+
            for (const force of forceArray) {
   savedArr.push({...force})
-    player.forces.set(force.key, saved.choice, 0);
+    player.forces.set(force.key, savedChoice, 0);
 }
            }
            this.updateState();
            player.forces.set(forceId, oppositeName, 0);
            if(isMovingOnTheOtherAxis) {
-                        for (const force of saverArr) {
-  player.forces.set(force.key, saved.choice, force.value);
+          const savedChoice = saved.choice as keyof Forces;
+                        for (const force of savedArr) {
+  player.forces.set(force.key, savedChoice, force.forceValue);
 }
 // and here I have to ask again, I guess? whether a collision happens now. I think the procedure must be the same, yes?
 // so I might be able to extract the above logic into a funtion and just call it here a second time
+  this.andSecondTime();
            }
       return;
 
     })
   }
+  andSecondTime() {
+    const player = this;
+    World.getCurrentEntities().forEach((entity: Base_Entity) => {
+      if (player === entity) {
+        return;
+      }
+      
+      // check if it is even close enough
+      if(!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(player, entity)) {
+        return;
+      }
+      
+      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
+      if (!Can_Collide) {
+        return;
+      }
+
+      const Answer = Collision_Stuff.areEntitiesIntersecting(player, entity);
+      if (Answer.Collision_Occurred === false) {
+        return;
+      }
+      
+      const tempPlayerBox: Box = {
+        x: Answer.Position_Before_Collision_A.x,
+        y: Answer.Position_Before_Collision_A.x,
+        width: player.width,
+        height: player.height
+      };
+      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(tempPlayerBox, entity);
+      const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;
+  
+        // get all forces moving player to the right except those also affecting the collided with entity
+       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, entity.forces);
+       forces.forEach(key=> {
+         // set them to zero
+         player.forces.set(key, playerCollisionDirection, 0)
+       }) 
+    
+ 
+       // remove all opposite forces as well
+       const oppositeName = player.forces.Get_Opposite_Force_Name(playerCollisionDirection);
+       
+              const forcesOpposite = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(oppositeName, entity.forces);
+       forcesOpposite.forEach(key=> {
+         // set them to zero
+         player.forces.set(key, oppositeName, 0)
+       }) 
+   const removeForceEntryOnceForceBecomesZero= true;
+   const forceId = Math.random().toString();
+
+ let orientation: Orientation = 'vertical';
+ let remaining= 0;
+   if(playerCollisionDirection ==="right" || playerCollisionDirection ==="left") {
+orientation = "horizontal";
+     const budget = Math.abs(Answer.Starting_Position_B.x - Answer.Theoretical_Ending_Position_B.x);
+     const spent = Math.abs(Answer. Starting_Position_B.x - Answer.Position_Before_Collision_B.x);
+      remaining = Math.abs(
+     budget - spent
+       );
+   } else {
+     orientation = "vertical"
+        const budget = Math.abs(Answer.Starting_Position_B.y - Answer.Theoretical_Ending_Position_B.y);
+     const spent = Math.abs(Answer. Starting_Position_B.y - Answer.Position_Before_Collision_B.y);
+      remaining = Math.abs(
+     budget - spent
+       );  
+   }
+   
+     player.setPosition(Answer.Position_Before_Collision_A);
+     
+           player.forces.set(forceId, oppositeName, remaining, removeForceEntryOnceForceBecomesZero);
+           this.updateState();
+           player.forces.set(forceId, oppositeName, 0);
+      return;
+
+    })
+  }
+  
 }
