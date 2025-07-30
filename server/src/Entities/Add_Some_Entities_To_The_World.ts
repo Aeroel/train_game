@@ -79,8 +79,14 @@ class Add_Some_Entities_To_The_World {
         const rail2_0 = Railway_Placing_Functionality.placeNextTo(rail1_0, secondEnd, secondDir, mainLength);
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
-        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength )
-
+        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength );
+        
+        
+        
+        
+          const rail6_0 = Railway_Placing_Functionality.placeSwitch(rail5_0, "firstEnd", "left", switchLength, mainLength);
+          
+          const rail7_0 = Railway_Placing_Functionality.placeNextTo(rail6_0, "firstEnd", "left", mainLength)
 
 
 const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
@@ -90,13 +96,12 @@ const offset = carSquareSize * 2;
         const rail2BotEnd = rail2_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(rail2BotEnd))
         const wall = new Rail_Switch_Wall(rail2BotEnd.x , 
-        rail2BotEnd.y + (carSquareSize / 2)
-        , ["down"], ["down", "right"], lengthWall, thicknessWall);
+        rail2BotEnd.y, ["down"], ["down", "right"], lengthWall, thicknessWall);
         World.addEntity(wall);
         
         const rail3LeftEnd = rail3_0.getEnd("firstEnd");
         console.log("is " + JSON.stringify(rail3LeftEnd))
-        const wall2 = new Rail_Switch_Wall(wall.x + offset, wall.y + offset, ["down", "right"], ["right"], thicknessWall, lengthWall);
+        const wall2 = new Rail_Switch_Wall(rail3LeftEnd.x, rail3LeftEnd.y + (0.5*carSquareSize), ["down", "right"], ["right"], thicknessWall, lengthWall);
         World.addEntity(wall2);
         
         
@@ -110,6 +115,27 @@ const offset = carSquareSize * 2;
         const wall4 = new Rail_Switch_Wall(four.x , four.y - (carSquareSize/2), ["up", "right"], ["up"], lengthWall, thicknessWall);
         World.addEntity(wall4);
         
+        
+        const five = rail5_0.getEnd("firstEnd")
+        World.addEntity(new Rail_Switch_Wall(
+          five.x, five.y, ["up"], ["up","left"], lengthWall, thicknessWall
+          ));
+          
+          const six = rail6_0.getEnd("secondEnd");
+          World.addEntity(new Rail_Switch_Wall(
+            six.x, six.y - (carSquareSize), ["up", "left"], ["left"], thicknessWall, lengthWall
+            ));
+            
+            const seven = rail7_0.getEnd("firstEnd");
+            World.addEntity(new Rail_Switch_Wall(
+              seven.x - (0.5*carSquareSize), seven.y-(0.5*carSquareSize), ["left"],["left", "down"], thicknessWall, lengthWall
+              ));
+              
+              const eight = rail1_0.getEnd("secondEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                eight.x - (1.5*carSquareSize), eight.y, ["left", "down"], ["down"], lengthWall,thicknessWall
+                ));
+          
         return rail1_0;
 
     }
