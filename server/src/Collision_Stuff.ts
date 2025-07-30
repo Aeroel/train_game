@@ -1,12 +1,7 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Box, Position } from "#root/Type_Stuff.js";
-declare type Collision_Info = {
-     Collision_Occurred: boolean, Position_Before_Collision_A: Position, Position_Before_Collision_B: Position,
-     entityA: Base_Entity,
-     entityB: Base_Entity
-  
-}
-export { Collision_Stuff, type Collision_Info };
+import type { Box, Position, Collision_Info} from "#root/Type_Stuff.js";
+
+export { Collision_Stuff, };
 class Collision_Stuff {
   static Do_Entities_Touch_Through_All_Tick_Subpositions(entityA: Base_Entity, entityB: Base_Entity) {
     const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);

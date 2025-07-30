@@ -2,7 +2,7 @@ import { Collision_Stuff } from "#root/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Entity_Forces, type Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
-import type { Direction, Orientation, Position } from "#root/Type_Stuff.js";
+import type { Box, Direction, Orientation, Position, Collision_Info } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
 import { log } from "console";
 import type { Socket } from "socket.io";
@@ -58,7 +58,6 @@ class Player extends Base_Entity {
   }
   Collision_Manager() {
     const player = this;
-    const collisionDirs = {right:false, left: false, up: false, down: false};
     World.getCurrentEntities().forEach((entity: Base_Entity) => {
       if (player === entity) {
         return;
@@ -67,28 +66,31 @@ class Player extends Base_Entity {
       if (!Can_Collide) {
         return;
       }
-      const wall_or_door = entity;
 
-      const Answer = Collision_Stuff.Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(player, wall_or_door);
+      const Answer = Collision_Stuff.areEntitiesIntersecting(player, entity);
       if (Answer.Collision_Occurred === false) {
         return;
       }
       
-      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
+      const tempPlayerBox: Box = {
+        x: Answer.Position_Before_Collision_A.x,
+        y: Answer.Position_Before_Collision_A.x,
+        width: player.width,
+        height: player.height
+      };
+      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(tempPlayerBox, entity);
       const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;
-      collisionDirs[playerCollisionDirection] = true;
-      const neededKeys = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, wall_or_door.forces);
-
-      player.forces.set(
-        `Pushback_${Math.random()}`,
-        player.forces.Get_Opposite_Force_Name(playerCollisionDirection),
-        player.standardMovementSpeed);
-
-      neededKeys.forEach(key => {
-        const value = player.forces.Get_By_Key(key, playerCollisionDirection);
-        player.forces.set(key, playerCollisionDirection, 0);
-        player.forces.set(key, player.forces.Get_Opposite_Force_Name(playerCollisionDirection), value);
-      })
+  
+        // get all forces moving player to the right except those also affecting the collided with entity
+       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, entity.forces);
+       forces.forEach(key=> {
+         // set them to zero
+         player.forces.set(key, playerCollisionDirection, 0)
+       }) 
+   const removeForceEntryOnceForceBecomesZero= true;
+           player.forces.set(Math.random(), player.forces.Get_Opposite_Force_Name(playerCollisionDirection), Answer.Remaining_X_Velocity_B, removeForceEntryOnceForceBecomesZero);
+           
+           
 
       return;
 
