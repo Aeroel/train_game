@@ -16,6 +16,7 @@ class Player extends Base_Entity {
   };
   speedUp = false;
   speedPerTick = 0.10;
+  justUpdated = false;
   socketId: Socket["id"] = "none";
   constructor() {
     super();
@@ -54,30 +55,20 @@ class Player extends Base_Entity {
       this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
     this.Collision_Manager();
-  //  super.updateState();
+  if(!this.justUpdated) {
+    super.updateState();
+  } else {
+    this.justUpdated = false;
   }
+  }
+
   Collision_Manager() {
     const player = this;
-    World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      if (player === entity) {
-        return;
-      }
-      
-      // check if it is even close enough
-      if(!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(player, entity)) {
-        return;
-      }
-      
-      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
-      if (!Can_Collide) {
-        return;
-      }
-
-      const Answer = Collision_Stuff.areEntitiesIntersecting(player, entity);
-      if (Answer.Collision_Occurred === false) {
-        return;
-      }
-      
+    const Answer = this.getClosestCollision();
+    if(Answer === null) {
+      return;
+    }
+    const entity = Answer.entityB;
       const tempPlayerBox: Box = {
         x: Answer.Position_Before_Collision_A.x,
         y: Answer.Position_Before_Collision_A.x,
@@ -165,7 +156,8 @@ orientation = "horizontal";
     player.forces.set(force.key, savedChoice, 0);
 }
            }
-           this.updateState();
+           super.updateState();
+           this.justUpdated = true;
            player.forces.set(forceId, oppositeName, 0);
            if(isMovingOnTheOtherAxis) {
           const savedChoice = saved.choice as keyof Forces;
@@ -178,29 +170,14 @@ orientation = "horizontal";
            }
       return;
 
-    })
   }
   andSecondTime() {
     const player = this;
-    World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      if (player === entity) {
-        return;
-      }
-      
-      // check if it is even close enough
-      if(!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(player, entity)) {
-        return;
-      }
-      
-      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
-      if (!Can_Collide) {
-        return;
-      }
-
-      const Answer = Collision_Stuff.areEntitiesIntersecting(player, entity);
-      if (Answer.Collision_Occurred === false) {
-        return;
-      }
+   const Answer = this.getClosestCollision();
+   if(Answer === null) {
+     return;
+   }
+   const entity = Answer.entityB;
       
       const tempPlayerBox: Box = {
         x: Answer.Position_Before_Collision_A.x,
@@ -251,11 +228,72 @@ orientation = "horizontal";
      player.setPosition(Answer.Position_Before_Collision_A);
      
            player.forces.set(forceId, oppositeName, remaining, removeForceEntryOnceForceBecomesZero);
-           this.updateState();
+           super.updateState();
            player.forces.set(forceId, oppositeName, 0);
       return;
 
-    })
   }
   
+    getAllColls(): Collision_Info[] {
+    const player = this;
+    const allCollisions: Collision_Info[] =[];
+        World.getCurrentEntities().forEach((entity: Base_Entity) => {
+      if (player === entity) {
+        return;
+      }
+      
+      // check if it is even close enough
+      if(!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(player, entity)) {
+        return;
+      }
+      
+      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
+      if (!Can_Collide) {
+        return;
+      }
+
+      const Answer = Collision_Stuff.areEntitiesIntersecting(player, entity);
+      if (Answer.Collision_Occurred === false) {
+        return;
+      }
+      allCollisions.push(Answer)
+    });
+    return allCollisions;
+  }
+  
+   getClosestCollision(): Collision_Info | null {
+  const allDetectedCollPairs: Collision_Info[] = this.getAllColls();
+  if (allDetectedCollPairs.length === 0) {
+    return null;
+  }
+
+  if (allDetectedCollPairs.length === 1) {
+    return allDetectedCollPairs[0];
+  }
+
+  // Helper: squared distance between two positions
+  function distSq(a: Position, b: Position): number {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx * dx + dy * dy;
+  }
+
+  const playerStart = allDetectedCollPairs[0].Starting_Position_A;
+
+  let closest: Collision_Info = allDetectedCollPairs[0];
+  let minDistSq = distSq(playerStart, closest.Position_Before_Collision_A);
+
+  for (let i = 1; i < allDetectedCollPairs.length; i++) {
+    const curr = allDetectedCollPairs[i];
+    const currDistSq = distSq(playerStart, curr.Position_Before_Collision_A);
+
+    if (currDistSq < minDistSq) {
+      closest = curr;
+      minDistSq = currDistSq;
+    }
+  }
+
+  return closest;
+}
+
 }
