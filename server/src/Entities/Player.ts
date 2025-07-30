@@ -87,10 +87,39 @@ class Player extends Base_Entity {
          // set them to zero
          player.forces.set(key, playerCollisionDirection, 0)
        }) 
+    
+ 
+       // remove all opposite forces as well
+       const oppositeName = player.Get_Opposite_Force_Name(playerCollisionDirection);
+       
+              const forcesOpposite = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(oppositeName, entity.forces);
+       forcesOpposite.forEach(key=> {
+         // set them to zero
+         player.forces.set(key, oppositeName, 0)
+       }) 
    const removeForceEntryOnceForceBecomesZero= true;
-           player.forces.set(Math.random(), player.forces.Get_Opposite_Force_Name(playerCollisionDirection), Answer.Remaining_X_Velocity_B, removeForceEntryOnceForceBecomesZero);
+   const forceId = Math.random().toString();
+ 
+   if(playerCollisionDirection ==="right" || playerCollisionDirection ==="left") {
+     const budget = Math.abs(Answer.Starting_Position_B.x - Answer.Theoretical_Ending_Position_B.x);
+     const spent = Math.abs(Answer. Starting_Position_B.x - Answer.Position_Before_Collision_B.x);
+     const remaining = Math.abs(
+     budget - spent
+       );
+   } else {
+        const budget = Math.abs(Answer.Starting_Position_B.y - Answer.Theoretical_Ending_Position_B.y);
+     const spent = Math.abs(Answer. Starting_Position_B.y - Answer.Position_Before_Collision_B.y);
+     const remaining = Math.abs(
+     budget - spent
+       );  
+   }
+   
+     player.setPosition(Answer.Position_Before_Collision_A);
+     
+           player.forces.set(forceId, oppositeName, remaining, removeForceEntryOnceForceBecomesZero);
            
-           
+           this.updateState();
+           player.forces.set(forceId, oppositeName, 0);
 
       return;
 

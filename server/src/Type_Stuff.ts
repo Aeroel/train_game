@@ -56,6 +56,10 @@ declare type CleanedEntity = VisibleEntity;
  
  declare type Collision_Info = {
      Collision_Occurred: boolean, Position_Before_Collision_A: Position, Position_Before_Collision_B: Position,
+     Starting_Position_A: Position,
+     Starting_Position_B: Position,
+     Theoretical_Ending_Position_A: Position,
+     Theoretical_Ending_Position_B: Position,
      entityA: Base_Entity,
      entityB: Base_Entity
   

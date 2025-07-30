@@ -43,6 +43,14 @@ class Collision_Stuff {
     let Collision_Occurred = false;
     let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
     let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
+
+    const Starting_Position_A: Position = { x: entityA.x, y: entityA.y };
+    const Starting_Position_B: Position = { x: entityB.x, y: entityB.y };
+    
+   const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);;
+    const Theoretical_Ending_Position_A = prelude.Theoretical_Ending_Position_A;
+    const Theoretical_Ending_Position_B = prelude.Theoretical_Ending_Position_B;
+   
     const loop = new Subpositions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
       if (Collision_Stuff.checkForIntersection(subA, subB)) {
@@ -54,7 +62,14 @@ class Collision_Stuff {
     })
 
 
-    const result: Collision_Info = { Collision_Occurred, Position_Before_Collision_A, Position_Before_Collision_B, entityA, entityB };
+    const result: Collision_Info = { Collision_Occurred,
+    Position_Before_Collision_A, Position_Before_Collision_B,
+    Starting_Position_A,
+    Starting_Position_B,
+    Theoretical_Ending_Position_A,
+    Theoretical_Ending_Position_B,
+    entityA,
+    entityB };
     return result;
 
   }
@@ -155,7 +170,10 @@ class Collision_Stuff {
     const entityASubpositions = entitiesSubpositionsArrays.entityA;
     const entityBSubpositions = entitiesSubpositionsArrays.entityB;
 
-    return { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions };
+    return { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions,
+    entityAEndingPosition,
+      entityBEndingPosition,
+    };
   }
 
   static getSubpositions(entityAStartingPosition: Position, entityAEndingPosition: Position, entityBStartingPosition: Position, entityBEndingPosition: Position) {
@@ -244,14 +262,19 @@ class Subpositions_Loop {
     this.entityA = entityA;
     this.entityB = entityB;
 
-    const { entitiesSubpositionsArrays } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
+   const prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
+    const entitiesSubpositionsArrays = prelude.entitiesSubpositionsArrays;
+
+   
 
     this.entityASubpositions = entitiesSubpositionsArrays.entityA;
     this.entityBSubpositions = entitiesSubpositionsArrays.entityB;
     this.loopLength = entitiesSubpositionsArrays.lengthOfEither;
   }
 
-  run(thisFunction: (current_index: number, subA: Box, subB: Box) => void): boolean {
+  run(
+    thisFunction: (current_index: number, subA: Box, subB: Box) => void
+    ): boolean {
     for (let current_index = 0; current_index < this.loopLength && !this.shouldStop; current_index++) {
       const subA = this.createSubEntity(this.entityA, this.entityASubpositions[current_index]);
       const subB = this.createSubEntity(this.entityB, this.entityBSubpositions[current_index]);
