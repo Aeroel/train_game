@@ -99,14 +99,18 @@ class Player extends Base_Entity {
        }) 
    const removeForceEntryOnceForceBecomesZero= true;
    const forceId = Math.random().toString();
+
+ let orientation: Orientation = 'vertical';
  
    if(playerCollisionDirection ==="right" || playerCollisionDirection ==="left") {
+orientation = "horizontal";
      const budget = Math.abs(Answer.Starting_Position_B.x - Answer.Theoretical_Ending_Position_B.x);
      const spent = Math.abs(Answer. Starting_Position_B.x - Answer.Position_Before_Collision_B.x);
      const remaining = Math.abs(
      budget - spent
        );
    } else {
+     orientation = "vertical"
         const budget = Math.abs(Answer.Starting_Position_B.y - Answer.Theoretical_Ending_Position_B.y);
      const spent = Math.abs(Answer. Starting_Position_B.y - Answer.Position_Before_Collision_B.y);
      const remaining = Math.abs(
@@ -117,10 +121,50 @@ class Player extends Base_Entity {
      player.setPosition(Answer.Position_Before_Collision_A);
      
            player.forces.set(forceId, oppositeName, remaining, removeForceEntryOnceForceBecomesZero);
+           let isMovingOnTheOtherAxis = false;
+           let netAxis = player.forces.Get_Net_Axis_Force("vertical")
+           if(orientation==="vertical") {
+                      netAxis = player.forces.Get_Net_Axis_Force("horizontal");    isMovingOnTheOtherAxis = 0 < netAxis;
+           } else {
+             netAxis = player.forces.Get_Net_Axis_Force("vertical");
+             isMovingOnTheOtherAxis = (0 < netAxis);
+           }
+           let tempId2 = Math.random().toString();
+           if(isMovingOnTheOtherAxis) {
+             const saved ={choice: "none", right:0,left:0,up:0,down:0};
+           if(orientation ==="horizontal") {
+             if(netAxis > 0 ) {
+               saved.down = netAxis;
+               saved.choice = "down";
+             } else {
+               saved.up = netAxis;
+               saved.choice = "up";
+             }
+           } else {
+               if(netAxis > 0 ) {
+               saved.right = netAxis;
+               saved.choice = "right";
+             } else {
+               saved.left = netAxis;
+               saved.choice = "left";
+             }
+           }
            
+           const forceArray =  player.forced.forces[saved.choice];
+           const savedArr=[];
+           for (const force of forceArray) {
+  savedArr.push({...force})
+    player.forces.set(force.key, saved.choice, 0);
+}
+           }
            this.updateState();
            player.forces.set(forceId, oppositeName, 0);
-
+           if(isMovingOnTheOtherAxis) {
+                        for (const force of saverArr) {
+  player.forces.set(force.key, saved.choice, force.value);
+}
+// and here I have to ask again, I guess? whether a collision happens now.
+           }
       return;
 
     })
