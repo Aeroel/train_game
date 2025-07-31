@@ -61,7 +61,21 @@ class Player extends Base_Entity {
     this.justUpdated = false;
   }
   }
-
+nullifyForcesInBothDirs(0layer: Player, playerCollisionDirection: Direction, entity: Base_Entity, oppositeName: Direction ) {
+          // get all forces moving player to the right except those also affecting the collided with entity
+       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, entity.forces);
+       forces.forEach(key=> {
+         // set them to zero
+         player.forces.set(key, playerCollisionDirection, 0)
+       }) 
+    
+       // remove all opposite forces as well
+              const forcesOpposite = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(oppositeName, entity.forces);
+       forcesOpposite.forEach(key=> {
+         // set them to zero
+         player.forces.set(key, oppositeName, 0)
+       }) 
+}
   Collision_Manager() {
     const player = this;
     const Answer = this.getClosestCollision();
@@ -77,47 +91,49 @@ class Player extends Base_Entity {
       };
       const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(tempPlayerBox, entity);
       const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;
-  
-        // get all forces moving player to the right except those also affecting the collided with entity
-       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, entity.forces);
-       forces.forEach(key=> {
-         // set them to zero
-         player.forces.set(key, playerCollisionDirection, 0)
-       }) 
-    
- 
-       // remove all opposite forces as well
-       const oppositeName = player.forces.Get_Opposite_Force_Name(playerCollisionDirection);
-       
-              const forcesOpposite = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(oppositeName, entity.forces);
-       forcesOpposite.forEach(key=> {
-         // set them to zero
-         player.forces.set(key, oppositeName, 0)
-       }) 
+
+       const oppositeName = player.forces.Get_Opposite_Force_Name(playerCollisionDirection);  
+
+        this.nullifyForcesInBothDirs(player, playerCollisionDirection, entity, oppositeName)
+
    const removeForceEntryOnceForceBecomesZero= true;
    const forceId = Math.random().toString();
 
  let orientation: Orientation = 'vertical';
- let remaining= 0;
    if(playerCollisionDirection ==="right" || playerCollisionDirection ==="left") {
 orientation = "horizontal";
-     const budget = Math.abs(Answer.Starting_Position_B.x - Answer.Theoretical_Ending_Position_B.x);
-     const spent = Math.abs(Answer. Starting_Position_B.x - Answer.Position_Before_Collision_B.x);
-      remaining = Math.abs(
-     budget - spent
-       );
    } else {
      orientation = "vertical"
-        const budget = Math.abs(Answer.Starting_Position_B.y - Answer.Theoretical_Ending_Position_B.y);
-     const spent = Math.abs(Answer. Starting_Position_B.y - Answer.Position_Before_Collision_B.y);
-      remaining = Math.abs(
-     budget - spent
-       );  
    }
    
      player.setPosition(Answer.Position_Before_Collision_A);
+     const entityFinalPos = Answer.Theoretical_Ending_Position_B;
+     let playerX = player.x;
+     let playerY = player.y;
+  
+     switch(oppositeName) {
+       case "right":
+         playerX = entityFinalPos.x + entity.width;
+         playerX++;
+
+        break;
+        case "left":
+        playerX = entityFinalPos.x - player.width;
+        playerX--;
+        break;
+        
+        case "up":
+          playerY = entityFinalPos.y - player.height;
+          playerY--;
+        break;
+        case "down":
+          playerY = entityFinalPos.y + entityFinalPos.height;
+          playerY++;
+        break;
+     }
+     player.setXY(playerX, playerY);
      
-           player.forces.set(forceId, oppositeName, remaining, removeForceEntryOnceForceBecomesZero);
+
            let isMovingOnTheOtherAxis = false;
            let netAxis = player.forces.Get_Net_Axis_Force("vertical")
          let savedArr = [];
