@@ -8,12 +8,13 @@ class World {
     entities: new Array(),
   };
   static pastStates = [];  // to do save all past states? 
-  static addEntity<T extends Base_Entity>(entity: T) : void {
+  static addEntity<T extends Base_Entity>(entity: T)  {
     if(!entity.hasTag('Entity')) {
       throw new Error('Entity has no entity tag, check stuff');
-      
+
     }
     World.state.entities.push(entity)
+          return entity;
   }
   static getCurrentState() {
     return World.state;

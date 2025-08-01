@@ -40,46 +40,23 @@ class Collision_Stuff {
   }
  
  static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
-       const aEnd: Position = a.calculateNextPositionBasedOnForcesAndDeltaTime();
-    const bEnd: Position = b.calculateNextPositionBasedOnForcesAndDeltaTime();
-  // Bounding boxes
-  const aLeft = a.x;
-  const aRight = aEnd.x;
-  const aTop = a.y;
-  const aBottom = aEnd.y;
+   // the base idea is that we have a general area if the entities are within, we will bother checking collision.
+  const BASE_DISTANCE = 1000;
 
-  const bLeft = b.x;
-  const bRight = bEnd.x;
-  const bTop = b.y;
-  const bBottom = bEnd.y;
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  const distanceSquared = dx * dx + dy * dy;
 
-  // Compute bounding box center points (for distance)
-  const aCenterX = (aLeft + aRight) / 2;
-  const aCenterY = (aTop + aBottom) / 2;
-  const bCenterX = (bLeft + bRight) / 2;
-  const bCenterY = (bTop + bBottom) / 2;
+  const aSpeed = a.speedPerTick ?? 0;
+  const bSpeed = b.speedPerTick ?? 0;
+  const effectiveRange = BASE_DISTANCE - (aSpeed + bSpeed);
 
-  const dx = aCenterX - bCenterX;
-  const dy = aCenterY - bCenterY;
-  const distance = Math.sqrt(dx * dx + dy * dy);
+  if (effectiveRange <= 0) return true;
 
-  // Max movement possible in this tick
-  const maxSpeedThisTick = (a.speedPerTick || 0) + (b.speedPerTick || 0);
-
-  // Conservative threshold: actual bounding boxes + their max move range
-  const aWidth = aRight - aLeft;
-  const aHeight = aBottom - aTop;
-  const bWidth = bRight - bLeft;
-  const bHeight = bBottom - bTop;
-
-  const maxBoundingRadius = Math.sqrt((aWidth / 2) ** 2 + (aHeight / 2) ** 2) +
-                            Math.sqrt((bWidth / 2) ** 2 + (bHeight / 2) ** 2);
-
-  const maxReach = maxSpeedThisTick + maxBoundingRadius;
-
-  return distance <= maxReach;
+  return distanceSquared <= effectiveRange * effectiveRange;
 }
- 
+
+
 
  
   static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity) {

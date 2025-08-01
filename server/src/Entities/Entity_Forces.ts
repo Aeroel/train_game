@@ -168,4 +168,12 @@ class Entity_Forces {
     }
 
 
+Get_Keys_Of_Force_Components_Of_A_Force(
+    direction: keyof Entity_Forces["forces"]
+): string[] {
+    const forceComponents = this.forces[direction];
+    return forceComponents.map((component) => component.key);
+}
+
+
 }

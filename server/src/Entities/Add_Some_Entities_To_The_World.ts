@@ -27,6 +27,7 @@ class Add_Some_Entities_To_The_World {
     static railLength = 1000;
     static rails: Rail[] = [];
    
+   
     static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: "forwards" | "backwards") {
         if(!AreOpposite(forwards, backwards)) {
             throw new Error(`Directions must be opposing (left and right or up and down), but ${forwards} and ${backwards} given`);
@@ -45,7 +46,12 @@ class Add_Some_Entities_To_The_World {
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
 
-
+      const wall = World.addEntity(
+        new Wall());
+        wall.setXY(950, 1250);
+        wall.setHeight(400);
+        wall.setWidth(40);
+        wall.setColor("pink")
 
         World.addEntity(new Forcefield());
 
