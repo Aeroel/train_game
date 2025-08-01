@@ -56,19 +56,19 @@ class Player extends Base_Entity {
       this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
     this.Collision_Manager();
-//  if(!this.justUpdated) {
+ if(!this.justUpdated) {
     super.updateState();
- // } else {
+  } else {
     this.justUpdated = false;
- // }
+ }
   }
 nullifyForcesInBothDirs(
   player: Player, 
   playerCollisionDirection: Direction, entity: Base_Entity,
 oppositeName: Direction ) {
-this.forces.forEachComponent(comp=>{
-  comp.forceValue =0
-})
+       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, entity.forces);
+       
+       
   
 }
   Collision_Manager() {
@@ -86,8 +86,14 @@ this.forces.forEachComponent(comp=>{
         width: player.width,
         height: player.height
       };
-      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(tempPlayerBox, entity);
-      const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;
+      const tempEntBox: Box = {
+        x: Answer.Position_Before_Collision_B.x,
+        y: Answer.Position_Before_Collision_B.y,
+        width: entity.width,
+        height: entity.height
+      };
+      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(tempPlayerBox, tempEntBox).aFace;
+      const playerCollisionDirection = playerSide as Direction;
 
        const oppositeName = player.forces.Get_Opposite_Force_Name(playerCollisionDirection);  
 

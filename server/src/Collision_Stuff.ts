@@ -148,31 +148,38 @@ class Collision_Stuff {
 
   }
 
-  static Which_Side_Of_Entity_Is_Facing_Another_Entity(entityA: Box, entityB: Box) {
-    const aCenterX = entityA.x + entityA.width / 2;
-    const aCenterY = entityA.y + entityA.height / 2;
-    const bCenterX = entityB.x + entityB.width / 2;
-    const bCenterY = entityB.y + entityB.height / 2;
+  static Which_Side_Of_Entity_Is_Facing_Another_Entity(a: Box, b: Box) {
+    const aRight = a.x + a.width;
+    const aBottom = a.y + a.height;
+    const bRight = b.x + b.width;
+    const bBottom = b.y + b.height;
 
-    const deltaX = bCenterX - aCenterX;
-    const deltaY = bCenterY - aCenterY;
+    const xOverlap = a.x < bRight && aRight > b.x;
+    const yOverlap = a.y < bBottom && aBottom > b.y;
 
-    const absX = Math.abs(deltaX);
-    const absY = Math.abs(deltaY);
-
-    if (absX > absY) {
-      if (deltaX > 0) {
-        return 'right';
-      } else {
-        return 'left';
-      }
+    if (xOverlap && yOverlap) {
+        throw new Error("Rectangles intersect; facing direction is undefined.");
     }
 
-    if (deltaY > 0) {
-      return 'bottom'
-    } else {
-      return 'top';
+    // If they are vertically apart (priority)
+    if (!yOverlap) {
+        if (aBottom <= b.y) {
+            return { aFace: "down", bFace: "up" };
+        }
+        if (bBottom <= a.y) {
+            return { aFace: "up", bFace: "down" };
+        }
     }
+  
+    // Otherwise use horizontal position
+    if (aRight <= b.x) {
+        return { aFace: "right", bFace: "left" };
+    }
+    if (bRight <= a.x) {
+        return { aFace: "left", bFace: "right" };
+    }
+
+    throw new Error("Rectangles are ambiguous or overlapping in unexpected way.");
   }
 
   static Get_Prelude_To_Subpositions_Loop(entityA: Base_Entity, entityB: Base_Entity) {
