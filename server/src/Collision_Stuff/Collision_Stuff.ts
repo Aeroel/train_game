@@ -313,7 +313,7 @@ static getAllCollisions(
     }
     
     if (!filterFn(other)) return;
-
+  
 
     const collisionInfo = Collision_Stuff.areEntitiesIntersecting(entity, other);
 
