@@ -56,30 +56,19 @@ class Player extends Base_Entity {
       this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
     this.Collision_Manager();
-  if(!this.justUpdated) {
+//  if(!this.justUpdated) {
     super.updateState();
-  } else {
+ // } else {
     this.justUpdated = false;
-  }
+ // }
   }
 nullifyForcesInBothDirs(
   player: Player, 
   playerCollisionDirection: Direction, entity: Base_Entity,
 oppositeName: Direction ) {
-          // get all forces moving player to the right except those also affecting the collided with entity
-       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force(playerCollisionDirection);
-       forces.forEach(key=> {
-         // set them to zero
-         player.forces.set(key, playerCollisionDirection, 0)
-       }) 
-    
-       // remove all opposite forces as well
-              const forcesOpposite = player.forces.Get_Keys_Of_Force_Components_Of_A_Force(oppositeName);
-       forcesOpposite.forEach(key=> {
-         // set them to zero
-         
-         player.forces.set(key, oppositeName, 0)
-       }) 
+this.forces.forEachComponent(comp=>{
+  comp.forceValue =0
+})
   
 }
   Collision_Manager() {
