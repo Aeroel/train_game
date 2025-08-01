@@ -55,65 +55,12 @@ class Player extends Base_Entity {
     if (this.controls.down) {
       this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
-    this.Collision_Manager();
+
+
     super.updateState();
   }
 
-  Collision_Manager() {
-
-    const player = this;
-    
-    const filterFn = (entity: Base_Entity) => {
-  return entity.hasTag("Wall") || entity.hasTag("Sliding_Door");
-       };
-
-    const Answer = Collision_Stuff.getClosestCollision(this, filterFn);
-    if(Answer === null) {
-      return;
-    }
-    this.forces.forEachComponent(comp=>{
-      comp.forceValue=0
-    })
-    if(1>0)
-    return; //<--- added triggers errror
-    
-    const entity = Answer.entityB;
-
-
-      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(this, entity).aFace;
-      const playerCollisionDirection = playerSide as Direction;
-     const oppositeName=this.forces.Get_Opposite_Force_Name(playerCollisionDirection);
-
-
-     const entityFinalPos = Answer.Theoretical_Ending_Position_B;
-     let playerX = player.x;
-     let playerY = player.y;
   
-     switch(oppositeName) {
-       case "right":
-         playerX = entityFinalPos.x + entity.width;
-         playerX++;
-
-        break;
-        case "left":
-        playerX = entityFinalPos.x - player.width;
-        playerX--;
-        break;
-        
-        case "up":
-          playerY = entityFinalPos.y - player.height;
-          playerY--;
-        break;
-        case "down":
-          playerY = entityFinalPos.y + entity.height;
-          playerY++;
-        break;
-     }
-     player.setXY(playerX, playerY);
-
-      return;
-
-  }
 
   
 
