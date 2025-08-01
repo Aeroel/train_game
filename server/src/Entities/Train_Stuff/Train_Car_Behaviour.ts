@@ -1,4 +1,4 @@
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { World } from "#root/World.js";
 import type { Station_Stop_Spot } from "../Station_Stop_Spot.js";
 import type { Train_Car, Train_Car_Movement_Direction } from "./Train_Car.js";

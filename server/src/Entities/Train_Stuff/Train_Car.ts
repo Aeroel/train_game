@@ -4,7 +4,7 @@ import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import type { Rail } from "./Rail.js";
 import type { Direction, Orientation, Point, Position, Collision_Info } from "#root/Type_Stuff.js";

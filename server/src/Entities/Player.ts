@@ -1,4 +1,4 @@
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Entity_Forces, type Force_Name as Force_Name , type Forces} from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
@@ -56,48 +56,34 @@ class Player extends Base_Entity {
       this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
     this.Collision_Manager();
- if(!this.justUpdated) {
     super.updateState();
-  } else {
-    this.justUpdated = false;
- }
   }
-nullifyForcesInBothDirs(
-  player: Player, 
-  playerCollisionDirection: Direction, entity: Base_Entity,
-oppositeName: Direction ) {
-       const forces = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, entity.forces);
-       
-       
-  
-}
+
   Collision_Manager() {
 
     const player = this;
-    const Answer = this.getClosestCollision();
+    
+    const filterFn = (entity: Base_Entity) => {
+  return entity.hasTag("Wall") || entity.hasTag("Sliding_Door");
+       };
+
+    const Answer = Collision_Stuff.getClosestCollision(this, filterFn);
     if(Answer === null) {
       return;
     }
-
+    this.forces.forEachComponent(comp=>{
+      comp.forceValue=0
+    })
+    if(1>0)
+    return; //<--- added triggers errror
+    
     const entity = Answer.entityB;
-      const tempPlayerBox: Box = {
-        x: Answer.Position_Before_Collision_A.x,
-        y: Answer.Position_Before_Collision_A.y,
-        width: player.width,
-        height: player.height
-      };
-      const tempEntBox: Box = {
-        x: Answer.Position_Before_Collision_B.x,
-        y: Answer.Position_Before_Collision_B.y,
-        width: entity.width,
-        height: entity.height
-      };
-      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(tempPlayerBox, tempEntBox).aFace;
+
+
+      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(this, entity).aFace;
       const playerCollisionDirection = playerSide as Direction;
+     const oppositeName=this.forces.Get_Opposite_Force_Name(playerCollisionDirection);
 
-       const oppositeName = player.forces.Get_Opposite_Force_Name(playerCollisionDirection);  
-
-        this.nullifyForcesInBothDirs(player, playerCollisionDirection, entity, oppositeName)
 
      const entityFinalPos = Answer.Theoretical_Ending_Position_B;
      let playerX = player.x;
@@ -125,74 +111,11 @@ oppositeName: Direction ) {
      }
      player.setXY(playerX, playerY);
 
-    this.justUpdated=true;
       return;
 
   }
 
   
-    getAllColls(): Collision_Info[] {
-    const player = this;
-    const allCollisions: Collision_Info[] =[];
-        World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      if (player === entity) {
-        return;
-      }
-      
-      // check if it is even close enough
-      if(!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(player, entity)) {
-        return;
-      }
-      
-      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
-      if (!Can_Collide) {
-        return;
-      }
 
-      const Answer = Collision_Stuff.areEntitiesIntersecting(player, entity);
-      if (Answer.Collision_Occurred === false) {
-        return;
-      }
-
-
-      allCollisions.push(Answer)
-    });
-    return allCollisions;
-  }
-  
-   getClosestCollision(): Collision_Info | null {
-  const allDetectedCollPairs: Collision_Info[] = this.getAllColls();
-  if (allDetectedCollPairs.length === 0) {
-    return null;
-  }
-
-  if (allDetectedCollPairs.length === 1) {
-    return allDetectedCollPairs[0];
-  }
-
-  // Helper: squared distance between two positions
-  function distSq(a: Position, b: Position): number {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return dx * dx + dy * dy;
-  }
-
-  const playerStart = allDetectedCollPairs[0].Starting_Position_A;
-
-  let closest: Collision_Info = allDetectedCollPairs[0];
-  let minDistSq = distSq(playerStart, closest.Position_Before_Collision_A);
-
-  for (let i = 1; i < allDetectedCollPairs.length; i++) {
-    const curr = allDetectedCollPairs[i];
-    const currDistSq = distSq(playerStart, curr.Position_Before_Collision_A);
-
-    if (currDistSq < minDistSq) {
-      closest = curr;
-      minDistSq = currDistSq;
-    }
-  }
-
-  return closest;
-}
 
 }

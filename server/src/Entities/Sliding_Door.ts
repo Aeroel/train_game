@@ -1,7 +1,7 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sensor } from "#root/Entities/Sensor.js"
 import { World } from "#root/World.js"
-import { Collision_Stuff } from "#root/Collision_Stuff.js"
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
 import { Entity_Forces } from "#root/Entities/Entity_Forces.js"
 
 export { Sliding_Door };

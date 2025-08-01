@@ -1,6 +1,7 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Position, Collision_Info} from "#root/Type_Stuff.js";
-
+import { Subpositions_Loop } from "#root/Collision_Stuff/Subpositions_Loop.js";
+import {World} from "#root/World.js"
 export { Collision_Stuff, };
 class Collision_Stuff {
   static Do_Entities_Touch_Through_All_Tick_Subpositions(entityA: Base_Entity, entityB: Base_Entity) {
@@ -268,59 +269,72 @@ class Collision_Stuff {
       y1 + h1 < y2 || // Entity A is above Entity B
       y2 + h2 < y1);   // Entity B is above Entity A
   }
+static getAllCollisions(
+  entity: Base_Entity,
+  filterFn: (other: Base_Entity) => boolean
+): Collision_Info[] {
+  const allCollisions: Collision_Info[] = [];
 
+  World.getCurrentEntities().forEach((other) => {
+    if (entity === other) return;
 
-}
+    if (!filterFn(other)) return;
 
-
-class Subpositions_Loop {
-  shouldStop = false;
-  result = false;
-  entityA: Base_Entity;
-  entityB: Base_Entity;
-  entityASubpositions: Position[];
-  entityBSubpositions: Position[];
-  loopLength: number;
-
-  constructor(
-    entityA: Base_Entity,
-    entityB: Base_Entity,
-  ) {
-    this.entityA = entityA;
-    this.entityB = entityB;
-
-   const prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
-    const entitiesSubpositionsArrays = prelude.entitiesSubpositionsArrays;
-
-   
-
-    this.entityASubpositions = entitiesSubpositionsArrays.entityA;
-    this.entityBSubpositions = entitiesSubpositionsArrays.entityB;
-    this.loopLength = entitiesSubpositionsArrays.lengthOfEither;
-  }
-
-  run(
-    thisFunction: (current_index: number, subA: Box, subB: Box) => void
-    ): boolean {
-    for (let current_index = 0; current_index < this.loopLength && !this.shouldStop; current_index++) {
-      const subA = this.createSubEntity(this.entityA, this.entityASubpositions[current_index]);
-      const subB = this.createSubEntity(this.entityB, this.entityBSubpositions[current_index]);
-
-      thisFunction(current_index, subA, subB);
+    if (!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(entity, other)) {
+      return;
     }
-    return this.result;
-  }
 
-  stop(result: boolean = true): void {
-    this.shouldStop = true;
-    this.result = result;
-  }
+    const collisionInfo = Collision_Stuff.areEntitiesIntersecting(entity, other);
 
-  createSubEntity(entity: Base_Entity, position: Position): Box {
-    return {
-      width: entity.width,
-      height: entity.height,
-      ...position
-    };
-  }
+    if (collisionInfo.Collision_Occurred) {
+      allCollisions.push(collisionInfo);
+    }
+  });
+
+  return allCollisions;
 }
+
+static getClosestCollision(
+  entity: Base_Entity,
+  filterFn: (other: Base_Entity) => boolean
+): Collision_Info | null {
+  const allDetectedCollPairs = Collision_Stuff.getAllCollisions(entity, filterFn);
+
+  if (allDetectedCollPairs.length === 0) {
+    return null;
+  }
+
+  if (allDetectedCollPairs.length === 1) {
+    return allDetectedCollPairs[0];
+  }
+
+  // Helper: squared distance between two positions
+  function distSq(a: Position, b: Position): number {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx * dx + dy * dy;
+  }
+
+  const entityStart = allDetectedCollPairs[0].Starting_Position_A;
+
+  let closest: Collision_Info = allDetectedCollPairs[0];
+  let minDistSq = distSq(entityStart, closest.Position_Before_Collision_A);
+
+  for (let i = 1; i < allDetectedCollPairs.length; i++) {
+    const curr = allDetectedCollPairs[i];
+    const currDistSq = distSq(entityStart, curr.Position_Before_Collision_A);
+
+    if (currDistSq < minDistSq) {
+      closest = curr;
+      minDistSq = currDistSq;
+    }
+  }
+
+  return closest;
+}
+
+
+
+}
+
+

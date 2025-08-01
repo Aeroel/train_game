@@ -1,4 +1,4 @@
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
