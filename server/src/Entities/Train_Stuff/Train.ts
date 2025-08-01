@@ -23,6 +23,7 @@ export class Train extends Base_Entity {
     }
     constructor(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
         super();
+        this.movDir = movementDirection;
         let startPosition: Position;
         if (rail.getOrientation() === 'horizontal') {
             startPosition = {

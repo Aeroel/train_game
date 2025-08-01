@@ -1,3 +1,7 @@
+import * as fs from 'fs';
+import * as path from 'path';
+
+
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Entity_Forces, type Force_Name as Force_Name , type Forces} from "#root/Entities/Entity_Forces.js";
@@ -14,6 +18,7 @@ class Player extends Base_Entity {
     up: false,
     down: false,
   };
+  lastSaveTime=0;
   marked: Base_Entity[] = [];
   speedUp = false;
   speedPerTick = 0.10;
@@ -56,13 +61,48 @@ class Player extends Base_Entity {
       this.forces.set("Player_Controls", "down", this.speedPerTick);
     }
 
+const now = Date.now();
+
+  if (now - this.lastSaveTime >= 1000) {
+    this.saveXYToFile();
+    this.lastSaveTime = now;
+  }
 
     super.updateState();
   }
 
-  
+  saveXYToFile() {
+    const savePath = path.resolve("player_save.json");
 
-  
+  const data = {
+    x: this.x,
+    y: this.y
+  };
+
+  try {
+    fs.writeFileSync(savePath, JSON.stringify(data));
+  } catch (err) {
+    console.error("Failed to save player position:", err);
+  }
+  }
+
+  readSavedXY() {
+  const savePath = path.resolve("player_save.json");
+
+  if (!fs.existsSync(savePath)) {
+    console.warn("No save file found. Starting with default position.");
+    return;
+  }
+
+  try {
+    const file = fs.readFileSync(savePath, "utf-8");
+    const data = JSON.parse(file);
+    this.setXY(data.x, data.y);
+  } catch (err) {
+    console.error("Failed to read player position:", err);
+  }
+}
+
 
 
 }
