@@ -81,15 +81,46 @@ Position_Management() {
    super.advancePositionFully();
    return;
   }
-  this.setPosition(coll.Position_Before_Collision_A);
- log(coll)
-  const looking = Collision_Stuff.Boxes_Looking(coll.Last_Box_Before_Collision_A, coll.Last_Box_Before_Collision_B)
-  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
-  console.log(looking.Entity_A_Looks_At_B_Direction)
+if(!coll.entityB.isMoving()) {
+  this.stationary(coll)
+} else {
+  this.ambulatory(coll)
+}
+  
   
 }
-
-
+ambulatory(coll: Collision_Info) {
+  const looking = Collision_Stuff.Boxes_Looking(coll.Last_Box_Before_Collision_A, coll.Last_Box_Before_Collision_B)
+  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
+  const other = coll.entityB;
+  const otherPos = coll.Theoretical_Ending_Position_B;
+  const pos: Position={x:this.x,y:this.y};
+  switch(looking.Entity_A_Looks_At_B_Direction) {
+    case "up":
+         pos.y = otherPos.y+other.height;
+         pos.y++
+      break;
+    case "down":
+        pos.y = otherPos.y-this.height;
+        pos.y--;
+      break;
+    case "right":
+      pos.x= otherPos.x - this.width;
+      pos.x--;
+      break;
+    case "left":
+      pos.x = otherPos.x + other.width;
+      pos.x++;
+      break;
+  }
+  this.setPosition(pos)
+}
+stationary(coll: Collision_Info) {
+    this.setPosition(coll.Position_Before_Collision_A);
+ 
+  const looking = Collision_Stuff.Boxes_Looking(coll.Last_Box_Before_Collision_A, coll.Last_Box_Before_Collision_B)
+  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
+}
 
   saveXYToFile() {
     const savePath = path.resolve("player_save.json");

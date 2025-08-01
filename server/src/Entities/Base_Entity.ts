@@ -45,6 +45,12 @@ class Base_Entity {
 this.advancePositionFully();
 
   }
+  isMoving() {
+    return (
+      this.forces.Get_Net_Axis_Force('vertical')>0 ||
+      this.forces.Get_Net_Axis_Force('horizontal')>0 
+      )
+  }
 advancePositionFully() {
       const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
 
