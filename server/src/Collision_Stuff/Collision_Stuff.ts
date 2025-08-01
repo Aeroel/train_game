@@ -1,3 +1,4 @@
+import type { Player } from "#root/Entities/Player.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info} from "#root/Type_Stuff.js";
 import { Subpositions_Loop } from "#root/Collision_Stuff/Subpositions_Loop.js";
@@ -301,7 +302,7 @@ static  Boxes_Looking(Box_A:Box,Box_B:Box) {
 static getAllCollisions(
   entity: Base_Entity,
   filterFn: (other: Base_Entity) => boolean
-): Collision_Info[] {
+): Collision_Info[] | null {
   const allCollisions: Collision_Info[] = [];
 
   World.getCurrentEntities().forEach((other) => {
@@ -320,17 +321,30 @@ static getAllCollisions(
       allCollisions.push(collisionInfo);
     }
   });
-
+if(allCollisions.length===0)  return null;
   return allCollisions;
 }
-
+static Wall_Or_Door_With_Player(wod: Base_Entity) {
+        const colls= Collision_Stuff.getAllCollisions(wod, (entity: Base_Entity)=>{
+        return entity.hasTag('Player');
+      })
+      if(!colls) return;
+      colls.forEach(coll=> {
+        
+        const player = coll.entityB as Player;
+        if(Collision_Stuff.checkForIntersection(player, wod)) {
+          return;
+        }
+        player.ambulatoryExternal(coll);
+      })
+}
 static getClosestCollision(
   entity: Base_Entity,
   filterFn: (other: Base_Entity) => boolean
 ): Collision_Info | null {
   const allDetectedCollPairs = Collision_Stuff.getAllCollisions(entity, filterFn);
 
-  if (allDetectedCollPairs.length === 0) {
+  if (allDetectedCollPairs === null) {
     return null;
   }
 

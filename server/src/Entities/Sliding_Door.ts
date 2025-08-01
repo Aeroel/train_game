@@ -93,7 +93,11 @@ class Sliding_Door extends Base_Entity {
     else if (this.getState() === 'closing') {
       this.handleClosing();
     }
+    this.withPlayer();
     super.updateState();
+  }
+  withPlayer() {
+    Collision_Stuff.Wall_Or_Door_With_Player(this)
   }
   handleClosing() {
     if (!(this.getState() === 'closing')) {
