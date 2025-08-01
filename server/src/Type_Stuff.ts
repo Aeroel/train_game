@@ -61,7 +61,9 @@ declare type CleanedEntity = VisibleEntity;
      Theoretical_Ending_Position_A: Position,
      Theoretical_Ending_Position_B: Position,
      entityA: Base_Entity,
-     entityB: Base_Entity
+     entityB: Base_Entity,
+     Last_Box_Before_Collision_A: Box,
+     Last_Box_Before_Collision_B: Box,
   
 }
 

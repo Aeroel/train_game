@@ -1,5 +1,5 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Box, Position, Collision_Info} from "#root/Type_Stuff.js";
+import type { Box, Direction, Position, Collision_Info} from "#root/Type_Stuff.js";
 import { Subpositions_Loop } from "#root/Collision_Stuff/Subpositions_Loop.js";
 import {World} from "#root/World.js"
 export { Collision_Stuff, };
@@ -64,6 +64,20 @@ class Collision_Stuff {
     let Collision_Occurred = false;
     let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
     let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
+    let Last_Box_Before_Collision_A: Box = {
+      x:entityA.x,
+    y:entityA.y,
+    width:entityA.width,
+    height:entityA.height,
+      
+    };
+    let Last_Box_Before_Collision_B: Box={
+      x:entityB.x,
+    y:entityB.y,
+    width:entityB.width,
+    height:entityB.height
+      
+    };
 
     const Starting_Position_A: Position = { x: entityA.x, y: entityA.y };
     const Starting_Position_B: Position = { x: entityB.x, y: entityB.y };
@@ -77,11 +91,13 @@ class Collision_Stuff {
       if (Collision_Stuff.checkForIntersection(subA, subB)) {
         Collision_Occurred = true;
         loop.stop();
+        return;
       }
       Position_Before_Collision_A = { x: subA.x, y: subA.y }
       Position_Before_Collision_B = { x: subB.x, y: subB.y }
+      Last_Box_Before_Collision_A = subA;
+      Last_Box_Before_Collision_B = subB;
     })
-
 
     const result: Collision_Info = { Collision_Occurred,
     Position_Before_Collision_A, Position_Before_Collision_B,
@@ -90,10 +106,23 @@ class Collision_Stuff {
     Theoretical_Ending_Position_A,
     Theoretical_Ending_Position_B,
     entityA,
-    entityB };
+    entityB,
+    Last_Box_Before_Collision_A,
+    Last_Box_Before_Collision_B,
+    };
     return result;
 
   }
+static  Boxes_Looking(Box_A:Box,Box_B:Box) {
+
+   const Entity_A_Looks_At_B_Direction = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(Box_A, Box_B).aFace as Direction;
+  const  Entity_B_Looks_At_A_Direction = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(Box_B, Box_A).aFace as Direction;
+    return {
+      Entity_A_Looks_At_B_Direction, Entity_B_Looks_At_A_Direction
+      
+    }
+    
+}
   static Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(entityA: Base_Entity, entityB: Base_Entity) {
 
 
@@ -278,11 +307,12 @@ static getAllCollisions(
   World.getCurrentEntities().forEach((other) => {
     if (entity === other) return;
 
-    if (!filterFn(other)) return;
-
     if (!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(entity, other)) {
       return;
     }
+    
+    if (!filterFn(other)) return;
+
 
     const collisionInfo = Collision_Stuff.areEntitiesIntersecting(entity, other);
 

@@ -175,5 +175,9 @@ Get_Keys_Of_Force_Components_Of_A_Force(
     return forceComponents.map((component) => component.key);
 }
 
-
+nullify(direction: keyof Entity_Forces["forces"]) {
+  this.forces[direction].forEach((forceComponent: Force_Component )=> {
+    forceComponent.forceValue = 0;
+  })
+}
 }

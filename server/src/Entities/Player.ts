@@ -68,8 +68,28 @@ const now = Date.now();
     this.lastSaveTime = now;
   }
 
-    super.updateState();
+    this.Position_Management();
   }
+
+Position_Management() {
+  const filtFn = (entity: Base_Entity) => {
+  const canCollide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
+    return canCollide;
+  }
+  const coll = Collision_Stuff.getClosestCollision(this, filtFn);
+  if(!coll) {
+   super.advancePositionFully();
+   return;
+  }
+  this.setPosition(coll.Position_Before_Collision_A);
+ log(coll)
+  const looking = Collision_Stuff.Boxes_Looking(coll.Last_Box_Before_Collision_A, coll.Last_Box_Before_Collision_B)
+  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
+  console.log(looking.Entity_A_Looks_At_B_Direction)
+  
+}
+
+
 
   saveXYToFile() {
     const savePath = path.resolve("player_save.json");

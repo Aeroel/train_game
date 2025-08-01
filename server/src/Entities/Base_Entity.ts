@@ -42,15 +42,17 @@ class Base_Entity {
     this.updateState();
   }
   updateState() {
-    const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
+this.advancePositionFully();
+
+  }
+advancePositionFully() {
+      const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
 
     this.x = nextPosition.x;
     this.y = nextPosition.y;
 
     this.forces.applyFriction();
-
-  }
-
+}
   addTag(tag: string) {
     this.tags.push(tag);
   }
