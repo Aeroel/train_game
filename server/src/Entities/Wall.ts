@@ -13,11 +13,9 @@ class Wall extends Base_Entity {
         this.addTag("Wall")
     }
     updateState() {
-      this.withPlayer();
+
       
       super.updateState();
     }
-    withPlayer() {
-       Collision_Stuff.Wall_Or_Door_With_Player(this);
-    }
+
 }

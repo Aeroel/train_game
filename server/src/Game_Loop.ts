@@ -20,24 +20,32 @@ class Game_Loop {
 
     // Process game logic in fixed-size steps
     while (Game_Loop.accumulatedTime >= Game_Loop.msPerTick) {
-      Game_Loop.updateGameState();
+      Game_Loop.simulateNextMoment();
       Game_Loop.accumulatedTime -= Game_Loop.msPerTick;
     }
 
     // Schedule the next iteration
-    setImmediate(Game_Loop.theLoop); // More precise than setTimeout in Node.js
+    setImmediate(Game_Loop.theLoop); // More precise than setTimeout in Node.js?
   }
 
-  static updateGameState() {
-    EntitySorter.Sort_All_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera();
+  static simulateNextMoment() {
+
     EmitStuff.Emit_To_All_Players_World_State_Stuff();
-    Game_Loop.Update_States_Of_All_Entities();
+    Game_Loop.Next_Moment_Of_All_Entities();
+    Game_Loop.Update_Positions_Of_All_Entities();
   }
 
-  static Update_States_Of_All_Entities() {
+  static Next_Moment_Of_All_Entities() {
     World.getCurrentEntities().forEach(entity => {
       entity.updateStateWrapper();
     });
   }
-
+  
+  static Update_Positions_Of_All_Entities() {
+    
+    World.getCurrentEntities().forEach(entity => {
+      entity.updatePosition();
+    });
+    
+  }
 }

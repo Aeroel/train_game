@@ -68,86 +68,12 @@ const now = Date.now();
     this.lastSaveTime = now;
   }
 
-    this.Position_Management();
   }
 
-Position_Management() {
-  const filtFn = (entity: Base_Entity) => {
-  const canCollide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
-    return canCollide;
-  }
-  const coll = Collision_Stuff.getClosestCollision(this, filtFn);
-  if(!coll) {
-   super.advancePositionFully();
-   return;
-  }
-if(!coll.entityB.isMoving()) {
-  this.stationary(coll)
-} else {
-  this.ambulatory(coll)
-}
-  
-  
-}
-ambulatory(coll: Collision_Info) {
-  const looking = Collision_Stuff.Boxes_Looking(coll.Last_Box_Before_Collision_A, coll.Last_Box_Before_Collision_B)
-  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
-  const other = coll.entityB;
-  const otherPos = coll.Theoretical_Ending_Position_B;
-  const pos: Position={x:this.x,y:this.y};
-  switch(looking.Entity_A_Looks_At_B_Direction) {
-    case "up":
-         pos.y = otherPos.y+other.height;
-         pos.y++
-      break;
-    case "down":
-        pos.y = otherPos.y-this.height;
-        pos.y--;
-      break;
-    case "right":
-      pos.x= otherPos.x - this.width;
-      pos.x--;
-      break;
-    case "left":
-      pos.x = otherPos.x + other.width;
-      pos.x++;
-      break;
-  }
-  this.setPosition(pos)
-}
-ambulatoryExternal(coll: Collision_Info) {
-  const player = coll.Last_Box_Before_Collision_B;
-  const other = coll.Last_Box_Before_Collision_A;
-  const looking = Collision_Stuff.Boxes_Looking(player, other)
-  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
-  const otherPos = coll.Theoretical_Ending_Position_A;
-  const pos: Position={x:this.x,y:this.y};
-  switch(looking.Entity_A_Looks_At_B_Direction) {
-    case "up":
-         pos.y = otherPos.y+other.height;
-         pos.y++
-      break;
-    case "down":
-        pos.y = otherPos.y-this.height;
-        pos.y--;
-      break;
-    case "right":
-      pos.x= otherPos.x - this.width;
-      pos.x--;
-      break;
-    case "left":
-      pos.x = otherPos.x + other.width;
-      pos.x++;
-      break;
-  }
-  this.setPosition(pos)
-}
-stationary(coll: Collision_Info) {
-    this.setPosition(coll.Position_Before_Collision_A);
- 
-  const looking = Collision_Stuff.Boxes_Looking(coll.Last_Box_Before_Collision_A, coll.Last_Box_Before_Collision_B)
-  this.forces.nullify(looking.Entity_A_Looks_At_B_Direction);
-}
+
+
+
+
 
   saveXYToFile() {
     const savePath = path.resolve("player_save.json");

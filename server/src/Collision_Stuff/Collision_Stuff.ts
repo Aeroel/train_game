@@ -321,23 +321,13 @@ static getAllCollisions(
       allCollisions.push(collisionInfo);
     }
   });
-if(allCollisions.length===0)  return null;
+if(allCollisions.length===0)  { 
+return null;
+}
   return allCollisions;
 }
-static Wall_Or_Door_With_Player(wod: Base_Entity) {
-        const colls= Collision_Stuff.getAllCollisions(wod, (entity: Base_Entity)=>{
-        return entity.hasTag('Player');
-      })
-      if(!colls) return;
-      colls.forEach(coll=> {
-        
-        const player = coll.entityB as Player;
-        if(Collision_Stuff.checkForIntersection(player, wod)) {
-          return;
-        }
-        player.ambulatoryExternal(coll);
-      })
-}
+
+
 static getClosestCollision(
   entity: Base_Entity,
   filterFn: (other: Base_Entity) => boolean

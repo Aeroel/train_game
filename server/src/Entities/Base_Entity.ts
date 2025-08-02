@@ -14,6 +14,8 @@ class Base_Entity {
   speedPerTick = 0;
   x = 0;
   y = 0;
+  previousX = 0;
+  previousY = 0;
   width = 0;
   height = 0;
   color = "white";
@@ -42,7 +44,7 @@ class Base_Entity {
     this.updateState();
   }
   updateState() {
-this.advancePositionFully();
+
 
   }
   isMoving() {
@@ -51,11 +53,20 @@ this.advancePositionFully();
       this.forces.Get_Net_Axis_Force('horizontal')>0 
       )
   }
-advancePositionFully() {
+  
+  updatePosition() {
+    this.applyForcesToPosition();
+  }
+  
+applyForcesToPosition() {
       const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
+
+    this.previousX = this.x;
+    this.previousY = this.y;
 
     this.x = nextPosition.x;
     this.y = nextPosition.y;
+    
 
     this.forces.applyFriction();
 }
