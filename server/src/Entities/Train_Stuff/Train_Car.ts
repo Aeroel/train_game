@@ -192,7 +192,7 @@ class Train_Car extends Base_Entity {
     return closest;
   }
   
-  
+   
   switchHandler() {
       if (this.currentMovementDirection === null) {
         return;
