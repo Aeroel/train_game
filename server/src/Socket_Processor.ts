@@ -5,6 +5,7 @@ import { Player } from "./Entities/Player.js";
 import { World } from "./World.js";
 import { Helper_Functions } from "./Helper_Functions.js";
 import { Typed_Object_Keys, type Direction } from "./Type_Stuff.js";
+import { Game_Loop } from "#root/Game_Loop.js"
 
 // I copied this type that vscode showed in popup of socket var from startThis...ts  file
 type Undesirable_Hardcode_Socket_Type = SocketIO.Socket<SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, any>;
@@ -23,6 +24,8 @@ class Socket_Processor {
         newPlayerEntity.setVisionRange(5000);
         newPlayerEntity.setSocketId(socket.id);
         World.addEntity(newPlayerEntity);
+
+
     }
 
 

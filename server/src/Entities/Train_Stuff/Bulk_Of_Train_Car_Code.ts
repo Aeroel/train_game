@@ -51,13 +51,14 @@ class Bulk_Of_Train_Car_Code {
    
     determine_new_forces_for_movement_along_the_rail() {
 
-        if (!this.car.Is_Moving()) {
+        if (!this.car.Is_Moving() || this.car.currentMovementDirection === null) {
             return this.car.forces.Get_No_Movement_Forces();
         }
 
+
         const defaultForceToMoveOnRail = this.car.speedPerTick;
         const newForces = this.car.forces.Get_No_Movement_Forces();
-        this.car.forwards.forEach((dir: Direction) => {
+        this.car[this.car.currentMovementDirection].forEach((dir: Direction) => {
             newForces[dir] = defaultForceToMoveOnRail
         })
 

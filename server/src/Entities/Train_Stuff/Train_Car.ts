@@ -51,7 +51,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  speedPerTick = 0.10 * 5;
+  speedPerTick = 0.10 * 10;
   twoPossibleMovementDirections = ["backwards", "forwards"];
   currentMovementDirection: Train_Car_Movement_Direction = "backwards";
   lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
@@ -180,6 +180,9 @@ class Train_Car extends Base_Entity {
       if (!collisionInfo.Collision_Occurred) {
         return;
       }
+      if(!this.Sensor_Accepts(rail_switch_wall)) {
+        return;
+      }
       Switch_Sensor_Collisions.push(collisionInfo);
     });
     return Switch_Sensor_Collisions;
@@ -250,25 +253,30 @@ class Train_Car extends Base_Entity {
 
   }
 
+Sensor_Accepts(rail_switch_wall: Rail_Switch_Wall) {
+          const movementDirs = this.currentMovementDirs();
+      if(movementDirs === null){
 
+        return false;
+      }
+     //console.log(rail_switch_wall.triggersUponContactWithCarIf)
+      const theCarMovementWillTriggerTheWall = rail_switch_wall.areDirectionsAlignedForTrigger(movementDirs);
+
+      return theCarMovementWillTriggerTheWall;
+}
 Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
   if(this.currentMovementDirection === null) {
     throw new Error("do not call sensor stuff func unless you know train is moving, bro")
   }
-        const movementDirs = this.currentMovementDirs();
-      if(movementDirs === null){
-        return;
-      }
-      const theCarMovementWillTriggerTheWall = rail_switch_wall.areDirectionsAlignedForTrigger(movementDirs);
-    if(!theCarMovementWillTriggerTheWall) {
-      return;
-    }
-
-
+  // I think this call is du0licate from switch sensor collisions check but too lazy to think and afraid to remove. but probably redundant and pointless to do it again here
+   if(!this.Sensor_Accepts(rail_switch_wall)) {
+     return;
+   }
       // Okay, so from point, we know that the wall and car need us to process the logic
       this[this.currentMovementDirection] = new Set<Direction>(rail_switch_wall.modifiesCarTo);
       this[this.getOppositeCarMovementDirection(this.currentMovementDirection)] = new Set<Direction>(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
 }
+
   teleportAndBringPassengers(toX: number, toY: number) {
     const carDeltaX = toX - this.x;
     const carDeltaY = toY - this.y;

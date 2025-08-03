@@ -10,8 +10,11 @@ class Game_Loop {
   static deltaTime = Game_Loop.msPerTick;
   static lastUpdateTime = Date.now();
   static accumulatedTime = 0;
+  static started = true;
 
   static theLoop() {
+
+
     const currentTime = Date.now();
     const elapsed = currentTime - Game_Loop.lastUpdateTime;
     Game_Loop.lastUpdateTime = currentTime;

@@ -62,7 +62,7 @@ class Add_Some_Entities_To_The_World {
         const sec_rail = Add_Some_Entities_To_The_World.addARailway2(900, 600, 3000, 350);
 
         this.Put_A_Train_On_Rail(sec_rail, "up", "down", "forwards");
-
+         
 
     }
 
@@ -103,37 +103,38 @@ const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
 const thicknessWall = 10;
 const lengthWall = 150;
 const offset = carSquareSize * 2;
+const half = carSquareSize*0.5;
         const rail2BotEnd = rail2_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(rail2BotEnd))
-        const wall = new Rail_Switch_Wall(rail2BotEnd.x , 
-        rail2BotEnd.y, ["down"], ["down", "right"], lengthWall, thicknessWall);
+        const wall = new Rail_Switch_Wall(rail2BotEnd.x - (half) , 
+        rail2BotEnd.y + (half), ["down"], ["down", "right"], lengthWall, thicknessWall);
         World.addEntity(wall);
         
         const rail3LeftEnd = rail3_0.getEnd("firstEnd");
         console.log("is " + JSON.stringify(rail3LeftEnd))
-        const wall2 = new Rail_Switch_Wall(rail3LeftEnd.x, rail3LeftEnd.y + (0.5*carSquareSize), ["down", "right"], ["right"], thicknessWall, lengthWall);
+        const wall2 = new Rail_Switch_Wall(rail3LeftEnd.x - half, rail3LeftEnd.y + half, ["down", "right"], ["right"], lengthWall, thicknessWall);
         World.addEntity(wall2);
         
         
        const three = rail4_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(three))
-        const wall3 = new Rail_Switch_Wall(three.x +(carSquareSize/2), three.y, ["right"], ["right", "up"], thicknessWall, lengthWall);
+        const wall3 = new Rail_Switch_Wall(three.x +(carSquareSize/2), three.y- half, ["right"], ["right", "up"], thicknessWall, lengthWall);
         World.addEntity(wall3);
         
        const four = rail5_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(four))
-        const wall4 = new Rail_Switch_Wall(four.x , four.y - (carSquareSize/2), ["up", "right"], ["up"], lengthWall, thicknessWall);
+        const wall4 = new Rail_Switch_Wall(four.x + half , four.y - (carSquareSize/2), ["up", "right"], ["up"], thicknessWall, lengthWall);
         World.addEntity(wall4);
         
         
         const five = rail5_0.getEnd("firstEnd")
         World.addEntity(new Rail_Switch_Wall(
-          five.x, five.y, ["up"], ["up","left"], lengthWall, thicknessWall
+          five.x - half, five.y - half, ["up"], ["up","left"], lengthWall, thicknessWall
           ));
           
           const six = rail6_0.getEnd("secondEnd");
           World.addEntity(new Rail_Switch_Wall(
-            six.x, six.y - (carSquareSize), ["up", "left"], ["left"], thicknessWall, lengthWall
+            six.x - half, six.y - half, ["up", "left"], ["left"], lengthWall, thicknessWall
             ));
             
             const seven = rail7_0.getEnd("firstEnd");
@@ -143,7 +144,7 @@ const offset = carSquareSize * 2;
               
               const eight = rail2_0.getEnd("firstEnd");
               World.addEntity(new Rail_Switch_Wall(
-                eight.x - (1.5*carSquareSize), eight.y, ["left", "down"], ["down"], lengthWall,thicknessWall
+                eight.x - half, eight.y - half, ["left", "down"], ["down"], thicknessWall,lengthWall
                 ));
           
         return rail2_0;
@@ -184,40 +185,41 @@ const offset = carSquareSize * 2;
 
 
 const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
+const half = 0.5*carSquareSize
 const thicknessWall = 10;
 const lengthWall = 150;
 const offset = carSquareSize * 2;
         const rail2BotEnd = rail2_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(rail2BotEnd))
-        const wall = new Rail_Switch_Wall(rail2BotEnd.x , 
-        rail2BotEnd.y, ["down"], ["down", "right"], lengthWall, thicknessWall);
+        const wall = new Rail_Switch_Wall(rail2BotEnd.x - half , 
+        rail2BotEnd.y + half, ["down"], ["down", "right"], lengthWall, thicknessWall);
         World.addEntity(wall);
         
         const rail3LeftEnd = rail3_0.getEnd("firstEnd");
         console.log("is " + JSON.stringify(rail3LeftEnd))
-        const wall2 = new Rail_Switch_Wall(rail3LeftEnd.x, rail3LeftEnd.y + (0.5*carSquareSize), ["down", "right"], ["right"], thicknessWall, lengthWall);
+        const wall2 = new Rail_Switch_Wall(rail3LeftEnd.x - half, rail3LeftEnd.y + half, ["down", "right"], ["right"], lengthWall, thicknessWall);
         World.addEntity(wall2);
         
         
        const three = rail4_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(three))
-        const wall3 = new Rail_Switch_Wall(three.x +(carSquareSize/2), three.y, ["right"], ["right", "up"], thicknessWall, lengthWall);
+        const wall3 = new Rail_Switch_Wall(three.x + half, three.y - half, ["right"], ["right", "up"], thicknessWall, lengthWall);
         World.addEntity(wall3);
         
        const four = rail5_0.getEnd("secondEnd");
         console.log("is " + JSON.stringify(four))
-        const wall4 = new Rail_Switch_Wall(four.x , four.y - (carSquareSize/2), ["up", "right"], ["up"], lengthWall, thicknessWall);
+        const wall4 = new Rail_Switch_Wall(four.x + half, four.y - half, ["up", "right"], ["up"], thicknessWall, lengthWall);
         World.addEntity(wall4);
         
         
         const five = rail5_0.getEnd("firstEnd")
         World.addEntity(new Rail_Switch_Wall(
-          five.x, five.y, ["up"], ["up","left"], lengthWall, thicknessWall
+          five.x - half, five.y - half, ["up"], ["up","left"], lengthWall, thicknessWall
           ));
           
           const six = rail6_0.getEnd("secondEnd");
           World.addEntity(new Rail_Switch_Wall(
-            six.x, six.y - (carSquareSize), ["up", "left"], ["left"], thicknessWall, lengthWall
+            six.x - half, six.y - half, ["up", "left"], ["left"], lengthWall, thicknessWall
             ));
             
             const seven = rail7_0.getEnd("firstEnd");
@@ -227,14 +229,54 @@ const offset = carSquareSize * 2;
               
               const eight = rail2_0.getEnd("firstEnd");
               World.addEntity(new Rail_Switch_Wall(
-                eight.x - (1.5*carSquareSize), eight.y, ["left", "down"], ["down"], lengthWall,thicknessWall
+                eight.x - (half), eight.y - half, ["left", "down"], ["down"], thicknessWall,lengthWall
                 ));
-          
-        return rail2_0;
+            
+     // below is sensors for the inner railway    
 
-    }
+     const nine = rail2_0.getEnd("firstEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                nine.x - (0.5*carSquareSize), nine.y - (0.5*carSquareSize), ["up",], ["up","right"], lengthWall,thicknessWall
+                ));
 
-
+     const ten = rail7_0.getEnd("firstEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                ten.x - (0.5*carSquareSize), ten.y - (0.5*carSquareSize), ["up","right",], ["right"], lengthWall,thicknessWall
+                ));  
+              
+           const eleven = rail6_0.getEnd("secondEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                eleven.x + (0.5*carSquareSize), eleven.y - (0.5*carSquareSize), ["right",], ["down","right"], thicknessWall,lengthWall
+                ));
+                
+           const twelve = rail5_0.getEnd("firstEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                twelve.x + (0.5*carSquareSize), twelve.y - (0.5*carSquareSize), ["down","right",], ["down",], thicknessWall,lengthWall
+                ));
+                
+           const thirteen = rail5_0.getEnd("secondEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                thirteen.x - (0.5*carSquareSize), thirteen.y + (0.5*carSquareSize), ["down",], ["down","left"], lengthWall,thicknessWall
+                ));
+                
+           const fourteen = rail4_0.getEnd("secondEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                fourteen.x - (0.5*carSquareSize), fourteen.y + (0.5*carSquareSize), ["down","left"], ["left"], lengthWall,thicknessWall
+                ));
+                
+           const fifteen = rail3_0.getEnd("firstEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                fifteen.x - (0.5*carSquareSize), fifteen.y - (0.5*carSquareSize), ["left"], ["left","up"], thicknessWall,lengthWall
+                ));  
+                
+           const sixteen = rail2_0.getEnd("secondEnd");
+              World.addEntity(new Rail_Switch_Wall(
+                sixteen.x - (0.5*carSquareSize), sixteen.y - (0.5*carSquareSize), ["left","up"], ["up"], thicknessWall,lengthWall
+                ));          
+                
+                
+          return rail2_0;
+   }
     static addTheGroundToTheWholeWorld() {
         const ground = new Ground();
         ground.setX(0);

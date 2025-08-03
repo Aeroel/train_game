@@ -17,5 +17,4 @@ console.log(`localhost IP: ${localhostIP}:${port}.`);
 // add test entities
 Add_Some_Entities_To_The_World.doItNow();
 
-// Start the loop
-Game_Loop.theLoop();
+     Game_Loop.theLoop();

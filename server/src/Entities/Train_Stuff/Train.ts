@@ -27,13 +27,13 @@ export class Train extends Base_Entity {
         let startPosition: Position;
         if (rail.getOrientation() === 'horizontal') {
             startPosition = {
-                x: rail.getX(),
+                x: rail.getX() +(0.5*rail.width),
                 y: rail.getY() - (carSquareSize / 2),
             };
         } else {
             startPosition = {
                 x: rail.getX() - (carSquareSize / 2),
-                y: rail.getY()
+                y: rail.getY() + (rail.height*0.5)
             }
         }
         for (let count = 0; count < numberOfCars; count++) {
@@ -49,6 +49,7 @@ export class Train extends Base_Entity {
             const car = new Train_Car({ backwards, forwards,  size: carSquareSize, x: carX, y: carY, train: this });
             car.setMovementDirection(this.movDir);
             World.addEntity(car);
+            console.log("pushed", car.forwards, car.x, car.y)
             this.cars.push(car);
             car.setMovementDirection(movementDirection);
             if (count > 0) {
