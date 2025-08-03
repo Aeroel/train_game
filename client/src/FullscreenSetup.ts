@@ -63,6 +63,45 @@ class FullscreenSetup {
   }
   static adjustCSSFor(screenMode: string) {
     this.adjustJoystickPositionToBetterFitScreenMode(screenMode);
+    this.adjustZoomButtons(screenMode);
+  }
+  static adjustZoomButtons(screenMode: string) {
+        const zoomInButton = document.getElementById("zoomInButton");
+        const zoomOutButton = document.getElementById("zoomOutButton");
+        
+    if(zoomOutButton === null || zoomInButton === null) {
+      throw new Error("Can't find zoomInButton and/or zoomOutButton");
+      
+    }
+    let zoomInButtonMargin = {top: "150px", right: "20px"};
+    let zoomOutButtonMargin = {top: "200px", right: "20px"};
+    switch (screenMode) {
+      case "fullscreen":
+        zoomInButtonMargin = {
+          top: "10px", right: "100px"
+        };
+        zoomOutButtonMargin = {
+          top: "70px", right: "100px"
+        };
+        break;
+      case 'nonFullscreen':
+        zoomInButtonMargin = {
+          top: "150px", right: "20px"
+        };
+        zoomOutButtonMargin = {
+          top: "200px", right: "20px"
+        };
+        break;
+      default:
+        throw new Error(`Invalid mode ${screenMode}`);
+        
+      break;
+    }
+    zoomInButton.style.right = zoomInButtonMargin.right;
+    zoomInButton.style.top = zoomInButtonMargin.top;
+ 
+    zoomOutButton.style.right = zoomOutButtonMargin.right;
+    zoomOutButton.style.top = zoomOutButtonMargin.top;
   }
   static adjustJoystickPositionToBetterFitScreenMode(mode: string) {
     const joystickContainer = document.getElementById("joystickContainer");

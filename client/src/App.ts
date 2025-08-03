@@ -5,11 +5,25 @@ import { SocketWrapper } from "#root/SocketWrapper";
 class App {
   static movementControlCommands = new Set();
   static playerWantsToMoveFaster = false;
+  static zoom: "no_change" | "in" | "out" = "no_change";
   static initialize() {
     document.addEventListener("DOMContentLoaded", () => {
       App.runThisCodeOncePageIsFullyLoaded();
     })
 
+  }
+  static zoomButtons() {
+       const zoomInButton = document.getElementById("zoomInButton");
+       const zoomOutButton = document.getElementById("zoomOutButton");
+   if(zoomInButton === null || zoomOutButton === null) {
+     throw new Error("zoomInButton and/or zoomOutButton not found");
+   }
+   zoomInButton.addEventListener("pointerup",()=> {
+     App.zoom = "in";
+   })   
+   zoomOutButton.addEventListener("pointerup",()=> {
+     App.zoom = "out";
+   })   
   }
  static speedUpButton() {
       const speedup_button = document.getElementById("speedupButton");
@@ -21,6 +35,7 @@ class App {
    })
  }
   static runThisCodeOncePageIsFullyLoaded() {
+ this.zoomButtons();
  this.speedUpButton();
     const ip_address_button = document.getElementById("ip_address_button");
     if (ip_address_button === null) {
@@ -74,8 +89,9 @@ class App {
       SocketWrapper.emit("controlKeys", {
         movement: movementControlKeysArray,
         speedUp: App.playerWantsToMoveFaster,
-
+        zoom: App.zoom
       });
+      App.zoom = "no_change";
     }, 25);
 
   }

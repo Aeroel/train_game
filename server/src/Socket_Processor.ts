@@ -40,14 +40,44 @@ class Socket_Processor {
         type Control_Keys = {
             movement: (Direction)[],
             speedUp: boolean,
+            zoom: "in" | "out" | "no_change"
         }
         socket.on("controlKeys", (receivedControlKeys: Control_Keys) => {
             const playerAssociatedWithSocket: Player = World.state.entities.find((entity: Player) => entity.socketId === socket.id);
             this.movement(playerAssociatedWithSocket, receivedControlKeys.movement, socket);
 
             this.speedUp(playerAssociatedWithSocket, receivedControlKeys.speedUp,);
-
+            this.zoom(playerAssociatedWithSocket,
+            receivedControlKeys.zoom)
         });
+    }
+    static zoom(playerAssociatedWithSocket: Player, zoom: "no_change"|"in"|"out") {
+     const validInput = (["no_change","in","out"].includes(zoom));
+     const changeRequested = !(zoom==="no_change");
+     if(!validInput || !changeRequested) {
+        return;
+      }
+      const minVisionRangeIWillAllow = 100;
+      const maxVisionRangeIWillAllow = 5000;
+      const changePerRequest = 500;
+      let possibleVal = 100;
+      switch(zoom) {
+        case "in":
+           possibleVal = playerAssociatedWithSocket.visionRange + changePerRequest;
+          if(possibleVal > maxVisionRangeIWillAllow) {
+            return;
+          }
+          playerAssociatedWithSocket.visionRange = possibleVal;
+        break;
+        case "out":
+          possibleVal = playerAssociatedWithSocket.visionRange - changePerRequest;
+          if(possibleVal < minVisionRangeIWillAllow) {
+            return;
+          }
+          playerAssociatedWithSocket.visionRange = possibleVal;
+        break;
+      }
+      
     }
     static speedUp(playerAssociatedWithSocket: Player, speedUp: boolean) {
         if (speedUp !== playerAssociatedWithSocket.speedUp) {
