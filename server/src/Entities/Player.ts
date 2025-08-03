@@ -21,9 +21,11 @@ class Player extends Base_Entity {
   lastSaveTime=0;
   marked: Base_Entity[] = [];
   speedUp = false;
+  intangibility = false;
   speedPerTick = 0.10;
   justUpdated = false;
   socketId: Socket["id"] = "none";
+  
   constructor() {
     super();
     this.addTag("Player");
@@ -41,6 +43,10 @@ class Player extends Base_Entity {
   swapSpeedUp() {
     this.speedUp = !this.speedUp;
   }
+  swapIntangibility() {
+    this.intangibility = !this.intangibility;
+  }
+  
   updateState() {
     if(this.speedUp) {
       this.speedPerTick = 1.00;

@@ -40,7 +40,8 @@ class Socket_Processor {
         type Control_Keys = {
             movement: (Direction)[],
             speedUp: boolean,
-            zoom: "in" | "out" | "no_change"
+            zoom: "in" | "out" | "no_change",
+            intangibility: boolean,
         }
         socket.on("controlKeys", (receivedControlKeys: Control_Keys) => {
             const playerAssociatedWithSocket: Player = World.state.entities.find((entity: Player) => entity.socketId === socket.id);
@@ -48,7 +49,9 @@ class Socket_Processor {
 
             this.speedUp(playerAssociatedWithSocket, receivedControlKeys.speedUp,);
             this.zoom(playerAssociatedWithSocket,
-            receivedControlKeys.zoom)
+            receivedControlKeys.zoom);
+            this.intangibility(playerAssociatedWithSocket, receivedControlKeys.intangibility);
+            
         });
     }
     static zoom(playerAssociatedWithSocket: Player, zoom: "no_change"|"in"|"out") {
@@ -83,6 +86,12 @@ class Socket_Processor {
         if (speedUp !== playerAssociatedWithSocket.speedUp) {
             playerAssociatedWithSocket.swapSpeedUp();
             console.log("speedup swap");
+        }
+    }
+    static intangibility(playerAssociatedWithSocket: Player, intangibility: boolean) {
+        if (intangibility !== playerAssociatedWithSocket.intangibility) {
+            playerAssociatedWithSocket.swapIntangibility();
+            console.log("intangibility swap");
         }
     }
     static movement(playerAssociatedWithSocket: Player, movementKeys: (Direction)[], socket: Undesirable_Hardcode_Socket_Type) {

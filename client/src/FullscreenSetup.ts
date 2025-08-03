@@ -64,6 +64,29 @@ class FullscreenSetup {
   static adjustCSSFor(screenMode: string) {
     this.adjustJoystickPositionToBetterFitScreenMode(screenMode);
     this.adjustZoomButtons(screenMode);
+    this.adjustIntangibilityButton(screenMode);
+  }
+  static adjustIntangibilityButton(screenMode: string) {
+    const intangibilityButton = document.getElementById("intangibilityButton");
+    if(intangibilityButton === null) {
+      throw new Error("intangibilityButton is null");
+    }
+    const intangibilityButtonMargin = {top:"10px", right:"80px"};
+    switch(screenMode) {
+      case "fullscreen":
+         intangibilityButtonMargin.top = "10p "
+         intangibilityButtonMargin.right = "180px" 
+      break;
+      case "nonFullscreen":
+        intangibilityButtonMargin.top = "10px"
+         intangibilityButtonMargin.right = "80px"
+      break;
+      default:
+         throw new Error(`Invalid mode ${screenMode}`)
+      break;
+    }
+    intangibilityButton.style.top = intangibilityButtonMargin.top;
+    intangibilityButton.style.right = intangibilityButtonMargin.right;
   }
   static adjustZoomButtons(screenMode: string) {
         const zoomInButton = document.getElementById("zoomInButton");

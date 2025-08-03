@@ -6,11 +6,21 @@ class App {
   static movementControlCommands = new Set();
   static playerWantsToMoveFaster = false;
   static zoom: "no_change" | "in" | "out" = "no_change";
+  static intangibility = false;
   static initialize() {
     document.addEventListener("DOMContentLoaded", () => {
       App.runThisCodeOncePageIsFullyLoaded();
     })
 
+  }
+  static intangibilityButton() {
+          const intangibilityButton = document.getElementById("intangibilityButton");
+   if(intangibilityButton === null) {
+     throw new Error("intangibilityButton not found");
+   }
+   intangibilityButton.addEventListener("pointerup",()=> {
+     App.intangibility = !(App.intangibility)
+   })
   }
   static zoomButtons() {
        const zoomInButton = document.getElementById("zoomInButton");
@@ -35,6 +45,7 @@ class App {
    })
  }
   static runThisCodeOncePageIsFullyLoaded() {
+ this.intangibilityButton();
  this.zoomButtons();
  this.speedUpButton();
     const ip_address_button = document.getElementById("ip_address_button");
@@ -89,7 +100,8 @@ class App {
       SocketWrapper.emit("controlKeys", {
         movement: movementControlKeysArray,
         speedUp: App.playerWantsToMoveFaster,
-        zoom: App.zoom
+        zoom: App.zoom,
+        intangibility: App.intangibility,
       });
       App.zoom = "no_change";
     }, 25);

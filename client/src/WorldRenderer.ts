@@ -15,6 +15,7 @@ type ReceivedWorldState = {
     playerX: number,
     playerY: number,
     playerSpeedUp: boolean,
+    playerIntangibility: boolean,
 }
 type Edge = {
     x1: number,
@@ -52,6 +53,7 @@ class WorldRenderer {
         WorldRenderer.worldState.playerX = worldState.playerX;
         WorldRenderer.worldState.playerY = worldState.playerY;
         this.speedUpHandler(worldState.playerSpeedUp);
+        this.intangibilityHandler(worldState.playerIntangibility);
 
     }
     static speedUpHandler(speedUp: boolean) {
@@ -65,6 +67,19 @@ class WorldRenderer {
        image = "True.jpg";
      }
     speedup_state_image.src = `${baseImg}_${image}`;
+    }
+    
+    static intangibilityHandler(intangibility: boolean) {
+    const intangibilityStateImage= document.getElementById("intangibilityStateImage") as HTMLImageElement;
+   if(intangibilityStateImage === null) {
+     throw new Error("intangibilityStateImage not found");
+   }
+        const baseImg = "./images/Intangibility_State";
+      let image = "False.jpg";
+     if(intangibility) {
+       image = "True.jpg";
+     }
+    intangibilityStateImage.src = `${baseImg}_${image}`;
     }
     
     static render() {
