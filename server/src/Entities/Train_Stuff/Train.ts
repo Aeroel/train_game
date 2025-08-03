@@ -58,8 +58,22 @@ export class Train extends Base_Entity {
             }
         }
     }
-
+    setMovementDirection(dir: "backwards"|"forwards"|null) {
+      this.cars.forEach(car=>{
+        car.setMovementDirection(dir)
+      })
+    }
+    stopMovement() {
+      
+      this.stopAllCars();
+    }
     updateState() {
+      this.cars.forEach(car=> {
+        if(car.behaviour.Get_Touching_Stop_Spot()===null) {
+          return;
+        }
+        this.stopMovement();
+      })
         super.updateState();
     }
 

@@ -5,9 +5,13 @@ export {
 }
 
 class Station_Stop_Spot extends Base_Entity {
-    color = 'black';
-    constructor() {
+    color = 'blue';
+    constructor(x: number, y: number) {
         super();
+        this.x=x;
+        this.y=y;
+        this.height = 100;
+        this.width = this.height;
         this.addTag("Station_Stop_Spot");
     }
 }

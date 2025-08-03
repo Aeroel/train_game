@@ -57,7 +57,7 @@ class Train_Car_Behaviour {
     Pause_Movement() {
         this.storedMovementDirection = this.car.currentMovementDirection;
         this.pauseBegunAt = Date.now();
-        this.car.stopMovement();
+        this.car.train.stopMovement();
 
     }
 
@@ -68,7 +68,8 @@ class Train_Car_Behaviour {
     }
 
     Continue_Moving() {
-        this.car.setMovementDirection(this.storedMovementDirection);
+
+        this.car.train.setMovementDirection(this.storedMovementDirection);
         this.Is_Waiting_For_Five_Seconds = false;
     }
     Get_Touching_Stop_Spot() : null | Station_Stop_Spot {
@@ -80,8 +81,9 @@ class Train_Car_Behaviour {
             if (!entity.hasTag("Station_Stop_Spot")) {
                 return null;
 
-            }
-            if (!Collision_Stuff.areEntitiesIntersecting(this.car, entity)) {
+            } 
+            const Answer = Collision_Stuff.areEntitiesIntersecting(this.car, entity)
+            if (!Answer.Collision_Occurred) {
                 return null;
 
             }

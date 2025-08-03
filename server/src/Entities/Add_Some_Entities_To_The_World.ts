@@ -62,7 +62,8 @@ class Add_Some_Entities_To_The_World {
         const sec_rail = Add_Some_Entities_To_The_World.addARailway2(900, 600, 3000, 350);
 
         this.Put_A_Train_On_Rail(sec_rail, "up", "down", "forwards");
-         
+        World.addEntity(new Station_Stop_Spot(5710, 275));
+        
 
     }
 
