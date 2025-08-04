@@ -2,7 +2,10 @@ import { App } from "#root/App";
 
 export { JoystickSetup };
 
+// this class seems complicated for me.
+// can it be improved? I am not sure. well, almsot certainly yes, in theory and probably in practice as well
 class JoystickSetup {
+    // what is this again? Sounds very technical
     static activePointerId: number | null = null;
 
     static runTheSetupCode() {
