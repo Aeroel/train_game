@@ -52,16 +52,16 @@ class Player extends Base_Entity {
     }
 
     if (this.controls.right) {
-      this.forces.set("Player_Controls", "right", this.speedPerTick);
+      this.movementForces.Set_Component("Player_Controls", "right", this.speedPerTick);
     }
     if (this.controls.left) {
-      this.forces.set("Player_Controls", "left", this.speedPerTick);
+      this.movementForces.Set_Component("Player_Controls", "left", this.speedPerTick);
     }
     if (this.controls.up) {
-      this.forces.set("Player_Controls", "up", this.speedPerTick);
+      this.movementForces.Set_Component("Player_Controls", "up", this.speedPerTick);
     }
     if (this.controls.down) {
-      this.forces.set("Player_Controls", "down", this.speedPerTick);
+      this.movementForces.Set_Component("Player_Controls", "down", this.speedPerTick);
     }
 
 const now = Date.now();

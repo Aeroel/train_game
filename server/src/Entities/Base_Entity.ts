@@ -1,4 +1,4 @@
-import { Entity_Forces } from "#root/Entities/Entity_Forces.js";
+import { Entity_Movement_Forces } from "#root/Entities/Entity_Movement_Forces.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Position } from "#root/Type_Stuff.js";
@@ -9,7 +9,7 @@ export { Base_Entity };
 class Base_Entity {
   id = Simple_Auto_Increment_Id_Generator.generateId();
   possibleForces = ["left", "right", "up", "down"];
-  forces = new Entity_Forces(this);
+  movementForces = new Entity_Movement_Forces(this);
   friction = 0.5;
   speedPerTick = 0;
   x = 0;
@@ -27,12 +27,11 @@ class Base_Entity {
 
     this.addTag("Entity");
   }
-  Get_No_Movement_Forces() {
-    return { up: 0, down: 0, right: 0, left: 0 };
-  }
+
+
   calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
-    const netHorizontalForce = this.forces.Get_Net_Axis_Force("horizontal")
-    const netVerticalForce = this.forces.Get_Net_Axis_Force("vertical");
+    const netHorizontalForce = this.movementForces.Get_Net_Axis_Force("horizontal")
+    const netVerticalForce = this.movementForces.Get_Net_Axis_Force("vertical");
 
     const x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
     const y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
@@ -49,8 +48,8 @@ class Base_Entity {
   }
   isMoving() {
     return (
-      this.forces.Get_Net_Axis_Force('vertical')>0 ||
-      this.forces.Get_Net_Axis_Force('horizontal')>0 
+      this.movementForces.Get_Net_Axis_Force('vertical')>0 ||
+      this.movementForces.Get_Net_Axis_Force('horizontal')>0 
       )
   }
   
@@ -68,7 +67,7 @@ applyForcesToPosition() {
     this.y = nextPosition.y;
     
 
-    this.forces.applyFriction();
+    this.movementForces.applyFriction();
 }
   addTag(tag: string) {
     this.tags.push(tag);
