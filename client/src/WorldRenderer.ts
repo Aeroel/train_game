@@ -61,7 +61,7 @@ class WorldRenderer {
    if(speedup_state_image === null) {
      throw new Error("speedup_state_image not found");
    }
-        const baseImg = "./images/Speedup";
+        const baseImg = "./images/Speedup_State";
       let image = "False.jpg";
      if(speedUp) {
        image = "True.jpg";
