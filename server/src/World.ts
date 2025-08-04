@@ -16,12 +16,18 @@ class World {
     World.state.entities.push(entity)
           return entity;
   }
+  
+  
   static getCurrentState() {
     return World.state;
   }
+  
+  
   static getCurrentEntities() : Base_Entity[] {
     return World.getCurrentState().entities;
   }
+  
+  
   static filterEntities(filterCriteriaFunction: (entity: Base_Entity)=> boolean) : Base_Entity[] {
     return World.getCurrentEntities().filter(filterCriteriaFunction);
   }
