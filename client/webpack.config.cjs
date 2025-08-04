@@ -1,10 +1,13 @@
 const path = require('path');
+const Webpack_Plugin_To_Fix_Termux_Scandir_Issue = require("./Webpack_Plugin_To_Fix_Termux_Scandir_Issue.cjs");
 
 const config = {
   watchOptions: {
   poll: true,
   ignored: /node_modules/
-},
+    },
+    plugins: [new Webpack_Plugin_To_Fix_Termux_Scandir_Issue()],
+    
     entry: './src/StartApp.ts',
     module: {
         rules: [
