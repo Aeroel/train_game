@@ -1,7 +1,7 @@
 const path = require('path');
 
-module.exports = {
-watchOptions: {
+const config = {
+  watchOptions: {
   poll: true,
   ignored: /node_modules/
 },
@@ -17,6 +17,7 @@ watchOptions: {
     },
     resolve: {
         extensions: ['.tsx', '.ts', '.js'],
+        // allows to use absolute imports relative to src using "#root/file"
         alias: {
             '#root': path.resolve(__dirname, 'src/'),
         },
@@ -25,4 +26,6 @@ watchOptions: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'public/build'),
     },
-};
+}
+
+module.exports = config;
