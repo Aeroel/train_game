@@ -32,19 +32,26 @@ class Entity_Forces {
         left: [],
     }
     removeForceComponentWhenValueHitsBelow = 0.9;
-    Get_Opposite_Force_Name(to: Force_Name): Force_Name {
-        const isOppositeTo = {
-            up: "down",
-            down: "up",
-            right: "left",
-            left: "right",
-        }
-        return isOppositeTo[to as keyof Entity_Forces["forces"]] as Force_Name;
-    }
+    
+    
+Get_Opposite_Force_Name(to: Force_Name): Force_Name {
+    const isOppositeTo: Record<Force_Name, Force_Name> = {
+        up: "down",
+        down: "up",
+        left: "right",
+        right: "left",
+    };
+
+    return isOppositeTo[to];
+}
+    
+    
     constructor(ofEntity: Base_Entity) {
         this.entity = ofEntity;
 
     }
+    
+    
     Get_No_Movement_Forces() {
         return { up: 0, down: 0, right: 0, left: 0 }
     }

@@ -1,12 +1,12 @@
 const path = require('path');
-const Webpack_Plugin_To_Fix_Termux_Scandir_Issue = require("./Webpack_Plugin_To_Fix_Termux_Scandir_Issue.cjs");
+const Plugin_To_Prevent_Webpack_From_Scanning_Inaccessible_Android_Folders = require("./Plugin_To_Prevent_Webpack_From_Scanning_Inaccessible_Android_Folders.cjs");
 
 const config = {
   watchOptions: {
   poll: true,
   ignored: /node_modules/
     },
-    plugins: [new Webpack_Plugin_To_Fix_Termux_Scandir_Issue()],
+    plugins: [new Plugin_To_Prevent_Webpack_From_Scanning_Inaccessible_Android_Folders()],
     
     entry: './src/StartApp.ts',
     module: {

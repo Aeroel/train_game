@@ -4,7 +4,7 @@ function isTermux() {
   return process.cwd().startsWith(TERMUX_DIR);
 }
 
-class Webpack_Plugin_To_Fix_Termux_Scandir_Issue {
+class Plugin_To_Prevent_Webpack_From_Scanning_Inaccessible_Android_Folders {
   apply(compiler) {
     if (!isTermux()) return;
 
@@ -26,4 +26,4 @@ class Webpack_Plugin_To_Fix_Termux_Scandir_Issue {
   }
 }
 
-module.exports = Webpack_Plugin_To_Fix_Termux_Scandir_Issue;
+module.exports = Plugin_To_Prevent_Webpack_From_Scanning_Inaccessible_Android_Folders;
