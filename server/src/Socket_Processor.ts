@@ -7,11 +7,17 @@ import { Helper_Functions } from "./Helper_Functions.js";
 import { Typed_Object_Keys, type Direction } from "./Type_Stuff.js";
 import { Game_Loop } from "#root/Game_Loop.js"
 
+ type Control_Keys = {
+            movement: (Direction)[],
+            speedUp: boolean,
+            zoom: "in" | "out" | "no_change",
+            intangibility: boolean,
+        }
 // I copied this type that vscode showed in popup of socket var from startThis...ts  file
-type Undesirable_Hardcode_Socket_Type = SocketIO.Socket<SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, any>;
+type Undesirable_Hardcoded_Socket_Type = SocketIO.Socket<SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, any>;
 
 class Socket_Processor {
-    static onNewConnection(socket: Undesirable_Hardcode_Socket_Type) {
+    static onNewConnection(socket: Undesirable_Hardcoded_Socket_Type) {
         console.log("A socket connected");
         Helper_Functions.Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket);
         socket.emit("welcome", "You have successfully connected to the server. Welcome!");
@@ -29,32 +35,28 @@ class Socket_Processor {
     }
 
 
-    static onDisconnect(socket: Undesirable_Hardcode_Socket_Type) {
+    static onDisconnect(socket: Undesirable_Hardcoded_Socket_Type) {
         socket.on("disconnect", () => {
             Helper_Functions.runThisUponSocketDisconnect(socket);
         })
     }
 
 
-    static onControl(socket: Undesirable_Hardcode_Socket_Type) {
-        type Control_Keys = {
-            movement: (Direction)[],
-            speedUp: boolean,
-            zoom: "in" | "out" | "no_change",
-            intangibility: boolean,
-        }
+    static onControl(socket: Undesirable_Hardcoded_Socket_Type) {
+
         socket.on("controlKeys", (receivedControlKeys: Control_Keys) => {
             const playerAssociatedWithSocket: Player = World.state.entities.find((entity: Player) => entity.socketId === socket.id);
             this.movement(playerAssociatedWithSocket, receivedControlKeys.movement, socket);
 
-            this.speedUp(playerAssociatedWithSocket, receivedControlKeys.speedUp,);
+            this.speedUp(playerAssociatedWithSocket, receivedControlKeys.speedUp);
             this.zoom(playerAssociatedWithSocket,
             receivedControlKeys.zoom);
             this.intangibility(playerAssociatedWithSocket, receivedControlKeys.intangibility);
             
         });
     }
-    static zoom(playerAssociatedWithSocket: Player, zoom: "no_change"|"in"|"out") {
+    
+    static zoom(playerAssociatedWithSocket: Player, zoom: Control_Keys["zoom"]) {
      const validInput = (["no_change","in","out"].includes(zoom));
      const changeRequested = !(zoom==="no_change");
      if(!validInput || !changeRequested) {
@@ -70,31 +72,37 @@ class Socket_Processor {
           if(possibleVal > maxVisionRangeIWillAllow) {
             return;
           }
-          playerAssociatedWithSocket.visionRange = possibleVal;
         break;
         case "out":
           possibleVal = playerAssociatedWithSocket.visionRange - changePerRequest;
           if(possibleVal < minVisionRangeIWillAllow) {
             return;
           }
-          playerAssociatedWithSocket.visionRange = possibleVal;
         break;
       }
+       playerAssociatedWithSocket.visionRange = possibleVal;
       
     }
-    static speedUp(playerAssociatedWithSocket: Player, speedUp: boolean) {
+    
+    
+    static speedUp(playerAssociatedWithSocket: Player, speedUp: Control_Keys["speedUp"]) {
         if (speedUp !== playerAssociatedWithSocket.speedUp) {
             playerAssociatedWithSocket.swapSpeedUp();
             console.log("speedup swap");
         }
     }
-    static intangibility(playerAssociatedWithSocket: Player, intangibility: boolean) {
-        if (intangibility !== playerAssociatedWithSocket.intangibility) {
+    
+    
+    static intangibility(playerAssociatedWithSocket: Player, intangibilityState: Control_Keys["intangibility"]) {
+        if (intangibilityState === playerAssociatedWithSocket.intangibility) {
+           return;
+        }
             playerAssociatedWithSocket.swapIntangibility();
             console.log("intangibility swap");
-        }
     }
-    static movement(playerAssociatedWithSocket: Player, movementKeys: (Direction)[], socket: Undesirable_Hardcode_Socket_Type) {
+    
+    
+    static movement(playerAssociatedWithSocket: Player, movementKeys: (Direction)[], socket: Undesirable_Hardcoded_Socket_Type) {
         // check that receivedMovement is what we expected... If not, ignore it, I guess
         if (!Array.isArray(movementKeys)) {
             return;

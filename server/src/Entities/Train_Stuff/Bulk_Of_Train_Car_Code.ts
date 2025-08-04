@@ -1,5 +1,5 @@
 import type { Direction, Point } from "#root/Type_Stuff.js";
-import { Assert_That, Assert_That_Number_Is_Positive } from "#root/Type_Validation_Stuff.js";
+
 import { World } from "#root/World.js";
 import { Base_Entity } from "../Base_Entity.js";
 import type { Train_Car, Train_Car_End, Train_Car_End_Name } from "./Train_Car.js";

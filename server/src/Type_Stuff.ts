@@ -67,7 +67,12 @@ declare type CleanedEntity = VisibleEntity;
   
 }
 
-// same as calling Object.keys but avoids as ... cast in random usages
+/* same as calling Object.keys but avoids as ... cast in random usages
+example:
+for (const key of Object.keys(user)) {
+becomes
+for (const key of Typed_Object_Keys(user)) {
+*/
 function Typed_Object_Keys<T extends object>(obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>;
 }

@@ -1,7 +1,6 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import { Assert_That_Number_Is_Positive, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Positive } from "#root/Type_Validation_Stuff.js";
+import { Assert_That_Number_Is_Zero_Or_Positive, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Zero_Or_Positive } from "#root/Type_Validation_Stuff.js";
 
-export { Entity_Forces };
 export type Force_Component = {
     key: string,
     forceValue: number,
@@ -21,7 +20,7 @@ export type Forces_Values = {
     left: number
 }
 export type Force_Name = "up" | "right" | "left" | "down";
-
+export { Entity_Forces };
 class Entity_Forces {
     entity: Base_Entity;
     Entities_That_Also_Get_The_Forces_Of_This_Entity: Base_Entity[] = new Array();
@@ -32,7 +31,7 @@ class Entity_Forces {
         right: [],
         left: [],
     }
-    threshold = 0.9;
+    removeForceComponentWhenValueHitsBelow = 0.9;
     Get_Opposite_Force_Name(to: Force_Name): Force_Name {
         const isOppositeTo = {
             up: "down",
@@ -68,7 +67,7 @@ class Entity_Forces {
 
         // simple post check
         Assert_That_Numbers_Are_Finite(result);
-        Assert_That_Numbers_Are_Positive(result);
+        Assert_That_Numbers_Are_Zero_Or_Positive(result);
 
         return result;
 
@@ -88,7 +87,7 @@ class Entity_Forces {
         this.set(key, "left", forces.left, keepAtZero);
     }
     set(key: string, forceName: Force_Name, forceValue: number, keepAtZero?: boolean) {
-        Assert_That_Number_Is_Positive(forceValue);
+        Assert_That_Number_Is_Zero_Or_Positive(forceValue);
         this.propagateSet(key, forceName, forceValue, keepAtZero)
         if (!this.Key_Exists_In_Force(key, forceName)) {
             if (typeof keepAtZero === "undefined") {
@@ -145,7 +144,7 @@ class Entity_Forces {
 
     }
     Remove_Components_That_Have_Their_Force_Values_Below_Threshold() {
-        const filterFunc = (component: Force_Component) => component.forceValue > this.threshold || component.keepAtZero;
+        const filterFunc = (component: Force_Component) => component.forceValue > this.removeForceComponentWhenValueHitsBelow || component.keepAtZero;
         this.forces.up = this.forces.up.filter(filterFunc);
         this.forces.down = this.forces.down.filter(filterFunc);
         this.forces.right = this.forces.right.filter(filterFunc);

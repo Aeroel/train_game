@@ -2,10 +2,10 @@ import { World } from "#root/World.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 import type { Player } from "#root/Entities/Player.js";
 import {Complicated_Pre_Emission_Functions} from "#root/World_State_Emission_Stuff/Complicated_Pre_Emission_Functions.js";
-import {type VisibleEdge,
-type VisibleEntity,
-type VirtualizedEntity,
-type CleanedEntity} from "#root/Type_Stuff.js";
+import type { VisibleEdge,
+VisibleEntity,
+VirtualizedEntity,
+CleanedEntity} from "#root/Type_Stuff.js";
 
 
 export { PreEmitStuff }

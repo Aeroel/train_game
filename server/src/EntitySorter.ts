@@ -1,11 +1,14 @@
 import { World } from "#root/World.js";
 import type { Base_Entity } from "./Entities/Base_Entity.js";
 
+ type Sort_Order = Record<string, number>;
+
+
 export {
   EntitySorter
 }
 class EntitySorter {
-  static readonly sortOrder = {
+  static readonly From_Top_Down_Camera_POV: Sort_Order = {
     "Ground": 0,
     "Rail_Switch_Wall": 0.5,
     "Rail": 1,
@@ -17,13 +20,13 @@ class EntitySorter {
     "Sensor":6,
   };
   static Sort_All_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera() {
-    this.entitySort(World.getCurrentEntities())
+    this.entitySort(this.From_Top_Down_Camera_POV, World.getCurrentEntities())
   }
-  static entitySort(entities: Base_Entity[]) {
+  static entitySort(sortOrder: Sort_Order, entities: Base_Entity[]) {
 
     return entities.sort((a, b) => {
-      const tagA = this.getTagPriority(a, EntitySorter.sortOrder);
-      const tagB = this.getTagPriority(b, EntitySorter.sortOrder);
+      const tagA = this.getTagPriority(a, sortOrder);
+      const tagB = this.getTagPriority(b, sortOrder);
 
       return tagA - tagB;
     });
@@ -31,9 +34,9 @@ class EntitySorter {
 
   }
 
-  static getTagPriority(entity: Base_Entity, sortOrder: typeof EntitySorter["sortOrder"]) {
+  static getTagPriority(entity: Base_Entity, sortOrder: Sort_Order) {
   // Find the highest-priority tag for this entity
-  let tag: keyof typeof EntitySorter["sortOrder"];
+  let tag: keyof Sort_Order;
   for (tag in sortOrder) {
     if (entity.hasTag(tag)) {
       return sortOrder[tag];

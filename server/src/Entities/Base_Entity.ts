@@ -2,7 +2,7 @@ import { Entity_Forces } from "#root/Entities/Entity_Forces.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Position } from "#root/Type_Stuff.js";
-import { Assert_That_Number_Is_Finite, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Positive_Or_Zero } from "#root/Type_Validation_Stuff.js";
+import { Assert_That_Number_Is_Finite, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Zero_Or_Positive } from "#root/Type_Validation_Stuff.js";
 
 export { Base_Entity };
 
@@ -118,7 +118,7 @@ applyForcesToPosition() {
 
   setXYWH(x: number, y: number, w: number, h: number) {
     Assert_That_Numbers_Are_Finite({ x, y, w, h });
-    Assert_That_Numbers_Are_Positive_Or_Zero({w, h})
+    Assert_That_Numbers_Are_Zero_Or_Positive({w, h})
     this.setX(x);
     this.setY(y);
     this.setWidth(w);
