@@ -4,9 +4,6 @@ type WorldState = {
     entities: Entity[],
     virtualCanvasWidth: number
     virtualCanvasHeight: number,
-    playerX: number,
-    playerY: number,
-    playerSpeedUp: boolean,
 }
 type ReceivedWorldState = {
     entities: Entity[],
@@ -42,20 +39,27 @@ class WorldRenderer {
         entities: new Array(),
         virtualCanvasWidth: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
         virtualCanvasHeight: WorldRenderer.initial_value_for_virtual_canvas_dimensions,
-        playerX: 0,
-        playerY: 0,
-        playerSpeedUp: false
     };
     static receiveWorldState(worldState: ReceivedWorldState) {
         WorldRenderer.worldState.entities = worldState.entities;
         WorldRenderer.worldState.virtualCanvasHeight = worldState.virtualHeight;
         WorldRenderer.worldState.virtualCanvasWidth = worldState.virtualWidth;
-        WorldRenderer.worldState.playerX = worldState.playerX;
-        WorldRenderer.worldState.playerY = worldState.playerY;
+
+        this.updatePlayerPositionText(worldState.playerX, worldState.playerY);
         this.speedUpHandler(worldState.playerSpeedUp);
         this.intangibilityHandler(worldState.playerIntangibility);
 
     }
+    
+    static updatePlayerPositionText(playerX: number, playerY: number) {
+              const coordinatesBox = <HTMLDivElement>document.getElementById("coordinatesLocation");
+        if (coordinatesBox === null) {
+            throw new Error("Could not get coordinates box");
+        }
+              // Update coordinates box with player position
+        coordinatesBox.textContent = `Player Position: X: ${playerX}, Y: ${playerY}`;
+    }
+    
     static speedUpHandler(speedUp: boolean) {
               const speedup_state_image= document.getElementById("speedupStateImage") as HTMLImageElement;
    if(speedup_state_image === null) {
@@ -83,12 +87,6 @@ class WorldRenderer {
     }
     
     static render() {
-        const coordinatesBox = <HTMLDivElement>document.getElementById("coordinatesLocation");
-        if (coordinatesBox === null) {
-            throw new Error("Could not get coordinates box");
-        }
-        // Update coordinates box with player position
-        coordinatesBox.textContent = `Player Position: X: ${WorldRenderer.worldState.playerX || 0}, Y: ${WorldRenderer.worldState.playerY || 0}`;
         // Get canvas and context
         const canvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
         if (canvas === null) {

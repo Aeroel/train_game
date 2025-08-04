@@ -12,6 +12,7 @@ class FullscreenSetup {
     }
 
     // Fullscreen function
+    // I wonder why is is async?
     fullscreenButton.addEventListener("click", async () => {
       FullscreenSetup.doThisWhenTheUserClicksOnTheFullscreenButton();
     });
@@ -19,12 +20,12 @@ class FullscreenSetup {
   }
   
   static doThisWhenTheUserClicksOnTheFullscreenButton() {
-    const isFullscreenModeCurrentlyOn = Boolean(document.fullscreenElement);
+    const userIsInFullscreenModeRightNow = Boolean(document.fullscreenElement);
 
     // again, ts says screen.orientation.lock is not found
     // @ts-ignore
     const isScreenOrientationSwitchingFunctionalityAvailable = Boolean(screen.orientation && screen.orientation.lock && screen.orientation.unlock);
-    if (isFullscreenModeCurrentlyOn) {
+    if (userIsInFullscreenModeRightNow) {
       FullscreenSetup.doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
       return;
     }
@@ -32,17 +33,26 @@ class FullscreenSetup {
   }
   static doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
 
-    // css modifications for better visual experience
-    FullscreenSetup.adjustCSSFor("nonFullscreen");
+
+    FullscreenSetup.adjustPositionsOfButtonsFor("nonFullscreen");
     document.exitFullscreen();
-    // bring orient. to whatever is default
-    if (App.isUserUsingAPhone() && isScreenOrientationSwitchingFunctionalityAvailable) {
-      screen.orientation.unlock();
+    if (App.isUserUsingAPhone()) {
+     this.releaseUsersScreenOrientationAfterExitingFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
     }
 
   }
+  
+  static releaseUsersScreenOrientationAfterExitingFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
+    if(!isScreenOrientationSwitchingFunctionalityAvailable) {
+      return;
+    }
+    
+          screen.orientation.unlock();
+  }
+  
+  
   static doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
-    FullscreenSetup.adjustCSSFor("fullscreen");
+    FullscreenSetup.adjustPositionsOfButtonsFor("fullscreen");
     const gameContainer = document.getElementById("gameContainer");
     if(gameContainer === null) {
       throw new Error('gameContainer is null');
@@ -50,8 +60,16 @@ class FullscreenSetup {
     gameContainer.requestFullscreen();
     // to landscape on fs if on mobile
 
-    if (App.isUserUsingAPhone() && isScreenOrientationSwitchingFunctionalityAvailable) {
-
+    if (App.isUserUsingAPhone()) {
+       this.switchScreenToLandscapeForMoreGameyExperience(isScreenOrientationSwitchingFunctionalityAvailable);
+    }
+  }
+  
+  static switchScreenToLandscapeForMoreGameyExperience( isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
+    if(!isScreenOrientationSwitchingFunctionalityAvailable) {
+      return;
+    }
+    
       // TS says lock method does not exist
       // lock does not exist normally, I guess? Maybe on mobile only?
       // @ts-ignore
@@ -59,9 +77,10 @@ class FullscreenSetup {
         console.log("Not on mobile but emulating mobile?");
 
       });
-    }
   }
-  static adjustCSSFor(screenMode: string) {
+  
+  
+  static adjustPositionsOfButtonsFor(screenMode: string) {
     this.adjustJoystickPositionToBetterFitScreenMode(screenMode);
     this.adjustZoomButtons(screenMode);
     this.adjustIntangibilityButton(screenMode);
@@ -88,6 +107,8 @@ class FullscreenSetup {
     intangibilityButton.style.top = intangibilityButtonMargin.top;
     intangibilityButton.style.right = intangibilityButtonMargin.right;
   }
+  
+  
   static adjustZoomButtons(screenMode: string) {
         const zoomInButton = document.getElementById("zoomInButton");
         const zoomOutButton = document.getElementById("zoomOutButton");
@@ -126,6 +147,8 @@ class FullscreenSetup {
     zoomOutButton.style.right = zoomOutButtonMargin.right;
     zoomOutButton.style.top = zoomOutButtonMargin.top;
   }
+  
+  
   static adjustJoystickPositionToBetterFitScreenMode(mode: string) {
     const joystickContainer = document.getElementById("joystickContainer");
     if(joystickContainer === null) {

@@ -13,6 +13,15 @@ class App {
     })
 
   }
+  
+    static runThisCodeOncePageIsFullyLoaded() {
+ this.intangibilityButton();
+ this.zoomButtons();
+ this.speedUpButton();
+ this.ipAddressFieldAndButton();
+  }
+  
+  
   static intangibilityButton() {
           const intangibilityButton = document.getElementById("intangibilityButton");
    if(intangibilityButton === null) {
@@ -22,6 +31,8 @@ class App {
      App.intangibility = !(App.intangibility)
    })
   }
+  
+  
   static zoomButtons() {
        const zoomInButton = document.getElementById("zoomInButton");
        const zoomOutButton = document.getElementById("zoomOutButton");
@@ -35,6 +46,8 @@ class App {
      App.zoom = "out";
    })   
   }
+  
+  
  static speedUpButton() {
       const speedup_button = document.getElementById("speedupButton");
    if(speedup_button === null) {
@@ -44,11 +57,9 @@ class App {
      App.playerWantsToMoveFaster = !(App.playerWantsToMoveFaster)
    })
  }
-  static runThisCodeOncePageIsFullyLoaded() {
- this.intangibilityButton();
- this.zoomButtons();
- this.speedUpButton();
-    const ip_address_button = document.getElementById("ip_address_button");
+
+static ipAddressFieldAndButton() {
+     const ip_address_button = document.getElementById("ip_address_button");
     if (ip_address_button === null) {
       throw new Error("ip_address_button not found");
     }
@@ -66,9 +77,9 @@ class App {
         return;
       }
       App.runThisUponIPAddressSubmit();
-    })
+    }) 
+}
 
-  }
   static runThisUponIPAddressSubmit() {
     const ip_address_field = <HTMLInputElement>document.getElementById("ip_address_field");
     if (ip_address_field === null) {
@@ -76,10 +87,10 @@ class App {
     }
     const ip = ip_address_field.value;
 
-    App.hideIPChoiceAndShowGameContainer();
-    App.runThisAfterIPAddressIsEntered(ip);
+    App.prepareAndConnect(ip);
   }
-  static runThisAfterIPAddressIsEntered(ip: string) {
+  static prepareAndConnect(ip: string) {
+    App.hideIPChoiceAndShowGameContainer();
     AppSetup.initialVisualCSSStyleAdjustments();
     AppSetup.serverConnectionStuff(ip);
     if (App.isUserUsingAPhone()) {
@@ -87,12 +98,12 @@ class App {
     } else {
       AppSetup.runKeyboardControlsSetupCode();
     }
-    AppSetup.runFullscreenButtonCode();
+    AppSetup.runFullscreenButtonSetupCode();
 
     AnimationLoop.start();
 
     // Example usage of App.movementControlCommands
-    // send whatever keys user presses every 0.1 secs
+    // send whatever keys user presses every something secs
     setInterval(() => {
       
       const movementControlKeysArray = Array.from(App.movementControlCommands);
@@ -103,14 +114,12 @@ class App {
         zoom: App.zoom,
         intangibility: App.intangibility,
       });
+      // reset zoom after sending so we do not keep zooming in or out more than once when user clicks 
       App.zoom = "no_change";
     }, 25);
 
   }
 
-  static isUserUsingAPhone() {
-    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-  }
   static hideIPChoiceAndShowGameContainer() {
     const server_ip_choice_container = document.getElementById("server_ip_choice_container");
     if (server_ip_choice_container === null) {
@@ -122,5 +131,9 @@ class App {
     }
     server_ip_choice_container.style.display = "none";
     gameContainer.style.display = "flex";
+  }
+  
+    static isUserUsingAPhone() {
+    return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 }

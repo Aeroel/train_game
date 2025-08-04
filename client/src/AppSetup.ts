@@ -8,7 +8,12 @@ import { ServerConnectionStatusVisualizer } from "#root/ServerConnectionStatusVi
 export { AppSetup };
 class AppSetup {
     static initialVisualCSSStyleAdjustments() {
-        // ensure the big fullscreen button icon is appropriately icon-sized. (Maybe I will resize the original image later instead?)
+        this.resizeFSButtonToAMoreIconeySize();
+        this.setCanvasSizeToAvoidPixelatedRendering();
+    }
+    
+    static resizeFSButtonToAMoreIconeySize() {
+              // ensure the big fullscreen button icon is appropriately icon-sized. (Maybe I will resize the original image later instead?)
         const FSButtonImage = document.getElementById("fullscreenButtonIcon");
         if (FSButtonImage === null) {
             throw new Error("Could not find full screen button image element");
@@ -16,9 +21,11 @@ class AppSetup {
         }
         FSButtonImage.style.width = "50px";
         FSButtonImage.style.height = "50px";
-
-        // unless I manually set canvas size to a big number like 1000, for some reason 
-        // if I don't set it, it will cause pixelated rendering...
+    }
+    
+    static setCanvasSizeToAvoidPixelatedRendering() {
+              /* unless I manually set canvas size to a big number like 1000, for some reason 
+         if I don't set it, it will cause pixelated rendering... */
         const gameCanvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
         if (gameCanvas === null) {
             throw new Error("Could not find full screen button image element");
@@ -26,8 +33,8 @@ class AppSetup {
         }
         gameCanvas.width = 1000;
         gameCanvas.height = 1000;
-
     }
+    
     static serverConnectionStuff(ip: string) {
         SocketWrapper.establishConnection(ip);
         const socket = SocketWrapper.get();
@@ -49,7 +56,7 @@ class AppSetup {
         ServerConnectionStatusVisualizer.initialize();
     }
 
-    static runFullscreenButtonCode() {
+    static runFullscreenButtonSetupCode() {
         FullscreenSetup.buttonSetupCode();
     }
 
