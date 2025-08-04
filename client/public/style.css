@@ -7,7 +7,6 @@ body {
     position: relative;
     width: 90vw;
     height: 90vh;
- /*   display: flex;*/
     display: none;
     justify-content: center;
     align-items: center;
@@ -28,7 +27,7 @@ body {
     left: 10px;
     z-index: 10;
   }
-    /* coordinatesLocation box positioned relative to canvas top-left */
+    /* coordinatesLocation box positioned relative to canvas top-left, below serverMessage*/
   #coordinatesLocation {
     position: absolute;
     top: 40px;
@@ -43,6 +42,7 @@ body {
     right: 10px;
     z-index: 10;
   }
+  
   #speedupButton {
     position: absolute;
     top: 80px;
