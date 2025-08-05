@@ -1,10 +1,12 @@
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
-import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
+import { Train_Car, Train_Car_Motion_Direction } from "#root/Entities/Train_Stuff/Train_Car.js";
 import type { Box, Direction, Position } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
 import { log } from "console";
+
+export type Train_Movement_Motion = null| "backwards" | "forwards"
 
 export class Train extends Base_Entity {
     x = 1;
@@ -14,16 +16,16 @@ export class Train extends Base_Entity {
     Waiting_To_Reach_Next_Rail = false;
     Waiting_Car_Current_Rail: Rail | null = null;
     cars: Train_Car[] = new Array();
-    movDir: "forwards" | "backwards" = "forwards";
+    movMotion: Train_Movement_Motion = "forwards";
     frontSide: "firstEnd" | "secondEnd" = "secondEnd";
     stopAllCars() {
         this.cars.forEach(car => {
             car.stopMovement();
         })
     }
-    constructor(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
+    constructor(rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Direction, Backwards_Movement_Directions: Train_Car_Motion_Direction, movementDirection: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
         super();
-        this.movDir = movementDirection;
+        this.movMotion = movementDirection;
         let startPosition: Position;
         if (rail.getOrientation() === 'horizontal') {
             startPosition = {
@@ -46,8 +48,8 @@ export class Train extends Base_Entity {
                 carX = startPosition.x;
                 carY = startPosition.y + (count * carSquareSize);
             }
-            const car = new Train_Car({ backwards, forwards,  size: carSquareSize, x: carX, y: carY, train: this });
-            car.setMovementDirection(this.movDir);
+            const car = new Train_Car({ Backwards_Movement_Directions, Forwards_Movement_Directions,  size: carSquareSize, x: carX, y: carY, train: this });
+            car.setMovementDirection(this.movMotion);
             World.addEntity(car);
             console.log("pushed", car.forwards, car.x, car.y)
             this.cars.push(car);

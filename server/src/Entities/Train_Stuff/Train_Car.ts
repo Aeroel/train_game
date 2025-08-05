@@ -6,6 +6,7 @@ import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
+import { Train_Car_Static } from "#root/Entities/Train_Stuff/Train_Car_Static.js"
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Orientation, Point, Position, Collision_Info } from "#root/Type_Stuff.js";
 import type { Directions_Values } from "#root/Entities/Entity_Movement_Forces.js";
@@ -17,21 +18,47 @@ import { Bulk_Of_Train_Car_Code } from "#root/Entities/Train_Stuff/Bulk_Of_Train
 export { Train_Car };
 
 interface Train_Car_Constructor {
-  backwards: Direction,
-  forwards: Direction,
+  Backwards_Movement_Directions: Train_Car_Movement_Directions,
+  Forwards_Movement_Directions: Train_Car_Movement_Directions,
   x: Base_Entity['x'],
   y: Base_Entity['y'],
   size: Base_Entity['x'] | Base_Entity['y'],
   train: Train,
 }
 
+export type Train_Car_Motion_Directions =
+  | []
+  | ['up']
+  | ['down']
+  | ['left']
+  | ['right']
+  
+  | ['left', 'up']
+  | ['up', 'left']
+  
+  | ['left', 'down']
+  | ['down', 'left']
+  
+  | ['right', 'up']
+  | ['up', 'right']
+  
+  | ['right', 'down']
+  | ['down', 'right'];
+
+  
+  
 export type Train_Car_End = {
   name: Train_Car_End_Name
 } & Position;
-export type Train_Car_Side = "frontSide" | "backSide";
+
 export type Train_Car_End_Name = "firstEnd" | "secondEnd";
-export type Train_Car_In_Motion_Movement_Direction = "backwards" | "forwards"
-export type Train_Car_Movement_Direction = null | "backwards" | "forwards";
+export type Train_Car_Movement_Motion = null | "backwards" | "forwards";
+
+export type Train_Car_Motions_Directions = {
+  backwards: Train_Car_Motion_Directions,
+  forwards: Train_Car_Motion_Directions,
+}
+
 export type Train_Car_Connected_Cars = {
   frontSide: null | Train_Car,
   backSide: null | Train_Car
@@ -52,11 +79,16 @@ class Train_Car extends Base_Entity {
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
   speedPerTick = 0.10 * 10;
-  twoPossibleMovementDirections = ["backwards", "forwards"];
-  currentMovementDirection: Train_Car_Movement_Direction = "backwards";
-  lastMovementDirectionBeforeNull: Train_Car_Movement_Direction = null;
-  forwards = new Set<Direction>();
-  backwards = new Set<Direction>();
+  twoPossibleMovementMotions = ["backwards", "forwards"];
+
+  currentMovementMotion: Train_Car_Movement_Motion = "backwards";
+
+  lastMovementMotionBeforeNull: Train_Car_Movement_Direction = null;
+
+motionsDirections: Train_Car_Motions_Directions = {
+    forwards: new Set<Direction>(),
+    backwards: new Set<Direction>(),
+};
 
   Rail_Movement_Key = `Rail_Movement`;
   Riding_Force_Key = `Riding_Car_Id_${this.id}`;
@@ -65,16 +97,18 @@ class Train_Car extends Base_Entity {
   bulk_of_code: Bulk_Of_Train_Car_Code;
   orientation: Orientation = "horizontal"
 
-  constructor({ backwards, forwards, x, y, size, train }: Train_Car_Constructor) {
+  constructor({ Backwards_Movement_Directions, Forwards_Movement_Directions, x, y, size, train }: Train_Car_Constructor) {
     if (!isFinite(x) || !isFinite(y) || !(size > 0)) {
       throw new Error(`x and y and size must be passed and be finite numbers. size must be greater than 0; Passed xysize are instead: ${x} and ${y} and ${size}`);
     }
     super();
     this.setColor("brown");
     this.addTag("Train_Car");
-    this.forwards.add(forwards);
-    this.backwards.add(backwards);
-    if(forwards === "down" || forwards === "up") {
+    
+    this.motionsDirections["forwards"] = Train_Car_Static.createDirectionSet(Forwards_Movement_Directions);
+    this.motionsDirections["backwards"] = Train_Car_Static.createDirectionSet(Backwards_Movement_Directions);
+   
+    if(Forwards_Movement_Directions.has("down" || Forwards_Movement_Directions.has("up")) {
       this.orientation = "vertical"
     } else {
       this.orientation = "horizontal"
@@ -146,12 +180,12 @@ class Train_Car extends Base_Entity {
 
   stopMovement() {
    
-   if(this.currentMovementDirection === null) {
+   if(this.currentMovementMotion === null) {
      return;
    }
-    this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
+    this.lastMovementMotionBeforeNull = this.currentMovementMotion;
     
-    this.currentMovementDirection = null;
+    this.currentMovementMotion = null;
 
     this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
 
@@ -160,7 +194,7 @@ class Train_Car extends Base_Entity {
 
   move_handler() {
  //   console.log(this.x, this.y)
-    if (this.currentMovementDirection === null) {
+    if (this.currentMovementMotion === null) {
       return false;
     }
     this.switchHandler();
@@ -202,7 +236,7 @@ class Train_Car extends Base_Entity {
   
    
   switchHandler() {
-      if (this.currentMovementDirection === null) {
+      if (this.currentMovementMotion === null) {
         return;
       }
     let closest: Collision_Info | null = this.Get_Closest_Sensor_Collision();
@@ -221,7 +255,7 @@ class Train_Car extends Base_Entity {
       y:nextPos.y}
       
       let Consumable_Budget;
-      if(this.forwards.has('up') || this.forwards.has('down')) {
+      if(this.motionsDirections["forwards"].has('up') || this.motionsDirections["forwards"].has('down')) {
        Consumable_Budget = Math.abs(beginningPos.y - supposedNextPos.y)
       } else {
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
@@ -270,7 +304,7 @@ Sensor_Accepts(rail_switch_wall: Rail_Switch_Wall) {
       return theCarMovementWillTriggerTheWall;
 }
 Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
-  if(this.currentMovementDirection === null) {
+  if(this.currentMovementMotion === null) {
     throw new Error("do not call sensor stuff func unless you know train is moving, bro")
   }
   // I think this call is du0licate from switch sensor collisions check but too lazy to think and afraid to remove. but probably redundant and pointless to do it again here
@@ -278,8 +312,8 @@ Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
      return;
    }
       // Okay, so from point, we know that the wall and car need us to process the logic
-      this[this.currentMovementDirection] = new Set<Direction>(rail_switch_wall.modifiesCarTo);
-      this[this.getOppositeCarMovementDirection(this.currentMovementDirection)] = new Set<Direction>(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
+      this.motionsDirections[this.currentMovementMotion] = Train_Car_Static.createDirectionSet(rail_switch_wall.modifiesCarTo);
+      this.motionsDirections[this.getOppositeCarMovementMotion(this.currentMovementMotion)] = Train_Car_Static.createDirectionSet(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
 }
 
   teleportAndBringPassengers(toX: number, toY: number) {
@@ -295,7 +329,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
       const newY = entity.y + carDeltaY;
       entity.setXY(newX, newY);
     }
-    if(this.forwards.has('up') || this.forwards.has('down')) {
+    if(this.motionsDirections["forwards"].has('up') || this.motionsDirections["forwards"].has('down')) {
     return carDeltaY;
     } else {
       return carDeltaX;
@@ -314,14 +348,14 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   }
   
   
-  getOppositeCarMovementDirection(dir: Train_Car_Movement_Direction) {
-   if(dir === null) {
-    throw new Error("dir is null, but this must not happen. Check the code leading up to this.") 
+  getOppositeCarMovementDirection(motion: Train_Car_Movement_Motion) {
+   if(motion === null) {
+    throw new Error("motion is null, but this must not happen. Check the code leading up to this.") 
    }
-   else if(dir==="backwards") {
+   else if(motion==="backwards") {
      return "forwards"
    }
-   else if(dir==="forwards") {
+   else if(motion==="forwards") {
      return "backwards"
    } else {
     throw new Error("Should not happen, yes?");
@@ -351,15 +385,15 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
    }
  }
   currentMovementDirs() {
-    if(this.currentMovementDirection === null) {
+    if(this.currentMovementMotion === null) {
       return null;
     }
-    const theSet= this[this.currentMovementDirection];
+    const theSet= this.motionsDirections[this.currentMovementMotion];
     const asArray = [...theSet];
     return asArray
   }
   Is_Moving(): boolean {
-    const isMoving: boolean = (this.currentMovementDirection === 'backwards' || this.currentMovementDirection === 'forwards');
+    const isMoving: boolean = (this.currentMovementMotion === 'backwards' || this.currentMovementMotion === 'forwards');
     return isMoving;
   }
 
@@ -369,11 +403,11 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   }
 
 
-  setMovementDirection(dir: Train_Car_Movement_Direction) {
-    if (dir !== null && !(this.twoPossibleMovementDirections.includes(dir))) {
-      throw new Error(`Invalid mov dir ${dir} `);
+  setMovementMotion(motion: Train_Car_Movement_Motion) {
+    if (motion !== null && !(this.twoPossibleMovementMotions.includes(motion))) {
+      throw new Error(`Invalid mov motion ${motion} `);
     }
-    this.currentMovementDirection = dir;
+    this.currentMovementMotion = motion;
   }
 
 
