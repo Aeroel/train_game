@@ -5,6 +5,7 @@ import { JoystickSetup } from "#root/JoystickSetup";
 import { TouchscreenControlsSetup } from "#root/TouchscreenControlsSetup"
 import { KeyboardControlsSetup } from "#root/KeyboardControlsSetup";
 import { ServerConnectionStatusVisualizer } from "#root/ServerConnectionStatusVisualizer";
+import { App } from "#root/App"
 
 export { AppSetup };
 class AppSetup {
