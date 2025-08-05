@@ -2,11 +2,25 @@ import { SocketWrapper } from "#root/SocketWrapper";
 import { WorldRenderer } from "#root/WorldRenderer";
 import { FullscreenSetup } from "#root/FullscreenSetup";
 import { JoystickSetup } from "#root/JoystickSetup";
+import { TouchscreenControlsSetup } from "#root/TouchscreenControlsSetup"
 import { KeyboardControlsSetup } from "#root/KeyboardControlsSetup";
 import { ServerConnectionStatusVisualizer } from "#root/ServerConnectionStatusVisualizer";
 
 export { AppSetup };
 class AppSetup {
+  static prepareAndSetupStuff(ip: string) {
+    AppSetup.initialVisualCSSStyleAdjustments();
+    AppSetup.serverConnectionStuff(ip);
+    if (App.isUserUsingAPhone()) {
+      AppSetup.runJoystickSetupCode();
+    } else {
+      AppSetup.runKeyboardControlsSetupCode();
+    }
+    AppSetup.runFullscreenButtonSetupCode();
+    AppSetup.runTouchscreenControlsSetupCode();
+  }
+  
+  
     static initialVisualCSSStyleAdjustments() {
         this.resizeFSButtonToAMoreIconeySize();
         this.setCanvasSizeToAvoidPixelatedRendering();
@@ -67,5 +81,8 @@ class AppSetup {
 
     static runKeyboardControlsSetupCode() {
         KeyboardControlsSetup.runTheSetupCode();
+    }
+    static runTouchscreenControlsSetupCode() {
+      TouchscreenControlsSetup.runTheSetupCode();
     }
 }

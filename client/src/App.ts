@@ -1,8 +1,8 @@
-export { App }
+
 import { AppSetup } from "#root/AppSetup";
 import { AnimationLoop } from "#root/AnimationLoop"
 import { SocketWrapper } from "#root/SocketWrapper";
-class App {
+export class App {
   static movementControlCommands = new Set();
   static playerWantsToMoveFaster = false;
   static zoom: "no_change" | "in" | "out" = "no_change";
@@ -15,48 +15,9 @@ class App {
   }
   
     static runThisCodeOncePageIsFullyLoaded() {
- this.intangibilityButton();
- this.zoomButtons();
- this.speedUpButton();
- this.ipAddressFieldAndButton();
+      .prepareClientForInitializingAConnection()
   }
-  
-  
-  static intangibilityButton() {
-          const intangibilityButton = document.getElementById("intangibilityButton");
-   if(intangibilityButton === null) {
-     throw new Error("intangibilityButton not found");
-   }
-   intangibilityButton.addEventListener("pointerup",()=> {
-     App.intangibility = !(App.intangibility)
-   })
-  }
-  
-  
-  static zoomButtons() {
-       const zoomInButton = document.getElementById("zoomInButton");
-       const zoomOutButton = document.getElementById("zoomOutButton");
-   if(zoomInButton === null || zoomOutButton === null) {
-     throw new Error("zoomInButton and/or zoomOutButton not found");
-   }
-   zoomInButton.addEventListener("pointerup",()=> {
-     App.zoom = "in";
-   })   
-   zoomOutButton.addEventListener("pointerup",()=> {
-     App.zoom = "out";
-   })   
-  }
-  
-  
- static speedUpButton() {
-      const speedup_button = document.getElementById("speedupButton");
-   if(speedup_button === null) {
-     throw new Error("speedup_button not found");
-   }
-   speedup_button.addEventListener("pointerup",()=> {
-     App.playerWantsToMoveFaster = !(App.playerWantsToMoveFaster)
-   })
- }
+
 
 static ipAddressFieldAndButton() {
      const ip_address_button = document.getElementById("ip_address_button");
@@ -89,16 +50,10 @@ static ipAddressFieldAndButton() {
 
     App.prepareAndConnect(ip);
   }
+ 
   static prepareAndConnect(ip: string) {
     App.hideIPChoiceAndShowGameContainer();
-    AppSetup.initialVisualCSSStyleAdjustments();
-    AppSetup.serverConnectionStuff(ip);
-    if (App.isUserUsingAPhone()) {
-      AppSetup.runJoystickSetupCode();
-    } else {
-      AppSetup.runKeyboardControlsSetupCode();
-    }
-    AppSetup.runFullscreenButtonSetupCode();
+  AppSetup.prepareAndSetupAllStuff(ip);
 
     AnimationLoop.start();
 
