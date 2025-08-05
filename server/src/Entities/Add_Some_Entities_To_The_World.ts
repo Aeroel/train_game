@@ -27,25 +27,14 @@ class Add_Some_Entities_To_The_World {
     static railLength = 1000;
     static rails: Rail[] = [];
    
-   
-    static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: "forwards" | "backwards") {
-        if(!AreOpposite(forwards, backwards)) {
-            throw new Error(`Directions must be opposing (left and right or up and down), but ${forwards} and ${backwards} given`);
-        }
-        if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
-            throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
-        }
-        const train = new Train(rail, forwards, backwards, movementDirection, 4, Add_Some_Entities_To_The_World.carSquareSize);
-        World.addEntity(train)
-
-
-    }
+  
     static doItNow() {
 
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
         Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
 
+    // random wall
       const wall = World.addEntity(
         new Wall());
         wall.setXY(950, 1250);
@@ -53,8 +42,11 @@ class Add_Some_Entities_To_The_World {
         wall.setWidth(40);
         wall.setColor("pink")
 
+      // random forcefield
         World.addEntity(new Forcefield());
 
+
+     // the two railways
         const first_rail = Add_Some_Entities_To_The_World.addARailway(400, 200, 4000, 400);
 
         this.Put_A_Train_On_Rail(first_rail, "down", "up", "forwards");
@@ -62,6 +54,8 @@ class Add_Some_Entities_To_The_World {
         const sec_rail = Add_Some_Entities_To_The_World.addARailway2(900, 600, 3000, 350);
 
         this.Put_A_Train_On_Rail(sec_rail, "up", "down", "forwards");
+        
+        // testing if train stops upon reaching this statiom stop spot
         World.addEntity(new Station_Stop_Spot(5710, 275));
         
 
@@ -278,6 +272,20 @@ const offset = carSquareSize * 2;
                 
           return rail2_0;
    }
+   
+       static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: "forwards" | "backwards") {
+        if(!AreOpposite(forwards, backwards)) {
+            throw new Error(`Directions must be opposing (left and right or up and down), but ${forwards} and ${backwards} given`);
+        }
+        if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
+            throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
+        }
+        const train = new Train(rail, forwards, backwards, movementDirection, 4, Add_Some_Entities_To_The_World.carSquareSize);
+        World.addEntity(train)
+
+
+    }
+    
     static addTheGroundToTheWholeWorld() {
         const ground = new Ground();
         ground.setX(0);

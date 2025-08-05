@@ -93,18 +93,21 @@ class Train_Car extends Base_Entity {
     this.Add_Center_Box_Entity();
 
     this.Init_Force_Keys();
-    this.Init_Propagation()
+    this.Add_Car_Walls_And_Doors_To_Propagation()
   }
 
-
+ // I dont think this does anything since I do not think I am using this for anything
   Connect_Car_To(otherCar: Train_Car, otherCarSide: keyof Train_Car["connectedCars"], thisCarSide: keyof Train_Car["connectedCars"]) {
     this.connectedCars[thisCarSide] = otherCar;
     otherCar.connectedCars[otherCarSide] = this;
 
   }
 
-
-  Init_Propagation() {
+  Init_Force_Keys() {
+    this.movementForces.Init_A_Component_With_Same_Key_For_Each_Direction(this.Rail_Movement_Key);
+  }
+  
+  Add_Car_Walls_And_Doors_To_Propagation() {
     // all walls and doors of the car
     for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
       this.movementForces.Add_Entity_To_Propagation_List(wall_or_door);
@@ -120,10 +123,6 @@ class Train_Car extends Base_Entity {
 
   }
 
-
-  Init_Force_Keys() {
-    this.movementForces.Init_A_Component_With_Same_Key_For_Each_Direction(this.Rail_Movement_Key);
-  }
 
 
   Add_Center_Box_Entity() {
@@ -146,8 +145,14 @@ class Train_Car extends Base_Entity {
 
 
   stopMovement() {
+   
+   if(this.currentMovementDirection === null) {
+     return;
+   }
     this.lastMovementDirectionBeforeNull = this.currentMovementDirection;
+    
     this.currentMovementDirection = null;
+
     this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
 
   }

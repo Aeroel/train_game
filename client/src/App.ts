@@ -7,6 +7,7 @@ export class App {
   static playerWantsToMoveFaster = false;
   static zoom: "no_change" | "in" | "out" = "no_change";
   static intangibility = false;
+
   static initialize() {
     document.addEventListener("DOMContentLoaded", () => {
       App.runThisCodeOncePageIsFullyLoaded();
