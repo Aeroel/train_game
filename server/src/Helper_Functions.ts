@@ -22,8 +22,10 @@ class Helper_Functions {
             return nets['Wi-Fi'][0].address;
         } else if (nets['swlan0']) {
             return nets['swlan0'][2].address;
-        } else {
-            throw new Error('Undefined WIFI');
+        } else if(nets["rmnet4"]) {
+          return nets["rmnet4"][1].address;
+         } else {
+            return "Couldn't get LAN IP";
         }
     }
 

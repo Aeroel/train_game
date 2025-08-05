@@ -6,9 +6,7 @@ import { SocketWrapper } from "#root/SocketWrapper"
 
 export class ClientPreparation {
   static preparationBeforeClientCanConnectToAServer() {
-    this.ipAddressFieldAndButton();
-    this.runThisUponIPAddressSubmit();
-    
+    this.ipAddressFieldAndButton()
 }
 static ipAddressFieldAndButton() {
      const ip_address_button = document.getElementById("ip_address_button");
