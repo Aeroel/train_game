@@ -18,32 +18,15 @@ import { Bulk_Of_Train_Car_Code } from "#root/Entities/Train_Stuff/Bulk_Of_Train
 export { Train_Car };
 
 interface Train_Car_Constructor {
-  Backwards_Movement_Directions: Train_Car_Movement_Directions,
-  Forwards_Movement_Directions: Train_Car_Movement_Directions,
+  Backwards_Movement_Directions: Train_Car_Motion_Directions,
+  Forwards_Movement_Directions: Train_Car_Motion_Directions,
   x: Base_Entity['x'],
   y: Base_Entity['y'],
   size: Base_Entity['x'] | Base_Entity['y'],
   train: Train,
 }
 
-export type Train_Car_Motion_Directions =
-  | []
-  | ['up']
-  | ['down']
-  | ['left']
-  | ['right']
-  
-  | ['left', 'up']
-  | ['up', 'left']
-  
-  | ['left', 'down']
-  | ['down', 'left']
-  
-  | ['right', 'up']
-  | ['up', 'right']
-  
-  | ['right', 'down']
-  | ['down', 'right'];
+export type Train_Car_Motion_Directions = Direction[]
 
   
   
@@ -52,7 +35,7 @@ export type Train_Car_End = {
 } & Position;
 
 export type Train_Car_End_Name = "firstEnd" | "secondEnd";
-export type Train_Car_Movement_Motion = null | "backwards" | "forwards";
+export type Train_Car_Motion = null | "backwards" | "forwards";
 
 export type Train_Car_Motions_Directions = {
   backwards: Train_Car_Motion_Directions,
@@ -81,13 +64,13 @@ class Train_Car extends Base_Entity {
   speedPerTick = 0.10 * 10;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
-  currentMovementMotion: Train_Car_Movement_Motion = "backwards";
+  currentMovementMotion: Train_Car_Motion = "backwards";
 
-  lastMovementMotionBeforeNull: Train_Car_Movement_Direction = null;
+  lastMovementMotionBeforeNull: Train_Car_Motion = null;
 
 motionsDirections: Train_Car_Motions_Directions = {
-    forwards: new Set<Direction>(),
-    backwards: new Set<Direction>(),
+    forwards: [],
+    backwards: [],
 };
 
   Rail_Movement_Key = `Rail_Movement`;
@@ -105,10 +88,9 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.setColor("brown");
     this.addTag("Train_Car");
     
-    this.motionsDirections["forwards"] = Train_Car_Static.createDirectionSet(Forwards_Movement_Directions);
-    this.motionsDirections["backwards"] = Train_Car_Static.createDirectionSet(Backwards_Movement_Directions);
+    Train_Car_Static.setMotionsDirections(this, Forwards_Movement_Directions, Backwards_Movement_Directions);
    
-    if(Forwards_Movement_Directions.has("down" || Forwards_Movement_Directions.has("up")) {
+    if(Forwards_Movement_Directions.includes("down") || Forwards_Movement_Directions.includes("up")) {
       this.orientation = "vertical"
     } else {
       this.orientation = "horizontal"
@@ -129,6 +111,12 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.Init_Force_Keys();
     this.Add_Car_Walls_And_Doors_To_Propagation()
   }
+  
+  setMotionsDirections(forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions) {
+   Train_Car_Static.setMotionsDirections(this, forwards, backwards);
+ 
+  }
+  
 
  // I dont think this does anything since I do not think I am using this for anything
   Connect_Car_To(otherCar: Train_Car, otherCarSide: keyof Train_Car["connectedCars"], thisCarSide: keyof Train_Car["connectedCars"]) {
@@ -255,7 +243,7 @@ motionsDirections: Train_Car_Motions_Directions = {
       y:nextPos.y}
       
       let Consumable_Budget;
-      if(this.motionsDirections["forwards"].has('up') || this.motionsDirections["forwards"].has('down')) {
+      if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
        Consumable_Budget = Math.abs(beginningPos.y - supposedNextPos.y)
       } else {
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
@@ -312,10 +300,14 @@ Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
      return;
    }
       // Okay, so from point, we know that the wall and car need us to process the logic
-      this.motionsDirections[this.currentMovementMotion] = Train_Car_Static.createDirectionSet(rail_switch_wall.modifiesCarTo);
-      this.motionsDirections[this.getOppositeCarMovementMotion(this.currentMovementMotion)] = Train_Car_Static.createDirectionSet(this.getOppositeDirections(rail_switch_wall.modifiesCarTo));
+      this.setMotionDirections(this.currentMovementMotion, rail_switch_wall.modifiesCarTo);
+      
+      this.setMotionDirections(this.getOppositeCarMovementMotion(this.currentMovementMotion), this.getOppositeDirections(rail_switch_wall.modifiesCarTo))
 }
 
+setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Directions) {
+  Train_Car_Static.setMotionDirections(this, motion, directions);
+}
   teleportAndBringPassengers(toX: number, toY: number) {
     const carDeltaX = toX - this.x;
     const carDeltaY = toY - this.y;
@@ -329,7 +321,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
       const newY = entity.y + carDeltaY;
       entity.setXY(newX, newY);
     }
-    if(this.motionsDirections["forwards"].has('up') || this.motionsDirections["forwards"].has('down')) {
+    if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
     return carDeltaY;
     } else {
       return carDeltaX;
@@ -348,7 +340,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   }
   
   
-  getOppositeCarMovementDirection(motion: Train_Car_Movement_Motion) {
+  getOppositeCarMovementMotion(motion: Train_Car_Motion) {
    if(motion === null) {
     throw new Error("motion is null, but this must not happen. Check the code leading up to this.") 
    }
@@ -403,7 +395,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   }
 
 
-  setMovementMotion(motion: Train_Car_Movement_Motion) {
+  setMovementMotion(motion: Train_Car_Motion) {
     if (motion !== null && !(this.twoPossibleMovementMotions.includes(motion))) {
       throw new Error(`Invalid mov motion ${motion} `);
     }

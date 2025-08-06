@@ -1,7 +1,7 @@
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { World } from "#root/World.js";
 import type { Station_Stop_Spot } from "../Station_Stop_Spot.js";
-import type { Train_Car, Train_Car_Movement_Direction } from "./Train_Car.js";
+import type { Train_Car, Train_Car_Motion } from "./Train_Car.js";
 
 export { Train_Car_Behaviour };
 
@@ -14,7 +14,7 @@ class Train_Car_Behaviour {
     lastSpot: null | Station_Stop_Spot = null;
     Is_Waiting_For_Five_Seconds: boolean  = false;
     Closing_Doors: boolean = false;
-    storedMovementDirection: Train_Car_Movement_Direction = null;
+    storedMotionDirection: Train_Car_Motion = null;
     pauseBegunAt = 0;
     constructor(ofThisCar: Train_Car) {
         if(!ofThisCar.hasTag("Train_Car")) {
@@ -55,7 +55,7 @@ class Train_Car_Behaviour {
     }
 
     Pause_Movement() {
-        this.storedMovementDirection = this.car.currentMovementDirection;
+        this.storedMotionDirection = this.car.currentMovementMotion;
         this.pauseBegunAt = Date.now();
         this.car.train.stopMovement();
 
@@ -69,7 +69,7 @@ class Train_Car_Behaviour {
 
     Continue_Moving() {
 
-        this.car.train.setMovementDirection(this.storedMovementDirection);
+        this.car.train.setMovementMotion(this.storedMotionDirection);
         this.Is_Waiting_For_Five_Seconds = false;
     }
     Get_Touching_Stop_Spot() : null | Station_Stop_Spot {

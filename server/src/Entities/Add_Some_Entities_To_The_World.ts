@@ -1,7 +1,7 @@
 import { Ground } from "#root/Entities/Ground.js";
 import { Base_Entity } from '#root/Entities/Base_Entity.js';
 import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
-import { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
+import { Train_Car, type Train_Car_Motion_Directions } from "#root/Entities/Train_Stuff/Train_Car.js";
 import { World } from "#root/World.js";
 import { Forcefield } from "#root/Entities/Forcefield.js";
 import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
@@ -9,19 +9,12 @@ import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
-import { My_Assert } from "#root/My_Assertion_Functionality.js";
+import { AssertThat } from "#root/My_Assertion_Functionality.js";
 import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 
 export { Add_Some_Entities_To_The_World };
 
-function AreOpposite(a: Direction, b:Direction) {
-    return (
-        (a === 'left' && b==='right') 
-        || (a==='right' &&b ==='left')
-        || (a==='down' && b==='up')
-        ||  (a === 'up' && b==='down') 
-    )
-}
+
 class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
     static railLength = 1000;
@@ -49,11 +42,11 @@ class Add_Some_Entities_To_The_World {
      // the two railways
         const first_rail = Add_Some_Entities_To_The_World.addARailway(400, 200, 4000, 400);
 
-        this.Put_A_Train_On_Rail(first_rail, "down", "up", "forwards");
+        this.Put_A_Train_On_Rail(first_rail, ["down"], ["up"], "forwards");
     
         const sec_rail = Add_Some_Entities_To_The_World.addARailway2(900, 600, 3000, 350);
 
-        this.Put_A_Train_On_Rail(sec_rail, "up", "down", "forwards");
+        this.Put_A_Train_On_Rail(sec_rail, ["up"], ["down"], "forwards");
         
         // testing if train stops upon reaching this statiom stop spot
         World.addEntity(new Station_Stop_Spot(5710, 275));
@@ -273,10 +266,8 @@ const offset = carSquareSize * 2;
           return rail2_0;
    }
    
-       static Put_A_Train_On_Rail(rail: Rail, forwards: Direction, backwards: Direction, movementDirection: "forwards" | "backwards") {
-        if(!AreOpposite(forwards, backwards)) {
-            throw new Error(`Directions must be opposing (left and right or up and down), but ${forwards} and ${backwards} given`);
-        }
+       static Put_A_Train_On_Rail(rail: Rail, forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions, movementDirection: "forwards" | "backwards") {
+
         if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
             throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
         }

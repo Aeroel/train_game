@@ -1,6 +1,5 @@
-export { My_Assert }
-function My_Assert(trueOrFalse: boolean, message: string) {
-      if((trueOrFalse) === false) {
-        throw new Error(`Assertion violated with message: ${message}`);
-      }
+export { AssertThat }
+
+function AssertThat(condition: unknown): asserts condition {
+  if (!condition) throw new Error('Assertion failed.');
 }
