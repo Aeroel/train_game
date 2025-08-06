@@ -17,7 +17,6 @@ export class Train extends Base_Entity {
     Waiting_Car_Current_Rail: Rail | null = null;
     cars: Train_Car[] = new Array();
     movMotion: Train_Movement_Motion = "forwards";
-    frontSide: "firstEnd" | "secondEnd" = "secondEnd";
     stopAllCars() {
         this.cars.forEach(car => {
             car.stopMovement();
@@ -56,7 +55,7 @@ export class Train extends Base_Entity {
             car.setMovementMotion(movementMotion);
             if (count > 0) {
                 const prevCar: Train_Car = this.cars[(this.cars.length - 1)];
-                car.Connect_Car_To(prevCar, "frontSide", "backSide");
+
             }
         }
     }

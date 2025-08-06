@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
     "noEmitOnError": true,
     "incremental": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo",

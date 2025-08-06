@@ -1,4 +1,4 @@
-
+import { AssertThat } from "#root/My_Assertion_Functionality.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
@@ -42,16 +42,11 @@ export type Train_Car_Motions_Directions = {
   forwards: Train_Car_Motion_Directions,
 }
 
-export type Train_Car_Connected_Cars = {
-  frontSide: null | Train_Car,
-  backSide: null | Train_Car
-};
 
 
 class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
 
-  connectedCars: Train_Car_Connected_Cars = { frontSide: null, backSide: null };
   train: Train;
 
   Wall_And_Door_Thickness = 5;
@@ -117,13 +112,6 @@ motionsDirections: Train_Car_Motions_Directions = {
  
   }
   
-
- // I dont think this does anything since I do not think I am using this for anything
-  Connect_Car_To(otherCar: Train_Car, otherCarSide: keyof Train_Car["connectedCars"], thisCarSide: keyof Train_Car["connectedCars"]) {
-    this.connectedCars[thisCarSide] = otherCar;
-    otherCar.connectedCars[otherCarSide] = this;
-
-  }
 
   Init_Force_Keys() {
     this.movementForces.Init_A_Component_With_Same_Key_For_Each_Direction(this.Rail_Movement_Key);
@@ -309,6 +297,12 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   Train_Car_Static.setMotionDirections(this, motion, directions);
 }
   teleportAndBringPassengers(toX: number, toY: number) {
+    AssertThat(
+      this.currentMovementMotion !== null, );
+    AssertThat(
+      this.motionsDirections.forwards.length > 0 && this.motionsDirections.backwards.length > 0,
+      );
+    
     const carDeltaX = toX - this.x;
     const carDeltaY = toY - this.y;
 
@@ -380,9 +374,7 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
     if(this.currentMovementMotion === null) {
       return null;
     }
-    const theSet= this.motionsDirections[this.currentMovementMotion];
-    const asArray = [...theSet];
-    return asArray
+    return this.motionsDirections[this.currentMovementMotion];
   }
   Is_Moving(): boolean {
     const isMoving: boolean = (this.currentMovementMotion === 'backwards' || this.currentMovementMotion === 'forwards');
