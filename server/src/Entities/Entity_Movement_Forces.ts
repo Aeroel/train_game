@@ -106,6 +106,7 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
             this.directions_and_their_components[forceDirection].push({ key, forceValue, keepAtZero });
             return;
         }
+
         const existingComponent = this.directions_and_their_components[forceDirection].find(component => component.key === key) as Force_Component;
         existingComponent.forceValue = forceValue;
 

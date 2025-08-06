@@ -56,7 +56,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  speedPerTick = 0.10 * 10;
+  speedPerTick = 0.10 * 5;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
   currentMovementMotion: Train_Car_Motion = "backwards";
@@ -492,8 +492,8 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   let minDistSq = Infinity;
 
   for (const info of colls) {
-    const dx = info.Position_Before_Collision_B.x - x;
-    const dy = info.Position_Before_Collision_B.y - y;
+    const dx = info.Position_Before_Collision_A.x - x;
+    const dy = info.Position_Before_Collision_A.y - y;
     const distSq = dx * dx + dy * dy;
 
     if (distSq < minDistSq) {
