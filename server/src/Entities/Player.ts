@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
 
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { SocketStorage } from "#root/SocketStorage.js";
@@ -75,7 +76,60 @@ const now = Date.now();
 
 
 
-
+collisionManager(calledTimes: number = 0) {
+  // this is because... I only call this twice
+  calledTimes++;
+  if(calledTimes >2) {
+    return;
+  }
+  const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
+  if(!(closestCollision)) {
+    return;
+  } 
+  const otherEntity = closestCollision.entityB;
+  const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
+  
+   const faces = Collision_Stuff.With_Which_Sides_Do_Two_Entities_Face_Each_Other(this, otherEntity);
+   if(!faces) {
+     // this probably means they are intersecting so we cant cleanly determine the answer. in that case something failed if we ever got to this, so just skip I guess.
+     console.log("Oopsie, must never happen and be resolved");
+     return;
+   }
+   const {aFace: playerFace, bFace: otherEntityFace} = faces;
+   const newPlayerPos = {
+     x:0,
+     y:0
+   }
+   
+   const offset = 1;
+   switch(otherEntityFace) {
+     case "right":
+        newPlayerPos.x = otherEntity.x + otherEntity.width + offset;
+        newPlayerPos.y = Player_Position_Just_Before_Collision.y
+      break;
+      
+      case "left":
+        newPlayerPos.x = otherEntity.x - offset - this.width;
+        newPlayerPos.y = Player_Position_Just_Before_Collision.y;
+      break;
+      
+      case "up":
+        newPlayerPos.x = Player_Position_Just_Before_Collision.x
+        newPlayerPos.y = otherEntity.y - offset - this.height;
+      break;
+      
+      case "down":
+        newPlayerPos.x = Player_Position_Just_Before_Collision.x
+        newPlayerPos.y = otherEntity.y + otherEntity.height + offset;
+      break;
+      
+   }
+   this.setPosition(newPlayerPos);
+   this.movementForces.nullify(playerFace);
+   this.movementForces.Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(otherEntityFace, otherEntity);
+   
+   this.collisionManager(calledTimes);
+}
 
 
   saveXYToFile() {

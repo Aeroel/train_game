@@ -66,14 +66,14 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
             throw new Error(`${key} not in ${forceDirection}, why?`);
         }
         const component = this.directions_and_their_components[forceDirection].find(component => component.key === key) as Force_Component;
-        return component.forceValue;
+        return component;
     }
     Get_A_Component_From_Each_Direction_By_Key(key: string) {
         const result = { up: 0, down: 0, left: 0, right: 9 };
-        result.up = this.Get_Direction_Component_By_Key(key, "up");
-        result.down = this.Get_Direction_Component_By_Key(key, "down");
-        result.left = this.Get_Direction_Component_By_Key(key, "left");
-        result.right = this.Get_Direction_Component_By_Key(key, "right");
+        result.up = this.Get_Direction_Component_By_Key(key, "up").forceValue;
+        result.down = this.Get_Direction_Component_By_Key(key, "down").forceValue;
+        result.left = this.Get_Direction_Component_By_Key(key, "left").forceValue;
+        result.right = this.Get_Direction_Component_By_Key(key, "right").forceValue;
 
         // simple post check
         Assert_That_Numbers_Are_Finite(result);
@@ -166,10 +166,10 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
 
     Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(
         forceDirection: keyof Entity_Movement_Forces["directions_and_their_components"],
-        anotherEntityForces: Entity_Movement_Forces
+        anotherEntity: Base_Entity
     ): string[] {
         const forceAComponents = this.directions_and_their_components[forceDirection];
-        const forceBComponents = anotherEntityForces.directions_and_their_components[forceDirection];
+        const forceBComponents = anotherEntity.movementForces.directions_and_their_components[forceDirection];
 
         const forceBTags = new Set(forceBComponents.map((component) => component.key));
 
@@ -189,6 +189,15 @@ Get_Keys_Of_Force_Components_Of_Direction(
 nullify(direction: keyof Entity_Movement_Forces["directions_and_their_components"]) {
   this.directions_and_their_components[direction].forEach((forceComponent: Force_Component )=> {
     forceComponent.forceValue = 0;
+  })
+}
+
+Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(direction: keyof Entity_Movement_Forces["directions_and_their_components"], anotherEntity: Base_Entity) {
+  const neededKeys = anotherEntity.movementForces.Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(direction, this.entity);
+
+  neededKeys.forEach(key=>{
+    const component =     anotherEntity.movementForces.Get_Direction_Component_By_Key(key, direction);
+    this.Set_Component(key, direction, component.forceValue, component.keepAtZero);
   })
 }
 }

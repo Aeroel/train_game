@@ -35,6 +35,7 @@ class Game_Loop {
 
     EmitStuff.Emit_To_All_Players_World_State_Stuff();
     Game_Loop.Next_Moment_Of_All_Entities();
+    Game_Loop.Collision_Resolutor();
     Game_Loop.Update_Positions_Of_All_Entities();
   }
 
@@ -43,7 +44,11 @@ class Game_Loop {
       entity.updateStateWrapper();
     });
   }
-  
+  static Collision_Resolutor() {
+        World.getCurrentEntities().forEach(entity => {
+      entity.collisionManager();
+    });
+  }
   static Update_Positions_Of_All_Entities() {
     
     World.getCurrentEntities().forEach(entity => {

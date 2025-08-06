@@ -63,16 +63,16 @@ class Collision_Stuff {
  
   static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity) {
     let Collision_Occurred = false;
-    let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
-    let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
-    let Last_Box_Before_Collision_A: Box = {
+    let Position_Just_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
+    let Position_Just_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
+    let Last_Box_Just_Before_Collision_A: Box = {
       x:entityA.x,
     y:entityA.y,
     width:entityA.width,
     height:entityA.height,
       
     };
-    let Last_Box_Before_Collision_B: Box={
+    let Last_Box_Just_Before_Collision_B: Box={
       x:entityB.x,
     y:entityB.y,
     width:entityB.width,
@@ -94,42 +94,33 @@ class Collision_Stuff {
         loop.stop();
         return;
       }
-      Position_Before_Collision_A = { x: subA.x, y: subA.y }
-      Position_Before_Collision_B = { x: subB.x, y: subB.y }
-      Last_Box_Before_Collision_A = subA;
-      Last_Box_Before_Collision_B = subB;
+      Position_Just_Before_Collision_A = { x: subA.x, y: subA.y }
+      Position_Just_Before_Collision_B = { x: subB.x, y: subB.y }
+      Last_Box_Just_Before_Collision_A = subA;
+      Last_Box_Just_Before_Collision_B = subB;
     })
 
     const result: Collision_Info = { Collision_Occurred,
-    Position_Before_Collision_A, Position_Before_Collision_B,
+    Position_Just_Before_Collision_A, Position_Just_Before_Collision_B,
     Starting_Position_A,
     Starting_Position_B,
     Theoretical_Ending_Position_A,
     Theoretical_Ending_Position_B,
     entityA,
     entityB,
-    Last_Box_Before_Collision_A,
-    Last_Box_Before_Collision_B,
+    Last_Box_Just_Before_Collision_A,
+    Last_Box_Just_Before_Collision_B,
     };
     return result;
 
   }
-static  Boxes_Looking(Box_A:Box,Box_B:Box) {
 
-   const Entity_A_Looks_At_B_Direction = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(Box_A, Box_B).aFace as Direction;
-  const  Entity_B_Looks_At_A_Direction = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(Box_B, Box_A).aFace as Direction;
-    return {
-      Entity_A_Looks_At_B_Direction, Entity_B_Looks_At_A_Direction
-      
-    }
-    
-}
   static Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(entityA: Base_Entity, entityB: Base_Entity) {
 
 
     let Collision_Occurred = false;
-    let Position_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
-    let Position_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
+    let Position_Just_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
+    let Position_Just_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
 
 
     const loop = new Subpositions_Loop(entityA, entityB);
@@ -138,12 +129,12 @@ static  Boxes_Looking(Box_A:Box,Box_B:Box) {
         Collision_Occurred = true;
         loop.stop();
       }
-      Position_Before_Collision_A = { x: subA.x, y: subA.y }
-      Position_Before_Collision_B = { x: subB.x, y: subB.y }
+      Position_Just_Before_Collision_A = { x: subA.x, y: subA.y }
+      Position_Just_Before_Collision_B = { x: subB.x, y: subB.y }
     })
 
 
-    const result = { Collision_Occurred, Position_Before_Collision_A, Position_Before_Collision_B };
+    const result = { Collision_Occurred, Position_Just_Before_Collision_A, Position_Just_Before_Collision_B };
     return result;
 
 
@@ -179,7 +170,9 @@ static  Boxes_Looking(Box_A:Box,Box_B:Box) {
 
   }
 
-  static Which_Side_Of_Entity_Is_Facing_Another_Entity(a: Box, b: Box) {
+  static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
+  {aFace: Direction, bFace: Direction} | null
+  {
     const aRight = a.x + a.width;
     const aBottom = a.y + a.height;
     const bRight = b.x + b.width;
@@ -187,9 +180,10 @@ static  Boxes_Looking(Box_A:Box,Box_B:Box) {
 
     const xOverlap = a.x < bRight && aRight > b.x;
     const yOverlap = a.y < bBottom && aBottom > b.y;
-
-    if (xOverlap && yOverlap) {
-        throw new Error("Rectangles intersect; facing direction is undefined.");
+    const intersects = xOverlap && yOverlap;
+    if (intersects) {
+      
+         return null;
     }
 
     // If they are vertically apart (priority)
@@ -352,11 +346,11 @@ static getClosestCollision(
   const entityStart = allDetectedCollPairs[0].Starting_Position_A;
 
   let closest: Collision_Info = allDetectedCollPairs[0];
-  let minDistSq = distSq(entityStart, closest.Position_Before_Collision_A);
+  let minDistSq = distSq(entityStart, closest.Position_Just_Before_Collision_A);
 
   for (let i = 1; i < allDetectedCollPairs.length; i++) {
     const curr = allDetectedCollPairs[i];
-    const currDistSq = distSq(entityStart, curr.Position_Before_Collision_A);
+    const currDistSq = distSq(entityStart, curr.Position_Just_Before_Collision_A);
 
     if (currDistSq < minDistSq) {
       closest = curr;

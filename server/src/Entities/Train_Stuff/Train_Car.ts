@@ -241,7 +241,7 @@ motionsDirections: Train_Car_Motions_Directions = {
  
       this.Sensor_Wall_Stuff(rail_switch_wall);
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
-      let spent = this.teleportAndBringPassengers(closest.Position_Before_Collision_A.x, closest.Position_Before_Collision_A.y)
+      let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
       Budget_Remaining -= spent;
       // now begins the budget loop
       while(Budget_Remaining > 0) {
@@ -261,7 +261,7 @@ motionsDirections: Train_Car_Motions_Directions = {
             return;
         }
 
-        const pos = closestSensorCollision.Position_Before_Collision_A;
+        const pos = closestSensorCollision.Position_Just_Before_Collision_A;
         spent = this.teleportAndBringPassengers(pos.x, pos.y);
         Budget_Remaining -= spent;
       }
@@ -492,8 +492,8 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
   let minDistSq = Infinity;
 
   for (const info of colls) {
-    const dx = info.Position_Before_Collision_A.x - x;
-    const dy = info.Position_Before_Collision_A.y - y;
+    const dx = info.Position_Just_Before_Collision_A.x - x;
+    const dy = info.Position_Just_Before_Collision_A.y - y;
     const distSq = dx * dx + dy * dy;
 
     if (distSq < minDistSq) {

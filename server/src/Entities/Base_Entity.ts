@@ -28,6 +28,9 @@ class Base_Entity {
     this.addTag("Entity");
   }
 
+collisionManager() {
+  
+}
 
   calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
     const netHorizontalForce = this.movementForces.Get_Net_Axis_Force("horizontal")
