@@ -191,6 +191,12 @@ nullify(direction: keyof Entity_Movement_Forces["directions_and_their_components
     forceComponent.forceValue = 0;
   })
 }
+nullifyAll() {
+  this.nullify("up")
+  this.nullify("down")
+  this.nullify("left")
+  this.nullify("right")
+}
 
 Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(direction: keyof Entity_Movement_Forces["directions_and_their_components"], anotherEntity: Base_Entity) {
   const neededKeys = anotherEntity.movementForces.Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(direction, this.entity);

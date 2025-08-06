@@ -429,7 +429,8 @@ const carContentsAndPassengers = this.getCarContentsAndPassengers();
     if (!entity.hasTag("Can_Ride_Train")) {
       return false;
     }
-    if (!Collision_Stuff.areEntitiesTouching(this, entity)) {
+    const intersect = Collision_Stuff.areEntitiesIntersecting(this, entity).Collision_Occurred;
+    if (!intersect) {
       return false;
     }
     return true;
