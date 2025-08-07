@@ -8,6 +8,7 @@ import { SocketStorage } from "#root/SocketStorage.js";
 
 import { log } from "console";
 import type { Socket } from "socket.io";
+import { Collision_Logger} from "#root/Collision_Stuff/Collision_Logger.js"
 export { Player };
 class Player extends Base_Entity {
   controls = {
@@ -77,15 +78,16 @@ const now = Date.now();
 
 
 collisionManager(calledTimes: number = 0) {
-  // this is because... I only call this twice
+
   calledTimes++;
-  if(calledTimes >2) {
-    return;
-  }
+
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
   if(!(closestCollision)) {
+   // Collision_Logger.add(`[${calledTimes}]`
+      )
     return;
   } 
+  
   const otherEntity = closestCollision.entityB;
   const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
   
@@ -101,7 +103,7 @@ collisionManager(calledTimes: number = 0) {
      y:0
    }
    
-   const offset = 1;
+   const offset = 0;
    switch(otherEntityFace) {
      case "right":
         newPlayerPos.x = otherEntity.x + otherEntity.width + offset;

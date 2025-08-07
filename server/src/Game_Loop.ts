@@ -5,7 +5,7 @@ import { World } from "#root/World.js";
 export { Game_Loop }
 
 class Game_Loop {
-  static tickRate = 20; // Updates per second
+  static tickRate = 25; // Updates per second
   static msPerTick = 1000 / Game_Loop.tickRate; // Duration of each update in milliseconds
   static deltaTime = Game_Loop.msPerTick;
   static lastUpdateTime = Date.now();
