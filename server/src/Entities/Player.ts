@@ -8,6 +8,7 @@ import { SocketStorage } from "#root/SocketStorage.js";
 
 import { log } from "console";
 import type { Socket } from "socket.io";
+import type { Position } from "#root/Type_Stuff.js";
 import { Collision_Logger} from "#root/Collision_Stuff/Collision_Logger.js"
 export { Player };
 class Player extends Base_Entity {
@@ -18,6 +19,7 @@ class Player extends Base_Entity {
     down: false,
   };
   lastSaveTime=0;
+  previousPositions:Position[]=[]
   marked: Base_Entity[] = [];
   speedUp = false;
   intangibility = false;
@@ -83,8 +85,7 @@ collisionManager(calledTimes: number = 0) {
 
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
   if(!(closestCollision)) {
-   // Collision_Logger.add(`[${calledTimes}]`
-      )
+
     return;
   } 
   
@@ -124,6 +125,9 @@ collisionManager(calledTimes: number = 0) {
         newPlayerPos.x = Player_Position_Just_Before_Collision.x
         newPlayerPos.y = otherEntity.y + otherEntity.height + offset;
       break;
+      default:
+       throw new Error("Must neve happen")
+      break;
       
    }
    this.setPosition(newPlayerPos);
@@ -133,7 +137,13 @@ collisionManager(calledTimes: number = 0) {
    this.collisionManager(calledTimes);
 }
 
+savePosition(pos: Position) {
+  if (this.previousPositions.length === 4) {
+    this.previousPositions.shift(); // remove first element
+  }
+  this.previousPositions.push(pos);
 
+}
   saveXYToFile() {
     const savePath = path.resolve("player_save.json");
 

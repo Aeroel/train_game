@@ -309,7 +309,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     this.x = toX;
     this.y = toY;
 
-const carContentsAndPassengers = this.getCarContentsAndPassengers();
+   const carContentsAndPassengers = this.getCarContentsAndPassengers();
     for (const entity of carContentsAndPassengers) {
       const newX = entity.x + carDeltaX;
       const newY = entity.y + carDeltaY;
