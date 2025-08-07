@@ -206,4 +206,9 @@ Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already
     this.Set_Component(key, direction, component.forceValue, component.keepAtZero);
   })
 }
+
+nullifyByKeyInAllDirections(key: string) {
+     const directionsValues = this.Get_No_Movement_Forces();
+      this.Set_A_Component_For_Each_Direction_By_Same_Key(key, directionsValues)
+}
 }

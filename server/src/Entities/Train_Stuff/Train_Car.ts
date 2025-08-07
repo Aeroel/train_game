@@ -56,7 +56,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  speedPerTick = 0.10 * 5;
+  speedPerTick = 0.10 * 25;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
   currentMovementMotion: Train_Car_Motion = "backwards";
@@ -314,6 +314,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
       const newX = entity.x + carDeltaX;
       const newY = entity.y + carDeltaY;
       entity.setXY(newX, newY);
+
     }
     if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
     return carDeltaY;
