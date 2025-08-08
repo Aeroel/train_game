@@ -24,10 +24,10 @@ class Socket_Processor {
         const newPlayerEntity = new Player();
         newPlayerEntity.setX(350);
         newPlayerEntity.setY(350);
-        newPlayerEntity.readSavedXY();
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
         newPlayerEntity.setVisionRange(5000);
+        newPlayerEntity.readSavedState();
         newPlayerEntity.setSocketId(socket.id);
         World.addEntity(newPlayerEntity);
 

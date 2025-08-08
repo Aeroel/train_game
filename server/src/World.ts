@@ -26,6 +26,10 @@ class World {
   static getCurrentEntities() : Base_Entity[] {
     return World.getCurrentState().entities;
   }
+  // alias
+  static getAllEntities() : Base_Entity[] {
+    return World.getCurrentEntities();
+  }
   
   
   static filterEntities(filterCriteriaFunction: (entity: Base_Entity)=> boolean) : Base_Entity[] {

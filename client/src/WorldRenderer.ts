@@ -57,7 +57,7 @@ class WorldRenderer {
             throw new Error("Could not get coordinates box");
         }
               // Update coordinates box with player position
-        coordinatesBox.textContent = `Player Position: X: ${playerX}, Y: ${playerY}`;
+        coordinatesBox.innerText = `Player Position:\n X: ${playerX},\n Y: ${playerY}`;
     }
     
     static speedUpHandler(speedUp: boolean) {

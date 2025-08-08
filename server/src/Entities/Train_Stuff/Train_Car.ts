@@ -56,7 +56,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  speedPerTick = 0.10 * 25;
+  speedPerTick = 0.10 * 10;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
   currentMovementMotion: Train_Car_Motion = "backwards";
@@ -387,6 +387,46 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     return this.bulk_of_code.determine_new_forces_for_movement_along_the_rail();
   }
 
+closeDoors(dir: Direction) {
+  switch(dir) {
+    case "right":
+            this.Walls_And_Doors.Right_Side_Top_Door.close();
+            this.Walls_And_Doors.Right_Side_Bottom_Door.close();
+    break;
+    case "left":
+           this.Walls_And_Doors.Left_Side_Top_Door.close();
+            this.Walls_And_Doors.Left_Side_Bottom_Door.close();
+    break;
+    case "up":
+           this.Walls_And_Doors.Top_Left_Door.close();
+            this.Walls_And_Doors.Top_Right_Door.close(); 
+    break;
+    case "down":
+            this.Walls_And_Doors.Bottom_Left_Door.close();
+            this.Walls_And_Doors.Bottom_Right_Door.close();
+    break;
+  }
+}
+openDoors(dir: Direction) {
+  switch(dir) {
+    case "right":
+            this.Walls_And_Doors.Right_Side_Top_Door.open();
+            this.Walls_And_Doors.Right_Side_Bottom_Door.open();
+    break;
+    case "left":
+           this.Walls_And_Doors.Left_Side_Top_Door.open();
+            this.Walls_And_Doors.Left_Side_Bottom_Door.open();
+    break;
+    case "up":
+           this.Walls_And_Doors.Top_Left_Door.open();
+            this.Walls_And_Doors.Top_Right_Door.open(); 
+    break;
+    case "down":
+            this.Walls_And_Doors.Bottom_Left_Door.open();
+            this.Walls_And_Doors.Bottom_Right_Door.open();
+    break;
+  }
+}
 
   setMovementMotion(motion: Train_Car_Motion) {
     if (motion !== null && !(this.twoPossibleMovementMotions.includes(motion))) {
@@ -397,7 +437,6 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
 
 
   updateState() {
- //   this.behaviour.behaviour();
     this.move_handler();
     this.Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car();
     super.updateState();

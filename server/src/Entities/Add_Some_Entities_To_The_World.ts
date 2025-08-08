@@ -49,7 +49,24 @@ class Add_Some_Entities_To_The_World {
         this.Put_A_Train_On_Rail(sec_rail, ["up"], ["down"], "forwards");
         
         // testing if train stops upon reaching this statiom stop spot
-        World.addEntity(new Station_Stop_Spot(5710, 275));
+        World.addEntity(
+          new Station_Stop_Spot({
+          x: 5710, y: 275, Which_Door_Of_A_Car_To_Open_And_Close:"down"})
+          );
+        World.addEntity(
+          new Station_Stop_Spot({
+          x:8800, y:2135,
+          Which_Door_Of_A_Car_To_Open_And_Close:"left"
+          })
+          );
+        World.addEntity(
+          new Station_Stop_Spot({x:6000, y:4135, Which_Door_Of_A_Car_To_Open_And_Close:"up"})
+          );
+        World.addEntity(new Station_Stop_Spot({
+          x:925, y:2193, Which_Door_Of_A_Car_To_Open_And_Close:"right"
+          
+        })
+        );
         
 
     }

@@ -71,7 +71,7 @@ class Player extends Base_Entity {
 const now = Date.now();
 
   if (now - this.lastSaveTime >= 1000) {
-    this.saveXYToFile();
+    this.saveStateToFile();
     this.lastSaveTime = now;
   }
 
@@ -146,12 +146,14 @@ savePosition(pos: Position) {
   this.previousPositions.push(pos);
 
 }
-  saveXYToFile() {
+  saveStateToFile() {
     const savePath = path.resolve("player_save.json");
 
   const data = {
     x: this.x,
-    y: this.y
+    y: this.y,
+    visionRange: this.visionRange,
+    
   };
 
   try {
@@ -161,7 +163,7 @@ savePosition(pos: Position) {
   }
   }
 
-  readSavedXY() {
+  readSavedState() {
   const savePath = path.resolve("player_save.json");
 
   if (!fs.existsSync(savePath)) {
@@ -173,6 +175,7 @@ savePosition(pos: Position) {
     const file = fs.readFileSync(savePath, "utf-8");
     const data = JSON.parse(file);
     this.setXY(data.x, data.y);
+    this.visionRange = data.visionRange;
   } catch (err) {
     console.error("Failed to read player position:", err);
   }
