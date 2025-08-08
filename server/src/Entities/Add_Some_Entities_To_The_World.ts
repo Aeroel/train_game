@@ -25,8 +25,8 @@ class Add_Some_Entities_To_The_World {
 
         Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
-        Add_Some_Entities_To_The_World.addTheGroundToTheWholeWorld();
-
+        Add_Some_Entities_To_The_World.addTheGround();
+        
     // random wall
       const wall = World.addEntity(
         new Wall());
@@ -67,6 +67,9 @@ class Add_Some_Entities_To_The_World {
           
         })
         );
+        
+        
+       const thirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
         
 
     }
@@ -294,13 +297,20 @@ const offset = carSquareSize * 2;
 
     }
     
-    static addTheGroundToTheWholeWorld() {
+    static addTheGround() {
         const ground = new Ground();
         ground.setX(0);
         ground.setY(0);
         ground.setWidth(World.width);
         ground.setHeight(World.height);
         World.addEntity(ground);
+        
+        const groundTwo = new Ground({color: "darkgreen"});
+        groundTwo.setX(0);
+        groundTwo.setY(World.height);
+        groundTwo.setWidth(World.width);
+        groundTwo.setHeight(World.height);
+        World.addEntity(groundTwo);
     }
 
     static addAWhiteRectangleForMovementReference() {
@@ -310,5 +320,68 @@ const offset = carSquareSize * 2;
         newEntity.setWidth(50);
         newEntity.setHeight(40);
         World.addEntity(newEntity);
+    }
+    
+    static addThirdRailway(x: number, y: number, mainLength: number, switchLength: number) {
+        const railOne_B = Railway_Placing_Functionality.place(x,y,mainLength, "down", );
+        
+        const railOne_A = Railway_Placing_Functionality.place(x-400,y,mainLength+400, "down", );
+
+const thicknessWall= 10;
+const lengthWall = this.carSquareSize;
+const half = 0.5*this.carSquareSize;
+
+       const railOne_A_Second_End = railOne_A.getEnd("secondEnd");
+       const railOne_A_Down_Switch =
+              World.addEntity(new Rail_Switch_Wall(
+                railOne_A_Second_End.x - half, railOne_A_Second_End.y + half, ["down"], ["down","right"], lengthWall,thicknessWall
+                ));
+                
+       const railOne_A_Up_Left_Switch =
+              World.addEntity(new Rail_Switch_Wall(
+                railOne_A_Second_End.x - half, railOne_A_Second_End.y - half, ["left", "up"], ["up"], thicknessWall,lengthWall
+                ));
+                
+        const railNegOne_A = Railway_Placing_Functionality.placeSwitch(railOne_A, "firstEnd", "left", 200, 500);
+        
+        const railNegTwo_A = Railway_Placing_Functionality.placeSwitch(railNegOne_A, "firstEnd", "up", 200, 500);
+    
+        const railNegThree_A = Railway_Placing_Functionality.placeSwitch(railNegTwo_A, "firstEnd", "right", 200, 900);
+
+        const railNegFour_A = Railway_Placing_Functionality.placeSwitch(railNegThree_A, "secondEnd", "down", 200, 900);
+
+
+       const railTwo_B = Railway_Placing_Functionality.placeSwitch(railOne_B, "secondEnd", "right", switchLength, mainLength+400);
+
+       const railTwo_A = Railway_Placing_Functionality.placeSwitch(railOne_A, "secondEnd", "right", switchLength, mainLength+400);
+       
+              const railTwo_A_First_End = railTwo_A.getEnd("firstEnd");
+       const railTwo_A_Right_Down_Switch =
+              World.addEntity(new Rail_Switch_Wall(
+                railTwo_A_First_End.x - half, railTwo_A_First_End.y + half, ["right", "down"], ["right"], lengthWall,thicknessWall
+                ));
+                
+       const railTwo_A_Left_Switch =
+              World.addEntity(new Rail_Switch_Wall(
+                railTwo_A_First_End.x - half, railTwo_A_First_End.y - half, ["left"], ["left","up"], thicknessWall,lengthWall
+                )); 
+       
+       
+       const railThree_B = Railway_Placing_Functionality.placeSwitch(railTwo_B, "secondEnd", "down", switchLength, mainLength);
+
+       const railThree_A = Railway_Placing_Functionality.placeSwitch(railTwo_A, "secondEnd", "down", switchLength, mainLength);
+
+       const railFour_B = Railway_Placing_Functionality.placeSwitch(railThree_B, "secondEnd", "right", switchLength, mainLength);
+
+       const railFour_A = Railway_Placing_Functionality.placeSwitch(railThree_A, "secondEnd", "right", switchLength, mainLength+400);
+       
+       const railFive_B = Railway_Placing_Functionality.placeSwitch(railFour_B, "secondEnd", "up", 200, 500);
+       
+       const railSix_B = Railway_Placing_Functionality.placeSwitch(railFive_B, "firstEnd", "right", 200, 500);
+       
+       const railSeven_B = Railway_Placing_Functionality.placeSwitch(railSix_B, "secondEnd", "down", 200, 900);
+       
+       const railEight_B = Railway_Placing_Functionality.placeSwitch(railSeven_B, "secondEnd", "left", 200, 900);
+
     }
 }
