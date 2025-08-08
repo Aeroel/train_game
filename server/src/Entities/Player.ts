@@ -83,13 +83,16 @@ collisionManager(calledTimes: number = 0) {
   if(this.intangibility) {
     return;
   }
-  calledTimes++;
-
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
   if(!(closestCollision)) {
 
     return;
   } 
+  calledTimes++;
+ if(calledTimes >6) {
+    return;
+ }
+  
   
   const otherEntity = closestCollision.entityB;
   const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 

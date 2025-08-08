@@ -23,7 +23,10 @@ export class Train extends Base_Entity {
         currentStopSpot: Station_Stop_Spot | null = null;
         begunWaiting = false;
         waitPeriodMs= 10 * 1000;
+        waitOnDoorPeriodMs= 5 * 1000;
         waitingSince = 0;
+        begunWaitingOnDoor = false;
+        waitingOnDoorSince =0;
     
     constructor(rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
         super();
@@ -41,13 +44,21 @@ export class Train extends Base_Entity {
     
     
     updateState() {
-      if(this.begunWaiting && Date.now() >(this.waitingSince + this.waitPeriodMs) ) {
+      if(this.begunWaiting) {
+        if(Date.now() >(this.waitingSince + this.waitPeriodMs) ) {
         this.begunWaiting = false;
-        this.resumeMovement();
+        this.begunWaitingOnDoor = true
+        this.waitingOnDoorSince=Date.now();
         if(this.currentStopSpot===null){
           throw new Error("Station_Stop_Spot is null")
         }
         this.closeDoors(this.currentStopSpot.Which_Door_Of_A_Car_To_Open_And_Close);
+        }
+      } else if(this.begunWaitingOnDoor) {
+        if(Date.now() > (this.waitOnDoorPeriodMs + this.waitingOnDoorSince)) {
+        this.begunWaitingOnDoor = false;
+        this.resumeMovement();
+            }
       } else {
        this.checkForUpcomingStopSpot();
       }
@@ -77,7 +88,7 @@ checkForUpcomingStopSpot() {
         this.currentStopSpot = stopSpotEntity;
         this.openDoors(this.currentStopSpot.Which_Door_Of_A_Car_To_Open_And_Close)
         this.alignCars(collision);
-        this.stopMovement();
+        this.pauseMovement();
 }
 openDoors(dir: Direction) {
   this.cars.forEach(car=> {
@@ -103,9 +114,6 @@ alignCars(collision: Collision_Info) {
     // Apply the delta to every car and update their internals
     for (const car of this.cars) {
         car.teleportCarContentsAndPassengersByDelta(deltaX, deltaY);
-        if(car === frontCar) {
-          continue;
-        }
         car.setXY(car.x + deltaX, car.y + deltaY);
     }
 }
