@@ -3,7 +3,7 @@ import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js"
 import { Train_Car, type Train_Car_Motion_Directions } from "#root/Entities/Train_Stuff/Train_Car.js";
-import type { Box, Direction, Position } from "#root/Type_Stuff.js";
+import type { Box, Direction, Position, Collision_Info } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
 import { log } from "console";
 
@@ -15,20 +15,106 @@ export class Train extends Base_Entity {
     y = 1;
     cars: Train_Car[] = new Array();
     movementMotion: Train_Movement_Motion = "forwards";
-    begunWaitingAt =0;
-    begunWaitingForDoorsAt =0;
-    previousMovementMotion: Train_Movement_Motion = "forwards";
-    Doors_to_control: Direction="right";
-    doorsState: "open"|"closed" = "closed";
-    lastStationStopSpot: null | Station_Stop_Spot = null;
-    currentStationStopSpot: null | Station_Stop_Spot = null;
 
+    Forwards_Movement_Directions: Train_Car_Motion_Directions =[];
+    Backwards_Movement_Directions: Train_Car_Motion_Directions=[];
+        beforePauseMovementMotion: Train_Movement_Motion = null;
+        
+        currentStopSpot: Station_Stop_Spot | null = null;
+        begunWaiting = false;
+        waitPeriodMs= 10 * 1000;
+        waitingSince = 0;
+    
     constructor(rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
         super();
         this.movementMotion = movementMotion;
-        this.previousMovementMotion = this.movementMotion;
-        let startPosition: Position;
-        if (rail.getOrientation() === 'horizontal') {
+
+        let startPosition: Position = this.getStartingPosition(rail, carSquareSize);
+        for (let count = 0; count < numberOfCars; count++) {
+              this.spawnCar(startPosition, count, rail, Forwards_Movement_Directions, Backwards_Movement_Directions, movementMotion, numberOfCars, carSquareSize)
+        }
+        
+
+    }
+   
+   
+    
+    
+    updateState() {
+      if(this.begunWaiting && Date.now() >(this.waitingSince + this.waitPeriodMs) ) {
+        this.begunWaiting = false;
+        this.resumeMovement();
+        if(this.currentStopSpot===null){
+          throw new Error("Station_Stop_Spot is null")
+        }
+        this.closeDoors(this.currentStopSpot.Which_Door_Of_A_Car_To_Open_And_Close);
+      } else {
+       this.checkForUpcomingStopSpot();
+      }
+        super.updateState();
+    }
+
+checkForUpcomingStopSpot() {
+    if (!this.isMoving()) return; // no point checking if stationary
+    const frontCar = this.getFrontCar();
+
+    // Find the closest collision where the other entity is a StopSpot
+    const collision = Collision_Stuff.getClosestCollision(
+        frontCar,
+        (other) => other.hasTag("Station_Stop_Spot")
+    );
+
+    if (!collision) {
+      return;
+    }
+     const stopSpotEntity = collision.entityB as Station_Stop_Spot;
+    if((this.currentStopSpot === stopSpotEntity )) {
+      return;
+    }
+
+        this.begunWaiting = true;
+        this.waitingSince = Date.now();
+        this.currentStopSpot = stopSpotEntity;
+        this.openDoors(this.currentStopSpot.Which_Door_Of_A_Car_To_Open_And_Close)
+        this.alignCars(collision);
+        this.stopMovement();
+}
+openDoors(dir: Direction) {
+  this.cars.forEach(car=> {
+    car.openDoors(dir);
+  })
+}
+closeDoors(dir: Direction) {
+  this.cars.forEach(car=> {
+    car.closeDoors(dir);
+  })
+}
+
+alignCars(collision: Collision_Info) {
+
+    // Calculate how far we need to shift everything
+    const frontCar = this.getFrontCar();
+   // Stop movement for the entire train immediately
+    const before = collision.Position_Just_Before_Collision_A;
+
+    const deltaX = before.x - frontCar.x;
+    const deltaY = before.y - frontCar.y;
+
+    // Apply the delta to every car and update their internals
+    for (const car of this.cars) {
+        car.teleportCarContentsAndPassengersByDelta(deltaX, deltaY);
+        if(car === frontCar) {
+          continue;
+        }
+        car.setXY(car.x + deltaX, car.y + deltaY);
+    }
+}
+
+
+
+getStartingPosition(rail: Rail, carSquareSize: number) {
+  let startPosition = {x:0,y:0};
+          if (rail.getOrientation() === 'horizontal') {
             startPosition = {
                 x: rail.getX() +(0.5*rail.width),
                 y: rail.getY() - (carSquareSize / 2),
@@ -39,160 +125,9 @@ export class Train extends Base_Entity {
                 y: rail.getY() + (rail.height*0.5)
             }
         }
-        for (let count = 0; count < numberOfCars; count++) {
-              this.spawnCar(startPosition, count, rail, Forwards_Movement_Directions, Backwards_Movement_Directions, movementMotion, numberOfCars, carSquareSize)
-        }
-    }
-   
-   
-    
-    
-    updateState() {
-       this.stateHandler();
-      
-        super.updateState();
-    }
- stateHandler() {
-    switch(this.state) {
-      case "in_transit":
-        this.Handle_in_transit_state();
-      break;
-      case "waiting_at_station":
-        this.Handle_waiting_at_station_state();
-      break;
-      
-    }
- }
- Handle_in_transit_state() {
-      const Did_the_train_reach_a_station = this.Did_the_train_reach_a_station();
-      if(Did_the_train_reach_a_station.answer ==="no") {
-        return;
-      }
-      console.log("yw")
-        this.pauseMovement();
-        this.state="waiting_at_station";
         
-        if(!Did_the_train_reach_a_station.Doors_to_control) {
-        throw new Error("Hmm... Door directioj must not be undefined or null")
-      }
-        this.Doors_to_control = Did_the_train_reach_a_station.Doors_to_control;
-        
-        this.begunWaitingAt = Date.now();
-        this.begunWaitingForDoorsAt = this.begunWaitingAt
- }
- 
- Did_the_train_reach_a_station() {
-   let answer = "no";
-   let Doors_to_control;
-   const train = this;
-   this.cars.forEach(car=> {
-     Collision_Stuff.getClosestCollision(
-       car, 
-       (other)=>{
-         if(!other.hasTag("Station_Stop_Spot")){
-           return false;
-         }
-         if(train.lastStationStopSpot !== null && train.lastStationStopSpot === other) {
-           return false;
-         }
-        
-           answer = "yes";
-           const station_stop_spot = other as Station_Stop_Spot;
-           Doors_to_control = station_stop_spot.Which_Door_Of_A_Car_To_Open_And_Close;
-           this.lastStationStopSpot = station_stop_spot;
-           return true;
-       }
-     );
-   });
-   return { answer, Doors_to_control};
- }
- 
- Handle_waiting_at_station_state() {
-   
-   const Is_it_time_for_the_train_to_leave_the_station = this.Is_it_time_for_the_train_to_leave_the_station();
-   const Is_it_time_for_the_doors_to_close = this.Is_it_time_for_the_doors_to_close();
-  if(Is_it_time_for_the_doors_to_close.answer ==="yes") {
-    this.closeDoors();
-  }
-   if(Is_it_time_for_the_train_to_leave_the_station.answer === "yes") {
-      this.leave();
-   } else {
-       this.Wait();
-   }
- }
- 
- leave() {
-   
-        const Are_the_doors_closed = this.Are_the_doors_closed();
-     if(Are_the_doors_closed.answer ==='no') {
-       this.closeDoors();
-     } else {
-       this.proceedToLeaveTheStation();
-     }
- }
- 
- Are_the_doors_closed() {
- let answer = "no";
- 
- return { answer }
+        return startPosition;
 }
-closeDoors() {
-  this.doorsState = "closed";
-  const Which_door_to_close= this.Which_door_to_open_and_close(); 
-  this.cars.forEach(car => {
-    car.closeDoors(Which_door_to_close)
-  })
-}
-
-Which_door_to_open_and_close() {
-  return this.Doors_to_control;
-}
-
- proceedToLeaveTheStation() {
-   this.state = "in_transit";
-   this.lastStationStopSpot = this.currentStationStopSpot;
-   this.resumeMovement();
- }
- Is_it_time_for_the_doors_to_close() {
-      const waiting = 7000;
-   const currentTime = Date.now();
-   const Is_wait_time_is_over = this.doorsState ==="open" && currentTime > (this.begunWaitingForDoorsAt + waiting);
-   let answer = "no";
-   if(Is_wait_time_is_over===true) {
-     answer = "yes";
-   }
-   return { answer };
- }
- Is_it_time_for_the_train_to_leave_the_station() {
-   const waiting = 10000;
-   const currentTime = Date.now();
-   const Is_wait_time_is_over = currentTime > (this.begunWaitingAt + waiting);
-   let answer = "no";
-   if(Is_wait_time_is_over===true) {
-     answer = "yes";
-   }
-   return { answer };
- }
- Wait() {
-        const Are_the_doors_open =  this.Are_the_doors_open();
-     if(Are_the_doors_open.answer ==="no") {
-       this.openDoors();
-     }
- }
- 
- openDoors() {
-   this.doorsState = "open"
-   this.cars.forEach(car => {
-     car.openDoors(this.Doors_to_control);
-   })
- }
- Are_the_doors_open() {
-   let answer= "no";
-   if(this.doorsState ==='open') {
-     answer = "yes";
-   }
-   return { answer}
- }
 spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
               let carX;
             let carY;
@@ -231,29 +166,80 @@ spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_D
       
       this.setMovementMotion(null);
     }
+    isMoving() {
+      return !(this.movementMotion === null);
+    }
     pauseMovement() {
-      this.previousMovementMotion = this.movementMotion;
+      if(!(this.isMoving())) {
+        throw new Error("Calling pauseMovement on a train that is not moving")
+      }
+      this.beforePauseMovementMotion = this.movementMotion;
       this.stopMovement();
     }
     resumeMovement() {
-      this.setMovementMotion(this.previousMovementMotion);
+      this.setMovementMotion(this.beforePauseMovementMotion);
+    }
+    
+
+getFrontCar() {
+    const res = this.determineFrontAndBackCars();
+    return res.front;
+}
+
+getBackCar() {
+    const res = this.determineFrontAndBackCars();
+
+    return res.back;
+}
+
+
+
+    determineFrontAndBackCars() {
+    if (!this.isMoving()) {
+        throw new Error("Cannot get back car of a stationary train");
     }
 
-    getCarsBefore(car: Train_Car): Train_Car[] {
-        const index = this.cars.indexOf(car);
-        return index === -1 ? [] : this.cars.slice(0, index);
+    const dirs = this.getActiveMovementDirections();
+    if (!dirs || dirs.length === 0) {
+        throw new Error("Could not get motion dirs or empty.")
     }
-    getCarsAfter(car: Train_Car): Train_Car[] {
-        const index = this.cars.indexOf(car);
-        return index === -1 ? [] : this.cars.slice(index + 1);
+
+    const sortedCars = [...this.cars].sort((a, b) => this.compareCarsByDirection(a, b, dirs));
+    return {
+        front: sortedCars[0],
+        back: sortedCars[sortedCars.length - 1],
+    };
+}
+
+// --------------------
+// Helpers
+// --------------------
+getActiveMovementDirections(): Train_Car_Motion_Directions {
+    if (this.movementMotion === "forwards") {
+        return this.cars[0].motionsDirections.forwards;
+    } else if (this.movementMotion === "backwards") {
+        return this.cars[0].motionsDirections.backwards;
     }
-    getNextCar(car: Train_Car): Train_Car {
-        const index = this.cars.indexOf(car);
-        const nextCarIndex = index + 1;
-        const nextCarExists = (nextCarIndex >= 0 && nextCarIndex < this.cars.length);
-        if (!nextCarExists) {
-            throw new Error(`getNextCar() called when there is no next car`)
-        }
-        return this.cars[nextCarIndex];
+    return [];
+}
+
+compareCarsByDirection(a: Train_Car, b: Train_Car, dirs: Train_Car_Motion_Directions): number {
+    // Vertical
+    if (dirs.includes("up")) {
+        if (a.y !== b.y) return a.y - b.y; // smallest y first
+    } else if (dirs.includes("down")) {
+        if (a.y !== b.y) return b.y - a.y; // largest y first
     }
+
+    // Horizontal
+    if (dirs.includes("left")) {
+        if (a.x !== b.x) return a.x - b.x; // smallest x first
+    } else if (dirs.includes("right")) {
+        if (a.x !== b.x) return b.x - a.x; // largest x first
+    }
+
+    return 0; // tie
+}
+
+
 }

@@ -63,7 +63,7 @@ class Add_Some_Entities_To_The_World {
           new Station_Stop_Spot({x:6000, y:4135, Which_Door_Of_A_Car_To_Open_And_Close:"up"})
           );
         World.addEntity(new Station_Stop_Spot({
-          x:925, y:2193, Which_Door_Of_A_Car_To_Open_And_Close:"right"
+          x:925, y:1500, Which_Door_Of_A_Car_To_Open_And_Close:"right"
           
         })
         );

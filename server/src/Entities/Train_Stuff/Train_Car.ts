@@ -265,6 +265,7 @@ motionsDirections: Train_Car_Motions_Directions = {
         spent = this.teleportAndBringPassengers(pos.x, pos.y);
         Budget_Remaining -= spent;
       }
+      
 
   }
 
@@ -309,17 +310,20 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     this.x = toX;
     this.y = toY;
 
-   const carContentsAndPassengers = this.getCarContentsAndPassengers();
-    for (const entity of carContentsAndPassengers) {
-      const newX = entity.x + carDeltaX;
-      const newY = entity.y + carDeltaY;
-      entity.setXY(newX, newY);
-
-    }
+   this.teleportCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
     if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
     return carDeltaY;
     } else {
       return carDeltaX;
+    }
+  }
+  teleportCarContentsAndPassengersByDelta(dx: number, dy: number) {
+    const carContentsAndPassengers = this.getCarContentsAndPassengers();
+    for (const entity of carContentsAndPassengers) {
+      const newX = entity.x + dx;
+      const newY = entity.y + dy;
+      entity.setXY(newX, newY);
+
     }
   }
   getCarContentsAndPassengers(): Base_Entity[] {
@@ -432,7 +436,13 @@ openDoors(dir: Direction) {
     if (motion !== null && !(this.twoPossibleMovementMotions.includes(motion))) {
       throw new Error(`Invalid mov motion ${motion} `);
     }
+    if(motion===null) {
+      this.stopMovement();
+      return;
+    }
     this.currentMovementMotion = motion;
+    const forces = this.determine_new_forces_for_movement_along_the_rail();
+      this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, forces);
   }
 
 
