@@ -15,6 +15,7 @@
     },
     "scripts": {
     "devtsc": "tsc --watch",
+    
     "devserver": "node --watch --enable-source-maps build/startThisToStartTheGameServer.js"
   }
 }
