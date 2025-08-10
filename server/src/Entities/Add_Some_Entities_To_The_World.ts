@@ -9,7 +9,7 @@ import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Position } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
-import { AssertThat } from "#root/My_Assertion_Functionality.js";
+import { Assert } from "#root/Assert.js";
 import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Railway_Placer, type Railway_Placer_Required_Inputs } from "#root/Entities/Railway_Placer.js";
 export { Add_Some_Entities_To_The_World };

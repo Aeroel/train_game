@@ -1,4 +1,4 @@
-import { AssertThat } from "#root/My_Assertion_Functionality.js"
+import { Assert } from "#root/Assert.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
@@ -191,8 +191,8 @@ motionsDirections: Train_Car_Motions_Directions = {
         return;
       }
       const rail_switch_wall = entity as Rail_Switch_Wall;
-      const collisionInfo = Collision_Stuff.areEntitiesIntersecting(this, rail_switch_wall);
-      if (!collisionInfo.Collision_Occurred) {
+      const collisionInfo = Collision_Stuff.getIntersectingCollision(this, rail_switch_wall);
+      if (!collisionInfo) {
         return;
       }
       if(!this.Sensor_Accepts(rail_switch_wall)) {
@@ -298,9 +298,9 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   Train_Car_Static.setMotionDirections(this, motion, directions);
 }
   teleportAndBringPassengers(toX: number, toY: number) {
-    AssertThat(
+    Assert.that(
       this.currentMovementMotion !== null, );
-    AssertThat(
+    Assert.that(
       this.motionsDirections.forwards.length > 0 && this.motionsDirections.backwards.length > 0,
       );
     
@@ -479,7 +479,7 @@ openDoors(dir: Direction) {
     if (!entity.hasTag("Can_Ride_Train")) {
       return false;
     }
-    const intersect = Collision_Stuff.areEntitiesIntersecting(this, entity).Collision_Occurred;
+    const intersect = Collision_Stuff.getIntersectingCollision(this, entity);
     if (!intersect) {
       return false;
     }

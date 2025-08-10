@@ -102,7 +102,6 @@ closeDoors(dir: Direction) {
 }
 
 alignCars(collision: Collision_Info) {
-
     // Calculate how far we need to shift everything
     const frontCar = this.getFrontCar();
    // Stop movement for the entire train immediately

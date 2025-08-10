@@ -82,8 +82,8 @@ class Train_Car_Behaviour {
                 return null;
 
             } 
-            const Answer = Collision_Stuff.areEntitiesIntersecting(this.car, entity)
-            if (!Answer.Collision_Occurred) {
+            const collision = Collision_Stuff.getIntersectingCollision(this.car, entity)
+            if (!collision) {
                 return null;
 
             }

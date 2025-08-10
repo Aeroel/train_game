@@ -1,6 +1,8 @@
+import { Assert } from "#root/Assert.js";
 import type { Player } from "#root/Entities/Player.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Box, Direction, Position, Collision_Info} from "#root/Type_Stuff.js";
+import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
+
 import { Subpositions_Loop } from "#root/Collision_Stuff/Subpositions_Loop.js";
 import {World} from "#root/World.js"
 export { Collision_Stuff, };
@@ -38,14 +40,10 @@ class Collision_Stuff {
   return distanceSquared <= effectiveRange * effectiveRange;
 }
 
-
-
- 
-  static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity): Collision_Info {
+static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
     const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
-    
+
     const result: Collision_Info = {
-      Collision_Occurred: false,
    
       Position_Just_Before_Collision_A: { x: entityA.x, y: entityA.y },
       Position_Just_Before_Collision_B: { x: entityB.x, y: entityB.y },
@@ -73,13 +71,13 @@ class Collision_Stuff {
     };
 
 
-    
+    let Collision_Occurred = false;
 
    
     const loop = new Subpositions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
       if (Collision_Stuff.checkForIntersection(subA, subB)) {
-        result.Collision_Occurred = true;
+        Collision_Occurred = true;
         loop.stop();
         return;
       }
@@ -88,10 +86,15 @@ class Collision_Stuff {
       result.Last_Box_Just_Before_Collision_A = subA;
       result.Last_Box_Just_Before_Collision_B = subB;
     })
-
-    return result;
+   
+    if(Collision_Occurred) {
+      return result;
+    }
+    
+    return null;
 
   }
+    
 
   static Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(entityA: Base_Entity, entityB: Base_Entity) {
 
@@ -287,9 +290,9 @@ static getAllCollisions(
     if (!filterFn(other)) return;
   
 
-    const collisionInfo = Collision_Stuff.areEntitiesIntersecting(entity, other);
+    const collisionInfo = Collision_Stuff.getIntersectingCollision(entity, other);
 
-    if (collisionInfo.Collision_Occurred) {
+    if (collisionInfo) {
       allCollisions.push(collisionInfo);
     }
   });
@@ -311,7 +314,9 @@ static getClosestCollision(
   }
 
   if (allDetectedCollPairs.length === 1) {
-    return allDetectedCollPairs[0];
+    const onlyColl = allDetectedCollPairs[0];
+    Assert.notNull(onlyColl);
+    return onlyColl;
   }
 
   // Helper: squared distance between two positions
@@ -324,10 +329,14 @@ static getClosestCollision(
   const entityStart = allDetectedCollPairs[0].Starting_Position_A;
 
   let closest: Collision_Info = allDetectedCollPairs[0];
+  
+  Assert.notNull(closest)
+  
   let minDistSq = distSq(entityStart, closest.Position_Just_Before_Collision_A);
 
   for (let i = 1; i < allDetectedCollPairs.length; i++) {
-    const curr = allDetectedCollPairs[i];
+    const curr: Collision_Info = allDetectedCollPairs[i];
+          Assert.notNull(curr)
     const currDistSq = distSq(entityStart, curr.Position_Just_Before_Collision_A);
 
     if (currDistSq < minDistSq) {

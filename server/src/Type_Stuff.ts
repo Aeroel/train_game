@@ -10,10 +10,10 @@ export {
   type VisibleEntity,
   type VirtualizedEntity,
   type CleanedEntity,
-  type Collision_Info,
 };
+export type { Collision_Info } from "#root/Collision_Stuff/Collision_Type_Stuff.js"
 
-import { Base_Entity } from "#root/Entities/Base_Entity.js"
+import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 declare type Point = {
   x: number,
   y: number,
@@ -53,19 +53,6 @@ declare type VisibleEntity = {
 declare type VirtualizedEntity = VisibleEntity;
 declare type CleanedEntity = VisibleEntity;
  
- 
- declare type Collision_Info = {
-     Collision_Occurred: boolean, Position_Just_Before_Collision_A: Position, Position_Just_Before_Collision_B: Position,
-     Starting_Position_A: Position,
-     Starting_Position_B: Position,
-     Theoretical_Ending_Position_A: Position,
-     Theoretical_Ending_Position_B: Position,
-     entityA: Base_Entity,
-     entityB: Base_Entity,
-     Last_Box_Just_Before_Collision_A: Box,
-     Last_Box_Just_Before_Collision_B: Box,
-  
-}
 
 /* same as calling Object.keys but avoids as ... cast in random usages
 example:

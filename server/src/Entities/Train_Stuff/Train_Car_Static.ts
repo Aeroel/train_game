@@ -1,6 +1,6 @@
 import type { Train_Car, Train_Car_Motion_Directions, Train_Car_Motion } from "#root/Entities/Train_Stuff/Train_Car.js"
 import type { Direction } from "#root/Type_Stuff.js"
-import { AssertThat } from "#root/My_Assertion_Functionality.js"
+import { Assert } from "#root/Assert.js"
 
 export class Train_Car_Static {
  
@@ -11,7 +11,7 @@ static setMotionsDirections(car: Train_Car, forwards: Train_Car_Motion_Direction
      Train_Car_Static.setMotionDirections(car, "backwards", backwards);
 }
 static setMotionDirections(car: Train_Car, motion: Train_Car_Motion, motionDirs: Train_Car_Motion_Directions) {
-  AssertThat(motion !== null);
+  Assert.that(motion !== null);
 this.validateMotionDirections(motionDirs);
   car.motionsDirections[motion] = motionDirs;
 }
