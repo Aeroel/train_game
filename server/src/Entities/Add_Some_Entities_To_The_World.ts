@@ -74,17 +74,12 @@ class Add_Some_Entities_To_The_World {
 
     }
 
+static addRailwayAbstract() {
+  
+}
+
     static addARailway(x: number, y: number, mainLength: number, switchLength: number) {
         
-
-        // extension dirs
-        const firstDir = "down";
-        const secondDir = "down";
-        const thirdDir = "down";
-
-        // ends
-        const secondEnd = "bottomEnd";
-        const thirdEnd = "rightEnd";
 
         // offset of right track 
         const offsetOfRight = (mainLength - (2 * this.carSquareSize));
@@ -94,7 +89,7 @@ class Add_Some_Entities_To_The_World {
 
         // left track
       //  const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
-        const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength, secondDir, );
+        const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength, "down", );
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
         const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength );
@@ -161,16 +156,6 @@ const half = carSquareSize*0.5;
 
     static addARailway2(x: number, y: number, mainLength: number, switchLength: number) {
         
-
-        // extension dirs
-        const firstDir = "down";
-        const secondDir = "down";
-        const thirdDir = "down";
-
-        // ends
-        const secondEnd = "bottomEnd";
-        const thirdEnd = "rightEnd";
-
         // offset of right track 
         const offsetOfRight = (mainLength - (2 * this.carSquareSize));
 
@@ -179,7 +164,7 @@ const half = carSquareSize*0.5;
 
         // left track
       //  const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
-        const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength + 200, secondDir, );
+        const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength + 200, "down", );
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength+1200);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
         const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength+200 );
@@ -348,6 +333,8 @@ const offset = carSquareSize * 2;
      
      
     }
+ 
+
     
     static addThirdRailway(x: number, y: number, mainLength: number, switchLength: number) {
 const thicknessWall= 10;

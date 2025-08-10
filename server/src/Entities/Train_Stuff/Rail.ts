@@ -12,8 +12,7 @@ export type Rail_Connection = {
     secondEnd: Rail | null;
 };
 export type Rail_End = {
-    name: Rail_End_Name,
-    connectedRail: Rail | null
+    name: Rail_End_Name
 } & Position;
 
 export type Rail_Orientation = "vertical" | "horizontal";
@@ -21,7 +20,7 @@ export type Rail_Orientation = "vertical" | "horizontal";
 
 class Rail extends Base_Entity {
     //  left right is for hori, top bot is for vert
-    railConnections: Rail_Connection = { firstEnd: null, secondEnd: null };
+
     twoPossibleEnds = ["firstEnd", "secondEnd"];
     defaultInitialOrientationValue: Rail_Orientation = 'horizontal';
     orientation: Rail_Orientation = this.defaultInitialOrientationValue;
@@ -50,31 +49,7 @@ class Rail extends Base_Entity {
                 break;
         }
     }
-    connectWithRail(
-        otherRail: Rail,
-        thisEnd: Rail_End_Name_Alternative, 
-        otherEnd: Rail_End_Name_Alternative, 
-        ) {
-        let thisEndFinal: Rail_End_Name = "firstEnd";
-        if(thisEnd === "bottomEnd" || thisEnd === "rightEnd") {
-            thisEndFinal = "secondEnd";
-        } else if (thisEnd === "topEnd" || thisEnd === "leftEnd") {
-            thisEndFinal = "firstEnd";
-        } else {
-            thisEndFinal = thisEnd as Rail_End_Name;
-        }
-        
-        let otherEndFinal: Rail_End_Name = "firstEnd";
-        if(otherEnd === "bottomEnd" || otherEnd === "rightEnd") {
-            otherEndFinal = "secondEnd";
-        } else if (otherEnd === "topEnd" || otherEnd === "leftEnd")  {
-            otherEndFinal = "firstEnd";
-        } else {
-            otherEndFinal = otherEnd as Rail_End_Name;
-        }
-        this.railConnections[thisEndFinal] = otherRail;
-        otherRail.railConnections[otherEndFinal] = this;
-    }
+
     setWidth(width: number) {
         super.setWidth(width);
         this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
@@ -108,15 +83,6 @@ class Rail extends Base_Entity {
         return Math.hypot(point1.x - point2.x, point1.y - point2.y);
     }
 
-    Out_Of_Two_Sides_Get_One_Closest_To_Specified_End(frontSideXY: Point, backSideXY: Point, endName: Rail_End_Name) {
-        const endInQuestion = this.getEnd(endName);
-
-        const frontDistance = this.calculateDistance(frontSideXY, endInQuestion);
-        const backDistance = this.calculateDistance(backSideXY, endInQuestion);
-
-        return frontDistance <= backDistance ? "frontSide" : "backSide";
-    }
-
     getEndClosestTo(point: Point) {
         Assert_That_Numbers_Are_Finite({pointX: point.x, pointY: point.y});
 
@@ -140,32 +106,15 @@ class Rail extends Base_Entity {
             throw new Error(`DTFE and DTSE must be numbers, one or both are NaN`);
         }
         if (distanceToFirstEnd < distanceToSecondEnd) {
-            closestEnd = {name: 'firstEnd' as Rail_End_Name, x: firstEnd.x, y: firstEnd.y, connectedRail: this.railConnections.firstEnd || null};
+            closestEnd = {name: 'firstEnd' as Rail_End_Name, x: firstEnd.x, y: firstEnd.y};
 
         } else if (distanceToFirstEnd > distanceToSecondEnd) {
-            closestEnd = {name: 'secondEnd' as Rail_End_Name, x: secondEnd.x, y: secondEnd.y, connectedRail: this.railConnections.secondEnd || null};
+            closestEnd = {name: 'secondEnd' as Rail_End_Name, x: secondEnd.x, y: secondEnd.y};
         } else {
             throw new Error("Hm? ");
         }
 
         return closestEnd;
-    }
-
-    findEndConnectedTo(anotherRail: Rail) {
-        const firstEndConnected = (this.railConnections.firstEnd === anotherRail);
-        const secondEndConnected = (this.railConnections.secondEnd === anotherRail);
-
-        if (firstEndConnected && secondEndConnected) {
-            throw new Error("Both ends are connected to the same rail.");
-        }
-
-        if (firstEndConnected) {
-            return { ...this.getFirstEnd(), name: "firstEnd" };
-        } else if (secondEndConnected) {
-            return { ...this.getSecondEnd(), name: "secondEnd" };
-        } else {
-            return null; // No connection found
-        }
     }
 
 }
