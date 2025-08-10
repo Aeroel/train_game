@@ -102,7 +102,7 @@ class Sliding_Door extends Base_Entity {
     if (!(this.getState() === 'closing')) {
       return;
     }
-    const Door_Finished_Closing = Collision_Stuff.areEntitiesTouching(this, this.sensors.Door_Finished_Closing_Sensor);
+    const Door_Finished_Closing = Collision_Stuff.checkForCollision(this, this.sensors.Door_Finished_Closing_Sensor);
     if (Door_Finished_Closing) {
       this.Handle_Door_Finished_Closing();
       return;
@@ -144,7 +144,7 @@ class Sliding_Door extends Base_Entity {
     if (!(this.getState() === 'opening')) {
       return;
     }
-    const Door_Finished_Opening = Collision_Stuff.areEntitiesTouching(this, this.sensors.Door_Finished_Opening_Sensor);
+    const Door_Finished_Opening = Collision_Stuff.checkForCollision(this, this.sensors.Door_Finished_Opening_Sensor);
     if (Door_Finished_Opening) {
       this.Handle_Door_Finished_Opening();
       return;

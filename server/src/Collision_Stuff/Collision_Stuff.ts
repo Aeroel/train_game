@@ -40,7 +40,7 @@ class Collision_Stuff {
   return distanceSquared <= effectiveRange * effectiveRange;
 }
 
-static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
+static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
     const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
 
     const result: Collision_Info = {
@@ -57,10 +57,9 @@ static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Col
       },
      Last_Box_Just_Before_Collision_B: {
       x:entityB.x,
-    y:entityB.y,
-    width:entityB.width,
-    height:entityB.height
-      
+      y:entityB.y,
+      width:entityB.width,
+      height:entityB.height
     },
     Starting_Position_A: { x: entityA.x, y: entityA.y },
     Starting_Position_B: { x: entityB.x, y: entityB.y },
@@ -94,62 +93,7 @@ static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Col
     return null;
 
   }
-    
 
-  static Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(entityA: Base_Entity, entityB: Base_Entity) {
-
-
-    let Collision_Occurred = false;
-    let Position_Just_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
-    let Position_Just_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
-
-
-    const loop = new Subpositions_Loop(entityA, entityB);
-    loop.run((index: number, subA: Box, subB: Box) => {
-      if (Collision_Stuff.checkTouchOrIntersect(subA, subB)) {
-        Collision_Occurred = true;
-        loop.stop();
-      }
-      Position_Just_Before_Collision_A = { x: subA.x, y: subA.y }
-      Position_Just_Before_Collision_B = { x: subB.x, y: subB.y }
-    })
-
-
-    const result = { Collision_Occurred, Position_Just_Before_Collision_A, Position_Just_Before_Collision_B };
-    return result;
-
-
-  }
-  static areEntitiesTouching(entityA: Base_Entity, entityB: Base_Entity): boolean {
-    const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
-
-    let collHappenedAtAnyTime = false;
-
-    for (let i = 0; i < entitiesSubpositionsArrays.lengthOfEither; i++) {
-      const subEA = {
-        width: entityA.width,
-        height: entityA.height,
-        x: entityASubpositions[i].x,
-        y: entityASubpositions[i].y,
-      };
-      const subEB = {
-        width: entityB.width,
-        height: entityB.height,
-        x: entityBSubpositions[i].x,
-        y: entityBSubpositions[i].y,
-      };
-
-      if (Collision_Stuff.checkTouchOrIntersect(subEA, subEB)) {
-        collHappenedAtAnyTime = true;
-        return collHappenedAtAnyTime;
-      }
-
-    }
-
-    return collHappenedAtAnyTime;
-
-
-  }
 
   static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
   {aFace: Direction, bFace: Direction} | null
@@ -209,6 +153,7 @@ static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Col
     };
   }
 
+
   static getSubpositions(entityAStartingPosition: Position, entityAEndingPosition: Position, entityBStartingPosition: Position, entityBEndingPosition: Position) {
 
     // here begins determination of how long each array will be. It is a single number
@@ -265,6 +210,7 @@ static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Col
     };
   }
 
+
   static checkTouchOrIntersect(boxA: Box, boxB: Box) {
     const { x: x1, y: y1, width: w1, height: h1 } = boxA;
     const { x: x2, y: y2, width: w2, height: h2 } = boxB;
@@ -274,7 +220,9 @@ static getIntersectingCollision(entityA: Base_Entity, entityB: Base_Entity): Col
       y1 + h1 < y2 || // Entity A is above Entity B
       y2 + h2 < y1);   // Entity B is above Entity A
   }
-static getAllCollisions(
+  
+  
+static findAllCollisions(
   entity: Base_Entity,
   filterFn: (other: Base_Entity) => boolean
 ): Collision_Info[] | null {
@@ -290,7 +238,7 @@ static getAllCollisions(
     if (!filterFn(other)) return;
   
 
-    const collisionInfo = Collision_Stuff.getIntersectingCollision(entity, other);
+    const collisionInfo = Collision_Stuff.checkForCollision(entity, other);
 
     if (collisionInfo) {
       allCollisions.push(collisionInfo);
@@ -307,7 +255,7 @@ static getClosestCollision(
   entity: Base_Entity,
   filterFn: (other: Base_Entity) => boolean
 ): Collision_Info | null {
-  const allDetectedCollPairs = Collision_Stuff.getAllCollisions(entity, filterFn);
+  const allDetectedCollPairs = Collision_Stuff.findAllCollisions(entity, filterFn);
 
   if (allDetectedCollPairs === null) {
     return null;

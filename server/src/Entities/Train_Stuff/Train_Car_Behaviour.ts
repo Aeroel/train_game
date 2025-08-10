@@ -82,7 +82,7 @@ class Train_Car_Behaviour {
                 return null;
 
             } 
-            const collision = Collision_Stuff.getIntersectingCollision(this.car, entity)
+            const collision = Collision_Stuff.checkForCollision(this.car, entity)
             if (!collision) {
                 return null;
 

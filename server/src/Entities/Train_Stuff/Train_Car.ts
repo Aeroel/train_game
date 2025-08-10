@@ -191,7 +191,7 @@ motionsDirections: Train_Car_Motions_Directions = {
         return;
       }
       const rail_switch_wall = entity as Rail_Switch_Wall;
-      const collisionInfo = Collision_Stuff.getIntersectingCollision(this, rail_switch_wall);
+      const collisionInfo = Collision_Stuff.checkForCollision(this, rail_switch_wall);
       if (!collisionInfo) {
         return;
       }
@@ -479,8 +479,8 @@ openDoors(dir: Direction) {
     if (!entity.hasTag("Can_Ride_Train")) {
       return false;
     }
-    const intersect = Collision_Stuff.getIntersectingCollision(this, entity);
-    if (!intersect) {
+    const coll = Collision_Stuff.checkForCollision(this, entity);
+    if (!coll) {
       return false;
     }
     return true;
