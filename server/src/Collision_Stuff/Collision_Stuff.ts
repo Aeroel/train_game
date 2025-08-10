@@ -2,6 +2,7 @@ import { Assert } from "#root/Assert.js";
 import type { Player } from "#root/Entities/Player.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
+import { Helper_Functions} from "#root/Helper_Functions.js"
 
 import { Subpositions_Loop } from "#root/Collision_Stuff/Subpositions_Loop.js";
 import {World} from "#root/World.js"
@@ -24,21 +25,27 @@ class Collision_Stuff {
   }
  
  static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
-   // the base idea is that we have a general area if the entities are within, we will bother checking collision.
-  const BASE_DISTANCE = 1000;
+    const BASE_DISTANCE = 1000;
 
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  const distanceSquared = dx * dx + dy * dy;
+    // Calculate Chebyshev distance
+    const dx = Math.abs(a.x - b.x);
+    const dy = Math.abs(a.y - b.y);
+    const chebyshevDistance = Math.max(dx, dy);
 
-  const aSpeed = a.speedPerTick ?? 0;
-  const bSpeed = b.speedPerTick ?? 0;
-  const effectiveRange = BASE_DISTANCE - (aSpeed + bSpeed);
+    // Get axis speeds from each entity
+    const aSpeedX = a.movementForces.Get_Net_Axis_Force("horizontal") ?? 0;
+    const aSpeedY = a.movementForces.Get_Net_Axis_Force("vertical") ?? 0;
+    const bSpeedX = b.movementForces.Get_Net_Axis_Force("horizontal") ?? 0;
+    const bSpeedY = b.movementForces.Get_Net_Axis_Force("vertical") ?? 0;
 
-  if (effectiveRange <= 0) return true;
+    // Effective range shrinks by combined max axis speeds per tick
+    const effectiveRange = BASE_DISTANCE - (Math.max(Math.abs(aSpeedX), Math.abs(aSpeedY)) + Math.max(Math.abs(bSpeedX), Math.abs(bSpeedY)));
 
-  return distanceSquared <= effectiveRange * effectiveRange;
+    if (effectiveRange <= 0) return true;
+
+    return chebyshevDistance <= effectiveRange;
 }
+
 
 static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
     const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
@@ -267,34 +274,29 @@ static getClosestCollision(
     return onlyColl;
   }
 
-  // Helper: squared distance between two positions
-  function distSq(a: Position, b: Position): number {
-    const dx = a.x - b.x;
-    const dy = a.y - b.y;
-    return dx * dx + dy * dy;
-  }
 
   const entityStart = allDetectedCollPairs[0].Starting_Position_A;
 
   let closest: Collision_Info = allDetectedCollPairs[0];
-  
-  Assert.notNull(closest)
-  
-  let minDistSq = distSq(entityStart, closest.Position_Just_Before_Collision_A);
+  Assert.notNull(closest);
+
+  let minDist = Helper_Functions.chebyshevDistance(entityStart, closest.Position_Just_Before_Collision_A);
 
   for (let i = 1; i < allDetectedCollPairs.length; i++) {
     const curr: Collision_Info = allDetectedCollPairs[i];
-          Assert.notNull(curr)
-    const currDistSq = distSq(entityStart, curr.Position_Just_Before_Collision_A);
+    Assert.notNull(curr);
 
-    if (currDistSq < minDistSq) {
+    const currDist = Helper_Functions.chebyshevDistance(entityStart, curr.Position_Just_Before_Collision_A);
+
+    if (currDist < minDist) {
       closest = curr;
-      minDistSq = currDistSq;
+      minDist = currDist;
     }
   }
 
   return closest;
 }
+
 
 
 

@@ -1,5 +1,6 @@
 import { Assert } from "#root/Assert.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { Helper_Functions } from "#root/Helper_Functions.js"
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Wall } from "#root/Entities/Wall.js";
@@ -528,33 +529,36 @@ openDoors(dir: Direction) {
     return this.bulk_of_code.Set_Car_Walls_And_Doors_Initial_Positions();
 
   }
+ 
+ 
  getClosest(
   x: number,
   y: number,
   colls: Collision_Info[]
 ): Collision_Info | null {
-  if(colls.length === 0) {
+  if (colls.length === 0) {
     return null;
   }
-  if(colls.length === 1) {
-    return colls[0]
+  if (colls.length === 1) {
+    return colls[0];
   }
+
   let closest: Collision_Info = colls[0];
-  let minDistSq = Infinity;
+  let minDist = Infinity;
 
   for (const info of colls) {
-    const dx = info.Position_Just_Before_Collision_A.x - x;
-    const dy = info.Position_Just_Before_Collision_A.y - y;
-    const distSq = dx * dx + dy * dy;
+    const pos = info.Position_Just_Before_Collision_A;
+    const dist = Helper_Functions.chebyshevDistance(pos, { x, y});
 
-    if (distSq < minDistSq) {
-      minDistSq = distSq;
+    if (dist < minDist) {
+      minDist = dist;
       closest = info;
     }
   }
 
   return closest;
 }
+
 
 
 

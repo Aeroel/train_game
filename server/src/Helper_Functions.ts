@@ -1,5 +1,6 @@
 import { SocketDataStorage } from "#root/SocketDataStorage.js";
 import { SocketStorage } from "#root/SocketStorage.js";
+import type { Position } from "#root/Type_Stuff.js"
 import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
 import { networkInterfaces } from "os";
@@ -8,6 +9,10 @@ import { networkInterfaces } from "os";
 export { Helper_Functions };
 class Helper_Functions {
 
+  
+  static chebyshevDistance(a: Position, b: Position): number {
+    return Math.max(Math.abs(a.x - b.x), Math.abs(a.y - b.y));
+  }
 
     static isNumber(num: number) {
         return (typeof num === 'number' && isFinite(num));
