@@ -24,6 +24,7 @@ interface Train_Car_Constructor {
   y: Base_Entity['y'],
   size: Base_Entity['x'] | Base_Entity['y'],
   train: Train,
+
 }
 
 export type Train_Car_Motion_Directions = Direction[]
@@ -48,7 +49,7 @@ class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
 
   train: Train;
-
+ passengers: Base_Entity[] = [];
   Wall_And_Door_Thickness = 5;
 
   Center_Box_Entity!: Base_Entity;
@@ -104,7 +105,7 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.Add_Center_Box_Entity();
 
     this.Init_Force_Keys();
-    this.Add_Car_Walls_And_Doors_To_Propagation()
+    this.Add_Car_Walls_And_Doors_To_Propagation();
   }
   
   setMotionsDirections(forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions) {
@@ -169,32 +170,28 @@ motionsDirections: Train_Car_Motions_Directions = {
 
 
   move_handler() {
+  const forces = this.determine_new_forces_for_movement_along_the_rail(); 
+   this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, forces);
  //   console.log(this.x, this.y)
     if (this.currentMovementMotion === null) {
       return false;
     }
+    
     this.switchHandler();
-
-    const newForces = this.determine_new_forces_for_movement_along_the_rail();
-
-    this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, newForces);
   }
   
   
   Get_Switch_Sensor_Collisions() {
     const Switch_Sensor_Collisions: Collision_Info[] = [];
-    World.getCurrentEntities().forEach(entity => {
-      if (this === entity) {
-        return;
-      }
-      if (!(entity.hasTag("Rail_Switch_Wall"))) {
-        return;
-      }
-      const rail_switch_wall = entity as Rail_Switch_Wall;
-      const collisionInfo = Collision_Stuff.checkForCollision(this, rail_switch_wall);
-      if (!collisionInfo) {
-        return;
-      }
+    
+   const all= Collision_Stuff.findAllCollisions(this, (other)=>other.hasTag("Rail_Switch_Wall"));
+   
+   if(!all) {
+     return Switch_Sensor_Collisions;
+     }
+     
+     all.forEach(collisionInfo=> {
+      const rail_switch_wall = collisionInfo.entityB as Rail_Switch_Wall;
       if(!this.Sensor_Accepts(rail_switch_wall)) {
         return;
       }
@@ -237,7 +234,6 @@ motionsDirections: Train_Car_Motions_Directions = {
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
       }
       let Budget_Remaining=Consumable_Budget;
-    
  
       this.Sensor_Wall_Stuff(rail_switch_wall);
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
@@ -256,8 +252,9 @@ motionsDirections: Train_Car_Motions_Directions = {
         this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, newForces);
         const closestSensorCollision = this.Get_Closest_Sensor_Collision();
         if(closestSensorCollision === null) {
-          const finalPos = this.calculateNextPositionBasedOnForcesAndDeltaTime();
+           const finalPos = this.calculateNextPositionBasedOnForcesAndDeltaTime();
             this.teleportAndBringPassengers(finalPos.x, finalPos.y);
+        this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
             return;
         }
 
@@ -265,7 +262,8 @@ motionsDirections: Train_Car_Motions_Directions = {
         spent = this.teleportAndBringPassengers(pos.x, pos.y);
         Budget_Remaining -= spent;
       }
-      
+    
+      this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
 
   }
 
@@ -318,6 +316,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     }
   }
   teleportCarContentsAndPassengersByDelta(dx: number, dy: number) {
+
     const carContentsAndPassengers = this.getCarContentsAndPassengers();
     for (const entity of carContentsAndPassengers) {
       const newX = entity.x + dx;
@@ -329,12 +328,6 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];
     entities.push(...this.movementForces.Entities_That_Also_Get_The_Forces_Of_This_Entity);
-        World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      if (!this.Car_Has_Entity_For_A_Passenger(entity)) {
-        return;
-      }
-        entities.push(entity)
-    });
     return entities
   }
   
@@ -445,46 +438,31 @@ openDoors(dir: Direction) {
       this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, forces);
   }
 
-
+addToPropagationList() {
+      this.Add_Car_Walls_And_Doors_To_Propagation();
+         this.determineCarPassengers(); 
+}
   updateState() {
+    this.addToPropagationList();
     this.move_handler();
-    this.Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car();
     super.updateState();
   }
-
-  Propagate_Forces_Affecting_The_Car_To_Entities_That_Are_Located_On_The_Car() {
-    const car_forces = this.movementForces.Get_A_Component_From_Each_Direction_By_Key(this.Rail_Movement_Key);
-    this.Add_Forces_To_Entities_That_Are_Located_On_The_Car(car_forces);
-  }
-  Add_Forces_To_Entities_That_Are_Located_On_The_Car(forces: Directions_Values) {
-
-    const forceKey = this.Riding_Force_Key;
-
-
-    // all passengers
-    World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      if (!this.Car_Has_Entity_For_A_Passenger(entity)) {
-        return;
-      }
-
-      entity.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(forceKey, forces);
-    });
-
-
-  }
-  Car_Has_Entity_For_A_Passenger(entity: Base_Entity) {
-    if (entity === this) {
-      return false;
+  determineCarPassengers() {
+    const passengers: Base_Entity[]=[];
+    const all = Collision_Stuff.findAllCollisions(this, (other)=>other.hasTag("Can_Ride_Train"));
+    if(!all) {
+      return
     }
-    if (!entity.hasTag("Can_Ride_Train")) {
-      return false;
-    }
-    const coll = Collision_Stuff.checkForCollision(this, entity);
-    if (!coll) {
-      return false;
-    }
-    return true;
+    
+    this.passengers = all.map(coll=>coll.entityB);
+    const car = this;
+    this.passengers.forEach(passenger=>{
+      car.movementForces.Add_Entity_To_Propagation_List(passenger)
+    })
   }
+
+
+
 
   /* 
   
@@ -527,6 +505,9 @@ openDoors(dir: Direction) {
   Set_Car_Walls_And_Doors_Initial_Positions() {
     return this.bulk_of_code.Set_Car_Walls_And_Doors_Initial_Positions();
 
+  }
+  cleanUp() {
+    this.movementForces.Clear_Propagation_List();
   }
  getClosest(
   x: number,

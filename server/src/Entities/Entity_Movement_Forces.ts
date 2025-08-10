@@ -111,7 +111,17 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
         existingComponent.forceValue = forceValue;
 
     }
+    Get_Propagation_List() {
+      return this.Entities_That_Also_Get_The_Forces_Of_This_Entity;
+    }
+    Clear_Propagation_List() {
+      this.Entities_That_Also_Get_The_Forces_Of_This_Entity = [];
+    }
     Add_Entity_To_Propagation_List(entity: Base_Entity) {
+      const index = this.Entities_That_Also_Get_The_Forces_Of_This_Entity.indexOf(entity);
+      if(!(index===-1)) {
+        return;
+      }
         this.Entities_That_Also_Get_The_Forces_Of_This_Entity.push(entity)
     }
     Set_Component_For_Each_Entity_That_Is_In_Propagation_List(key: string, forceDirection: Force_Direction, forceValue: number, keepAtZero?: boolean) {
@@ -130,8 +140,11 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
         }
 
         const existingComponent = this.directions_and_their_components[forceDirection].find(component => component.key === key);
+
         return existingComponent !== undefined;
     }
+  
+  
     applyFriction() {
         this.forEachComponent((component: Force_Component) => {
             component.forceValue *= (1 - this.entity.friction);

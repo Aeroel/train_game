@@ -88,10 +88,6 @@ collisionManager(calledTimes: number = 0) {
 
     return;
   } 
-  calledTimes++;
- if(calledTimes >6) {
-    return;
- }
   
   
   const otherEntity = closestCollision.entityB;
@@ -134,12 +130,16 @@ collisionManager(calledTimes: number = 0) {
        throw new Error("Must neve happen")
       break;
       
-   }
+   } 
    this.setPosition(newPlayerPos);
+
    this.movementForces.nullify(playerFace);
    this.movementForces.Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(otherEntityFace, otherEntity);
-   
-   this.collisionManager(calledTimes);
+    
+      if(calledTimes===2) {
+     return;
+   }
+   this.collisionManager(2);
 }
 
 savePosition(pos: Position) {

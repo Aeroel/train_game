@@ -37,6 +37,7 @@ class Game_Loop {
     Game_Loop.Next_Moment_Of_All_Entities();
     Game_Loop.Collision_Resolutor();
     Game_Loop.Update_Positions_Of_All_Entities();
+    Game_Loop.Clean_Up();
   }
 
   static Next_Moment_Of_All_Entities() {
@@ -55,5 +56,10 @@ class Game_Loop {
       entity.updatePosition();
     });
     
+  }
+  static Clean_Up() {
+        World.getCurrentEntities().forEach(entity => {
+      entity.cleanUp();
+    });
   }
 }
