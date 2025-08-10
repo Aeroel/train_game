@@ -14,6 +14,6 @@
     "scripts": {
         "webpackwatch": "webpack --watch --mode development",
         "liveserver": "live-server public/ --no-browser",
-        "dev": "concurrently --names 'WEBPACK,LIVE-SERVER' --prefix '[{name}]' --prefix-colors 'yellow,cyan' 'pnpm:webpackwatch' 'pnpm:liveserver'"
+        "dev": "concurrently --names 'WEBPACK,LIVE_SERVER' --prefix '[{name}]' --prefix-colors 'yellow,cyan' 'pnpm:webpackwatch' 'pnpm:liveserver'"
     }
 }
