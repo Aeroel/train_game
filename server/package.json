@@ -11,11 +11,12 @@
         "#root/*": "./build/*"
     },
     "devDependencies": {
+        "concurrently": "^9.2.0",
         "typescript": "^5.9.2"
     },
     "scripts": {
-    "devtsc": "tsc --watch",
-    
-    "devserver": "node --watch --enable-source-maps build/startThisToStartTheGameServer.js"
-  }
+        "devtsc": "tsc --watch",
+        "devserver": "node --watch --enable-source-maps build/startThisToStartTheGameServer.js",
+        "dev": "concurrently --names 'TSC,NODE_SERVER' --prefix '[{name}]' --prefix-colors 'yellow,cyan' 'pnpm:devtsc' 'pnpm:devserver'"
+    }
 }

@@ -1,5 +1,4 @@
 export { Assert }
-
 class Assert {
   static that(condition: unknown): asserts condition {
 
