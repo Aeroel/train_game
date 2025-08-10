@@ -87,8 +87,7 @@ static addRailwayAbstract() {
 
 
 
-        // left track
-      //  const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
+
         const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength, "down", );
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
@@ -162,8 +161,7 @@ const half = carSquareSize*0.5;
 
 
 
-        // left track
-      //  const rail1_0 = Railway_Placing_Functionality.place(x, y, mainLength, firstDir);
+
         const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength + 200, "down", );
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength+1200);
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);

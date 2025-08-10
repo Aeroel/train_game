@@ -7,10 +7,7 @@ export { Rail };
 
 export type Rail_End_Name = "firstEnd" | "secondEnd";
 export type Rail_End_Name_Alternative = Rail_End_Name | "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
-export type Rail_Connection = {
-    firstEnd: Rail | null;
-    secondEnd: Rail | null;
-};
+
 export type Rail_End = {
     name: Rail_End_Name
 } & Position;
