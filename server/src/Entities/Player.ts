@@ -80,12 +80,14 @@ const now = Date.now();
 
 
 collisionManager(calledTimes: number = 0) {
+
   if(this.intangibility) {
     return;
   }
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
-  if(!(closestCollision)) {
-
+  if(!(closestCollision) || calledTimes>10) {
+    Collision_Logger.add(calledTimes)
+   // console.log(calledTimes)
     return;
   } 
   
@@ -136,10 +138,7 @@ collisionManager(calledTimes: number = 0) {
    this.movementForces.nullify(playerFace);
    this.movementForces.Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(otherEntityFace, otherEntity);
     
-      if(calledTimes===2) {
-     return;
-   }
-   this.collisionManager(2);
+   this.collisionManager(calledTimes+1);
 }
 
 savePosition(pos: Position) {
