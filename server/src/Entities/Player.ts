@@ -50,7 +50,7 @@ class Player extends Base_Entity {
   
   updateState() {
     if(this.speedUp) {
-      this.speedPerTick = 10.00;
+      this.speedPerTick = 1.00;
     } else {
       this.speedPerTick = 0.50;
     }
