@@ -29,38 +29,19 @@ class Rail extends Base_Entity {
         this.addTag("Rail");
         this.setColor("purple");
     }
-    getFirstEnd() {
-        switch (this.orientation) {
-            case "vertical":
-                return { x: this.getCenterX(), y: this.getCenterY() - (this.getHeight() / 2) };
-                break;
-            case "horizontal":
-                return { x: this.getCenterX() - (this.getWidth() / 2), y: this.getCenterY() };
-                break;
-        }
-    }
-    getSecondEnd() {
-        switch (this.orientation) {
-            case "vertical":
-                return { x: this.getCenterX(), y: this.getCenterY() + (this.getHeight() / 2) };
-                break;
-            case "horizontal":
-                return { x: this.getCenterX() + (this.getWidth() / 2), y: this.getCenterY() };
-                break;
-        }
-    }
+
 
     setWidth(width: number) {
         super.setWidth(width);
         this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
     }
+    
+    
     setHeight(height: number) {
         super.setHeight(height);
         this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
     }
-    getOrientation() {
-        return this.orientation;
-    }
+
 
     getEnd(endType: Rail_End_Name | Rail_End_Name_Alternative) {
         if (this.orientation === 'horizontal') {
@@ -77,17 +58,21 @@ class Rail extends Base_Entity {
             }
         }
         // Default (if no matching end type)
-        throw new Error(`${endType} does not match any valid value...`);
+        throw new Error(`${endType} does not 
+        match any valid value...`);
     }
+    
+    
     calculateDistance(point1: Point, point2: Point) {
         return Math.hypot(point1.x - point2.x, point1.y - point2.y);
     }
 
+
     getEndClosestTo(point: Point) {
         Assert_That_Numbers_Are_Finite({pointX: point.x, pointY: point.y});
 
-        const firstEnd = this.getFirstEnd();
-        const secondEnd = this.getSecondEnd();
+        const firstEnd = this.getEnd("firstEnd");
+        const secondEnd = this.getEnd("secondEnd");
 
         const distanceToFirstEnd = Math.sqrt(
             Math.pow(point.x - firstEnd.x, 2) +

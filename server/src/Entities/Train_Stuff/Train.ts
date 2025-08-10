@@ -122,7 +122,7 @@ alignCars(collision: Collision_Info) {
 
 getStartingPosition(rail: Rail, carSquareSize: number) {
   let startPosition = {x:0,y:0};
-          if (rail.getOrientation() === 'horizontal') {
+          if (rail.orientation === 'horizontal') {
             startPosition = {
                 x: rail.getX() +(0.5*rail.width),
                 y: rail.getY() - (carSquareSize / 2),
@@ -139,7 +139,7 @@ getStartingPosition(rail: Rail, carSquareSize: number) {
 spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
               let carX;
             let carY;
-            if (rail.getOrientation() === 'horizontal') {
+            if (rail.orientation === 'horizontal') {
                 carX = startPosition.x + (count * carSquareSize);
                 carY = startPosition.y;
             } else {

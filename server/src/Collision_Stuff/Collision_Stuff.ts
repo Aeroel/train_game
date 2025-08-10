@@ -5,30 +5,10 @@ import { Subpositions_Loop } from "#root/Collision_Stuff/Subpositions_Loop.js";
 import {World} from "#root/World.js"
 export { Collision_Stuff, };
 class Collision_Stuff {
-  static Do_Entities_Touch_Through_All_Tick_Subpositions(entityA: Base_Entity, entityB: Base_Entity) {
-    const { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions } = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
-    let Do_Entities_Collide_At_All_Subpositions = true;
+  static Do_Entities_Intersect_In_Every_Subposition(entityA: Base_Entity, entityB: Base_Entity) {
+    let doThey = true;
 
-    for (let i = 0; i < entitiesSubpositionsArrays.lengthOfEither; i++) {
-      const subEA = {
-        width: entityA.width,
-        height: entityA.height,
-        x: entityASubpositions[i].x,
-        y: entityASubpositions[i].y,
-      };
-      const subEB = {
-        width: entityB.width,
-        height: entityB.height,
-        x: entityBSubpositions[i].x,
-        y: entityBSubpositions[i].y,
-      };
-
-      if (!Collision_Stuff.checkTouchOrIntersect(subEA, subEB)) {
-        Do_Entities_Collide_At_All_Subpositions = false;
-        return Do_Entities_Collide_At_All_Subpositions;
-      }
-
-    }
+    
 
 
   }
@@ -61,56 +41,54 @@ class Collision_Stuff {
 
 
  
-  static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity) {
-    let Collision_Occurred = false;
-    let Position_Just_Before_Collision_A: Position = { x: entityA.x, y: entityA.y };
-    let Position_Just_Before_Collision_B: Position = { x: entityB.x, y: entityB.y };
-    let Last_Box_Just_Before_Collision_A: Box = {
+  static areEntitiesIntersecting(entityA: Base_Entity, entityB: Base_Entity): Collision_Info {
+    const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
+    
+    const result: Collision_Info = {
+      Collision_Occurred: false,
+   
+      Position_Just_Before_Collision_A: { x: entityA.x, y: entityA.y },
+      Position_Just_Before_Collision_B: { x: entityB.x, y: entityB.y },
+      
+      Last_Box_Just_Before_Collision_A:
+        {
       x:entityA.x,
     y:entityA.y,
     width:entityA.width,
     height:entityA.height,
-      
-    };
-    let Last_Box_Just_Before_Collision_B: Box={
+      },
+     Last_Box_Just_Before_Collision_B: {
       x:entityB.x,
     y:entityB.y,
     width:entityB.width,
     height:entityB.height
       
+    },
+    Starting_Position_A: { x: entityA.x, y: entityA.y },
+    Starting_Position_B: { x: entityB.x, y: entityB.y },
+    Theoretical_Ending_Position_A: prelude.entityAEndingPosition,
+    Theoretical_Ending_Position_B: prelude.entityBEndingPosition,
+    entityA,
+    entityB,
     };
 
-    const Starting_Position_A: Position = { x: entityA.x, y: entityA.y };
-    const Starting_Position_B: Position = { x: entityB.x, y: entityB.y };
+
     
-   const  prelude = Collision_Stuff.Get_Prelude_To_Subpositions_Loop(entityA, entityB);;
-    const Theoretical_Ending_Position_A = prelude.entityAEndingPosition;
-    const Theoretical_Ending_Position_B = prelude.entityBEndingPosition;
+
    
     const loop = new Subpositions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
       if (Collision_Stuff.checkForIntersection(subA, subB)) {
-        Collision_Occurred = true;
+        result.Collision_Occurred = true;
         loop.stop();
         return;
       }
-      Position_Just_Before_Collision_A = { x: subA.x, y: subA.y }
-      Position_Just_Before_Collision_B = { x: subB.x, y: subB.y }
-      Last_Box_Just_Before_Collision_A = subA;
-      Last_Box_Just_Before_Collision_B = subB;
+      result.Position_Just_Before_Collision_A = { x: subA.x, y: subA.y }
+      result.Position_Just_Before_Collision_B = { x: subB.x, y: subB.y }
+      result.Last_Box_Just_Before_Collision_A = subA;
+      result.Last_Box_Just_Before_Collision_B = subB;
     })
 
-    const result: Collision_Info = { Collision_Occurred,
-    Position_Just_Before_Collision_A, Position_Just_Before_Collision_B,
-    Starting_Position_A,
-    Starting_Position_B,
-    Theoretical_Ending_Position_A,
-    Theoretical_Ending_Position_B,
-    entityA,
-    entityB,
-    Last_Box_Just_Before_Collision_A,
-    Last_Box_Just_Before_Collision_B,
-    };
     return result;
 
   }
