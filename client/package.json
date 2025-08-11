@@ -4,16 +4,12 @@
         "socket.io-client": "^4.8.1"
     },
     "devDependencies": {
-        "concurrently": "^9.2.0",
         "live-server": "^1.2.2",
         "ts-loader": "^9.5.2",
-        "webpack": "^5.99.9",
-        "webpack-cli": "^6.0.1",
-        "webpack-dev-server": "^5.2.2"
+        "webpack": "^5.101.0"
     },
     "scripts": {
-        "webpackwatch": "webpack --watch --mode development",
-        "liveserver": "live-server public/ --no-browser",
-        "dev": "concurrently --names 'WEBPACK,LIVE-SERVER' --prefix '[{name}]' --prefix-colors 'yellow,cyan' 'pnpm:webpackwatch' 'pnpm:liveserver'"
+        "debwebpack": "webpack --watch --mode development",
+        "devliveserver": "live-server public/ --no-browser"
     }
 }
