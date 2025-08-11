@@ -80,12 +80,13 @@ const now = Date.now();
 
 
 collisionManager(calledTimes: number = 0) {
-if(calledTimes >1) {
+if(calledTimes >10) {
   return;
 }
   if(this.intangibility) {
     return;
   }
+  
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
   if(!(closestCollision)) {
     return;
