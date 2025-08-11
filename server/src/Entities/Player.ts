@@ -79,10 +79,10 @@ const now = Date.now();
 
 
 
-collisionManager(calledTimes: number = 0) {
-if(calledTimes >10) {
-  return;
-}
+collisionManager(
+  {lastCall=false}:
+  {lastCall?: boolean}
+  ={}) {
   if(this.intangibility) {
     return;
   }
@@ -138,8 +138,11 @@ if(calledTimes >10) {
 
    this.movementForces.nullify(playerFace);
    this.movementForces.Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(otherEntityFace, otherEntity);
-    
-   this.collisionManager(calledTimes+1);
+
+    if(lastCall) {
+      return;
+    }
+   this.collisionManager({lastCall: true});
 }
 
 savePosition(pos: Position) {
