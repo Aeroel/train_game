@@ -6,10 +6,11 @@
     "devDependencies": {
         "live-server": "^1.2.2",
         "ts-loader": "^9.5.2",
-        "webpack": "^5.101.0"
+        "webpack": "^5.101.0",
+        "webpack-cli": "^6.0.1"
     },
     "scripts": {
-        "debwebpack": "webpack --watch --mode development",
+        "devwebpack": "webpack --watch --mode development",
         "devliveserver": "live-server public/ --no-browser"
     }
 }
