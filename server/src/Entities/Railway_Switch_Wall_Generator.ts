@@ -18,6 +18,7 @@ export class Railway_Switch_Wall_Generator {
           thicknessWall: number;
           lengthWall: number;
           half: number;
+          carSquareSize: number;
           thickHalf: number;
           lenHalf: number;
   constructor({
@@ -28,6 +29,7 @@ export class Railway_Switch_Wall_Generator {
           this.thicknessWall = thicknessWall;
           this.lengthWall = carSquareSize;
           this.half = 0.5*carSquareSize;
+          this.carSquareSize = carSquareSize
           this.thickHalf = this.thicknessWall + this.half;
           this.lenHalf = this.lengthWall + this.half;
           this.placeSwitchWallsThroughout();
@@ -116,29 +118,40 @@ endNames.forEach((endName: Rail_End_Name) => {
       enterModifiesTo ${JSON.stringify(enterModifiesTo)}, enterAccepts ${JSON.stringify(enterAccepts)}, enterLocatedOn ${JSON.stringify(enterLocatedOn)}
 
       `);
+      
+      const half = this.half;
+      const halfPlusThickness = this.thickHalf
       // exit
      World.addEntity(
         Rail_Switch_Wall.getInstance({
-          end, half: this.half,
-           x:end.x, y: end.y,
+          endName,
+          carSquareSize: this.carSquareSize,
+           x:end.x,
+           y: end.y,
            modifiesCarTo: exitModifiesTo,
            triggersUponContactWithCarIf: exitAccepts,
            orientation: current.rail.getOrientation(),
            wallThickness: this.thicknessWall,
-         wallLength: this.lengthWall, wallType:"exit" 
+         wallLength: this.lengthWall,
+         wallType:"exit",
+         location: null
           })
         );
         
         // entrance
-     World.addEntity(
+             World.addEntity(
         Rail_Switch_Wall.getInstance({
-          end, half: this.half, wallType: "enter",
-           x:end.x, y: end.y,
+          endName,
+         carSquareSize:this.carSquareSize,
+           x:end.x,
+           y: end.y,
            modifiesCarTo: enterModifiesTo,
            triggersUponContactWithCarIf: enterAccepts,
            orientation: current.rail.getOrientation(),
            wallThickness: this.thicknessWall,
-         wallLength: this.lengthWall  
+         wallLength: this.lengthWall,
+         wallType:"enter",
+         location:enterLocatedOn,
           })
         );
     });

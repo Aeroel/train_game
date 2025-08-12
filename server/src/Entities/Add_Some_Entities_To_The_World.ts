@@ -348,19 +348,6 @@ const lenHalf = lengthWall + half;
         const railOne_B = Railway_Placing_Functionality.place(x,y,mainLength, railOne_Dir );
         
         const railOne_A = Railway_Placing_Functionality.place(x-400,y,mainLength+400, railOne_Dir, );
-
-
-
-       const railOne_A_Second_End = railOne_A.getEnd("secondEnd");
-       const railOne_A_Second_End_From_Down_Switch =
-              World.addEntity(new Rail_Switch_Wall(
-                railOne_A_Second_End.x - half, railOne_A_Second_End.y + half, ["down"], ["down","right"], lengthWall,thicknessWall
-                ));
-                
-       const railOne_A_Second_End_From_Up_Left_Switch =
-              World.addEntity(new Rail_Switch_Wall(
-                railOne_A_Second_End.x - half, railOne_A_Second_End.y - half, ["left", "up"], ["up"], thicknessWall,lengthWall
-                ));
                 
 
     // END railPairOne        
@@ -372,30 +359,6 @@ const lenHalf = lengthWall + half;
        const railTwo_B = Railway_Placing_Functionality.placeSwitch(railOne_B, "secondEnd", railTwo_Dir, switchLength, mainLength+400);
 
        const railTwo_A = Railway_Placing_Functionality.placeSwitch(railOne_A, "secondEnd", railTwo_Dir, switchLength, mainLength+400);
-       
-              const railTwo_A_First_End = railTwo_A.getEnd("firstEnd");
-       const railTwo_A_First_End_Bottom_Switch =
-              World.addEntity(new Rail_Switch_Wall(
-                railTwo_A_First_End.x - half, railTwo_A_First_End.y + thickHalf, ["right", "down"], ["right"], lengthWall,thicknessWall
-                ));
-              
-       const railTwo_A_First_End_Left_Switch =
-              World.addEntity(new Rail_Switch_Wall(
-                railTwo_A_First_End.x - thickHalf, railTwo_A_First_End.y - half, ["left"], ["left","up"], thicknessWall,lengthWall
-                )); 
-                
-                
-             const railTwo_A_Second_End = railTwo_A.getEnd("secondEnd");
-             
-             
-             const railTwo_A_Second_End_Bottom_Switch =  World.addEntity(new Rail_Switch_Wall(
-                railTwo_A_Second_End.x - half, railTwo_A_Second_End.y + thickHalf, ["right", "down"], ["right"], lengthWall,thicknessWall
-                ));
-              
-       const railTwo_A_Second_End_Right_Switch =
-              World.addEntity(new Rail_Switch_Wall(
-                railTwo_A_Second_End.x + thickHalf, railTwo_A_Second_End.y - half, ["left"], ["left","up"], thicknessWall,lengthWall
-                )); 
                 
        
        // END railPairTwo
@@ -475,7 +438,7 @@ const lenHalf = lengthWall + half;
       railOneB_A_Uturn_3.connectWith({otherRail: railOneB_A_Uturn_4, otherEndName: "firstEnd", thisEndName:"firstEnd",} )  
     
     // hmm...
-    //  railOneB_A_Uturn_4.connectWith({otherRail: railOne_A, otherEndName: "firstEnd", thisEndName:"firstEnd",} )  
+      //railOneB_A_Uturn_4.connectWith({otherRail: railOne_A, otherEndName: "firstEnd", thisEndName:"firstEnd",} )  
       
       
       // END Connections
@@ -497,7 +460,7 @@ const lenHalf = lengthWall + half;
           { rail: railOne_B},
           { rail: railOneB_A_Uturn_1 },
           { rail: railOneB_A_Uturn_2 },
-          { rail: railOneB_A_Uturn_2 },
+          { rail: railOneB_A_Uturn_3 },
           { rail: railOneB_A_Uturn_4 },
          ];
 
