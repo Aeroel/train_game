@@ -47,7 +47,7 @@ class Railway_Placing_Functionality {
     const thisEnd = thisRail.getEnd(thisRailEnd);
     const newRail = new Rail();
     World.addEntity(newRail);
-    if (thisRail.orientation === 'vertical') {
+    if (thisRail.getOrientation() === 'vertical') {
       // set correct dimensions
       newRail.setWidth(newRailLength);
       newRail.setHeight(10);
@@ -67,7 +67,7 @@ class Railway_Placing_Functionality {
         newRail.x = thisEnd.x + switchLength;
       }
     }
-    else if (thisRail.orientation === "horizontal") {
+    else if (thisRail.getOrientation() === "horizontal") {
       // also set correct dimensions
       newRail.setWidth(10);
       newRail.setHeight(newRailLength);

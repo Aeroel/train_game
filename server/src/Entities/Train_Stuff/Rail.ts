@@ -9,94 +9,80 @@ export type Rail_End_Name = "firstEnd" | "secondEnd";
 export type Rail_End_Name_Alternative = Rail_End_Name | "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
 
 export type Rail_End = {
-    name: Rail_End_Name
+    name: Rail_End_Name,
 } & Position;
 
+export type Rail_Connections = {
+    [EndName in Rail_End_Name]: Rail_End | null;
+}
 export type Rail_Orientation = "vertical" | "horizontal";
 
 
 class Rail extends Base_Entity {
-    //  left right is for hori, top bot is for vert
-
+    connections: Rail_Connections = {
+      firstEnd: null,
+      secondEnd: null,
+    }
     twoPossibleEnds = ["firstEnd", "secondEnd"];
-    defaultInitialOrientationValue: Rail_Orientation = 'horizontal';
-    orientation: Rail_Orientation = this.defaultInitialOrientationValue;
     constructor() {
         super();
         this.addTag("Rail");
         this.setColor("purple");
     }
-
-
-    setWidth(width: number) {
-        super.setWidth(width);
-        this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
-    }
     
     
-    setHeight(height: number) {
-        super.setHeight(height);
-        this.orientation = this.width > this.height ? 'horizontal' : 'vertical';
+    connectWith({otherRail, otherEndName, thisEndName}:{otherRail: Rail, otherEndName: Rail_End_Name, thisEndName: Rail_End_Name}) {
+      const otherEnd = otherRail.getEnd(otherEndName);
+      const thisEnd = this.getEnd(thisEndName);
+      
+      this.connections[thisEndName] = otherEnd;
+      
+      otherRail.connections[otherEndName] = thisEnd;
+    }
+  
+  
+    getOrientation() {
+      const orientation = this.width > this.height ? 'horizontal' : 'vertical';
+      return orientation;
     }
 
 
-    getEnd(endType: Rail_End_Name | Rail_End_Name_Alternative) {
-        if (this.orientation === 'horizontal') {
-            if (endType === 'secondEnd' || endType === 'rightEnd') {
-                return { x: this.x + this.width, y: this.y };
-            } else if (endType === 'firstEnd' || endType === 'leftEnd') {
-                return { x: this.x, y: this.y };
+    getEnd(endName: Rail_End_Name | Rail_End_Name_Alternative): Rail_End {
+     
+      const end: Rail_End = {
+        name:"firstEnd",
+        x:0,
+        y:0
+      }
+        if (this.getOrientation() === 'horizontal') {
+            if (endName === 'secondEnd' || endName === 'rightEnd') {
+                end.x=this.x + this.width;
+                end.y= this.y;
+                end.name="secondEnd";
+                return end;
+            } else if (endName === 'firstEnd' || endName === 'leftEnd') {
+                end.x= this.x;
+                end.y= this.y;
+               end.name="firstEnd";
+               return end;
             }
-        } else if (this.orientation === 'vertical') {
-            if (endType === 'secondEnd' || endType === 'bottomEnd') {
-                return { x: this.x, y: this.y + this.height };
-            } else if (endType === 'firstEnd' || endType === 'topEnd') {
-                return { x: this.x, y: this.y };
+        } else if (this.getOrientation() === 'vertical') {
+            if (endName === 'secondEnd' || endName === 'bottomEnd') {
+                end.x=this.x;
+                end.y= this.y + this.height;
+                end.name="secondEnd";
+                return end;
+            } else if (endName === 'firstEnd' || endName === 'topEnd') {
+                end.x = this.x;
+                end.y= this.y;
+                end.name="firstEnd";
+                return end;
             }
         }
         // Default (if no matching end type)
-        throw new Error(`${endType} does not 
+        throw new Error(`${endName} does not 
         match any valid value...`);
     }
     
-    
-    calculateDistance(point1: Point, point2: Point) {
-        return Math.hypot(point1.x - point2.x, point1.y - point2.y);
-    }
-
-
-    getEndClosestTo(point: Point) {
-        Assert_That_Numbers_Are_Finite({pointX: point.x, pointY: point.y});
-
-        const firstEnd = this.getEnd("firstEnd");
-        const secondEnd = this.getEnd("secondEnd");
-
-        const distanceToFirstEnd = Math.sqrt(
-            Math.pow(point.x - firstEnd.x, 2) +
-            Math.pow(point.y - firstEnd.y, 2)
-        );
-
-        const distanceToSecondEnd = Math.sqrt(
-            Math.pow(point.x - secondEnd.x, 2) +
-            Math.pow(point.y - secondEnd.y, 2)
-        );
-
-
-        let closestEnd: Rail_End;
-
-        if (isNaN(distanceToFirstEnd) || isNaN(distanceToSecondEnd)) {
-            throw new Error(`DTFE and DTSE must be numbers, one or both are NaN`);
-        }
-        if (distanceToFirstEnd < distanceToSecondEnd) {
-            closestEnd = {name: 'firstEnd' as Rail_End_Name, x: firstEnd.x, y: firstEnd.y};
-
-        } else if (distanceToFirstEnd > distanceToSecondEnd) {
-            closestEnd = {name: 'secondEnd' as Rail_End_Name, x: secondEnd.x, y: secondEnd.y};
-        } else {
-            throw new Error("Hm? ");
-        }
-
-        return closestEnd;
-    }
 
 }
