@@ -70,7 +70,10 @@ class Add_Some_Entities_To_The_World {
         );
         
         
-       const thirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
+       const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
+       
+        this.Put_A_Train_On_Rail(firstRailOutOfThirdRailway, ["up"], ["down"], "forwards");
+       
         
 
     }
@@ -342,11 +345,11 @@ const lengthWall = this.carSquareSize;
 const half = 0.5*this.carSquareSize;
 const thickHalf = thicknessWall + half;
 const lenHalf = lengthWall + half;
- 
+ let returnRail: Rail;
     //  BEGIN  railPairOne
     const railOne_Dir = "down"
         const railOne_B = Railway_Placing_Functionality.place(x,y,mainLength, railOne_Dir );
-        
+         returnRail= railOne_B;
         const railOne_A = Railway_Placing_Functionality.place(x-400,y,mainLength+400, railOne_Dir, );
                 
 
@@ -445,6 +448,7 @@ const lenHalf = lengthWall + half;
       
       
       // BEGIN Switch_Wall_Generation
+      // order matters
        const railsArr: {rail: Rail,}[] = [
          {rail: railOne_A,},
          {rail: railTwo_A,},
@@ -471,7 +475,7 @@ const lenHalf = lengthWall + half;
         })
         
         // END Switch_Wall_Generation
-
+       return returnRail;
     }
 
 }
