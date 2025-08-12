@@ -1,6 +1,8 @@
 export { Socket_Processor }
-import * as SocketIO from "socket.io"
+import type { Undesirable_Hardcoded_Socket_Type } from "#root/Socket_Type_Stuff.js" 
 import { Socket_Functions } from "./Socket_Functions.js";
+import { SocketDataStorage } from "#root/SocketDataStorage.js";
+import { Settings } from "#root/Settings.js";
 import { Player } from "./Entities/Player.js";
 import { World } from "./World.js";
 import { Helper_Functions } from "./Helper_Functions.js";
@@ -13,8 +15,7 @@ import { Game_Loop } from "#root/Game_Loop.js"
             zoom: "in" | "out" | "no_change",
             intangibility: boolean,
         }
-// I copied this type that vscode showed in popup of socket var from startThis...ts  file
-type Undesirable_Hardcoded_Socket_Type = SocketIO.Socket<SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, SocketIO.DefaultEventsMap, any>;
+
 
 class Socket_Processor {
     static onNewConnection(socket: Undesirable_Hardcoded_Socket_Type) {
@@ -34,7 +35,19 @@ class Socket_Processor {
 
     }
 
-
+    static onPing(socket: Undesirable_Hardcoded_Socket_Type) {
+      socket.on("ping", ()=>{
+      const currTime = Date.now();
+      if(Socket_Functions.pingOnCooldown(socket, currTime)) {
+        return;
+      }
+      
+      SocketDataStorage.set(socket, "lastPingTimeMs", currTime)
+        socket.emit("pong","pong")
+      })
+    }
+    
+    
     static onDisconnect(socket: Undesirable_Hardcoded_Socket_Type) {
         socket.on("disconnect", () => {
             Helper_Functions.runThisUponSocketDisconnect(socket);
@@ -124,3 +137,4 @@ class Socket_Processor {
         });
     }
 }
+

@@ -5,6 +5,7 @@ import { SocketWrapper } from "#root/SocketWrapper"
 
 
 export class ClientPreparation {
+  static lastPingTime=0;
   static preparationBeforeClientCanConnectToAServer() {
     this.ipAddressFieldAndButton()
 }
@@ -61,6 +62,21 @@ static ipAddressFieldAndButton() {
       // reset zoom after sending so we do not keep zooming in or out more than once when user clicks 
       App.zoom = "no_change";
     }, 25);
+    
+  setInterval(
+    ()=>{
+      SocketWrapper.emit("ping", "ok");
+      this.lastPingTime=Date.now();
+    }
+    ,2000);
+  SocketWrapper.on("pong",()=>{
+    const pingMs = Date.now() - this.lastPingTime;
+  const msg = `Ping: ${pingMs} ms`;
+  const elem = document.getElementById("ping");
+  if(!elem) throw new Error('elem null');
+  elem.innerText = msg;
+    
+  });
 
   }
 

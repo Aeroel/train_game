@@ -1,12 +1,15 @@
 import type { Rail, Rail_End_Name, Rail_End} from "#root/Entities/Train_Stuff/Rail.js"
 import type { Direction } from "#root/Type_Stuff.js"
-import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
+import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js";
+import { World } from "#root/World.js";
+
      type Rail_Holder={
        rail: Rail
      }   
 interface Railway_Switch_Wall_Generator_Constructor {
           railsArr: Rail_Holder[],
-          thicknessWall: number, lengthWall: number, half: number, thickHalf: number, lenHalf: number,
+          thicknessWall: number,
+          carSquareSize: number,
         
 }
 
@@ -19,16 +22,18 @@ export class Railway_Switch_Wall_Generator {
           lenHalf: number;
   constructor({
           railsArr,
-          thicknessWall, lengthWall, half, thickHalf, lenHalf,
+          thicknessWall, carSquareSize
         }: Railway_Switch_Wall_Generator_Constructor) {
           this.railsArr = railsArr;
           this.thicknessWall = thicknessWall;
-          this.lengthWall = lengthWall;
-          this.half = half;
-          this.thickHalf = thickHalf;
-          this.lenHalf = lenHalf;
+          this.lengthWall = carSquareSize;
+          this.half = 0.5*carSquareSize;
+          this.thickHalf = this.thicknessWall + this.half;
+          this.lenHalf = this.lengthWall + this.half;
           this.placeSwitchWallsThroughout();
         }
+        
+        
         placeSwitchWallsThroughout() {
           console.log("\nMethod 4 - Higher-order function:");
           const gentor = this;
@@ -50,7 +55,6 @@ endNames.forEach((endName: Rail_End_Name) => {
         return;
       }
       
-     
       const exitModifiesTo: Direction[]=[];
       const exitAccepts: Direction[] =[];
       const enterModifiesTo: Direction[]=[];
@@ -110,10 +114,37 @@ endNames.forEach((endName: Rail_End_Name) => {
       }
       console.log(`endName${endName}->exitModifiesTo:${JSON.stringify(exitModifiesTo)}, exitAccepts:${JSON.stringify(exitAccepts)},
       enterModifiesTo ${JSON.stringify(enterModifiesTo)}, enterAccepts ${JSON.stringify(enterAccepts)}, enterLocatedOn ${JSON.stringify(enterLocatedOn)}
-      
-      `)
+
+      `);
+      // exit
+     World.addEntity(
+        Rail_Switch_Wall.getInstance({
+          end, half: this.half,
+           x:end.x, y: end.y,
+           modifiesCarTo: exitModifiesTo,
+           triggersUponContactWithCarIf: exitAccepts,
+           orientation: current.rail.getOrientation(),
+           wallThickness: this.thicknessWall,
+         wallLength: this.lengthWall, wallType:"exit" 
+          })
+        );
+        
+        // entrance
+     World.addEntity(
+        Rail_Switch_Wall.getInstance({
+          end, half: this.half, wallType: "enter",
+           x:end.x, y: end.y,
+           modifiesCarTo: enterModifiesTo,
+           triggersUponContactWithCarIf: enterAccepts,
+           orientation: current.rail.getOrientation(),
+           wallThickness: this.thicknessWall,
+         wallLength: this.lengthWall  
+          })
+        );
     });
         }
+        
+        
     mustNeverBeCalled() {
         throw new Error
         /*console.log*/("Must never reach this point since I handle the aligned rails by not connenctikg them. So I guess I accidentally might have connected some")

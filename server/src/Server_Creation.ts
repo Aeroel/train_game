@@ -16,6 +16,7 @@ class Server_Creation {
   Socket_Processor.onNewConnection(socket);
   Socket_Processor.onDisconnect(socket);
   Socket_Processor.onControl(socket);
+  Socket_Processor.onPing(socket);
   
     });
     

@@ -504,7 +504,7 @@ const lenHalf = lengthWall + half;
         
         const gentor =  new Railway_Switch_Wall_Generator({
           railsArr,
-          thicknessWall, lengthWall, half, thickHalf, lenHalf,
+          thicknessWall, carSquareSize
         })
         
         // END Switch_Wall_Generation

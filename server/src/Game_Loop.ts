@@ -11,7 +11,8 @@ class Game_Loop {
   static lastUpdateTime = Date.now();
   static accumulatedTime = 0;
   static started = true;
-
+ static emitEveryMs= 25;
+ static lastEmitTime =0;
   static theLoop() {
 
 
@@ -33,11 +34,11 @@ class Game_Loop {
 
   static simulateNextMoment() {
 
-    EmitStuff.Emit_To_All_Players_World_State_Stuff();
     Game_Loop.Next_Moment_Of_All_Entities();
     Game_Loop.Collision_Resolutor();
     Game_Loop.Update_Positions_Of_All_Entities();
     Game_Loop.Clean_Up();
+    Game_Loop.emitToPlayers();
   }
 
   static Next_Moment_Of_All_Entities() {
@@ -61,5 +62,14 @@ class Game_Loop {
         World.getCurrentEntities().forEach(entity => {
       entity.cleanUp();
     });
+  }
+static  emitToPlayers() {
+        const timeToEmit = Date.now() > (this.lastEmitTime + this.emitEveryMs) 
+    if(!timeToEmit) {
+     return;
+    }
+   EmitStuff.Emit_To_All_Players_World_State_Stuff();
+     this.lastEmitTime = Date.now();
+    
   }
 }
