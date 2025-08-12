@@ -25,7 +25,7 @@ class Collision_Stuff {
  
  static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
    // the base idea is that we have a general area if the entities are within, we will bother checking collision.
-  const BASE_DISTANCE = 400;
+  const BASE_DISTANCE = 200;
 
   const dx = a.x - b.x;
   const dy = a.y - b.y;
