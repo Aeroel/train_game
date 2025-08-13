@@ -1,6 +1,7 @@
 .vs/
 
 server/package-lock.json
+server/player_save.json
 
 server/node_modules/
 client/node_modules/
