@@ -144,7 +144,9 @@ collisionManager(
     }
    this.collisionManager({lastCall: true});
 }
-
+stopControls() {
+  this.movementForces.nullifyByKeyInAllDirections("Player_Controls");
+}
 savePosition(pos: Position) {
   if (this.previousPositions.length === 4) {
     this.previousPositions.shift(); // remove first element
