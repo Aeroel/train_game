@@ -24,6 +24,8 @@ class Rail extends Base_Entity {
       secondEnd: null,
     }
     twoPossibleEnds = ["firstEnd", "secondEnd"];
+    
+
     constructor() {
         super();
         this.addTag("Rail");

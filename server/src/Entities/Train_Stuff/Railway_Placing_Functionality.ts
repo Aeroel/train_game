@@ -5,6 +5,14 @@ import type { Direction } from "#root/Type_Stuff.js";
 export { Railway_Placing_Functionality }
 
 class Railway_Placing_Functionality {
+ 
+ static railThickness=10;
+ /* Stored rails are really only used for placeNextTo, to automatically determine endName to avoid manually specifying endNames, which was quite annoying. 
+   So, basically, whenever I call placeNextTo(someRail...)
+   I look in this array, by necessity find it and use the direction. if not found, throw error, obviously
+ */
+ static allCreatedRails: {rail:Rail, direction: Direction}[]=[];
+ 
   static place(x: number, y: number, length: number, direction: Direction) {
     let rail = new Rail(); // Default empty rail
     rail.setX(x)
@@ -13,44 +21,46 @@ class Railway_Placing_Functionality {
     switch (direction) {
       case 'right':
         rail.setWidth(length);
-        rail.setHeight(10); // Default rail height (horizontal)
+        rail.setHeight(this.railThickness); // Default rail height (horizontal)
         break;
       case 'left':
         rail.setWidth(length);
-        rail.setHeight(10); // Default rail height (horizontal)
+        rail.setHeight(this.railThickness); // Default rail height (horizontal)
         rail.x = rail.x - length; // Adjust x to account for leftward movement
         break;
       case 'up':
         rail.setHeight(length);
-        rail.setWidth(10); // Default rail width (vertical)
+        rail.setWidth(this.railThickness); // Default rail width (vertical)
         rail.y = rail.y - length;
         break;
       case 'down':
         rail.setHeight(length);
-        rail.setWidth(10); // Default rail width (vertical)
+        rail.setWidth(this.railThickness); // Default rail width (vertical)
         break;
     }
     World.addEntity(rail); // Add the rail to the world
+    this.allCreatedRails.push({direction, rail})
     return rail;
   }
   static placeSwitch(
     thisRail: Rail,
-    thisRailEnd: Rail_End_Name,
     direction: Direction,
     switchLength: number,
     newRailLength: number,) {
+     const thisRailEnd = this.recordedRailToEndName(thisRail);
     if (!
       (thisRailEnd === "firstEnd" || thisRailEnd === "secondEnd")
     ) {
       throw new Error("Please provide either first or second end name instead of top/left/etc for simplicity");
     }
+
     const thisEnd = thisRail.getEnd(thisRailEnd);
     const newRail = new Rail();
     World.addEntity(newRail);
     if (thisRail.getOrientation() === 'vertical') {
       // set correct dimensions
       newRail.setWidth(newRailLength);
-      newRail.setHeight(10);
+      newRail.setHeight(this.railThickness);
 
 
       if (thisRailEnd === "firstEnd") {
@@ -69,7 +79,7 @@ class Railway_Placing_Functionality {
     }
     else if (thisRail.getOrientation() === "horizontal") {
       // also set correct dimensions
-      newRail.setWidth(10);
+      newRail.setWidth(this.railThickness);
       newRail.setHeight(newRailLength);
 
 
@@ -86,12 +96,47 @@ class Railway_Placing_Functionality {
         newRail.y = thisEnd.y + switchLength;
       }
     }
+        this.allCreatedRails.push({direction, rail: newRail})
     return newRail;
   }
   
   
+  static recordedRailToEndName(rail: Rail): Rail_End_Name {
+    const dirOfRail = this.getDirectionByRail(rail);
+    let railEndName: Rail_End_Name;
+switch(dirOfRail) {
+  case "up":
+  case "left":
+     railEndName = "firstEnd";
+  break;
+  case "down":
+    case "right":
+     railEndName = "secondEnd";
+  break;
+}
+return railEndName
+  }
+  static getDirectionByRail(rail: Rail): Direction {
+    assertNoDuplicateRails(this.allCreatedRails);
+    function assertNoDuplicateRails(array: { rail: Rail; direction: Direction }[]): void {
+  const seen = new Set<Rail>();
+  for (const item of array) {
+    if (seen.has(item.rail)) {
+      throw new Error(`Duplicate rail found: "${item.rail}"`);
+    }
+    seen.add(item.rail);
+  }
+}
+  const item = this.allCreatedRails.find(entry => entry.rail === rail);
+  if (!item) {
+    throw new Error(`Rail not found in array, which can only happen if either the placing functions somehow had these array pushes removed or maybe you are calling this in a non-standard manner (i.e., not as a result of using Railway_Placing_Functionality class`);
+  }
+  return item.direction;
+}
   // Place a rail next to an existing rail
-  static placeNextTo(otherRail: Rail, nextToOtherRailEnd: Rail_End_Name_Alternative, extendsInDirection: Direction, length: number) {
+  static placeNextTo(otherRail: Rail, extendsInDirection: Direction, length: number) {
+
+const nextToOtherRailEnd = this.recordedRailToEndName(otherRail);
     let newX;
     let newY;
     let end = otherRail.getEnd(nextToOtherRailEnd); // Get position of the specified end
@@ -105,14 +150,13 @@ class Railway_Placing_Functionality {
     // if(direction === 'up') {
     //     newY -= length; 
     // }
-    if (nextToOtherRailEnd === 'bottomEnd' && extendsInDirection === 'left') {
-      newX += 10;
-      length += 10;
+    if (nextToOtherRailEnd === 'secondEnd' && extendsInDirection === 'left') {
+      newX += this.railThickness;
+      length += this.railThickness;
     }
 
     // Now place the next rail based on direction
     let newRail = this.place(newX, newY, length, extendsInDirection);
-
     return newRail;
   }
 }

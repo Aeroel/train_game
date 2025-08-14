@@ -69,8 +69,7 @@ motionsDirections: Train_Car_Motions_Directions = {
     backwards: [],
 };
 
-  Rail_Movement_Key = `Rail_Movement`;
-  Riding_Force_Key = `Riding_Car_Id_${this.id}`;
+  Rail_Movement_Key = `Movement_Car_Id_${this.id}`;
 
   behaviour: Train_Car_Behaviour;
   bulk_of_code: Bulk_Of_Train_Car_Code;

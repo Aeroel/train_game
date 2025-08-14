@@ -73,7 +73,7 @@ class Add_Some_Entities_To_The_World {
        const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
        
         this.Put_A_Train_On_Rail(firstRailOutOfThirdRailway, ["up"], ["down"], "forwards");
-       
+       this.surroundThirdWithWalls()
         
 
     }
@@ -336,9 +336,37 @@ const offset = carSquareSize * 2;
      
     }
  
-
-    
+static surroundThirdWithWalls() {
+  const horizontal="horizontal";
+  const vertical="vertical"
+  const pos1={x: 750, y:5200};
+    this.wallHelper(pos1, vertical, 4000);
+    this.wallHelper(pos1, horizontal, 1800);
+  Railway_Placing_Functionality.railThickness=50;
+   const rail1= Railway_Placing_Functionality.place(2550, 5200, 1500, "down");
+ const rail2=  Railway_Placing_Functionality.placeNextTo(rail1, "secondEnd", "left", 900);
+  
+}
+static wallHelper(pos: Position, orientation: Orientation,length: number)   {
+ 
+  const wall = World.addEntity(
+    new Wall(
+      ))
+      wall.setPosition(pos)
+  wall.setColor("pink");
+  const thickness = 50;
+  let width=thickness;
+  let height=length;
+  if(orientation==="horizontal") {
+    width=length;
+    height=thickness;
+  }
+  wall.setWidth(width);
+  wall.setHeight(height)
+}  
     static addThirdRailway(x: number, y: number, mainLength: number, switchLength: number) {
+
+
       const carSquareSize = this.carSquareSize
 const thicknessWall= 10;
 const lengthWall = this.carSquareSize;
