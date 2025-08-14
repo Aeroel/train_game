@@ -10,7 +10,7 @@ const port = arbitrary_number;
 
 const LANIP = Helper_Functions.getLocalIP();
 const localhostIP = "127.0.0.1";
-console.log(`Yay. Started a server on port ${port}.`);
+console.log(`Yaaaay. Started a server on port ${port}.`);
 console.log(`LAN IP: ${LANIP}:${port}`);
 console.log(`localhost IP: ${localhostIP}:${port}.`);
 
