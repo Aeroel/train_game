@@ -53,11 +53,6 @@ class Railway_Placing_Functionality {
     switchLength: number,
     newRailLength: number,) {
      const thisRailEnd = this.tryToAutomaticallyChooseRailEndName(thisRail);
-    if (!
-      (thisRailEnd === "firstEnd" || thisRailEnd === "secondEnd")
-    ) {
-      throw new Error("Please provide either first or second end name instead of top/left/etc for simplicity");
-    }
 
     const thisEnd = thisRail.getEnd(thisRailEnd);
     const newRail = new Rail();
@@ -108,7 +103,7 @@ class Railway_Placing_Functionality {
   static addToCreatedRails({direction, rail}:{direction: Direction, rail: Rail} ) {
      this.allCreatedRails.push({rail,direction, endsAvailableForPlacement:["firstEnd","secondEnd"] })
   }
-/*  This is a little obscure or gimmicky, so I likely still need ability to manually specify rail ends, maybe in a separate function or as optional parameter to be used instead of calling this when no end is specified in any of the placement funcs.
+/*  This is a little obscure or gimmicky, so I likely still need ability to manually specify rail ends, especially if I would like to have one rail branching to few and control where train goes, maybe in a separate function or as optional parameter to be used instead of calling this when no end is specified in any of the placement funcs.
   Basically, the idea is this: I use the placement funcs like this:
   rail1 eq initialplace right
   rail2 eq placenextto rail1 extend down <- here end of rail1 automatically determined to be secondEnd (remember: for hor rails, secondEnd is right, and for vertical rails secondEnd is bottom)
@@ -142,7 +137,7 @@ if(!(recRail.endsAvailableForPlacement.includes(railEndName))){
   railEndName = recRail.endsAvailableForPlacement[0];
   
 }
-// consume used end so it will not be possible to use it afterwards
+// consume used end so it will not be possible to use it afterwards 
 recRail.endsAvailableForPlacement = recRail.endsAvailableForPlacement.filter(endName => endName !== railEndName);
 
 return railEndName
