@@ -10,6 +10,10 @@ export {
   type VisibleEntity,
   type VirtualizedEntity,
   type CleanedEntity,
+  type End,
+  type End_Name,
+  type End_Name_Alternative,
+  
 };
 export type { Collision_Info } from "#root/Collision_Stuff/Collision_Type_Stuff.js"
 
@@ -53,6 +57,16 @@ declare type VisibleEntity = {
 declare type VirtualizedEntity = VisibleEntity;
 declare type CleanedEntity = VisibleEntity;
  
+ 
+declare type End_Name = "firstEnd" | "secondEnd";
+declare type End_Name_Alternative =  "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
+
+declare type End = {
+    name: End_Name,
+} & Position;
+
+
+
 
 /* same as calling Object.keys but avoids as ... cast in random usages
 example:

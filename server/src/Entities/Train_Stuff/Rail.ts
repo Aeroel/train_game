@@ -1,24 +1,23 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
-import type { Point, Position } from "#root/Type_Stuff.js";
+import type { Point, Position, End_Name, End_Name_Alternative, End, Orientation } from "#root/Type_Stuff.js";
 import { Assert_That_Numbers_Are_Finite } from "#root/Type_Validation_Stuff.js";
-
+import type {Supports_Chained_Placement} from "#root/Chained_Placement.js"
 export { Rail };
 
-export type Rail_End_Name = "firstEnd" | "secondEnd";
-export type Rail_End_Name_Alternative = Rail_End_Name | "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
+export type Rail_End_Name = End_Name
+export type Rail_End_Name_Alternative = End_Name_Alternative
 
-export type Rail_End = {
-    name: Rail_End_Name,
-} & Position;
+export type Rail_End = End
+
+
+export type Rail_Orientation = Orientation
 
 export type Rail_Connections = {
     [EndName in Rail_End_Name]: Rail_End | null;
 }
-export type Rail_Orientation = "vertical" | "horizontal";
 
-
-class Rail extends Base_Entity {
+class Rail extends Base_Entity implements Supports_Chained_Placement {
     connections: Rail_Connections = {
       firstEnd: null,
       secondEnd: null,
