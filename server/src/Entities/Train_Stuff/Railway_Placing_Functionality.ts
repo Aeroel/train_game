@@ -2,6 +2,11 @@ import { World } from "#root/World.js";
 import { Rail, type Rail_End_Name, type Rail_End_Name_Alternative } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction } from "#root/Type_Stuff.js";
 
+type Stored_Placed_Rail = {
+  rail: Rail, 
+  direction: Direction,
+  endsAvailableForPlacement: Rail_End_Name[]
+}
 export { Railway_Placing_Functionality }
 
 class Railway_Placing_Functionality {
@@ -11,7 +16,7 @@ class Railway_Placing_Functionality {
    So, basically, whenever I call placeNextTo(someRail...)
    I look in this array, by necessity find it and use the direction. if not found, throw error, obviously
  */
- static allCreatedRails: {rail:Rail, direction: Direction}[]=[];
+ static allCreatedRails: Stored_Placed_Rail[]=[];
  
   static place(x: number, y: number, length: number, direction: Direction) {
     let rail = new Rail(); // Default empty rail
@@ -39,7 +44,7 @@ class Railway_Placing_Functionality {
         break;
     }
     World.addEntity(rail); // Add the rail to the world
-    this.allCreatedRails.push({direction, rail})
+         this.addToCreatedRails({rail, direction})
     return rail;
   }
   static placeSwitch(
@@ -47,7 +52,7 @@ class Railway_Placing_Functionality {
     direction: Direction,
     switchLength: number,
     newRailLength: number,) {
-     const thisRailEnd = this.recordedRailToEndName(thisRail);
+     const thisRailEnd = this.tryToAutomaticallyChooseRailEndName(thisRail);
     if (!
       (thisRailEnd === "firstEnd" || thisRailEnd === "secondEnd")
     ) {
@@ -96,17 +101,34 @@ class Railway_Placing_Functionality {
         newRail.y = thisEnd.y + switchLength;
       }
     }
-        this.allCreatedRails.push({direction, rail: newRail})
+         this.addToCreatedRails({rail: newRail, direction})
     return newRail;
   }
   
   static addToCreatedRails({direction, rail}:{direction: Direction, rail: Rail} ) {
-     // to do
+     this.allCreatedRails.push({rail,direction, endsAvailableForPlacement:["firstEnd","secondEnd"] })
   }
-  static recordedRailToEndName(rail: Rail): Rail_End_Name {
-    const dirOfRail = this.getDirectionByRail(rail);
+/*  This is a little obscure or gimmicky, so I likely still need ability to manually specify rail ends, maybe in a separate function or as optional parameter to be used instead of calling this when no end is specified in any of the placement funcs.
+  Basically, the idea is this: I use the placement funcs like this:
+  rail1 eq initialplace right
+  rail2 eq placenextto rail1 extend down <- here end of rail1 automatically determined to be secondEnd (remember: for hor rails, secondEnd is right, and for vertical rails secondEnd is bottom)
+  rail3 eq placenextto rail2 extend left <-- extends from rail2's secondEnd
+  rail4 eq placenextto rail1 extend up <-- problem occurs here. it will use second end like rail2 and place rail4 at the same end as rail2, creating a mess, but I want to use firstEnd. 
+  // or maybe I did this instead, same issue.
+  rail4 eq placenextto rail1 extend right
+  
+  So, auto choosing end is only for cases when I do a linear railway construction like:
+  initialPlace left, extend up, extend right, extend down (for example, let's say we just made a square shapee circular railway)
+  but if I do placement from both of raiL'S ends, I still need to manually specify them
+  etc.
+  */
+  static tryToAutomaticallyChooseRailEndName(rail: Rail): Rail_End_Name {
+    const recRail = this.getRecordedRail(rail);
+    if(recRail.endsAvailableForPlacement.length === 0) {
+      throw new Error("Simplified rail placing without manual specification does not work for auto placing multiple rails near a rail end")
+    }
     let railEndName: Rail_End_Name;
-switch(dirOfRail) {
+switch(recRail.direction) {
   case "up":
   case "left":
      railEndName = "firstEnd";
@@ -116,20 +138,29 @@ switch(dirOfRail) {
      railEndName = "secondEnd";
   break;
 }
+if(!(recRail.endsAvailableForPlacement.includes(railEndName))){
+  railEndName = recRail.endsAvailableForPlacement[0];
+  
+}
+// consume used end so it will not be possible to use it afterwards
+recRail.endsAvailableForPlacement = recRail.endsAvailableForPlacement.filter(endName => endName !== railEndName);
+
 return railEndName
   }
-  static getDirectionByRail(rail: Rail): Direction {
+  
+  
+  static getRecordedRail(rail: Rail): Stored_Placed_Rail {
 
-  const item = this.allCreatedRails.find(entry => entry.rail === rail);
-  if (!item) {
+  const recedRail = this.allCreatedRails.find(entry => entry.rail === rail);
+  if (!recedRail) {
     throw new Error(`Rail not found in array, which can only happen if either the placing functions somehow had these array pushes removed or maybe you are calling this in a non-standard manner (i.e., not as a result of using Railway_Placing_Functionality class`);
   }
-  return item.direction;
+  return recedRail;
 }
   // Place a rail next to an existing rail
   static placeNextTo(otherRail: Rail, extendsInDirection: Direction, length: number) {
 
-const nextToOtherRailEnd = this.recordedRailToEndName(otherRail);
+const nextToOtherRailEnd = this.tryToAutomaticallyChooseRailEndName(otherRail);
     let newX;
     let newY;
     let end = otherRail.getEnd(nextToOtherRailEnd); // Get position of the specified end
