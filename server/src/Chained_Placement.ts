@@ -1,20 +1,40 @@
-import { World } from "#root/World.js";
-import type { Direction, End, End_Name, End_Name_Alternative, Orientation } from "#root/Type_Stuff.js";
+import type { Direction, End, End_Name, End_Name_Alternative, Orientation, Entity_With_Ends_And_Orientation,} from "#root/Type_Stuff.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 
 
 export type Stored_Placed_Entity = {
-  entity:  Base_Entity & Supports_Chained_Placement, 
+  entity:  Base_Entity & Entity_With_Ends_And_Orientation, 
   direction: Direction,
   endsAvailableForPlacement: End_Name[]
 }
+export type Place_Params<T extends Base_Entity & Entity_With_Ends_And_Orientation> = {
+  entity: T;
+  x: number;
+  y: number;
+  length: number;
+  direction: Direction;
+  thickness: number
+};
+export type Place_Switch_Params<T extends Base_Entity & Entity_With_Ends_And_Orientation > = {
+    otherEntity: T,
+    newEntity: T,
+    direction: Direction,
+    switchLength: number,
+    newEntityLength: number,
+    thickness: number
+}
+
+export type Place_Next_To_Params<T extends Base_Entity & Entity_With_Ends_And_Orientation> = {
+      newEntity: T, 
+      otherEntity: T, 
+      extendsInDirection: Direction, 
+      length: number,
+      thickness: number,
+  
+}; 
 export { Chained_Placement }
 
-export interface Supports_Chained_Placement {
-  getOrientation(): Orientation;
-  getEnd(endName: End_Name | End_Name_Alternative): End;
-  
-}
+
 class Chained_Placement {
  
  static thickness=10;
@@ -24,47 +44,60 @@ class Chained_Placement {
  */
  static allCreatedEntities: Stored_Placed_Entity[]=[];
  
-  static place<T extends Base_Entity & Supports_Chained_Placement>(entity: T, x: number, y: number, length: number, direction: Direction) {
+
+  static place<T extends Base_Entity & Entity_With_Ends_And_Orientation>(
+    {
+      entity,
+      x,
+     y,
+     length,
+    direction,
+   thickness    
+    }: Place_Params<T>
+  ): T  {
     entity.setX(x)
     entity.setY(y);
-
     switch (direction) {
       case 'right':
         entity.setWidth(length);
-        entity.setHeight(this.thickness); // Default rail height (horizontal)
+        entity.setHeight(thickness); // Default rail height (horizontal)
         break;
       case 'left':
         entity.setWidth(length);
-        entity.setHeight(this.thickness); // Default rail height (horizontal)
+        entity.setHeight(thickness); // Default rail height (horizontal)
         entity.x = entity.x - length; // Adjust x to account for leftward movement
         break;
       case 'up':
         entity.setHeight(length);
-        entity.setWidth(this.thickness); // Default rail width (vertical)
+        entity.setWidth(thickness); // Default rail width (vertical)
         entity.y = entity.y - length;
         break;
       case 'down':
         entity.setHeight(length);
-        entity.setWidth(this.thickness); // Default rail width (vertical)
+        entity.setWidth(thickness); // Default rail width (vertical)
         break;
     }
-    World.addEntity(entity); // Add the rail to the world
+
          this.addToCreatedEntities({entity, direction})
     return entity;
   }
-  static placeSwitch<T extends Base_Entity & Supports_Chained_Placement>(
-    otherEntity: T,
-    newEntity: T,
-    direction: Direction,
-    switchLength: number,
-    newEntityLength: number,) {
+  
+  
+  static placeSwitch<T extends Base_Entity & Entity_With_Ends_And_Orientation>({
+    otherEntity,
+    newEntity,
+    direction,
+    switchLength,
+    newEntityLength,
+    thickness,
+  }: Place_Switch_Params<T>) {
      const otherEntityEnd = this.tryToAutomaticallyChooseEntityEndName(otherEntity);
 
     const otherEnd = otherEntity.getEnd(otherEntityEnd);
     if (otherEntity.getOrientation() === 'vertical') {
       // set correct dimensions
       newEntity.setWidth(newEntityLength);
-      newEntity.setHeight(this.thickness);
+      newEntity.setHeight(thickness);
 
 
       if (otherEntityEnd === "firstEnd") {
@@ -83,7 +116,7 @@ class Chained_Placement {
     }
     else if (otherEntity.getOrientation() === "horizontal") {
       // also set correct dimensions
-      newEntity.setWidth(this.thickness);
+      newEntity.setWidth(thickness);
       newEntity.setHeight(newEntityLength);
 
 
@@ -103,8 +136,46 @@ class Chained_Placement {
          this.addToCreatedEntities({entity: newEntity, direction})
     return newEntity
   }
+
   
-  static addToCreatedEntities<T extends Base_Entity & Supports_Chained_Placement>({direction, entity}:{direction: Direction, entity: T} ) {
+  // Place a rail next to an existing rail
+  static placeNextTo<T extends Base_Entity & Entity_With_Ends_And_Orientation>({newEntity, otherEntity, extendsInDirection, length, thickness}: Place_Next_To_Params<T>) {
+
+const nextToOtherEntityEnd = this.tryToAutomaticallyChooseEntityEndName(otherEntity);
+    let newX;
+    let newY;
+    let end = otherEntity.getEnd(nextToOtherEntityEnd); // Get position of the specified end
+
+    // Decide where to place the new rail based on relativeEnd and direction
+    newX = end.x;
+    newY = end.y;
+    // if(direction === 'left') {
+    //     newX -= length; 
+    // }
+    // if(direction === 'up') {
+    //     newY -= length; 
+    // }
+    if (nextToOtherEntityEnd === 'secondEnd' && extendsInDirection === 'left') {
+      newX += thickness;
+      length += thickness;
+    }
+
+    // Now place the next rail based on direction
+    this.place({
+            entity: newEntity,
+  x:newX,
+  y: newY,
+  length,
+  direction: extendsInDirection,
+  thickness
+    
+    });
+    return newEntity;
+  }
+  
+  
+  // irrelevant to using the Chained_Placement class
+    static addToCreatedEntities<T extends Base_Entity & Entity_With_Ends_And_Orientation>({direction, entity}:{direction: Direction, entity: T} ) {
      this.allCreatedEntities.push({entity,direction, endsAvailableForPlacement:["firstEnd","secondEnd"] })
   }
 /*  This is a little obscure or gimmicky, so I likely still need ability to manually specify entity ends, especially if I would like to have one entity branching to few and control where train goes, maybe in a separate function or as optional parameter to be used instead of calling this when no end is specified in any of the placement funcs.
@@ -156,30 +227,6 @@ return entityEndName
   }
   return recedEntity;
 }
-  // Place a rail next to an existing rail
-  static placeNextTo<T extends Base_Entity & Supports_Chained_Placement>(thisEntity: T, otherEntity: T, extendsInDirection: Direction, length: number) {
-
-const nextToOtherEntityEnd = this.tryToAutomaticallyChooseEntityEndName(otherEntity);
-    let newX;
-    let newY;
-    let end = otherEntity.getEnd(nextToOtherEntityEnd); // Get position of the specified end
-
-    // Decide where to place the new rail based on relativeEnd and direction
-    newX = end.x;
-    newY = end.y;
-    // if(direction === 'left') {
-    //     newX -= length; 
-    // }
-    // if(direction === 'up') {
-    //     newY -= length; 
-    // }
-    if (nextToOtherEntityEnd === 'secondEnd' && extendsInDirection === 'left') {
-      newX += this.thickness;
-      length += this.thickness;
-    }
-
-    // Now place the next rail based on direction
-    this.place(thisEntity, newX, newY, length, extendsInDirection);
-    return thisEntity;
-  }
+ 
+ 
 }

@@ -13,12 +13,15 @@ import { Wall } from "#root/Entities/Wall.js";
 import { Assert } from "#root/Assert.js";
 import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Railway_Placer, type Railway_Placer_Required_Inputs } from "#root/Entities/Railway_Placer.js";
+import { Chained_Placement } from "#root/Chained_Placement.js";
+
 export { Add_Some_Entities_To_The_World };
 
 
 class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
     static railLength = 1000;
+    static railwayFenceWallThickness = 50;
     static rails: Rail[] = [];
    
   
@@ -94,6 +97,7 @@ static addRailwayAbstract() {
 
         const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength, "down", );
         const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "right", switchLength, mainLength);
+        console.log(rail3_0)
         const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "right", mainLength);
         const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "up", switchLength, mainLength );
         
@@ -337,32 +341,51 @@ const offset = carSquareSize * 2;
     }
  
 static surroundThirdWithWalls() {
-  const horizontal="horizontal";
-  const vertical="vertical"
-  const pos1={x: 750, y:5200};
-    this.wallHelper(pos1, vertical, 4000);
-    this.wallHelper(pos1, horizontal, 1800);
-  Railway_Placing_Functionality.railThickness=50;
-   const rail1= Railway_Placing_Functionality.place(2550, 5200, 1500, "down");
- const rail2=  Railway_Placing_Functionality.placeNextTo(rail1, "left", 900);
+
+  const x=750;
+  const y=5200;
+  
+   const wall1 = this.wallHelperPlace({x,y,direction:"right", length:1700});
+   const wall2= this.wallHelperPlaceNextTo({wall: wall1, direction:"down",length: 1500  });
+   const wall3= this.wallHelperPlaceNextTo({wall: wall2, direction:"left",length: 700  });
+   
+   
+   /* TODO: more convenient way to place:
+   this.wallHelperPlace()
+   .wallHelperPlaceNextTo()
+   .wallHelperPlaceNextTo()
+   .wallHelperPlaceNextTo()
+   */
   
 }
-static wallHelper(pos: Position, orientation: Orientation,length: number)   {
- 
+static wallHelperPlaceNextTo({wall, direction, length}: {wall: Wall, direction: Direction, length: number}) {
+  const newWall=new Wall();
+  newWall.setColor("pink");
+  World.addEntity(newWall);
+    Chained_Placement.placeNextTo({
+    otherEntity: wall,
+    newEntity: newWall,
+    extendsInDirection: direction, length, thickness: this.railwayFenceWallThickness
+    })
+    return newWall;
+}
+static wallHelperPlace({x, y, direction, length}:{x:number,y: number, direction: Direction, length: number})   {
+ const thickness = this.railwayFenceWallThickness;
   const wall = World.addEntity(
     new Wall(
       ))
-      wall.setPosition(pos)
   wall.setColor("pink");
-  const thickness = 50;
-  let width=thickness;
-  let height=length;
-  if(orientation==="horizontal") {
-    width=length;
-    height=thickness;
-  }
-  wall.setWidth(width);
-  wall.setHeight(height)
+
+  Chained_Placement.place({
+    entity:wall,
+    x,
+    y,
+    length,
+    direction,
+    thickness
+  })
+  return wall;
+
 }  
     static addThirdRailway(x: number, y: number, mainLength: number, switchLength: number) {
 

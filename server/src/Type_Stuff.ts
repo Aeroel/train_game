@@ -13,6 +13,8 @@ export {
   type End,
   type End_Name,
   type End_Name_Alternative,
+  type Connections,
+  type Entity_With_Ends_And_Orientation,
   
 };
 export type { Collision_Info } from "#root/Collision_Stuff/Collision_Type_Stuff.js"
@@ -65,8 +67,14 @@ declare type End = {
     name: End_Name,
 } & Position;
 
+declare type Connections = {
+    [EndName in End_Name]: End | null;
+}
 
-
+interface Entity_With_Ends_And_Orientation {
+  getOrientation(): Orientation;
+  getEnd(endName: End_Name | End_Name_Alternative): End;
+}
 
 /* same as calling Object.keys but avoids as ... cast in random usages
 example:
