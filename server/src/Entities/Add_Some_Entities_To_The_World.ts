@@ -93,16 +93,16 @@ static addRailwayAbstract() {
 
 
         const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength, "down", );
-        const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength);
-        const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
-        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength );
+        const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "right", switchLength, mainLength);
+        const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "right", mainLength);
+        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "up", switchLength, mainLength );
         
         
         
         
-          const rail6_0 = Railway_Placing_Functionality.placeSwitch(rail5_0, "firstEnd", "left", switchLength, mainLength);
+          const rail6_0 = Railway_Placing_Functionality.placeSwitch(rail5_0, "left", switchLength, mainLength);
           
-          const rail7_0 = Railway_Placing_Functionality.placeNextTo(rail6_0, "firstEnd", "left", mainLength)
+          const rail7_0 = Railway_Placing_Functionality.placeNextTo(rail6_0,  "left", mainLength)
 
 
 const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
@@ -167,16 +167,16 @@ const half = carSquareSize*0.5;
 
 
         const rail2_0 = Railway_Placing_Functionality.place(x,y,mainLength + 200, "down", );
-        const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "secondEnd", "right", switchLength, mainLength+1200);
-        const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "rightEnd", "right", mainLength);
-        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "secondEnd", "up", switchLength, mainLength+200 );
+        const rail3_0 = Railway_Placing_Functionality.placeSwitch(rail2_0, "right", switchLength, mainLength+1200);
+        const rail4_0 = Railway_Placing_Functionality.placeNextTo(rail3_0, "right", mainLength);
+        const rail5_0 = Railway_Placing_Functionality.placeSwitch(rail4_0, "up", switchLength, mainLength+200 );
         
         
         
         
-          const rail6_0 = Railway_Placing_Functionality.placeSwitch(rail5_0, "firstEnd", "left", switchLength, mainLength);
+          const rail6_0 = Railway_Placing_Functionality.placeSwitch(rail5_0, "left", switchLength, mainLength);
           
-          const rail7_0 = Railway_Placing_Functionality.placeNextTo(rail6_0, "firstEnd", "left", mainLength+1200)
+          const rail7_0 = Railway_Placing_Functionality.placeNextTo(rail6_0, "left", mainLength+1200)
 
 
 const carSquareSize = Add_Some_Entities_To_The_World.carSquareSize;
@@ -344,7 +344,7 @@ static surroundThirdWithWalls() {
     this.wallHelper(pos1, horizontal, 1800);
   Railway_Placing_Functionality.railThickness=50;
    const rail1= Railway_Placing_Functionality.place(2550, 5200, 1500, "down");
- const rail2=  Railway_Placing_Functionality.placeNextTo(rail1, "secondEnd", "left", 900);
+ const rail2=  Railway_Placing_Functionality.placeNextTo(rail1, "left", 900);
   
 }
 static wallHelper(pos: Position, orientation: Orientation,length: number)   {
@@ -387,9 +387,9 @@ const lenHalf = lengthWall + half;
 
     // BEGIN railPairTwo
     const railTwo_Dir = "right";
-       const railTwo_B = Railway_Placing_Functionality.placeSwitch(railOne_B, "secondEnd", railTwo_Dir, switchLength, mainLength+400);
+       const railTwo_B = Railway_Placing_Functionality.placeSwitch(railOne_B, railTwo_Dir, switchLength, mainLength+400);
 
-       const railTwo_A = Railway_Placing_Functionality.placeSwitch(railOne_A, "secondEnd", railTwo_Dir, switchLength, mainLength+400);
+       const railTwo_A = Railway_Placing_Functionality.placeSwitch(railOne_A, railTwo_Dir, switchLength, mainLength+400);
                 
        
        // END railPairTwo
@@ -397,40 +397,40 @@ const lenHalf = lengthWall + half;
       
       // BEGIN railPairThree
       const railThree_Dir = "down";
-       const railThree_B = Railway_Placing_Functionality.placeSwitch(railTwo_B, "secondEnd", railThree_Dir, switchLength, mainLength);
+       const railThree_B = Railway_Placing_Functionality.placeSwitch(railTwo_B, railThree_Dir, switchLength, mainLength);
 
-       const railThree_A = Railway_Placing_Functionality.placeSwitch(railTwo_A, "secondEnd", railThree_Dir, switchLength, mainLength);
+       const railThree_A = Railway_Placing_Functionality.placeSwitch(railTwo_A, railThree_Dir, switchLength, mainLength);
 
        // END railPairThree
  
  
        // BEGIN railPairFour
        const railFour_Dir = "right";
-       const railFour_B = Railway_Placing_Functionality.placeSwitch(railThree_B, "secondEnd", railFour_Dir, switchLength, mainLength);
+       const railFour_B = Railway_Placing_Functionality.placeSwitch(railThree_B, railFour_Dir, switchLength, mainLength);
 
-       const railFour_A = Railway_Placing_Functionality.placeSwitch(railThree_A, "secondEnd", railFour_Dir, switchLength, mainLength+400);
+       const railFour_A = Railway_Placing_Functionality.placeSwitch(railThree_A, railFour_Dir, switchLength, mainLength+400);
        // END railPairFour
        
        
        // BEGIN Uturn from railFour_A to railFour_B
-             const railFourA_B_Uturn_1 = Railway_Placing_Functionality.placeSwitch(railFour_A, "secondEnd", "down", 200, 500);
+             const railFourA_B_Uturn_1 = Railway_Placing_Functionality.placeSwitch(railFour_A, "down", 200, 500);
 
-       const railFourA_B_Uturn_2 = Railway_Placing_Functionality.placeSwitch(railFourA_B_Uturn_1, "secondEnd", "right", 200, 500);
+       const railFourA_B_Uturn_2 = Railway_Placing_Functionality.placeSwitch(railFourA_B_Uturn_1, "right", 200, 500);
        
-       const railFourA_B_Uturn_3 = Railway_Placing_Functionality.placeSwitch(railFourA_B_Uturn_2, "secondEnd", "up", 200, 900);
+       const railFourA_B_Uturn_3 = Railway_Placing_Functionality.placeSwitch(railFourA_B_Uturn_2,"up", 200, 900);
 
-       const railFourA_B_Uturn_4 = Railway_Placing_Functionality.placeSwitch(railFourA_B_Uturn_3, "firstEnd", "left", 200, 900);
+       const railFourA_B_Uturn_4 = Railway_Placing_Functionality.placeSwitch(railFourA_B_Uturn_3, "left", 200, 900);
        // END Uturn from railFour_A to railFour_B
        
        // BEGIN Uturn from railOne_B to railOne_A
        
-      const railOneB_A_Uturn_1 = Railway_Placing_Functionality.placeSwitch(railOne_B, "firstEnd", "right", 200, 500);
+      const railOneB_A_Uturn_1 = Railway_Placing_Functionality.placeSwitch(railOne_B, "right", 200, 500);
             
-        const railOneB_A_Uturn_2 = Railway_Placing_Functionality.placeSwitch(railOneB_A_Uturn_1, "secondEnd", "up", 200, 500);
+        const railOneB_A_Uturn_2 = Railway_Placing_Functionality.placeSwitch(railOneB_A_Uturn_1, "up", 200, 500);
      
-          const railOneB_A_Uturn_3= Railway_Placing_Functionality.placeSwitch(railOneB_A_Uturn_2, "firstEnd", "left", 200, 900);   
+          const railOneB_A_Uturn_3= Railway_Placing_Functionality.placeSwitch(railOneB_A_Uturn_2, "left", 200, 900);   
    
-       const railOneB_A_Uturn_4 = Railway_Placing_Functionality.placeSwitch(railOneB_A_Uturn_3, "firstEnd", "down", 200, 900);
+       const railOneB_A_Uturn_4 = Railway_Placing_Functionality.placeSwitch(railOneB_A_Uturn_3, "down", 200, 900);
      
         // END Uturn from railOneB to railOneA
      

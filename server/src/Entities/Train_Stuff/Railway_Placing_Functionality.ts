@@ -100,7 +100,9 @@ class Railway_Placing_Functionality {
     return newRail;
   }
   
-  
+  static addToCreatedRails({direction, rail}:{direction: Direction, rail: Rail} ) {
+     // to do
+  }
   static recordedRailToEndName(rail: Rail): Rail_End_Name {
     const dirOfRail = this.getDirectionByRail(rail);
     let railEndName: Rail_End_Name;
@@ -117,16 +119,7 @@ switch(dirOfRail) {
 return railEndName
   }
   static getDirectionByRail(rail: Rail): Direction {
-    assertNoDuplicateRails(this.allCreatedRails);
-    function assertNoDuplicateRails(array: { rail: Rail; direction: Direction }[]): void {
-  const seen = new Set<Rail>();
-  for (const item of array) {
-    if (seen.has(item.rail)) {
-      throw new Error(`Duplicate rail found: "${item.rail}"`);
-    }
-    seen.add(item.rail);
-  }
-}
+
   const item = this.allCreatedRails.find(entry => entry.rail === rail);
   if (!item) {
     throw new Error(`Rail not found in array, which can only happen if either the placing functions somehow had these array pushes removed or maybe you are calling this in a non-standard manner (i.e., not as a result of using Railway_Placing_Functionality class`);
