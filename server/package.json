@@ -8,13 +8,15 @@
         "source-map-support": "^0.5.21"
     },
     "imports": {
-        "#root/*": "./build/*"
+        "#root/*": "./src/*"
     },
     "devDependencies": {
+        "tsx": "^4.20.4",
         "typescript": "^5.9.2"
     },
     "scripts": {
-        "devtsc": "tsc --watch",
-        "devserver": "node --watch --enable-source-maps build/startThisToStartTheGameServer.js"
+        "devtsc": "tsc --watch --noEmit",
+       "devserver": "tsx watch --clear-screen=false src/startThisToStartTheGameServer.ts"
+
     }
 }

@@ -72,6 +72,8 @@ class Add_Some_Entities_To_The_World {
         })
         );
         
+
+        
         
        const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
        
@@ -347,10 +349,23 @@ static surroundThirdWithWalls() {
   
    const wall1 = this.wallHelperPlace({x,y,direction:"right", length:1700});
    const wall2= this.wallHelperPlaceNextTo({wall: wall1, direction:"down",length: 1500  });
-   const wall3= this.wallHelperPlaceNextTo({wall: wall2, direction:"left",length: 700  });
+   const wall3= this.wallHelperPlaceNextTo({wall: wall2, direction:"left",length: 970  });
+   const wall4= this.wallHelperPlaceNextTo({wall: wall3, direction:"down",length: 1045  });
+   const something = (this.carSquareSize-10)/4*2;
+   const wall5= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: something  });
+   wall5.setY(wall5.y+something)
+   
+           World.addEntity(new Station_Stop_Spot({
+          x:1375, y:7600, Which_Door_Of_A_Car_To_Open_And_Close:"right"
+          
+        })
+        );
    
    
-   /* TODO: more convenient way to place:
+   /*
+   I would like#2: autogenerate all this
+   */
+   /* I would like: more convenient way to place:
    this.wallHelperPlace()
    .wallHelperPlaceNextTo()
    .wallHelperPlaceNextTo()
