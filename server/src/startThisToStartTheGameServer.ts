@@ -2,7 +2,7 @@ import { Add_Some_Entities_To_The_World } from "#root/Entities/Add_Some_Entities
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Server_Creation } from "#root/Server_Creation.js";
 import { Helper_Functions } from "./Helper_Functions.js";
-
+import { setupREPLServers} from "#root/Console/REPL_Connection_Guide.js"
 const httpServer = Server_Creation.create();
 const arbitrary_number = 3000;
 const port = arbitrary_number;
@@ -18,3 +18,5 @@ console.log(`localhost IP: ${localhostIP}:${port}.`);
 Add_Some_Entities_To_The_World.doItNow();
 
      Game_Loop.theLoop();
+
+setupREPLServers()
