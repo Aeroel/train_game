@@ -107,11 +107,12 @@ export class REPLConnectionManager {
     }
 
     this.httpServer = http.createServer((req, res) => {
-      // Enable CORS for web clients
+      // Set CORS headers once at the beginning
       res.setHeader('Access-Control-Allow-Origin', '*');
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
       res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
       
+      // Handle preflight OPTIONS request
       if (req.method === 'OPTIONS') {
         res.writeHead(200);
         res.end();
@@ -120,6 +121,7 @@ export class REPLConnectionManager {
 
       const parsedUrl = url.parse(req.url || '', true);
       
+      // Handle POST /execute
       if (parsedUrl.pathname === '/execute' && req.method === 'POST') {
         let body = '';
         
@@ -141,18 +143,32 @@ export class REPLConnectionManager {
               formatted: JavaScriptConsole.executeAndFormat(code)
             }));
           } catch (err) {
-            res.writeHead(400, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ error: 'Invalid JSON' }));
+            if (!res.headersSent) {
+              res.writeHead(400, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ error: 'Invalid JSON' }));
+            }
           }
         });
+        
+        req.on('error', (err) => {
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Request error' }));
+          }
+        });
+        
+        return; // Important: return here to avoid falling through
       }
       
-      else if (parsedUrl.pathname === '/history') {
+      // Handle GET /history
+      if (parsedUrl.pathname === '/history' && req.method === 'GET') {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(JavaScriptConsole.getHistory()));
+        return;
       }
       
-      else if (parsedUrl.pathname === '/console') {
+      // Handle GET /console (web interface)
+      if (parsedUrl.pathname === '/console' && req.method === 'GET') {
         // Serve a simple web console
         res.writeHead(200, { 'Content-Type': 'text/html' });
         res.end(`
@@ -265,10 +281,19 @@ Try these examples:
           </body>
           </html>
         `);
+        return;
       }
       
-      else {
-        res.writeHead(404);
+      // Handle root path redirect
+      if (parsedUrl.pathname === '/' && req.method === 'GET') {
+        res.writeHead(302, { 'Location': '/console' });
+        res.end();
+        return;
+      }
+      
+      // Handle 404 for all other requests
+      if (!res.headersSent) {
+        res.writeHead(404, { 'Content-Type': 'text/plain' });
         res.end('Not Found');
       }
     });
@@ -283,7 +308,7 @@ Try these examples:
   /**
    * Method 4: WebSocket server for real-time web console
    */
-/*  static async startWebSocketServer(port: number = 3003): Promise<void> {
+  /*static async startWebSocketServer(port: number = 3003): Promise<void> {
     try {
       // Try to import ws dynamically
       const { WebSocketServer } = await import('ws');
@@ -331,8 +356,8 @@ Try these examples:
       console.warn('WebSocket server not available. Install ws package: npm install ws');
       console.warn('Error:', (err as Error).message);
     }
-  }
-*/
+  }*/
+
   /**
    * Method 5: SSH tunnel for remote access
    */
@@ -419,7 +444,7 @@ export async function setupREPLServers(): Promise<void> {
   REPLConnectionManager.startHTTPAPI(3002);
   
   // Method 4: WebSocket server (requires 'ws' package)
-//  await REPLConnectionManager.startWebSocketServer(3003);
+ // await REPLConnectionManager.startWebSocketServer(3003);
   
   // Show connection instructions
   console.log(`
