@@ -47,12 +47,12 @@ export type Train_Car_Motions_Directions = {
 
 class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
-
+  prevSensor: Rail_Switch_Wall = new Rail_Switch_Wall();
   train: Train;
  passengers: Base_Entity[] = [];
   Wall_And_Door_Thickness = 5;
 
-  Center_Box_Entity!: Base_Entity;
+  Center_Box_Entity: Base_Entity = new Base_Entity();
 
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
@@ -217,7 +217,13 @@ motionsDirections: Train_Car_Motions_Directions = {
        return;
      }
       const rail_switch_wall = closest.entityB as Rail_Switch_Wall;
-      
+      const sameSensorAsPreviousTick = rail_switch_wall===this.prevSensor;
+     if(sameSensorAsPreviousTick) {
+       return; // we could also deliberately check for second closest collision in case the sensors are too close. but do I want to bother? I can just not place them too close together
+     } 
+  
+     this.prevSensor = rail_switch_wall;
+         
       const beginningPos = {x: this.x, y: this.y}
       const nextPos = 
         this.calculateNextPositionBasedOnForcesAndDeltaTime()
@@ -233,33 +239,42 @@ motionsDirections: Train_Car_Motions_Directions = {
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
       }
       let Budget_Remaining=Consumable_Budget;
- 
-      this.Sensor_Wall_Stuff(rail_switch_wall);
+  
+    
+      this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
       let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
+      
       Budget_Remaining -= spent;
       // now begins the budget loop
-      while(Budget_Remaining > 0) {
+      let timesWeRanTheLoop = 0;
+
+      const mustNotGoOverThis = 20; // <-- if it does go over it, I assume I will need to reduce train speed
+      while(Budget_Remaining > 0) { 
+        timesWeRanTheLoop++;
+        Assert.that(timesWeRanTheLoop < mustNotGoOverThis);
         const newForces = this.determine_new_forces_for_movement_along_the_rail();
         for(const dir in newForces) {
           const key = dir as keyof Directions_Values
           if(newForces[key] <= 0) {
-            return;
+            continue;
           }
             newForces[key] = Budget_Remaining;
         }
         this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, newForces);
         const closestSensorCollision = this.Get_Closest_Sensor_Collision();
-        if(closestSensorCollision === null) {
-           const finalPos = this.calculateNextPositionBasedOnForcesAndDeltaTime();
-            this.teleportAndBringPassengers(finalPos.x, finalPos.y);
-        this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
-            return;
+        if(closestSensorCollision === null || closestSensorCollision.entityB === this.prevSensor) {
+            break;
         }
 
         const pos = closestSensorCollision.Position_Just_Before_Collision_A;
+        const switchWall = closestSensorCollision.entityB as Rail_Switch_Wall;
         spent = this.teleportAndBringPassengers(pos.x, pos.y);
+        if(spent <= 0) {
+          break;
+        }
         Budget_Remaining -= spent;
+        this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWall)
       }
     
       this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
@@ -277,7 +292,7 @@ Sensor_Accepts(rail_switch_wall: Rail_Switch_Wall) {
 
       return theCarMovementWillTriggerTheWall;
 }
-Sensor_Wall_Stuff(rail_switch_wall: Rail_Switch_Wall) {
+Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall: Rail_Switch_Wall) {
   if(this.currentMovementMotion === null) {
     throw new Error("do not call sensor stuff func unless you know train is moving, bro")
   }
@@ -308,6 +323,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     this.y = toY;
 
    this.teleportCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
+   
     if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
     return carDeltaY;
     } else {

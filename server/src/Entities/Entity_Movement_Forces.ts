@@ -145,12 +145,7 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
     }
   
   
-    applyFriction() {
-        this.forEachComponent((component: Force_Component) => {
-            component.forceValue *= (1 - this.entity.friction);
-        });
-        this.Remove_Components_That_Have_Their_Force_Values_Below_Threshold();
-    }
+
     forEachComponent(doThis: (component: Force_Component) => void) {
         this.directions_and_their_components.up.forEach(doThis);
         this.directions_and_their_components.down.forEach(doThis);
