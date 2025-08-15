@@ -1,9 +1,10 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 
+
 export { World }
 class World {
-  static width: number = 10_000;
-  static height: number = 10_000;
+  static width: number = 20_000;
+  static height: number = 20_000;
   static state = {
     entities: new Array(),
   };
@@ -16,7 +17,7 @@ class World {
     World.state.entities.push(entity)
           return entity;
   }
-  
+
   
   static getCurrentState() {
     return World.state;

@@ -27,10 +27,10 @@ class Add_Some_Entities_To_The_World {
   
     static doItNow() {
 
-        Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
 
-        Add_Some_Entities_To_The_World.addTheGround();
+      const ground =   Add_Some_Entities_To_The_World.addTheGround();
         
+          Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
     // random wall
       const wall = World.addEntity(
         new Wall());
@@ -38,7 +38,8 @@ class Add_Some_Entities_To_The_World {
         wall.setHeight(400);
         wall.setWidth(40);
         wall.setColor("pink")
-
+       
+       ground.Add_Entity_To_Velocity_Propagation_List(wall);
       // random forcefield
         World.addEntity(new Forcefield());
 
@@ -291,19 +292,13 @@ const offset = carSquareSize * 2;
     }
     
     static addTheGround() {
-        const ground = new Ground();
-        ground.setX(0);
-        ground.setY(0);
-        ground.setWidth(World.width);
-        ground.setHeight(World.height);
-        World.addEntity(ground);
-        
         const groundTwo = new Ground({color: "darkgreen"});
         groundTwo.setX(0);
-        groundTwo.setY(World.height);
+        groundTwo.setY(0);
         groundTwo.setWidth(World.width);
         groundTwo.setHeight(World.height);
-        World.addEntity(groundTwo);
+       return World.addEntity(groundTwo);
+  
     }
 
     static addAWhiteRectangleForMovementReference() {
