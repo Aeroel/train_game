@@ -245,6 +245,10 @@ motionsDirections: Train_Car_Motions_Directions = {
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
       let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
 
+      if(spent <=0) {
+              this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
+           return;
+      }
       Budget_Remaining -= spent;
       // now begins the budget loop
       let timesWeRanTheLoop = 0;
@@ -333,7 +337,6 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   teleportCarContentsAndPassengersByDelta(dx: number, dy: number) {
 
     const carContentsAndPassengers = this.getCarContentsAndPassengers();
-    const staticContents = carContentsAndPassengers.filter((content)=>(false === content.hasTag("Player")))
     for (const entity of carContentsAndPassengers) {
       const newX = entity.x + dx;
       const newY = entity.y + dy;
