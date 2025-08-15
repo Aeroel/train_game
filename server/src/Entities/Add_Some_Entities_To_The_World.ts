@@ -41,7 +41,8 @@ class Add_Some_Entities_To_The_World {
        
        ground.Add_Entity_To_Velocity_Propagation_List(wall);
       // random forcefield
-        World.addEntity(new Forcefield());
+        const ff = World.addEntity(new Forcefield());
+        ground.Add_Entity_To_Velocity_Propagation_List(ff)
 
 if(1>0)return;
      // the two railways
