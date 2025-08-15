@@ -136,7 +136,7 @@ collisionManager(
    } 
    this.setPosition(newPlayerPos);
 
-   this.movementForces.nullify(playerFace);
+   this.movementForces.remove(playerFace);
    this.movementForces.Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(otherEntityFace, otherEntity);
 
     if(lastCall) {
@@ -145,7 +145,7 @@ collisionManager(
    this.collisionManager({lastCall: true});
 }
 stopControls() {
-  this.movementForces.nullifyByKeyInAllDirections("Player_Controls");
+  this.movementForces.removeByKeyInAllDirections("Player_Controls");
 }
 savePosition(pos: Position) {
   if (this.previousPositions.length === 4) {

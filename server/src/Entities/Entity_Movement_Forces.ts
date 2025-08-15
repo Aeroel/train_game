@@ -1,178 +1,100 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Direction } from "#root/Type_Stuff.js"
-import { Assert_That_Number_Is_Zero_Or_Positive, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Zero_Or_Positive } from "#root/Type_Validation_Stuff.js";
+import type { Direction } from "#root/Type_Stuff.js";
+import { Assert } from "#root/Assert.js";
+import {
+    Assert_That_Number_Is_Zero_Or_Positive,
+    Assert_That_Numbers_Are_Finite,
+    Assert_That_Numbers_Are_Zero_Or_Positive
+} from "#root/Type_Validation_Stuff.js";
 
 export type Force_Component = {
-    key: string,
-    forceValue: number,
-    keepAtZero: boolean,
-}
-export type Directions_Force_Components = {
-    up: Force_Component[],
-    down: Force_Component[],
-    right: Force_Component[],
-    left: Force_Component[],
+    key: string;
+    forceValue: number;
+};
 
-}
+export type Directions_Force_Components = {
+    up: Force_Component[];
+    down: Force_Component[];
+    right: Force_Component[];
+    left: Force_Component[];
+};
+
 export type Directions_Values = {
-    up: number,
-    down: number,
-    right: number,
-    left: number
-}
+    up: number;
+    down: number;
+    right: number;
+    left: number;
+};
+
 export type Force_Direction = Direction;
 
-
 export { Entity_Movement_Forces };
+
 class Entity_Movement_Forces {
     entity: Base_Entity;
-    Entities_That_Also_Get_The_Forces_Of_This_Entity: Base_Entity[] = new Array();
-    static readonly Possible_Directions = ["up", "down", "left", "right"];
-    directions_and_their_components: Directions_Force_Components= {
+    private propagationList: Base_Entity[] = [];
+    static readonly Possible_Directions: Force_Direction[] = ["up", "down", "left", "right"];
+    directions_and_their_components: Directions_Force_Components = {
         up: [],
         down: [],
         right: [],
         left: [],
-    }
-    removeForceComponentWhenValueHitsBelow = 0.9;
-    
-    
-Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
-    const isOppositeTo: Record<Force_Direction, Force_Direction> = {
-        up: "down",
-        down: "up",
-        left: "right",
-        right: "left",
     };
 
-    return isOppositeTo[to];
-}
-    
-    
     constructor(ofEntity: Base_Entity) {
         this.entity = ofEntity;
+    }
 
+    // ----------------- Utility Methods -----------------
+    Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
+        const mapping: Record<Force_Direction, Force_Direction> = {
+            up: "down",
+            down: "up",
+            left: "right",
+            right: "left",
+        };
+        return mapping[to];
     }
-    
-    
-    Get_No_Movement_Forces() {
-        return { up: 0, down: 0, right: 0, left: 0 }
+
+    Get_No_Movement_Forces(): Directions_Values {
+        return { up: 0, down: 0, right: 0, left: 0 };
     }
-    Init_A_Component_With_Same_Key_For_Each_Direction(keyName: string) {
-        this.Set_A_Component_For_Each_Direction_By_Same_Key(keyName, { up: 0, down: 0, left: 0, right: 0 }, true);
-    }
-    Get_Direction_Component_By_Key(key: string, forceDirection: Force_Direction) {
-        if (!this.Component_Exists_In_Direction(key, forceDirection)) {
-            throw new Error(`${key} not in ${forceDirection}, why?`);
+
+    Component_Exists_In_Direction(key: string, dir: Force_Direction): boolean {
+        if (!Entity_Movement_Forces.Possible_Directions.includes(dir)) {
+            throw new Error(`Force direction ${dir} is invalid`);
         }
-        const component = this.directions_and_their_components[forceDirection].find(component => component.key === key) as Force_Component;
+        return this.directions_and_their_components[dir].some(c => c.key === key);
+    }
+
+    // ----------------- Component Accessors -----------------
+    Get_Direction_Component_By_Key(key: string, dir: Force_Direction): Force_Component {
+        const component = this.directions_and_their_components[dir].find(c => c.key === key);
+        if (!component) {
+            throw new Error(`${key} not found in ${dir}. ${JSON.stringify(this.entity.tags)}`);
+        }
         return component;
     }
-    Get_A_Component_From_Each_Direction_By_Key(key: string) {
-        const result = { up: 0, down: 0, left: 0, right: 9 };
-        result.up = this.Get_Direction_Component_By_Key(key, "up").forceValue;
-        result.down = this.Get_Direction_Component_By_Key(key, "down").forceValue;
-        result.left = this.Get_Direction_Component_By_Key(key, "left").forceValue;
-        result.right = this.Get_Direction_Component_By_Key(key, "right").forceValue;
 
-        // simple post check
+    Get_A_Component_From_Each_Direction_By_Key(key: string): Directions_Values {
+        const result: Directions_Values = {
+            up: this.Get_Direction_Component_By_Key(key, "up").forceValue,
+            down: this.Get_Direction_Component_By_Key(key, "down").forceValue,
+            left: this.Get_Direction_Component_By_Key(key, "left").forceValue,
+            right: this.Get_Direction_Component_By_Key(key, "right").forceValue,
+        };
+
         Assert_That_Numbers_Are_Finite(result);
         Assert_That_Numbers_Are_Zero_Or_Positive(result);
 
         return result;
-
-    }
-    sumComponents(forceDirection: Force_Direction) {
-        let sum = 0;
-        this.directions_and_their_components[forceDirection].forEach(forceComponent => {
-            sum += forceComponent.forceValue;
-
-        });
-        return sum;
-    }
-    Set_A_Component_For_Each_Direction_By_Same_Key(key: string, directionsValues: Directions_Values, keepAtZero = false) {
-        this.Set_Component(key, "up", directionsValues.up, keepAtZero);
-        this.Set_Component(key, "down", directionsValues.down, keepAtZero);
-        this.Set_Component(key, "right", directionsValues.right, keepAtZero);
-        this.Set_Component(key, "left", directionsValues.left, keepAtZero);
-    }
-    Set_Component(key: string, forceDirection: Force_Direction, forceValue: number, keepAtZero?: boolean) {
-        Assert_That_Number_Is_Zero_Or_Positive(forceValue);
-        this.Set_Component_For_Each_Entity_That_Is_In_Propagation_List(key, forceDirection, forceValue, keepAtZero)
-        if (!this.Component_Exists_In_Direction(key, forceDirection)) {
-            if (typeof keepAtZero === "undefined") {
-                keepAtZero = false
-            }
-            this.directions_and_their_components[forceDirection].push({ key, forceValue, keepAtZero });
-            return;
-        }
-
-        const existingComponent = this.directions_and_their_components[forceDirection].find(component => component.key === key) as Force_Component;
-        existingComponent.forceValue = forceValue;
-
-    }
-    Get_Propagation_List() {
-      return this.Entities_That_Also_Get_The_Forces_Of_This_Entity;
-    }
-    Clear_Propagation_List() {
-      this.Entities_That_Also_Get_The_Forces_Of_This_Entity = [];
-    }
-    Add_Entity_To_Propagation_List(entity: Base_Entity) {
-      const index = this.Entities_That_Also_Get_The_Forces_Of_This_Entity.indexOf(entity);
-      if(!(index===-1)) {
-        return;
-      }
-        this.Entities_That_Also_Get_The_Forces_Of_This_Entity.push(entity)
-    }
-    Set_Component_For_Each_Entity_That_Is_In_Propagation_List(key: string, forceDirection: Force_Direction, forceValue: number, keepAtZero?: boolean) {
-        if (this.Entities_That_Also_Get_The_Forces_Of_This_Entity.length === 0) {
-            return;
-        }
-        const propagationKey = `${key}`
-        this.Entities_That_Also_Get_The_Forces_Of_This_Entity.forEach(entity => {
-            entity.movementForces.Set_Component(propagationKey, forceDirection, forceValue, keepAtZero)
-        })
-    }
-    
-    Component_Exists_In_Direction(key: string, forceDirection: Force_Direction) {
-        if (!Entity_Movement_Forces.Possible_Directions.includes(forceDirection)) {
-            throw new Error(`Force ${forceDirection} invalid`);
-        }
-
-        const existingComponent = this.directions_and_their_components[forceDirection].find(component => component.key === key);
-
-        return existingComponent !== undefined;
-    }
-  
-  
-
-    forEachComponent(doThis: (component: Force_Component) => void) {
-        this.directions_and_their_components.up.forEach(doThis);
-        this.directions_and_their_components.down.forEach(doThis);
-        this.directions_and_their_components.right.forEach(doThis);
-        this.directions_and_their_components.left.forEach(doThis);
-    }
-    Get_Net_Axis_Force(axis: "horizontal" | "vertical") {
-        switch (axis) {
-            case "horizontal":
-                return this.sumComponents("right") - this.sumComponents("left")
-                break;
-            case "vertical":
-                return this.sumComponents("down") - this.sumComponents("up")
-                break;
-        }
-
-    }
-    Remove_Components_That_Have_Their_Force_Values_Below_Threshold() {
-        const filterFunc = (component: Force_Component) => component.forceValue > this.removeForceComponentWhenValueHitsBelow || component.keepAtZero;
-        this.directions_and_their_components.up = this.directions_and_their_components.up.filter(filterFunc);
-        this.directions_and_their_components.down = this.directions_and_their_components.down.filter(filterFunc);
-        this.directions_and_their_components.right = this.directions_and_their_components.right.filter(filterFunc);
-        this.directions_and_their_components.left = this.directions_and_their_components.left.filter(filterFunc);
     }
 
+    Get_Keys_Of_Force_Components_Of_Direction(dir: Force_Direction): string[] {
+        return this.directions_and_their_components[dir].map(c => c.key);
+    }
 
-    Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(
+Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(
         forceDirection: keyof Entity_Movement_Forces["directions_and_their_components"],
         anotherEntity: Base_Entity
     ): string[] {
@@ -186,37 +108,125 @@ Get_Opposite_Force_Direction(to: Force_Direction): Force_Direction {
             .map((component) => component.key);
     }
 
+    // ----------------- Component Setters -----------------
+    Set_Component(key: string, dir: Force_Direction, value: number) {
+        Assert_That_Number_Is_Zero_Or_Positive(value);
 
-Get_Keys_Of_Force_Components_Of_Direction(
-    direction: keyof Entity_Movement_Forces["directions_and_their_components"]
-): string[] {
-    const forceComponents = this.directions_and_their_components[direction];
-    return forceComponents.map((component) => component.key);
+        // Propagate first
+        this.propagationList.forEach(entity => {
+            entity.movementForces.Set_Component(key, dir, value);
+        });
+
+        const existing = this.directions_and_their_components[dir].find(c => c.key === key);
+        if (existing) {
+            existing.forceValue = value;
+        } else {
+            this.directions_and_their_components[dir].push({ key, forceValue: value });
+        }
+    }
+
+    Set_A_Component_For_Each_Direction_By_Same_Key(key: string, values: Directions_Values) {
+        Entity_Movement_Forces.Possible_Directions.forEach(dir => {
+            this.Set_Component(key, dir, values[dir]);
+        });
+    }
+
+    Init_A_Component_With_Same_Key_For_Each_Direction(key: string) {
+        this.Set_A_Component_For_Each_Direction_By_Same_Key(key, this.Get_No_Movement_Forces());
+    }
+
+    sumComponents(dir: Force_Direction): number {
+        return this.directions_and_their_components[dir].reduce((acc, c) => acc + c.forceValue, 0);
+    }
+
+    Get_Net_Axis_Force(axis: "horizontal" | "vertical"): number {
+        switch (axis) {
+            case "horizontal":
+                return this.sumComponents("right") - this.sumComponents("left");
+            case "vertical":
+                return this.sumComponents("down") - this.sumComponents("up");
+        }
+    }
+
+    // ----------------- Propagation List -----------------
+    Get_Propagation_List(): Base_Entity[] {
+        return [...this.propagationList];
+    }
+
+Clear_Propagation_List() {
+    for (const entity of this.propagationList) {
+        // Remove all components of this entity from the linked entity
+        for (const dir of Entity_Movement_Forces.Possible_Directions as Force_Direction[]) {
+            for (const comp of this.directions_and_their_components[dir]) {
+                entity.movementForces.removeByKeyInAllDirections(comp.key);
+            }
+        }
+    }
+
+    // Now safe to clear
+    this.propagationList = [];
 }
 
-nullify(direction: keyof Entity_Movement_Forces["directions_and_their_components"]) {
-  this.directions_and_their_components[direction].forEach((forceComponent: Force_Component )=> {
-    forceComponent.forceValue = 0;
-  })
-}
-nullifyAll() {
-  this.nullify("up")
-  this.nullify("down")
-  this.nullify("left")
-  this.nullify("right")
-}
 
-Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(direction: keyof Entity_Movement_Forces["directions_and_their_components"], anotherEntity: Base_Entity) {
-  const neededKeys = anotherEntity.movementForces.Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(direction, this.entity);
+    Add_Entity_To_Propagation_List(entity: Base_Entity) {
+        if (entity.movementForces.propagationList.includes(this.entity)) {
+            throw new Error(`Circular propagation detected: ${entity} already propagates to ${this.entity}`);
+        }
+        if (!this.propagationList.includes(entity)) {
+            this.propagationList.push(entity);
+        }
+    }
 
-  neededKeys.forEach(key=>{
-    const component =     anotherEntity.movementForces.Get_Direction_Component_By_Key(key, direction);
-    this.Set_Component(key, direction, component.forceValue, component.keepAtZero);
-  })
-}
+    // ----------------- Removal -----------------
+    removeByKeyInAllDirections(key: string, visited = new Set<Base_Entity>()) {
+        if (visited.has(this.entity)) {
+            throw new Error("Circular propagation detected while removing component");
+        }
+        visited.add(this.entity);
 
-nullifyByKeyInAllDirections(key: string) {
-     const directionsValues = this.Get_No_Movement_Forces();
-      this.Set_A_Component_For_Each_Direction_By_Same_Key(key, directionsValues)
-}
+        // Remove from propagation entities first
+        this.propagationList.forEach(entity => {
+            entity.movementForces.removeByKeyInAllDirections(key, visited);
+        });
+
+        // Remove locally
+        Entity_Movement_Forces.Possible_Directions.forEach(dir => {
+            this.directions_and_their_components[dir] = this.directions_and_their_components[dir].filter(c => c.key !== key);
+        });
+    }
+
+    remove(dir: Force_Direction) {
+        // Remove components from propagation first
+        this.propagationList.forEach(entity => {
+            entity.movementForces.remove(dir);
+        });
+
+        this.directions_and_their_components[dir] = [];
+    }
+
+    removeAll() {
+        Entity_Movement_Forces.Possible_Directions.forEach(dir => this.remove(dir));
+    }
+
+    // ----------------- Iteration -----------------
+    forEachComponent(doThis: (component: Force_Component) => void) {
+        Entity_Movement_Forces.Possible_Directions.forEach(dir => {
+            this.directions_and_their_components[dir].forEach(c => doThis(c));
+        });
+    }
+
+    Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(
+        dir: Force_Direction,
+        other: Base_Entity
+    ) {
+        const keys = other.movementForces.Get_Keys_Of_Components_Of_A_Direction_That_Are_Not_Present_In_Another_Entity_Components_Of_Same_Direction(
+            dir,
+            this.entity
+        );
+
+        keys.forEach(key => {
+            const component = other.movementForces.Get_Direction_Component_By_Key(key, dir);
+            this.Set_Component(key, dir, component.forceValue);
+        });
+    }
 }

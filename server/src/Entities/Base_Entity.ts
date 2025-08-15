@@ -10,7 +10,6 @@ class Base_Entity {
   id = Simple_Auto_Increment_Id_Generator.generateId();
   possibleForces = ["left", "right", "up", "down"];
   movementForces = new Entity_Movement_Forces(this);
-  friction = 0.5;
   speedPerTick = 0;
   x = 0;
   y = 0;
@@ -31,8 +30,11 @@ class Base_Entity {
 collisionManager() {
   
 }
+  updatePosition() {
+    this.applyForcesToPosition();
+  }
 cleanUp() {
-  
+  this.movementForces.removeAll();
 }
   calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
     const netHorizontalForce = this.movementForces.Get_Net_Axis_Force("horizontal")
@@ -58,9 +60,6 @@ cleanUp() {
       )
   }
   
-  updatePosition() {
-    this.applyForcesToPosition();
-  }
   
 applyForcesToPosition() {
       const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
@@ -70,9 +69,7 @@ applyForcesToPosition() {
 
     this.x = nextPosition.x;
     this.y = nextPosition.y;
-    
-
-    this.movementForces.applyFriction();
+  
 }
   addTag(tag: string) {
     this.tags.push(tag);

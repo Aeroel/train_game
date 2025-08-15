@@ -47,7 +47,7 @@ export type Train_Car_Motions_Directions = {
 
 class Train_Car extends Base_Entity {
   debug_id = Simple_Auto_Increment_Id_Generator.generateId("Train_Car");
-  prevSensor: Rail_Switch_Wall = new Rail_Switch_Wall();
+  prevSensor: Rail_Switch_Wall = new Rail_Switch_Wall(0,0, [],  [],0, 0);
   train: Train;
  passengers: Base_Entity[] = [];
   Wall_And_Door_Thickness = 5;
@@ -244,7 +244,7 @@ motionsDirections: Train_Car_Motions_Directions = {
       this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
       let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
-      
+
       Budget_Remaining -= spent;
       // now begins the budget loop
       let timesWeRanTheLoop = 0;
@@ -333,6 +333,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   teleportCarContentsAndPassengersByDelta(dx: number, dy: number) {
 
     const carContentsAndPassengers = this.getCarContentsAndPassengers();
+    const staticContents = carContentsAndPassengers.filter((content)=>(false === content.hasTag("Player")))
     for (const entity of carContentsAndPassengers) {
       const newX = entity.x + dx;
       const newY = entity.y + dy;
@@ -342,7 +343,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   }
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];
-    entities.push(...this.movementForces.Entities_That_Also_Get_The_Forces_Of_This_Entity);
+    entities.push(...this.movementForces.Get_Propagation_List());
     return entities
   }
   
@@ -460,7 +461,7 @@ addToPropagationList() {
   updateState() {
     this.addToPropagationList();
     this.move_handler();
-    super.updateState();
+   // super.updateState();
   }
   determineCarPassengers() {
     const passengers: Base_Entity[]=[];
@@ -523,6 +524,7 @@ addToPropagationList() {
   }
   cleanUp() {
     this.movementForces.Clear_Propagation_List();
+    super.cleanUp();
   }
  getClosest(
   x: number,
