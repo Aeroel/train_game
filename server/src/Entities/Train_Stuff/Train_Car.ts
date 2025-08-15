@@ -9,11 +9,11 @@ import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behavi
 import { Train_Car_Static } from "#root/Entities/Train_Stuff/Train_Car_Static.js"
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Orientation, Point, Position, Collision_Info } from "#root/Type_Stuff.js";
-import type { Directions_Values } from "#root/Entities/Entity_Movement_Forces.js";
+
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Bulk_Of_Train_Car_Code } from "#root/Entities/Train_Stuff/Bulk_Of_Train_Car_Code.js";
-
+import type { Velocity_Component} from "#root/Entities/Entity_Velocity.js"
 
 export { Train_Car };
 
@@ -57,7 +57,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  speedPerTick = 0.10 * 10;
+  normalSpeedForBothAxes = 0.10 * 10;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
   currentMovementMotion: Train_Car_Motion = "backwards";
@@ -114,22 +114,24 @@ motionsDirections: Train_Car_Motions_Directions = {
   
 
   Init_Force_Keys() {
-    this.movementForces.Init_A_Component_With_Same_Key_For_Each_Direction(this.Rail_Movement_Key);
+    const component= {value:0,key:this.Rail_Movement_Key}
+    this.vx.Add_Component(component);
+    this.vy.Add_Component(component);
   }
   
   Add_Car_Walls_And_Doors_To_Propagation() {
     // all walls and doors of the car
     for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
-      this.movementForces.Add_Entity_To_Propagation_List(wall_or_door);
+      this.Add_Entity_To_Velocity_Propagation_List(wall_or_door);
       if (wall_or_door instanceof Sliding_Door) {
         for (const sensor of Object.values(wall_or_door.sensors)) {
-          this.movementForces.Add_Entity_To_Propagation_List(sensor)
+          this.Add_Entity_To_Velocity_Propagation_List(sensor)
         }
       }
 
     }
     // and the central box
-    this.movementForces.Add_Entity_To_Propagation_List(this.Center_Box_Entity);
+    this.Add_Entity_To_Velocity_Propagation_List(this.Center_Box_Entity);
 
   }
 
@@ -142,18 +144,6 @@ motionsDirections: Train_Car_Motions_Directions = {
 
 
 
-  oppositeOf(val: any, vals: any) {
-    // Check if val exists in vals
-    if (vals.includes(val)) {
-      // Find and return the opposite value
-      return vals.find((v: any) => v !== val);
-    }
-    // If val is not found, return undefined or any other indication
-    return undefined;
-  }
-
-
-
   stopMovement() {
    
    if(this.currentMovementMotion === null) {
@@ -163,14 +153,16 @@ motionsDirections: Train_Car_Motions_Directions = {
     
     this.currentMovementMotion = null;
 
-    this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
+    this.vx.Add_Component({key:this.Rail_Movement_Key, value:0});
+    this.vy.Add_Component({key:this.Rail_Movement_Key, value:0});
 
   }
 
 
   move_handler() {
-  const forces = this.determine_new_forces_for_movement_along_the_rail(); 
-   this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, forces);
+  const {vx, vy} = this.determine_new_velocity_for_movement_along_the_rail(); 
+   this.vx.Add_Component({key:this.Rail_Movement_Key, value:vx.value});
+   this.vy.Add_Component({key:this.Rail_Movement_Key,value: vy.value});
  //   console.log(this.x, this.y)
     if (this.currentMovementMotion === null) {
       return false;
@@ -246,7 +238,8 @@ motionsDirections: Train_Car_Motions_Directions = {
       let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
 
       if(spent <=0) {
-              this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
+     this.vx.Add_Component({key:this.Rail_Movement_Key,value: 0});
+     this.vy.Add_Component({key:this.Rail_Movement_Key, value:0});
            return;
       }
       Budget_Remaining -= spent;
@@ -257,15 +250,17 @@ motionsDirections: Train_Car_Motions_Directions = {
       while(Budget_Remaining > 0) { 
         timesWeRanTheLoop++;
         Assert.that(timesWeRanTheLoop < mustNotGoOverThis);
-        const newForces = this.determine_new_forces_for_movement_along_the_rail();
-        for(const dir in newForces) {
-          const key = dir as keyof Directions_Values
-          if(newForces[key] <= 0) {
+        const newVel = this.determine_new_velocity_for_movement_along_the_rail();
+        for(const vel in newVel) {
+          const key = vel as keyof {vx: Velocity_Component, vy: Velocity_Component }
+          if(newVel[key].value === 0) {
             continue;
           }
-            newForces[key] = Budget_Remaining;
+            newVel[key].value = Budget_Remaining;
         }
-        this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, newForces);
+        this.vx.Add_Component({key:this.Rail_Movement_Key, value:newVel.vx.value});
+        this.vy.Add_Component({key:this.Rail_Movement_Key, value:newVel.vy.value});
+        
         const closestSensorCollision = this.Get_Closest_Sensor_Collision();
         if(closestSensorCollision === null || closestSensorCollision.entityB === this.prevSensor) {
             break;
@@ -281,7 +276,8 @@ motionsDirections: Train_Car_Motions_Directions = {
         this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWall)
       }
     
-      this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, this.movementForces.Get_No_Movement_Forces());
+     this.vx.Add_Component({key:this.Rail_Movement_Key, value:0});
+     this.vy.Add_Component({key:this.Rail_Movement_Key, value: 0});
 
   }
 
@@ -346,7 +342,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   }
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];
-    entities.push(...this.movementForces.Get_Propagation_List());
+    entities.push(...this.Get_Velocity_Propagation_List());
     console.log(entities.length);
     return entities
   }
@@ -400,8 +396,8 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   }
 
 
-  determine_new_forces_for_movement_along_the_rail(): Directions_Values {
-    return this.bulk_of_code.determine_new_forces_for_movement_along_the_rail();
+  determine_new_velocity_for_movement_along_the_rail(): {vx: Velocity_Component, vy: Velocity_Component} {
+    return this.bulk_of_code.determine_new_velocity_for_movement_along_the_rail();
   }
 
 closeDoors(dir: Direction) {
@@ -454,8 +450,9 @@ openDoors(dir: Direction) {
       return;
     }
     this.currentMovementMotion = motion;
-    const forces = this.determine_new_forces_for_movement_along_the_rail();
-      this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Rail_Movement_Key, forces);
+    const newVel = this.determine_new_velocity_for_movement_along_the_rail();
+      this.vx.Add_Component(newVel.vx );
+      this.vy.Add_Component(newVel.vy );
   }
 
 addToPropagationList() {
@@ -477,7 +474,7 @@ addToPropagationList() {
     this.passengers = all.map(coll=>coll.entityB);
     const car = this;
     this.passengers.forEach(passenger=>{
-      car.movementForces.Add_Entity_To_Propagation_List(passenger)
+      car.Add_Entity_To_Velocity_Propagation_List(passenger)
     })
   }
 
@@ -527,7 +524,8 @@ addToPropagationList() {
 
   }
   cleanUp() {
-    this.movementForces.Clear_Propagation_List();
+    this.vx.Clear_Propagation_List();
+    this.vy.Clear_Propagation_List();
     super.cleanUp();
   }
  getClosest(

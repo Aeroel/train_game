@@ -1,7 +1,7 @@
-import { Entity_Velocity } from "#root/Entities/Entity_Velocity.js";
+import { Entity_Velocity, type Velocity_Component } from "#root/Entities/Entity_Velocity.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
-import type { Position } from "#root/Type_Stuff.js";
+import type { Position, Direction } from "#root/Type_Stuff.js";
 import { Assert_That_Number_Is_Finite, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Zero_Or_Positive } from "#root/Type_Validation_Stuff.js";
 
 export { Base_Entity };
@@ -10,6 +10,7 @@ class Base_Entity {
   id = Simple_Auto_Increment_Id_Generator.generateId();
   vx = new Entity_Velocity(this);
   vy = new Entity_Velocity(this);
+  velocityPropagationList: Base_Entity[] = [];
   speedX = 0;
   speedY = 0;
   x = 0;
@@ -29,6 +30,7 @@ collisionManager() {
   
 }
   updatePosition() {
+    this.applyVelocityToPosition();
   }
 cleanUp() {
   this.vx.nullify();
@@ -52,19 +54,72 @@ cleanUp() {
 
   isMoving() {
     return (
-         this.vx.get() > 0 ||
-         this.vy.get() >0 
+         this.vx.get() !== 0 ||
+         this.vy.get() !== 0 
       )
   }
   
   
-applyForcesToPosition() {
+applyVelocityToPosition() {
       const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
 
     this.x = nextPosition.x;
     this.y = nextPosition.y;
   
 }
+nullifyVelocity() {
+  this.vx.nullify();
+  this.vy.nullify()
+}
+Add_Entity_To_Velocity_Propagation_List(entity: Base_Entity) {
+  this.velocityPropagationList.push(entity);
+  this.vx.Add_To_Propagation_List(entity.vx)
+  this.vy.Add_To_Propagation_List(entity.vy)
+}
+Get_Velocity_Propagation_List() {
+  return this.velocityPropagationList;
+}
+Remove_Entity_From_Velocity_Propagation_List(entity: Base_Entity) {
+    this.vx.Remove_From_Propagation_List(entity.vx)
+  this.vy.Remove_From_Propagation_List(entity.vy)
+}
+directionToAxisVelocity({direction, key, value}:{direction: Direction, key: Velocity_Component['key'], value: Velocity_Component['value']}) {
+  let axis: "y"|"x"="x";
+  switch(direction) {
+     case "up":
+       value = -1*value;
+       axis="y"
+      break;
+     case "left":
+       axis="x"
+        value = -1*value;
+      break;
+     case "right":
+       axis="x" 
+
+      break;
+      case "down":
+      axis='y'
+      break;
+   }
+   return {
+     value,
+     key,
+     axis,
+   }
+}
+directionToVelocity({direction, key, value}:{direction: Direction, key: Velocity_Component['key'], value: Velocity_Component['value']}) {
+   const velAxis = this.directionToAxisVelocity({direction, key, value});
+   switch(velAxis.axis) {
+     case "y":
+        this.vy.Add_Component({key:velAxis.key, value: velAxis.value});
+      break;
+     case "x":
+        this.vx.Add_Component({key:velAxis.key, value: velAxis.value});
+      break;
+   }
+}
+
   addTag(tag: string) {
     this.tags.push(tag);
   }

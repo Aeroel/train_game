@@ -42,7 +42,7 @@ class Add_Some_Entities_To_The_World {
       // random forcefield
         World.addEntity(new Forcefield());
 
-
+if(1>0)return;
      // the two railways
         const first_rail = Add_Some_Entities_To_The_World.addARailway(400, 200, 4000, 400);
 

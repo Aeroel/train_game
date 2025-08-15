@@ -43,16 +43,16 @@ class Entity_Velocity {
         return difference;
     }
 
-    Add_Component(key: Velocity_Component['key'], value: Velocity_Component['value']) {
-         const existingComponent = this.components.find(component => component.key === key);
+    Add_Component(component: Velocity_Component) {
+         const existingComponent = this.components.find(thisComponent => thisComponent.key === component.key);
     if (existingComponent) {
-        existingComponent.value = value; // update value if component exists
+        existingComponent.value = component.value; // update value if component exists
     } else {
-        this.components.push({ key, value }); // add new component if not exists
+        this.components.push(component); // add new component if not exists
     }
             // Propagate to others
         this.propagationList.forEach(otherVelocity=> {
-            otherVelocity.Add_Component(key, value);
+            otherVelocity.Add_Component(component);
         });
     }
 
@@ -71,7 +71,14 @@ class Entity_Velocity {
     Get_Propagation_List(): Entity_Velocity[] {
         return [...this.propagationList];
     }
-    
+    Remove_From_Propagation_List(velocity: Entity_Velocity) {
+          const index = this.propagationList.findIndex(foundVelocity => foundVelocity === velocity);
+    if (index !== -1) {
+        this.propagationList.splice(index, 1); // remove the component
+    } else {
+        throw new Error(`Velocity not found.`);
+    }
+    }
 
 Clear_Propagation_List() {
     for (const velocity of this.propagationList) {
@@ -87,7 +94,7 @@ Clear_Propagation_List() {
 
    Add_To(velocity: Entity_Velocity) {
         this.components.forEach(component=> {
-               velocity.Add_Component(component.key, component.value) 
+               velocity.Add_Component(component) 
         });
    }
 

@@ -58,15 +58,15 @@ class Player extends Base_Entity {
     }
 
     if (this.controls.right) {
-      this.vx.Add_Component("Player_Controls", this.speedX);
+      this.vx.Add_Component({key:"Player_Controls", value:this.speedX});
     } else if (this.controls.left) {
-      this.vx.Add_Component("Player_Controls", -this.speedX);
+      this.vx.Add_Component({key:"Player_Controls",value: -this.speedX});
     }
     if (this.controls.up) {
-      this.vy.Add_Component("Player_Controls", -this.speedY);
+      this.vy.Add_Component({key:"Player_Controls", value:-this.speedY});
     }
     else if (this.controls.down) {
-      this.vy.Add_Component("Player_Controls", this.speedY);
+      this.vy.Add_Component({key:"Player_Controls", value:this.speedY});
     }
 
   const now = Date.now();

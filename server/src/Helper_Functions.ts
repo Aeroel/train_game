@@ -3,7 +3,7 @@ import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
 import { networkInterfaces } from "os";
-import { Direction } from "#root/Type_Stuff.js";
+import type { Direction } from "#root/Type_Stuff.js";
 
 
 export { Helper_Functions };
@@ -64,5 +64,6 @@ class Helper_Functions {
       if(dir==="right") {
          return "left";
         }
+        throw new Error(`Invalid dir ${dir}`)
     }
 }

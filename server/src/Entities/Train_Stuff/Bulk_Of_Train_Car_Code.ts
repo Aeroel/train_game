@@ -1,4 +1,5 @@
 import type { Direction, Point } from "#root/Type_Stuff.js";
+import type { Velocity_Component} from "#root/Entities/Entity_Velocity.js";
 
 import { World } from "#root/World.js";
 import { Base_Entity } from "../Base_Entity.js";
@@ -49,21 +50,33 @@ class Bulk_Of_Train_Car_Code {
 
 
    
-    determine_new_forces_for_movement_along_the_rail() {
-
+    determine_new_velocity_for_movement_along_the_rail(): {vx: Velocity_Component, vy: Velocity_Component }{
+         const newVelocity = {
+           vx: {key:this.car.Rail_Movement_Key, value:0},
+           vy: {key:this.car.Rail_Movement_Key, value:0}
+        }
         if (!this.car.Is_Moving() || this.car.currentMovementMotion === null) {
-            return this.car.movementForces.Get_No_Movement_Forces();
+            return newVelocity;
         }
 
 
-        const defaultForceToMoveOnRail = this.car.speedPerTick;
-        const newForces = this.car.movementForces.Get_No_Movement_Forces();
+
+
         this.car.motionsDirections[this.car.currentMovementMotion].forEach((dir: Direction) => {
-            newForces[dir] = defaultForceToMoveOnRail
+            const {axis, value} = this.car.directionToAxisVelocity({
+               key:this.car.Rail_Movement_Key,
+               value: this.car.normalSpeedForBothAxes,
+               direction: dir
+             })
+             if(axis==='y') {
+               newVelocity.vy.value=value;
+             } else {
+               newVelocity.vx.value = value;
+             }
         })
 
 
-        return newForces;
+        return newVelocity;
     }
 
 
