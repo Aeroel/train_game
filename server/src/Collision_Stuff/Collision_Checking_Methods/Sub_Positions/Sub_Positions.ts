@@ -45,7 +45,7 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
    
     const loop = new Sub_Positions_Loop(entityA, entityB);
     loop.run((index: number, subA: Box, subB: Box) => {
-      if (Sub_Positions.checkForIntersection(subA, subB)) {
+      if (Sub_Positions.testForTouch(subA, subB)) {
         Collision_Occurred = true;
         loop.stop();
         return;
@@ -66,42 +66,7 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
 
 
 
-  static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
-  {aFace: Direction, bFace: Direction} | null
-  {
-    const aRight = a.x + a.width;
-    const aBottom = a.y + a.height;
-    const bRight = b.x + b.width;
-    const bBottom = b.y + b.height;
 
-    const xOverlap = a.x < bRight && aRight > b.x;
-    const yOverlap = a.y < bBottom && aBottom > b.y;
-    const intersects = xOverlap && yOverlap;
-    if (intersects) {
-      
-         throw new Error("Enteties intersect, did not determine facing faces")
-    }
-
-    // If they are vertically apart (priority)
-    if (!yOverlap) {
-        if (aBottom <= b.y) {
-            return { aFace: "down", bFace: "up" };
-        }
-        if (bBottom <= a.y) {
-            return { aFace: "up", bFace: "down" };
-        }
-    }
-  
-    // Otherwise use horizontal position
-    if (aRight <= b.x) {
-        return { aFace: "right", bFace: "left" };
-    }
-    if (bRight <= a.x) {
-        return { aFace: "left", bFace: "right" };
-    }
-
-    throw new Error("Rectangles are ambiguous or overlapping in unexpected way.");
-  }
 
   static Get_Prelude_To_Subpositions_Loop(entityA: Base_Entity, entityB: Base_Entity) {
     if (!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
@@ -183,13 +148,22 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
   }
 
 
-  static checkForIntersection(a: Box, b: Box): boolean {
-    return (
-      a.x < b.x + b.width &&
-      a.x + a.width > b.x &&
-      a.y < b.y + b.height &&
-      a.y + a.height > b.y
-    );
-  }
+
+/**
+ * Tests if two boxes are touching or overlapping
+ * Returns true when boxes share area OR when they're just touching at edges/corners
+ * @param boxA First box with x, y, w, h properties
+ * @param boxB Second box with x, y, w, h properties
+ * @returns true if boxes are touching or overlapping, false if separated
+ */
+static testForTouch(boxA: Box, boxB: Box): boolean {
+  // Check if boxes are separated (not touching)
+  return !(
+    boxA.x > boxB.x + boxB.width ||      // A starts after B ends (gap between them)
+    boxA.x + boxA.width < boxB.x ||      // A ends before B starts (gap between them)
+    boxA.y > boxB.y + boxB.height ||      // A starts below B (gap between them)
+    boxA.y + boxA.height < boxB.y         // A ends above B (gap between them)
+  );
+}
 }
 

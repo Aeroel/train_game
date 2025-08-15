@@ -1,4 +1,4 @@
-import { Entity_Movement_Forces } from "#root/Entities/Entity_Movement_Forces.js";
+import { Entity_Velocity } from "#root/Entities/Entity_Velocity.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Position } from "#root/Type_Stuff.js";
@@ -8,20 +8,18 @@ export { Base_Entity };
 
 class Base_Entity {
   id = Simple_Auto_Increment_Id_Generator.generateId();
-  possibleForces = ["left", "right", "up", "down"];
-  movementForces = new Entity_Movement_Forces(this);
-  speedPerTick = 0;
+  vx = new Entity_Velocity(this);
+  vy = new Entity_Velocity(this);
+  speedX = 0;
+  speedY = 0;
   x = 0;
   y = 0;
-  previousX = 0;
-  previousY = 0;
   width = 0;
   height = 0;
   color = "white";
   tags = new Array();
   defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
-  lastUpdateStateCall=0;
   constructor() {
 
     this.addTag("Entity");
@@ -31,17 +29,15 @@ collisionManager() {
   
 }
   updatePosition() {
-    this.applyForcesToPosition();
   }
 cleanUp() {
-  this.movementForces.removeAll();
+  this.vx.nullify();
+  this.vy.nullify();
 }
   calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
-    const netHorizontalForce = this.movementForces.Get_Net_Axis_Force("horizontal")
-    const netVerticalForce = this.movementForces.Get_Net_Axis_Force("vertical");
 
-    const x = (this.x + (netHorizontalForce * Game_Loop.deltaTime));
-    const y = (this.y + (netVerticalForce * Game_Loop.deltaTime));
+    const x = (this.x + (this.vx.get() * Game_Loop.deltaTime));
+    const y = (this.y + (this.vy.get() * Game_Loop.deltaTime));
     const position: Position = { x, y };
     return position;
   }
@@ -53,19 +49,17 @@ cleanUp() {
 
 
   }
+
   isMoving() {
     return (
-      this.movementForces.Get_Net_Axis_Force('vertical')>0 ||
-      this.movementForces.Get_Net_Axis_Force('horizontal')>0 
+         this.vx.get() > 0 ||
+         this.vy.get() >0 
       )
   }
   
   
 applyForcesToPosition() {
       const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
-
-    this.previousX = this.x;
-    this.previousY = this.y;
 
     this.x = nextPosition.x;
     this.y = nextPosition.y;

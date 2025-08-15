@@ -3,41 +3,14 @@ import type { Player } from "#root/Entities/Player.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
 import { Check_For_Collision} from "#root/Collision_Stuff/Check_For_Collision.js"
+import { Collision_Broad_Phase_Check } from "#root/Collision_Stuff/Collision_Broad_Phase_Check.js"
 import {World} from "#root/World.js"
 export { Collision_Stuff, };
 class Collision_Stuff {
-  static Do_Entities_Intersect_In_Every_Subposition(entityA: Base_Entity, entityB: Base_Entity) {
-    let doThey = true;
-
-    
-
-
-  }
-  static checkForIntersection(a: Box, b: Box): boolean {
-    return (
-      a.x < b.x + b.width &&
-      a.x + a.width > b.x &&
-      a.y < b.y + b.height &&
-      a.y + a.height > b.y
-    );
-  }
  
  static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
-   // the base idea is that we have a general area if the entities are within, we will bother checking collision.
-  const BASE_DISTANCE = 200;
-
-  const dx = a.x - b.x;
-  const dy = a.y - b.y;
-  const distanceSquared = dx * dx + dy * dy;
-
-  const aSpeed = a.speedPerTick ?? 0;
-  const bSpeed = b.speedPerTick ?? 0;
-  const effectiveRange = BASE_DISTANCE - (aSpeed + bSpeed);
-
-  if (effectiveRange <= 0) return true;
-
-  return distanceSquared <= effectiveRange * effectiveRange;
-}
+   return Collision_Broad_Phase_Check.areCloseEnoughForCollisionCheck(a, b);
+ }
 
 static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
   return Check_For_Collision(entityA, entityB);
@@ -45,7 +18,7 @@ static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_
 
 
   static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
-  {aFace: Direction, bFace: Direction} | null
+  {aFace: Direction, bFace: Direction}
   {
     const aRight = a.x + a.width;
     const aBottom = a.y + a.height;
@@ -57,7 +30,7 @@ static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_
     const intersects = xOverlap && yOverlap;
     if (intersects) {
       
-         return null;
+         throw new Error("Enteties intersect, did not determine facing faces")
     }
 
     // If they are vertically apart (priority)

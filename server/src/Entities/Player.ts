@@ -19,12 +19,12 @@ class Player extends Base_Entity {
     down: false,
   };
   lastSaveTime=0;
-  previousPositions:Position[]=[]
-  marked: Base_Entity[] = [];
   speedUp = false;
   intangibility = false;
-  speedPerTick = 0.10;
-  justUpdated = false;
+ normalSpeedForBothAxes=0.5;
+ spedUpSpeedForBothAxes=1.0;
+ speedX= this.normalSpeedForBothAxes;
+ speedY= this.normalSpeedForBothAxes;
   socketId: Socket["id"] = "none";
   
   constructor() {
@@ -50,27 +50,28 @@ class Player extends Base_Entity {
   
   updateState() {
     if(this.speedUp) {
-      this.speedPerTick = 1.00;
+      this.speedX = this.spedUpSpeedForBothAxes;
+      this.speedY = this.spedUpSpeedForBothAxes;
     } else {
-      this.speedPerTick = 0.50;
+      this.speedX = this.normalSpeedForBothAxes;
+      this.speedY = this.normalSpeedForBothAxes;
     }
 
     if (this.controls.right) {
-      this.movementForces.Set_Component("Player_Controls", "right", this.speedPerTick);
-    }
-    if (this.controls.left) {
-      this.movementForces.Set_Component("Player_Controls", "left", this.speedPerTick);
+      this.vx.Add_Component("Player_Controls", this.speedX);
+    } else if (this.controls.left) {
+      this.vx.Add_Component("Player_Controls", -this.speedX);
     }
     if (this.controls.up) {
-      this.movementForces.Set_Component("Player_Controls", "up", this.speedPerTick);
+      this.vy.Add_Component("Player_Controls", -this.speedY);
     }
-    if (this.controls.down) {
-      this.movementForces.Set_Component("Player_Controls", "down", this.speedPerTick);
+    else if (this.controls.down) {
+      this.vy.Add_Component("Player_Controls", this.speedY);
     }
 
-const now = Date.now();
-
-  if (now - this.lastSaveTime >= 1000) {
+  const now = Date.now();
+   const timeToSave = now - this.lastSaveTime >= 1000;
+  if (timeToSave) {
     this.saveStateToFile();
     this.lastSaveTime = now;
   }
@@ -97,11 +98,7 @@ collisionManager(
   const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
   
    const faces = Collision_Stuff.With_Which_Sides_Do_Two_Entities_Face_Each_Other(this, otherEntity);
-   if(!faces) {
-     // this probably means they are intersecting so we cant cleanly determine the answer. in that case something failed if we ever got to this, so just skip I guess.
-     console.log("Oopsie, must never happen and be resolved");
-     return;
-   }
+
    const {aFace: playerFace, bFace: otherEntityFace} = faces;
    const newPlayerPos = {
      x:0,
@@ -135,25 +132,28 @@ collisionManager(
       
    } 
    this.setPosition(newPlayerPos);
-
-   this.movementForces.remove(playerFace);
-   this.movementForces.Receive_Force_Components_Of_A_Direction_From_Another_Entity_That_Are_Not_Already_Present(otherEntityFace, otherEntity);
+  switch(playerFace) {
+    case "up":
+      case "down":
+   this.vy.nullify();
+   otherEntity.vy.Add_To(this.vy);
+   break;
+       case "left":
+      case "right":
+    this.vx.nullify();
+    otherEntity.vx.Add_To(this.vx);
+      break;
+  }
+   
 
     if(lastCall) {
       return;
     }
+
    this.collisionManager({lastCall: true});
 }
-stopControls() {
-  this.movementForces.removeByKeyInAllDirections("Player_Controls");
-}
-savePosition(pos: Position) {
-  if (this.previousPositions.length === 4) {
-    this.previousPositions.shift(); // remove first element
-  }
-  this.previousPositions.push(pos);
 
-}
+
   saveStateToFile() {
     const savePath = path.resolve("player_save.json");
 

@@ -56,7 +56,7 @@ class Swept {
   }
   
   // Calculate positions just before collision (with a tiny offset to prevent overlap)
-  const epsilon = 0.001;
+  const epsilon = 1;
   const timeBeforeCollision = Math.max(0, collisionTime - epsilon);
   
   const positionBeforeCollisionA: Position = {

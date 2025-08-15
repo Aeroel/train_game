@@ -2,7 +2,8 @@ import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sensor } from "#root/Entities/Sensor.js"
 import { World } from "#root/World.js"
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
-import { Entity_Movement_Forces } from "#root/Entities/Entity_Movement_Forces.js"
+import { Entity_Velocity } from "#root/Entities/Entity_Velocity.js"
+import {Helper_Functions } from "#root/Helper_Functions.js"
 
 export { Sliding_Door };
 
@@ -26,7 +27,7 @@ class Sliding_Door extends Base_Entity {
 
   };
   Door_Sliding_Speed = 0.01;
-  Sliding_Key = 'Sliding';
+  Sliding_Key = `Sliding_Door_${this.id}`;
   setXYWH(x: number, y: number, w: number, h: number) {
     super.setXYWH(x, y, w, h);
     this.Sensors_Init_Pos();
@@ -78,13 +79,14 @@ class Sliding_Door extends Base_Entity {
   constructor(Sliding_Open_Direction: Door_Sliding_Open_Direction) {
     super();
     this.addTag('Sliding_Door');
-    this.movementForces.Init_A_Component_With_Same_Key_For_Each_Direction(this.Sliding_Key);
+    this.vx.Add_Component(this.Sliding_Key,0);
+    this.vy.Add_Component(this.Sliding_Key,0);
 
     if (!Sliding_Door.Possible_Sliding_Open_Directions.includes(Sliding_Open_Direction)) {
       throw new Error(`Invalid opening direction "${Sliding_Open_Direction}". `);
     }
     this.Which_Direction_The_Door_Slides_When_Opening = Sliding_Open_Direction;
-    this.Which_Direction_The_Door_Slides_When_Closing = this.movementForces.Get_Opposite_Force_Direction(this.Which_Direction_The_Door_Slides_When_Opening) as Door_Sliding_Closed_Direction;
+    this.Which_Direction_The_Door_Slides_When_Closing = Helper_Functions.getOppositeDirection(Sliding_Open_Direction) as Door_Sliding_Closed_Direction;
   }
   updateState() {
     if (this.getState() === 'opening') {
@@ -109,7 +111,8 @@ class Sliding_Door extends Base_Entity {
     }
     let neededForces = this.movementForces.Get_No_Movement_Forces();
     neededForces[this.Which_Direction_The_Door_Slides_When_Closing] = this.Door_Sliding_Speed;
-    this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Sliding_Key, neededForces)
+    this.movementForces.Set_A_Component_For_Each_Direction_By_Same_Key(this.Sliding_Key, neededForces);
+    
   }
   Handle_Door_Finished_Closing() {
     let neededX;

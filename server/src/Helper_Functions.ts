@@ -3,6 +3,7 @@ import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
 import { networkInterfaces } from "os";
+import { Direction } from "#root/Type_Stuff.js";
 
 
 export { Helper_Functions };
@@ -49,5 +50,19 @@ class Helper_Functions {
         });
         const index = World.state.entities.indexOf(playerAssociatedWithSocket);
         World.state.entities.splice(index, 1);
+    }
+    static getOppositeDirection(dir: Direction): Direction {
+      if(dir==="up") {
+         return "down";
+      }
+      if(dir==="down") {
+         return "up";
+      }
+      if(dir==="left") {
+         return "right";
+      }
+      if(dir==="right") {
+         return "left";
+        }
     }
 }

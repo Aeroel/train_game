@@ -44,6 +44,7 @@ export class Train extends Base_Entity {
     
     
     updateState() {
+      //if(1>0) return;
       if(this.begunWaiting) {
         if(Date.now() >(this.waitingSince + this.waitPeriodMs) ) {
         this.begunWaiting = false;
@@ -67,7 +68,7 @@ export class Train extends Base_Entity {
 
 checkForUpcomingStopSpot() {
     if (!this.isMoving()) return; // no point checking if stationary
-    const frontCar = this.getFrontCar();
+    const frontCar = this.cars[0];
 
     // Find the closest collision where the other entity is a StopSpot
     const collision = Collision_Stuff.getClosestCollision(
@@ -103,7 +104,7 @@ closeDoors(dir: Direction) {
 
 alignCars(collision: Collision_Info) {
     // Calculate how far we need to shift everything
-    const frontCar = this.getFrontCar();
+    const frontCar = this.cars[0];
    // Stop movement for the entire train immediately
     const before = collision.Position_Just_Before_Collision_A;
 
@@ -187,66 +188,5 @@ spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_D
       this.setMovementMotion(this.beforePauseMovementMotion);
     }
     
-
-getFrontCar() {
-    const res = this.determineFrontAndBackCars();
-    return res.front;
-}
-
-getBackCar() {
-    const res = this.determineFrontAndBackCars();
-
-    return res.back;
-}
-
-
-
-    determineFrontAndBackCars() {
-    if (!this.isMoving()) {
-        throw new Error("Cannot get back car of a stationary train");
-    }
-
-    const dirs = this.getActiveMovementDirections();
-    if (!dirs || dirs.length === 0) {
-        throw new Error("Could not get motion dirs or empty.")
-    }
-
-    const sortedCars = [...this.cars].sort((a, b) => this.compareCarsByDirection(a, b, dirs));
-    return {
-        front: sortedCars[0],
-        back: sortedCars[sortedCars.length - 1],
-    };
-}
-
-// --------------------
-// Helpers
-// --------------------
-getActiveMovementDirections(): Train_Car_Motion_Directions {
-    if (this.movementMotion === "forwards") {
-        return this.cars[0].motionsDirections.forwards;
-    } else if (this.movementMotion === "backwards") {
-        return this.cars[0].motionsDirections.backwards;
-    }
-    return [];
-}
-
-compareCarsByDirection(a: Train_Car, b: Train_Car, dirs: Train_Car_Motion_Directions): number {
-    // Vertical
-    if (dirs.includes("up")) {
-        if (a.y !== b.y) return a.y - b.y; // smallest y first
-    } else if (dirs.includes("down")) {
-        if (a.y !== b.y) return b.y - a.y; // largest y first
-    }
-
-    // Horizontal
-    if (dirs.includes("left")) {
-        if (a.x !== b.x) return a.x - b.x; // smallest x first
-    } else if (dirs.includes("right")) {
-        if (a.x !== b.x) return b.x - a.x; // largest x first
-    }
-
-    return 0; // tie
-}
-
 
 }

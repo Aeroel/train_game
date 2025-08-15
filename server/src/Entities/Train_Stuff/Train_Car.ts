@@ -347,6 +347,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];
     entities.push(...this.movementForces.Get_Propagation_List());
+    console.log(entities.length);
     return entities
   }
   
@@ -464,7 +465,7 @@ addToPropagationList() {
   updateState() {
     this.addToPropagationList();
     this.move_handler();
-   // super.updateState();
+   super.updateState();
   }
   determineCarPassengers() {
     const passengers: Base_Entity[]=[];

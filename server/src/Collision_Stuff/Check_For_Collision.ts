@@ -2,7 +2,7 @@ import type { Collision_Info } from "#root/Type_Stuff.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Swept } from "#root/Collision_Stuff/Collision_Checking_Methods/Swept/Swept.js"
 import { Sub_Positions} from "#root/Collision_Stuff/Collision_Checking_Methods/Sub_Positions/Sub_Positions.js"
-const currentMethod: "swept" | "subPositions" = "swept";
+const currentMethod: "swept" | "subPositions" = "subPositions";
 
 export function Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
    switch(currentMethod) {
