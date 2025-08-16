@@ -105,7 +105,7 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
     const entityBTheoreticalLength = Math.max(Math.abs(entityBDeltaX), Math.abs(entityBDeltaY));
 
     let finalLength = Math.round((Math.max(entityATheoreticalLength, entityBTheoreticalLength)));
-    finalLength = finalLength * 4;
+    finalLength = finalLength * 5;
 
     // now we know the length. Make two arrays.
 
