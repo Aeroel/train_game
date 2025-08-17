@@ -16,7 +16,13 @@
     },
     "scripts": {
         "devtsc": "tsc --watch --noEmit",
-       "devserver": "tsx watch --clear-screen=false src/startThisToStartTheGameServer.ts"
-
+        "devserver":"pnpm run devservertsx",
+       "devserverprof":"pnpm run devservertsxprof",
+       
+       "devservertsx": "tsx watch --clear-screen=false src/startThisToStartTheGameServer.ts",
+       "devservertsxprof": "tsx watch --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
+       "devservernode":"node --watch --enable-source-maps build/startThisToStartTheGameServer.js",
+       "devservernodeprof":"node --prof --watch --enable-source-maps build/startThisToStartTheGameServer.js"
+ 
     }
 }
