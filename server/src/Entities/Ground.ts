@@ -8,8 +8,8 @@ interface Ground_Constructor {
 
 class Ground extends Base_Entity {
   groundDriftKey = `Ground_Id_${this.id}_Drift_Key`
-  groundDriftVX=0;
-  groundDriftVY=-0.5;
+  groundDriftVX= 1;
+  groundDriftVY= -0.5;
   constructor({color="green"}: Ground_Constructor = {}) {
     super();
     this.setColor(color)

@@ -34,11 +34,14 @@ class FullscreenSetup {
   static doStuffToExitFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
 
 
-    FullscreenSetup.adjustPositionsOfButtonsFor("nonFullscreen");
-    document.exitFullscreen();
-    if (App.isUserUsingAPhone()) {
+
+    document.exitFullscreen().then(()=>{
+          FullscreenSetup.adjustPositionsOfButtonsFor("nonFullscreen");
+              if (App.isUserUsingAPhone()) {
      this.releaseUsersScreenOrientationAfterExitingFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable);
     }
+    });
+
 
   }
   
@@ -52,17 +55,20 @@ class FullscreenSetup {
   
   
   static doStuffToEnterFullscreenMode(isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
-    FullscreenSetup.adjustPositionsOfButtonsFor("fullscreen");
+
     const gameContainer = document.getElementById("gameContainer");
     if(gameContainer === null) {
       throw new Error('gameContainer is null');
     }
-    gameContainer.requestFullscreen();
-    // to landscape on fs if on mobile
+    gameContainer.requestFullscreen().then(()=>{
+          FullscreenSetup.adjustPositionsOfButtonsFor("fullscreen");
+              // to landscape on fs if on mobile
 
     if (App.isUserUsingAPhone()) {
        this.switchScreenToLandscapeForMoreGameyExperience(isScreenOrientationSwitchingFunctionalityAvailable);
     }
+    });
+
   }
   
   static switchScreenToLandscapeForMoreGameyExperience( isScreenOrientationSwitchingFunctionalityAvailable: boolean) {
@@ -84,7 +90,14 @@ class FullscreenSetup {
     this.adjustJoystickPositionToBetterFitScreenMode(screenMode);
     this.adjustZoomButtons(screenMode);
     this.adjustIntangibilityButton(screenMode);
+    this.adjustConsole(screenMode);
+    
+    
+  static adjustConsole(screenMode: string) {
+    // todo
   }
+  
+  
   static adjustIntangibilityButton(screenMode: string) {
     const intangibilityButton = document.getElementById("intangibilityButton");
     if(intangibilityButton === null) {
