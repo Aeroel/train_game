@@ -43,10 +43,10 @@ export class Collision_Broad_Phase_Check {
    * Faster moving entities need larger margins to catch potential collisions
    */
   private static calculateDynamicMargin(a: Base_Entity, b: Base_Entity): number {
-   const avx = a.vx.get();
-   const avy = a.vy.get();
-   const bvx = b.vx.get();
-   const bvy = b.vy.get();
+   const avx = a.velocity.x.get();
+   const avy = a.velocity.y.get();
+   const bvx = b.velocity.x.get();
+   const bvy = b.velocity.y.get();
     const aSpeed = Math.sqrt((avx || 0) ** 2 + (avy || 0) ** 2);
     const bSpeed = Math.sqrt((bvx || 0) ** 2 + (bvy || 0) ** 2);
     const maxSpeed = Math.max(aSpeed, bSpeed);

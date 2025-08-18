@@ -58,15 +58,15 @@ class Player extends Base_Entity {
     }
 
     if (this.controls.right) {
-      this.vx.Add_Component({key:"Player_Controls", value:this.speedX});
+      this.velocity.x.Add_Component({key:"Player_Controls", value:this.speedX});
     } else if (this.controls.left) {
-      this.vx.Add_Component({key:"Player_Controls",value: -this.speedX});
+      this.velocity.x.Add_Component({key:"Player_Controls",value: -this.speedX});
     }
     if (this.controls.up) {
-      this.vy.Add_Component({key:"Player_Controls", value:-this.speedY});
+      this.velocity.y.Add_Component({key:"Player_Controls", value:-this.speedY});
     }
     else if (this.controls.down) {
-      this.vy.Add_Component({key:"Player_Controls", value:this.speedY});
+      this.velocity.y.Add_Component({key:"Player_Controls", value:this.speedY});
     }
 
   const now = Date.now();
@@ -135,13 +135,13 @@ collisionManager(
   switch(playerFace) {
     case "up":
       case "down":
-   this.vy.nullify();
-   otherEntity.vy.Add_To(this.vy);
+   this.velocity.y.nullify();
+   otherEntity.velocity.y.Add_To(this.velocity.y);
    break;
        case "left":
       case "right":
-    this.vx.nullify();
-    otherEntity.vx.Add_To(this.vx);
+    this.velocity.x.nullify();
+    otherEntity.velocity.x.Add_To(this.velocity.x);
       break;
   }
    

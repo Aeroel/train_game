@@ -35,7 +35,13 @@ class Rail_Switch_Wall extends Base_Entity {
         this.modifiesCarTo = modifiesCarTo;
         this.addTag("Rail_Switch_Wall");
     }
-    areDirectionsAlignedForTrigger(directions: Direction[]) {
+    
+
+    
+    areDirectionsAlignedForTrigger(directions: Direction[] | null) {
+      if(directions === null) {
+        throw new Error("areDirectionsAlignedForTrigger does not expect directions to be null. Do not call it like this. Check beforehand.")
+      }
       let identical = true;
       directions.forEach((dir: Direction) => {
         if(!(this.triggersUponContactWithCarIf.includes(dir))) {

@@ -8,9 +8,7 @@ export { Base_Entity };
 
 class Base_Entity {
   id = Simple_Auto_Increment_Id_Generator.generateId();
-  vx = new Entity_Velocity(this);
-  vy = new Entity_Velocity(this);
-  velocityPropagationList: Base_Entity[] = [];
+  velocity = new Entity_Velocity(this);
   speedX = 0;
   speedY = 0;
   x = 0;
@@ -25,37 +23,45 @@ class Base_Entity {
 
     this.addTag("Entity");
   }
-
-collisionManager() {
   
-}
-  updatePosition() {
-    this.applyVelocityToPosition();
-  }
-cleanUp() {
-  this.vx.nullify();
-  this.vy.nullify();
-}
-  calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
-
-    const x = (this.x + (this.vx.get() * Game_Loop.deltaTime));
-    const y = (this.y + (this.vy.get() * Game_Loop.deltaTime));
-    const position: Position = { x, y };
-    return position;
-  }
-  updateStateWrapper() {
-    
-    this.updateState();
-  }
+  
   updateState() {
 
 
   }
 
+
+
+collisionManager() {
+  
+}
+
+
+  updatePosition() {
+    this.applyVelocityToPosition();
+  }
+  
+  
+Clean_Up() {
+   this.velocity.nullify()
+}
+
+
+
+
+  calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
+
+    const x = (this.x + (this.velocity.x.get() * Game_Loop.deltaTime));
+    const y = (this.y + (this.velocity.y.get() * Game_Loop.deltaTime));
+    const position: Position = { x, y };
+    return position;
+  }
+
+
   isMoving() {
     return (
-         this.vx.get() !== 0 ||
-         this.vy.get() !== 0 
+         this.velocity.x.get() !== 0 ||
+         this.velocity.y.get() !== 0 
       )
   }
   
@@ -67,58 +73,7 @@ applyVelocityToPosition() {
     this.y = nextPosition.y;
   
 }
-nullifyVelocity() {
-  this.vx.nullify();
-  this.vy.nullify()
-}
-Add_Entity_To_Velocity_Propagation_List(entity: Base_Entity) {
-  this.velocityPropagationList.push(entity);
-  this.vx.Add_To_Propagation_List(entity.vx)
-  this.vy.Add_To_Propagation_List(entity.vy)
-}
-Get_Velocity_Propagation_List() {
-  return this.velocityPropagationList;
-}
-Remove_Entity_From_Velocity_Propagation_List(entity: Base_Entity) {
-    this.vx.Remove_From_Propagation_List(entity.vx)
-  this.vy.Remove_From_Propagation_List(entity.vy)
-}
-directionToAxisVelocity({direction, key, value}:{direction: Direction, key: Velocity_Component['key'], value: Velocity_Component['value']}) {
-  let axis: "y"|"x"="x";
-  switch(direction) {
-     case "up":
-       value = -1*value;
-       axis="y"
-      break;
-     case "left":
-       axis="x"
-        value = -1*value;
-      break;
-     case "right":
-       axis="x" 
 
-      break;
-      case "down":
-      axis='y'
-      break;
-   }
-   return {
-     value,
-     key,
-     axis,
-   }
-}
-directionToVelocity({direction, key, value}:{direction: Direction, key: Velocity_Component['key'], value: Velocity_Component['value']}) {
-   const velAxis = this.directionToAxisVelocity({direction, key, value});
-   switch(velAxis.axis) {
-     case "y":
-        this.vy.Add_Component({key:velAxis.key, value: velAxis.value});
-      break;
-     case "x":
-        this.vx.Add_Component({key:velAxis.key, value: velAxis.value});
-      break;
-   }
-}
 
   addTag(tag: string) {
     this.tags.push(tag);

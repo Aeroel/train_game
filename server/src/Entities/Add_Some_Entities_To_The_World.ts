@@ -39,10 +39,9 @@ class Add_Some_Entities_To_The_World {
         wall.setWidth(40);
         wall.setColor("pink")
        
-       ground.Add_Entity_To_Velocity_Propagation_List(wall);
       // random forcefield
         const ff = World.addEntity(new Forcefield());
-        ground.Add_Entity_To_Velocity_Propagation_List(ff)
+
 
 if(1>0)return;
      // the two railways

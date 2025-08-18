@@ -3,7 +3,7 @@ import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
 import { networkInterfaces } from "os";
-import type { Direction } from "#root/Type_Stuff.js";
+import type { Direction, Position } from "#root/Type_Stuff.js";
 
 
 export { Helper_Functions };
@@ -29,6 +29,13 @@ class Helper_Functions {
             return "Couldn't get LAN IP";
         }
     }
+
+  // Helper: squared distance between two positions
+  static distSq(a: Position, b: Position): number {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx * dx + dy * dy;
+  }
 
     static Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket: Socket) {
         SocketStorage.add(socket);

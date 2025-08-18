@@ -50,6 +50,7 @@ class Train_Car extends Base_Entity {
   prevSensor: Rail_Switch_Wall = new Rail_Switch_Wall(0,0, [],  [],0, 0);
   train: Train;
  passengers: Base_Entity[] = [];
+ colectedPassengersForThisTick = false;
   Wall_And_Door_Thickness = 5;
 
   Center_Box_Entity: Base_Entity = new Base_Entity();
@@ -104,7 +105,6 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.Add_Center_Box_Entity();
 
     this.Init_Force_Keys();
-    this.Add_Car_Walls_And_Doors_To_Propagation();
   }
   
   setMotionsDirections(forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions) {
@@ -115,23 +115,23 @@ motionsDirections: Train_Car_Motions_Directions = {
 
   Init_Force_Keys() {
     const component= {value:0,key:this.Rail_Movement_Key}
-    this.vx.Add_Component(component);
-    this.vy.Add_Component(component);
+    this.velocity.x.Add_Component(component);
+    this.velocity.y.Add_Component(component);
   }
   
   Add_Car_Walls_And_Doors_To_Propagation() {
     // all walls and doors of the car
     for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
-      this.Add_Entity_To_Velocity_Propagation_List(wall_or_door);
+      this.velocity.Add_To_Propagation_List(wall_or_door.velocity);
       if (wall_or_door instanceof Sliding_Door) {
         for (const sensor of Object.values(wall_or_door.sensors)) {
-          this.Add_Entity_To_Velocity_Propagation_List(sensor)
+          this.velocity.Add_To_Propagation_List(sensor.velocity)
         }
       }
 
     }
     // and the central box
-    this.Add_Entity_To_Velocity_Propagation_List(this.Center_Box_Entity);
+    this.velocity.Add_To_Propagation_List(this.Center_Box_Entity.velocity);
 
   }
 
@@ -153,16 +153,16 @@ motionsDirections: Train_Car_Motions_Directions = {
     
     this.currentMovementMotion = null;
 
-    this.vx.Add_Component({key:this.Rail_Movement_Key, value:0});
-    this.vy.Add_Component({key:this.Rail_Movement_Key, value:0});
+    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:0});
+    this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
 
   }
 
 
   move_handler() {
   const {vx, vy} = this.determine_new_velocity_for_movement_along_the_rail(); 
-   this.vx.Add_Component({key:this.Rail_Movement_Key, value:vx.value});
-   this.vy.Add_Component({key:this.Rail_Movement_Key,value: vy.value});
+   this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:vx.value});
+   this.velocity.y.Add_Component({key:this.Rail_Movement_Key,value: vy.value});
  //   console.log(this.x, this.y)
     if (this.currentMovementMotion === null) {
       return false;
@@ -172,29 +172,15 @@ motionsDirections: Train_Car_Motions_Directions = {
   }
   
   
-  Get_Switch_Sensor_Collisions() {
-    const Switch_Sensor_Collisions: Collision_Info[] = [];
-    
-   const all= Collision_Stuff.findAllCollisions(this, (other)=>other.hasTag("Rail_Switch_Wall"));
-   
-   if(!all) {
-     return Switch_Sensor_Collisions;
-     }
-     
-     all.forEach(collisionInfo=> {
-      const rail_switch_wall = collisionInfo.entityB as Rail_Switch_Wall;
-      if(!this.Sensor_Accepts(rail_switch_wall)) {
-        return;
-      }
-      Switch_Sensor_Collisions.push(collisionInfo);
-    });
-    return Switch_Sensor_Collisions;
-  }
-  
-  
   Get_Closest_Sensor_Collision() {
-    const Switch_Sensor_Collisions = this.Get_Switch_Sensor_Collisions();
-    const closest = this.getClosest(this.x, this.y, Switch_Sensor_Collisions);
+    const closest = Collision_Stuff.getClosestCollision(this, (other)=> {
+      if(!other.hasTag("Rail_Switch_Wall")) {
+        return false;
+        }
+        const Switch_Wall = other as Rail_Switch_Wall;
+        return Switch_Wall.areDirectionsAlignedForTrigger(this.getCurrentMovementDirs());
+      
+    });
     return closest;
   }
   
@@ -203,7 +189,7 @@ motionsDirections: Train_Car_Motions_Directions = {
       if (this.currentMovementMotion === null) {
         return;
       }
-    let closest: Collision_Info | null = this.Get_Closest_Sensor_Collision();
+    let closest = this.Get_Closest_Sensor_Collision();
 
     if(closest === null) {
        return;
@@ -238,8 +224,8 @@ motionsDirections: Train_Car_Motions_Directions = {
       let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
 
       if(spent <=0) {
-     this.vx.Add_Component({key:this.Rail_Movement_Key,value: 0});
-     this.vy.Add_Component({key:this.Rail_Movement_Key, value:0});
+     this.velocity.x.Add_Component({key:this.Rail_Movement_Key,value: 0});
+     this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
            return;
       }
       Budget_Remaining -= spent;
@@ -258,8 +244,8 @@ motionsDirections: Train_Car_Motions_Directions = {
           }
             newVel[key].value = Budget_Remaining;
         }
-        this.vx.Add_Component({key:this.Rail_Movement_Key, value:newVel.vx.value});
-        this.vy.Add_Component({key:this.Rail_Movement_Key, value:newVel.vy.value});
+        this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:newVel.vx.value});
+        this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:newVel.vy.value});
         
         const closestSensorCollision = this.Get_Closest_Sensor_Collision();
         if(closestSensorCollision === null || closestSensorCollision.entityB === this.prevSensor) {
@@ -276,30 +262,18 @@ motionsDirections: Train_Car_Motions_Directions = {
         this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWall)
       }
     
-     this.vx.Add_Component({key:this.Rail_Movement_Key, value:0});
-     this.vy.Add_Component({key:this.Rail_Movement_Key, value: 0});
+     this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:0});
+     this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: 0});
 
   }
 
-Sensor_Accepts(rail_switch_wall: Rail_Switch_Wall) {
-          const movementDirs = this.currentMovementDirs();
-      if(movementDirs === null){
 
-        return false;
-      }
-     //console.log(rail_switch_wall.triggersUponContactWithCarIf)
-      const theCarMovementWillTriggerTheWall = rail_switch_wall.areDirectionsAlignedForTrigger(movementDirs);
 
-      return theCarMovementWillTriggerTheWall;
-}
 Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall: Rail_Switch_Wall) {
   if(this.currentMovementMotion === null) {
     throw new Error("do not call sensor stuff func unless you know train is moving, bro")
   }
-  // I think this call is du0licate from switch sensor collisions check but too lazy to think and afraid to remove. but probably redundant and pointless to do it again here
-   if(!this.Sensor_Accepts(rail_switch_wall)) {
-     return;
-   }
+
       // Okay, so from point, we know that the wall and car need us to process the logic
       this.setMotionDirections(this.currentMovementMotion, rail_switch_wall.modifiesCarTo);
       
@@ -342,7 +316,9 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   }
   getCarContentsAndPassengers(): Base_Entity[] {
     const entities: Base_Entity[] =[];
-    entities.push(...this.Get_Velocity_Propagation_List());
+    entities.push(this.Center_Box_Entity);
+    entities.push(...Object.values(this.Walls_And_Doors));
+    entities.push(...this.passengers);
     console.log(entities.length);
     return entities
   }
@@ -384,7 +360,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
       break;
    }
  }
-  currentMovementDirs() {
+  getCurrentMovementDirs() {
     if(this.currentMovementMotion === null) {
       return null;
     }
@@ -451,31 +427,39 @@ openDoors(dir: Direction) {
     }
     this.currentMovementMotion = motion;
     const newVel = this.determine_new_velocity_for_movement_along_the_rail();
-      this.vx.Add_Component(newVel.vx );
-      this.vy.Add_Component(newVel.vy );
+      this.velocity.x.Add_Component(newVel.vx );
+      this.velocity.y.Add_Component(newVel.vy );
   }
 
 addToPropagationList() {
       this.Add_Car_Walls_And_Doors_To_Propagation();
-         this.determineCarPassengers(); 
+      if(!this.colectedPassengersForThisTick) {
+        throw new Error("You forgot to collect passengers");
+      }
+        this.passengers.forEach(passenger=>{
+          this.velocity.Add_To_Propagation_List(passenger.velocity);
+        })
 }
   updateState() {
+    this.collectCarPassengers();
     this.addToPropagationList();
     this.move_handler();
    super.updateState();
   }
-  determineCarPassengers() {
+  
+  
+  collectCarPassengers() {
     const passengers: Base_Entity[]=[];
-    const all = Collision_Stuff.findAllCollisions(this, (other)=>other.hasTag("Can_Ride_Train"));
-    if(!all) {
+    const all = Collision_Stuff.findCollisions(this, (other)=>other.hasTag("Can_Ride_Train"));
+    if(all.length ===0) {
       return
     }
     
-    this.passengers = all.map(coll=>coll.entityB);
-    const car = this;
-    this.passengers.forEach(passenger=>{
-      car.Add_Entity_To_Velocity_Propagation_List(passenger)
+    all.forEach(coll=>{
+      const passenger = coll.entityB;
+      this.passengers.push(passenger)
     })
+    this.colectedPassengersForThisTick = true;
   }
 
 
@@ -484,6 +468,19 @@ addToPropagationList() {
   /* 
   
   */
+
+  
+  
+  Clean_Up() {
+    this.velocity.Clear_Propagation_List();
+    this.colectedPassengersForThisTick = false;
+    this.passengers = [];
+    super.Clean_Up();
+  }
+  
+  
+ 
+
   Create_And_Return_Car_Walls_And_Doors() {
     return {
       Top_Left_Wall: new Wall(),
@@ -523,39 +520,5 @@ addToPropagationList() {
     return this.bulk_of_code.Set_Car_Walls_And_Doors_Initial_Positions();
 
   }
-  cleanUp() {
-    this.vx.Clear_Propagation_List();
-    this.vy.Clear_Propagation_List();
-    super.cleanUp();
-  }
- getClosest(
-  x: number,
-  y: number,
-  colls: Collision_Info[]
-): Collision_Info | null {
-  if(colls.length === 0) {
-    return null;
-  }
-  if(colls.length === 1) {
-    return colls[0]
-  }
-  let closest: Collision_Info = colls[0];
-  let minDistSq = Infinity;
-
-  for (const info of colls) {
-    const dx = info.Position_Just_Before_Collision_A.x - x;
-    const dy = info.Position_Just_Before_Collision_A.y - y;
-    const distSq = dx * dx + dy * dy;
-
-    if (distSq < minDistSq) {
-      minDistSq = distSq;
-      closest = info;
-    }
-  }
-
-  return closest;
-}
-
-
 
 }

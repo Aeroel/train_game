@@ -38,12 +38,12 @@ class Game_Loop {
     Game_Loop.Collision_Resolutor();
     Game_Loop.Update_Positions_Of_All_Entities();
     Game_Loop.Clean_Up();
-    Game_Loop.emitToPlayers();
+    Game_Loop.Emit_To_Players();
   }
 
   static Next_Moment_Of_All_Entities() {
     World.getCurrentEntities().forEach(entity => {
-      entity.updateStateWrapper();
+      entity.updateState();
     });
   }
   static Collision_Resolutor() {
@@ -60,10 +60,10 @@ class Game_Loop {
   }
   static Clean_Up() {
         World.getCurrentEntities().forEach(entity => {
-      entity.cleanUp();
+      entity.Clean_Up();
     });
   }
-static  emitToPlayers() {
+static  Emit_To_Players() {
         const timeToEmit = Date.now() > (this.lastEmitTime + this.emitEveryMs) 
     if(!timeToEmit) {
      return;
