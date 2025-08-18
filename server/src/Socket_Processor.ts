@@ -8,6 +8,7 @@ import { World } from "./World.js";
 import { Helper_Functions } from "./Helper_Functions.js";
 import { Typed_Object_Keys, type Direction } from "./Type_Stuff.js";
 import { Game_Loop } from "#root/Game_Loop.js"
+import { Command_Console }  from "#root/Console/Simple_Console.js"
 
  type Control_Keys = {
             movement: (Direction)[],
@@ -31,10 +32,23 @@ class Socket_Processor {
         newPlayerEntity.readSavedState();
         newPlayerEntity.setSocketId(socket.id);
         World.addEntity(newPlayerEntity);
-
+       this.consoleStuff(socket, newPlayerEntity)
 
     }
 
+static consoleStuff(socket:Undesirable_Hardcoded_Socket_Type, player: Player){
+  socket.emit("consoleMessages",Command_Console.welcomeMessages)
+    socket.on("consoleCommand", (cmd: string)=>{
+
+     const result= Command_Console.executeCommand(cmd, socket);
+      socket.emit("consoleMessages", 
+      [`You sent the command: ${cmd}`,
+      `Result: ${result.message}`
+      
+      ])
+
+    })
+}
     static onPing(socket: Undesirable_Hardcoded_Socket_Type) {
       socket.on("ping", ()=>{
       const currTime = Date.now();

@@ -15,8 +15,8 @@ body {
   /* Canvas fills the container */
   #gameCanvas {
     background-color: black;
-    width: 1000px;
-    height: 1000px;
+    width: 100vw;
+    height: 100vh;
   }
 
 
@@ -119,7 +119,14 @@ body {
   }
   
   #consoleContainer {
+    background: green;
+    z-index: 9999;
+    position: fixed;
     display: none;
+    left: 5%;
+    top: 5%;
+    right: 5%;
+    bottom: 5%;
   }
     #showConsoleButtonImage {
       position: absolute;
@@ -130,6 +137,8 @@ body {
   }
   
     #hideConsoleButtonImage {
+      position: absolute;
+      right: 5%;
     width:50px;
     height:50px;
   }

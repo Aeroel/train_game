@@ -13,6 +13,7 @@ type ReceivedWorldState = {
     playerY: number,
     playerSpeedUp: boolean,
     playerIntangibility: boolean,
+
 }
 type Edge = {
     x1: number,

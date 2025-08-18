@@ -91,7 +91,7 @@ class FullscreenSetup {
     this.adjustZoomButtons(screenMode);
     this.adjustIntangibilityButton(screenMode);
     this.adjustConsole(screenMode);
-    
+  }   
     
   static adjustConsole(screenMode: string) {
     // todo
