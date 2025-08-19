@@ -40,7 +40,7 @@ class Add_Some_Entities_To_The_World {
         wall.setColor("pink")
       const wall2 = World.addEntity(
         new Wall());
-        wall2.setXY(950, 1250);
+        wall2.setXY(wall.x + wall.width, 1250);
         wall2.setHeight(40);
         wall2.setWidth(400);
         wall2.setColor("pink")
