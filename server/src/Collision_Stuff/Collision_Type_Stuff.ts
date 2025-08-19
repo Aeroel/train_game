@@ -3,7 +3,7 @@ export type {
 } 
 
 
-import type { Position, Box} from "#root/Type_Stuff.js"
+import type { Position, Box, Direction} from "#root/Type_Stuff.js"
 import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 
 
@@ -19,4 +19,5 @@ declare type Collision_Info = {
   Position_Just_Before_Collision_B: Position;
   Last_Box_Just_Before_Collision_A: Box;
   Last_Box_Just_Before_Collision_B: Box;
+  bFacingA?: Direction;
 }

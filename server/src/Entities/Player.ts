@@ -89,13 +89,14 @@ collisionManager(
   }
   
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
-  if(!(closestCollision)) {
+  if(!(closestCollision) || !(closestCollision.bFacingA)) {
     return;
   } 
   
   
   const otherEntity = closestCollision.entityB;
   const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
+  console.log(Player_Position_Just_Before_Collision)
   
    const faces = Collision_Stuff.With_Which_Sides_Do_Two_Entities_Face_Each_Other(this, otherEntity);
 
