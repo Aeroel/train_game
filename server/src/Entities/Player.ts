@@ -5,6 +5,7 @@ import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
 
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { SocketStorage } from "#root/SocketStorage.js";
+import { Helper_Functions} from "#root/Helper_Functions.js"
 
 import { log } from "console";
 import type { Socket } from "socket.io";
@@ -97,10 +98,9 @@ collisionManager(
   const otherEntity = closestCollision.entityB;
   const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
   console.log(Player_Position_Just_Before_Collision)
-  
-   const faces = Collision_Stuff.With_Which_Sides_Do_Two_Entities_Face_Each_Other(this, otherEntity);
 
-   const {aFace: playerFace, bFace: otherEntityFace} = faces;
+   const playerFace = Helper_Functions.getOppositeDirection(closestCollision.bFacingA);
+   const otherEntityFace = closestCollision.bFacingA;
    const newPlayerPos = {
      x:0,
      y:0
