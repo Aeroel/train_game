@@ -11,7 +11,7 @@ class Game_Loop {
   static lastUpdateTime = Date.now();
   static accumulatedTime = 0;
   static started = true;
- static emitEveryMs= 25;
+ static emitEveryMs= 50;
  static lastEmitTime =0;
   static theLoop() {
 

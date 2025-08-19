@@ -18,13 +18,15 @@ class Planet extends Base_Entity {
   
   
   updateState() {
-    this.velocity.x.Add_Component({key:this.planetDriftKey, value:this .planetDriftVX})
-    this.velocity.y.Add_Component({key:this.planetDriftKey, value:this .planetDriftVY})
-    this.Entities_On_Ground_Drift_Too();
+    //  this.planetMoves();
   }
+planetMoves() {
+      this.velocity.x.Add_Component({key:this.planetDriftKey, value:this .planetDriftVX})
+    this.velocity.y.Add_Component({key:this.planetDriftKey, value:this .planetDriftVY})
+    this.Entities_On_Planet_Drift_Too();
+}
 
-
- Entities_On_Ground_Drift_Too() {
+ Entities_On_Planet_Drift_Too() {
    const touchingThisGroundCollisions = Collision_Stuff.findCollisions(this);
    if(touchingThisGroundCollisions.length === 0) {
      return;

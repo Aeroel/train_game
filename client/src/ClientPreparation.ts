@@ -55,7 +55,7 @@ static ipAddressFieldAndButton() {
       });
       // reset zoom after sending so we do not keep zooming in or out more than once when user clicks 
       App.zoom = "no_change";
-    }, 25);
+    }, 50);
     
    this.pingMeasurement();
    this.consoleStuff();

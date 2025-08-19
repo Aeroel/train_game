@@ -125,8 +125,9 @@ Clear_Propagation_List() {
   }
 
 nullify() {
-  // alias for Remove_All_Components()
-  this.Remove_All_Components();
+   this.components.forEach(component=>{
+     component.value = 0;
+   })
 }
 Remove_All_Components(): void {
    const keysToRemove = this.components.map(component=>component.key);

@@ -9,7 +9,7 @@ export {
 }
 class EntitySorter {
   static readonly From_Top_Down_Camera_POV: Sort_Order = {
-    "Ground": 0,
+    "Planet": 0,
     "Rail_Switch_Wall": 0.5,
     "Rail": 1,
     "Train_Car": 2,
@@ -19,8 +19,8 @@ class EntitySorter {
     "Sliding_Door": 5, 
     "Sensor":6,
   };
-  static Sort_All_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera() {
-    this.entitySort(this.From_Top_Down_Camera_POV, World.getCurrentEntities())
+  static Sort_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera(entities: Base_Entity[]) {
+    this.entitySort(this.From_Top_Down_Camera_POV, entities);
   }
   static entitySort(sortOrder: Sort_Order, entities: Base_Entity[]) {
 

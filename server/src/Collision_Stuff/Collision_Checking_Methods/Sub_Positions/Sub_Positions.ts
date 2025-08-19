@@ -50,10 +50,12 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
         loop.stop();
         return;
       }
-      result.Position_Just_Before_Collision_A = { x: subA.x, y: subA.y }
-      result.Position_Just_Before_Collision_B = { x: subB.x, y: subB.y }
-      result.Last_Box_Just_Before_Collision_A = subA;
-      result.Last_Box_Just_Before_Collision_B = subB;
+      const subARounded={x: Math.round(subA.x), y:Math.round(subA.y)}
+      const subBRounded={x: Math.round(subB.x), y:Math.round(subB.y)}
+      result.Position_Just_Before_Collision_A = { ...subARounded}
+      result.Position_Just_Before_Collision_B = { ...subBRounded }
+      result.Last_Box_Just_Before_Collision_A = { ...subA, ...subARounded };
+      result.Last_Box_Just_Before_Collision_B = { ...subB, ...subBRounded };
     })
    
     if(Collision_Occurred) {
