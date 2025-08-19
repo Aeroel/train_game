@@ -19,5 +19,6 @@ declare type Collision_Info = {
   Position_Just_Before_Collision_B: Position;
   Last_Box_Just_Before_Collision_A: Box;
   Last_Box_Just_Before_Collision_B: Box;
-  bFacingA?: Direction;
+  bFacingA: Direction;
+  aFacingB: Direction;
 }

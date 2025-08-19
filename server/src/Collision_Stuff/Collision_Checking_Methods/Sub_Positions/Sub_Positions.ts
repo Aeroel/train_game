@@ -12,7 +12,9 @@ class Sub_Positions {
 
 static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
     const  prelude = Sub_Positions.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
-
+    const faces=this.With_Which_Sides_Do_Two_Entities_Face_Each_Other(entityA, entityB);
+    const aFacingB=faces.aFace
+    const bFacingA=faces.bFace
     const result: Collision_Info = {
    
       Position_Just_Before_Collision_A: { x: entityA.x, y: entityA.y },
@@ -37,6 +39,8 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
     Theoretical_Ending_Position_B: prelude.entityBEndingPosition,
     entityA,
     entityB,
+    bFacingA,
+    aFacingB,
     };
 
 
@@ -169,5 +173,41 @@ static testForTouch(boxA: Box, boxB: Box): boolean {
     boxA.y + boxA.height < boxB.y         // A ends above B (gap between them)
   );
 }
+  static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
+  {aFace: Direction, bFace: Direction}
+  {
+    const aRight = a.x + a.width;
+    const aBottom = a.y + a.height;
+    const bRight = b.x + b.width;
+    const bBottom = b.y + b.height;
+
+    const xOverlap = a.x < bRight && aRight > b.x;
+    const yOverlap = a.y < bBottom && aBottom > b.y;
+    const intersects = xOverlap && yOverlap;
+    if (intersects) {
+      
+         throw new Error("Enteties intersect, did not determine facing faces")
+    }
+
+    // If they are vertically apart (priority)
+    if (!yOverlap) {
+        if (aBottom <= b.y) {
+            return { aFace: "down", bFace: "up" };
+        }
+        if (bBottom <= a.y) {
+            return { aFace: "up", bFace: "down" };
+        }
+    }
+  
+    // Otherwise use horizontal position
+    if (aRight <= b.x) {
+        return { aFace: "right", bFace: "left" };
+    }
+    if (bRight <= a.x) {
+        return { aFace: "left", bFace: "right" };
+    }
+
+    throw new Error("Rectangles are ambiguous or overlapping in unexpected way.");
+  }
 }
 
