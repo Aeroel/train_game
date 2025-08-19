@@ -38,6 +38,12 @@ class Add_Some_Entities_To_The_World {
         wall.setHeight(400);
         wall.setWidth(40);
         wall.setColor("pink")
+      const wall2 = World.addEntity(
+        new Wall());
+        wall2.setXY(950, 1250);
+        wall2.setHeight(40);
+        wall2.setWidth(400);
+        wall2.setColor("pink")
        
       // random forcefield
         const ff = World.addEntity(new Forcefield());

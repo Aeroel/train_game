@@ -106,24 +106,28 @@ collisionManager(
    }
    
    const offset = 0;
+   const offsetX = Math.sign(this.velocity.x.get()) * 0;
+   const offsetY = Math.sign(this.velocity.y.get()) * 0;
+   const playerBeforeCollY= offsetY + Player_Position_Just_Before_Collision.y 
+   const playerBeforeCollX= offsetX + Player_Position_Just_Before_Collision.x; 
    switch(otherEntityFace) {
      case "right":
         newPlayerPos.x = otherEntity.x + otherEntity.width + offset;
-        newPlayerPos.y = Player_Position_Just_Before_Collision.y
+        newPlayerPos.y = playerBeforeCollY;
       break;
       
       case "left":
         newPlayerPos.x = otherEntity.x - offset - this.width;
-        newPlayerPos.y = Player_Position_Just_Before_Collision.y;
+        newPlayerPos.y = playerBeforeCollY;
       break;
       
       case "up":
-        newPlayerPos.x = Player_Position_Just_Before_Collision.x
+        newPlayerPos.x = playerBeforeCollX
         newPlayerPos.y = otherEntity.y - offset - this.height;
       break;
       
       case "down":
-        newPlayerPos.x = Player_Position_Just_Before_Collision.x
+        newPlayerPos.x = playerBeforeCollX
         newPlayerPos.y = otherEntity.y + otherEntity.height + offset;
       break;
       default:

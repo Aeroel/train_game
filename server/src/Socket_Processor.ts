@@ -28,15 +28,16 @@ class Socket_Processor {
         if(!planet) {
           throw new Error("Could not find planet entity")
         }
-        planet.velocity.Add_To_Propagation_List(newPlayerEntity.velocity)
+
+        newPlayerEntity.readSavedState();
         newPlayerEntity.setX(
-        planet.getCenterX());
-        newPlayerEntity.setY(planet.getCenterY());
+        planet.getX());
+        newPlayerEntity.setY(planet.getY());
         
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
         newPlayerEntity.setVisionRange(5000);
-        newPlayerEntity.readSavedState();
+
         newPlayerEntity.setSocketId(socket.id);
         World.addEntity(newPlayerEntity);
        this.consoleStuff(socket, newPlayerEntity)

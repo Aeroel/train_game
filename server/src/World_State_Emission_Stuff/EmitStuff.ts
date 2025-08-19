@@ -12,15 +12,12 @@ class EmitStuff {
   static Emit_To_All_Players_World_State_Stuff() {
     const entities = World.getEntities();
    EntitySorter.Sort_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera(entities);
-   console.log("sorted")
-       console.log(entities.map(en=>en.tags))
-       
+   
     const allPlayers: Player[] = World.filterEntities(entity => entity.hasTag("Player")) as Player[];
     allPlayers.forEach(player => {
       EmitStuff.Emit_World_State_To_Player(player, entities);
     })
-    console.log("after emit")
-    console.log(entities.map(en=>en.tags))
+
   }
 
   static Emit_World_State_To_Player(player: Player, entities: Base_Entity[]) {

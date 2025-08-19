@@ -1,7 +1,8 @@
 /*
 note: after sending the prompt, gpt instantly gave faied code with failed tests. I sent second message saying "tests failed [copynof tests output]". it then rhought for few minutes it gave this workijg code below.
 
-prompt:
+prompt {
+  
 Implement in TypeScript a collision system between player entity and wall entity such that:
 1. If player moves (in a straight line or diagonally, which has same cost, so diagonal is faster in getting from point xy to another xy) and wall standing and they will collie, player stops just outside the wall but slides if can. 
 2. If player and wall move at each other (say, diagonally), wall is always allowed to complete its full movement (in other words it has no collision applied to it), while player is pushed by the wall.
@@ -40,7 +41,7 @@ Wanted wall2 5000, 140
 Wanted wall2
 
 Include the tests.
-
+}
 */
 
 

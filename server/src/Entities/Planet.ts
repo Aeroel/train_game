@@ -8,7 +8,7 @@ interface Planet_Constructor {
 
 class Planet extends Base_Entity {
   planetDriftKey = `Planet_Id_${this.id}_Drift_Key`
-  planetDriftVX= 1;
+  planetDriftVX= 0.25;
   planetDriftVY= -0.5;
   constructor({color="green"}: Planet_Constructor = {}) {
     super();
@@ -18,7 +18,7 @@ class Planet extends Base_Entity {
   
   
   updateState() {
-    //  this.planetMoves();
+      this.planetMoves();
   }
 planetMoves() {
       this.velocity.x.Add_Component({key:this.planetDriftKey, value:this .planetDriftVX})
