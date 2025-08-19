@@ -45,9 +45,9 @@ this.propagationList.splice(this.propagationList.indexOf(velocity), 1);
 }
 
 Clear_Propagation_List() {
-  this.propagationList =[];
   this.x.Clear_Propagation_List();
   this.y.Clear_Propagation_List();
+    this.propagationList =[];
 }
 
 directionToAxisVelocity({direction, key, value}:{direction: Direction, key: Velocity_Component['key'], value: Velocity_Component['value']}) {

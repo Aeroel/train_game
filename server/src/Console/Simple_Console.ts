@@ -11,6 +11,7 @@ export class Command_Console {
     "Available commands:",
     "tp 1 777 888 <-- teleport entity with id 1 to x 777 y 888",
     "listentities 7 <-- lists page 7 of all entities",
+    "tpab 1 2 <-- teleport entity with id 1 to entity with id 2",
     ]
   private static commands: Record<string, Command_Callback> = {};
 static add(name: string, cb: Command_Callback) {
@@ -82,4 +83,22 @@ Command_Console.add("listentities", (args, socket) => {
     }
 
    return msg;
+});
+Command_Console.add("tpab", (args, socket) => {
+    if (args.length !== 3) {
+      return "invalid argument count"
+    }
+    const idA = Number(args[1]);
+    const idB = Number(args[2]);
+
+    const entities = World.getEntities();
+    const entityA = entities.find((e) => e.id === idA);
+    const entityB = entities.find((e) => e.id === idB);
+
+    if (!entityA || !entityB) {
+     return "error: one or both entities not found";
+    }
+
+    entityA.setPosition({ x: entityB.x, y: entityB.y });
+    return "tp entity a to entity b succeeded"
 });

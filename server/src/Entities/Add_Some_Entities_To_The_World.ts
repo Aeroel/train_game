@@ -1,4 +1,4 @@
-import { Ground } from "#root/Entities/Ground.js";
+import { Planet } from "#root/Entities/Planet.js";
 import { Railway_Switch_Wall_Generator } from "#root/Entities/Railway_Switch_Wall_Generator.js"
 import { Base_Entity } from '#root/Entities/Base_Entity.js';
 import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
@@ -28,7 +28,7 @@ class Add_Some_Entities_To_The_World {
     static doItNow() {
 
 
-      const ground =   Add_Some_Entities_To_The_World.addTheGround();
+      const planet =   Add_Some_Entities_To_The_World.addThePlanet();
         
           Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
     // random wall
@@ -291,13 +291,13 @@ const offset = carSquareSize * 2;
 
     }
     
-    static addTheGround() {
-        const groundTwo = new Ground({color: "darkgreen"});
-        groundTwo.setX(0);
-        groundTwo.setY(0);
-        groundTwo.setWidth(World.width);
-        groundTwo.setHeight(World.height);
-       return World.addEntity(groundTwo);
+    static addThePlanet() {
+        const planetTwo = new Planet({color: "darkgreen"});
+        planetTwo.setX(0);
+        planetTwo.setY(0);
+        planetTwo.setWidth(World.width);
+        planetTwo.setHeight(World.height);
+       return World.addEntity(planetTwo);
   
     }
 

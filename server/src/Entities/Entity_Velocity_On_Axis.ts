@@ -92,6 +92,7 @@ class Entity_Velocity_On_Axis {
 
 
 Clear_Propagation_List() {
+ 
     for (const velocity of this.propagationList) {
         for(const thisComponent of this.components) {
           velocity.Remove_Component(thisComponent.key)

@@ -27,9 +27,12 @@ class World {
   static getCurrentEntities() : Base_Entity[] {
     return World.getCurrentState().entities;
   }
-  // alias
+  // aliases
   static getAllEntities() : Base_Entity[] {
     return World.getCurrentEntities();
+  }
+  static getEntities(): Base_Entity[] {
+    return World.getAllEntities();
   }
   
   
