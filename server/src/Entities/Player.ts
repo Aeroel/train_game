@@ -25,7 +25,7 @@ class Player extends Base_Entity {
   speedUp = false;
   intangibility = false;
  normalSpeedForBothAxes=0.5;
- spedUpSpeedForBothAxes=5.0;
+ spedUpSpeedForBothAxes=1.25;
  speedX= this.normalSpeedForBothAxes;
  speedY= this.normalSpeedForBothAxes;
   socketId: Socket["id"] = "none";

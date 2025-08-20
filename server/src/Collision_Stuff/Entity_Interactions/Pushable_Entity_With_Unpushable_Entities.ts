@@ -31,7 +31,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
   
   */
   const yDistBetweenStartingPointAndCollisionPoint = Pushable_Position_Just_Before_Collision.y - pushableEntity.y;
-  console.log(xDistBetweenStartingPointAndCollisionPoint,yDistBetweenStartingPointAndCollisionPoint)
+
   const currentVX = pushableEntity.velocity.x.get()
   const currentVY = pushableEntity.velocity.y.get()
   const spentVX = xDistBetweenStartingPointAndCollisionPoint / Game_Loop.deltaTime;

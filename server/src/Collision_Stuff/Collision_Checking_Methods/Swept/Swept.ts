@@ -57,8 +57,7 @@ class Swept {
         entityB,
         Position_Just_Before_Collision_A: startA,
         Position_Just_Before_Collision_B: startB,
-        Last_Box_Just_Before_Collision_A: {x: startA.x, y: startA.y, width: entityA.width, height: entityA.height},
-        Last_Box_Just_Before_Collision_B: {x: startB.x, y: startB.y, width: entityB.width, height: entityB.height},
+
         bFacingA,
         aFacingB: Helper_Functions.getOppositeDirection(bFacingA)
       };
@@ -86,8 +85,7 @@ class Swept {
       entityB,
       Position_Just_Before_Collision_A: collisionA,
       Position_Just_Before_Collision_B: collisionB,
-      Last_Box_Just_Before_Collision_A: {x: collisionA.x, y: collisionA.y, width: entityA.width, height: entityA.height},
-      Last_Box_Just_Before_Collision_B: {x: collisionB.x, y: collisionB.y, width: entityB.width, height: entityB.height},
+
       bFacingA,
       aFacingB: Helper_Functions.getOppositeDirection(bFacingA)
     };

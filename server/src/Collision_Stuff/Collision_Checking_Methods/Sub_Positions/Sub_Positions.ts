@@ -2,212 +2,159 @@ import { Assert } from "#root/Assert.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
 
-import { Sub_Positions_Loop } from "#root/Collision_Stuff/Collision_Checking_Methods/Sub_Positions/Sub_Positions_Loop.js";
+
 import {World} from "#root/World.js"
+import {Game_Loop} from "#root/Game_Loop.js"
 
 export { Sub_Positions, };
 class Sub_Positions {
 
+static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
+
+  const dt = Game_Loop.deltaTime;
+  const ADX = a.vx * dt; 
+  const ADY = a.vy * dt; 
+  const BDX = b.vx * dt; 
+  const BDY = b.vy * dt; 
+  const AEnd={x:a.x+ADX, y:a.y+ADY}
+  const BEnd={x:b.x+BDX, y:b.y+BDY}
+  const subDivisions = 10000;
+  const ADXPerSubstep  = ADX / subDivisions;
+  const ADYPerSubstep   = ADY / subDivisions;
+  const BDXPerSubstep  = BDX / subDivisions;
+  const BDYPerSubstep  = BDY / subDivisions;
  
-
-static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
-    const  prelude = Sub_Positions.Get_Prelude_To_Subpositions_Loop(entityA, entityB);
-    const faces=this.With_Which_Sides_Do_Two_Entities_Face_Each_Other(entityA, entityB);
-    const aFacingB=faces.aFace
-    const bFacingA=faces.bFace
-    const result: Collision_Info = {
-   
-      Position_Just_Before_Collision_A: { x: entityA.x, y: entityA.y },
-      Position_Just_Before_Collision_B: { x: entityB.x, y: entityB.y },
-      
-      Last_Box_Just_Before_Collision_A:
-        {
-      x:entityA.x,
-    y:entityA.y,
-    width:entityA.width,
-    height:entityA.height,
-      },
-     Last_Box_Just_Before_Collision_B: {
-      x:entityB.x,
-      y:entityB.y,
-      width:entityB.width,
-      height:entityB.height
-    },
-    Starting_Position_A: { x: entityA.x, y: entityA.y },
-    Starting_Position_B: { x: entityB.x, y: entityB.y },
-    Theoretical_Ending_Position_A: prelude.entityAEndingPosition,
-    Theoretical_Ending_Position_B: prelude.entityBEndingPosition,
-    entityA,
-    entityB,
-    bFacingA,
-    aFacingB,
-    };
-
-
-    let Collision_Occurred = false;
-
-   
-    const loop = new Sub_Positions_Loop(entityA, entityB);
-    loop.run((index: number, subA: Box, subB: Box) => {
-      if (Sub_Positions.testForTouch(subA, subB)) {
-        Collision_Occurred = true;
-        loop.stop();
-        return;
-      }
-
-      const subARounded={x:
-      subA.x, y:subA.y}
-      const subBRounded={x: subB.x, y:subB.y}
-      result.Position_Just_Before_Collision_A = { ...subARounded}
-      result.Position_Just_Before_Collision_B = { ...subBRounded }
-      result.Last_Box_Just_Before_Collision_A = { ...subA, ...subARounded };
-      result.Last_Box_Just_Before_Collision_B = { ...subB, ...subBRounded };
-    })
-   
-    if(Collision_Occurred) {
-      return result;
-    }
+ let collided= false;
+ let ALastPosBeforeColl={
+   x:a.x,
+   y:a.y
+ }
+ let BLastPosBeforeColl={
+   x:b.x,
+   y:b.y
+ }
+  for(let i=0;i < subDivisions;i++) {
+    const subAX = a.x + (i * ADXPerSubstep)
+    const subAY = a.y + (i * ADYPerSubstep)
+    const subBX = b.x + (i * BDXPerSubstep)
+    const subBY = b.y + (i * BDYPerSubstep)
+  /*  console.log(`Hi!
+    ${subAX}
+    ${subAY}
+    ${subBX}
+    ${subBX}
     
-    return null;
-
-  }
-
-
-
-
-
-  static Get_Prelude_To_Subpositions_Loop(entityA: Base_Entity, entityB: Base_Entity) {
-    if (!entityA.hasTag("Entity") || !entityB.hasTag("Entity")) {
-      throw new Error(`Both arguments must be entities`)
+    `)*/
+    const subABox = {
+      x: subAX,
+      y: subAY,
+      width: a.width,
+      height: a.height
     }
-    const entityAStartingPosition: Position = { x: entityA.x, y: entityA.y };
-    const entityBStartingPosition: Position = { x: entityB.x, y: entityB.y };
-
-    const entityAEndingPosition: Position = entityA.calculateNextPositionBasedOnVelocityAndDeltaTime();
-    const entityBEndingPosition: Position = entityB.calculateNextPositionBasedOnVelocityAndDeltaTime();
-
-    const entitiesSubpositionsArrays = Sub_Positions.getSubpositions(entityAStartingPosition, entityAEndingPosition, entityBStartingPosition, entityBEndingPosition);
-
-    const entityASubpositions = entitiesSubpositionsArrays.entityA;
-    const entityBSubpositions = entitiesSubpositionsArrays.entityB;
-
-    return { entitiesSubpositionsArrays, entityASubpositions, entityBSubpositions,
-    entityAEndingPosition,
-      entityBEndingPosition,
-    };
-  }
-
-
-  static getSubpositions(entityAStartingPosition: Position, entityAEndingPosition: Position, entityBStartingPosition: Position, entityBEndingPosition: Position) {
-
-    // here begins determination of how long each array will be. It is a single number
-    const entityADeltaX = entityAEndingPosition.x - entityAStartingPosition.x;
-    const entityADeltaY = entityAEndingPosition.y - entityAStartingPosition.y;
-
-    const entityATheoreticalLength = Math.max(Math.abs(entityADeltaX), Math.abs(entityADeltaY));
-
-
-    const entityBDeltaX = entityBEndingPosition.x - entityBStartingPosition.x;
-    const entityBDeltaY = entityBEndingPosition.y - entityBStartingPosition.y;
-
-    const entityBTheoreticalLength = Math.max(Math.abs(entityBDeltaX), Math.abs(entityBDeltaY));
-
-    let finalLength = Math.round((Math.max(entityATheoreticalLength, entityBTheoreticalLength)));
-    finalLength = finalLength * 5;
-
-    // now we know the length. Make two arrays.
-
-    const entityASubpositions = [{ ...entityAStartingPosition },
-    ];
-    const entityBSubpositions = [
-      { ...entityBStartingPosition }
-    ];
-
-    const AChangePerSubStepX = entityADeltaX / finalLength;
-    const AChangePerSubStepY = entityADeltaY / finalLength;
-
-    const BChangePerSubStepX = entityBDeltaX / finalLength;
-    const BChangePerSubStepY = entityBDeltaY / finalLength;
-
-    for (let i = 1; i < finalLength; i++) {
-      const ASubpos = {
-        x: entityAStartingPosition.x + (i * AChangePerSubStepX),
-        y: entityAStartingPosition.y + (i * AChangePerSubStepY),
-      };
-      entityASubpositions.push(ASubpos);
-
-      const BSubpos = {
-        x: entityBStartingPosition.x + (i * BChangePerSubStepX),
-        y: entityBStartingPosition.y + (i * BChangePerSubStepY),
-      };
-      entityBSubpositions.push(BSubpos);
-
+    const subBBox = {
+      x: subBX,
+      y: subBY,
+      width: b.width,
+      height: b.height
     }
-
-    entityASubpositions.push({ ...entityAEndingPosition });
-    entityBSubpositions.push({ ...entityBEndingPosition });
-
-    // now subpositions are ready, send them to callee
-    return {
-      entityA: entityASubpositions,
-      entityB: entityBSubpositions,
-      lengthOfEither: entityBSubpositions.length,
-    };
+     collided = this.boxesCollide(subBBox, subABox)
+    if(collided) {
+      break;
+    }
+    let imin = (i-5);
+    if(i<=0) {
+      imin=0;
+    }
+    ALastPosBeforeColl.x = a.x + (imin * ADXPerSubstep)
+    ALastPosBeforeColl.y = a.y + (imin * ADYPerSubstep)
+    BLastPosBeforeColl.x = b.x + (imin * BDXPerSubstep)
+    BLastPosBeforeColl.y = b.y + (imin * BDYPerSubstep)
+    
   }
+  return this.genCollInfo(a,b, ALastPosBeforeColl, BLastPosBeforeColl, AEnd, BEnd);
+}
 
+static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position, aEnd: Position, bEnd: Position, ) {
+  const aLastBox = {...aLast, width:a.width,height:a.height}
+  const bLastBox = {...bLast, width:b.width,height:b.height}
+  const {aFace, bFace}=this.With_Which_Sides_Do_Two_Entities_Face_Each_Other(aLastBox, bLastBox);
+  return {
+  Starting_Position_A: {
+    x:a.x,y:a.y
+  } ,
+  Starting_Position_B: {
+    x:b.x,y:b.y
+  } ,
+  Theoretical_Ending_Position_A: {
+    x:aEnd.x,y:aEnd.y
+  } ,
+  Theoretical_Ending_Position_B: {
+    x:bEnd.x, y:bEnd.y
+  } ,
+  entityA: a,
+  entityB: b,
+  Position_Just_Before_Collision_A:aLast ,
+  Position_Just_Before_Collision_B: bLast,
+  bFacingA: bFace,
+  aFacingB:aFace,
+  }
+}
 
-
-/**
- * Tests if two boxes are touching or overlapping
- * Returns true when boxes share area OR when they're just touching at edges/corners
- * @param boxA First box with x, y, w, h properties
- * @param boxB Second box with x, y, w, h properties
- * @returns true if boxes are touching or overlapping, false if separated
- */
-static testForTouch(boxA: Box, boxB: Box): boolean {
-  // Check if boxes are separated (not touching)
-  return !(
-    boxA.x > boxB.x + boxB.width ||      // A starts after B ends (gap between them)
-    boxA.x + boxA.width < boxB.x ||      // A ends before B starts (gap between them)
-    boxA.y > boxB.y + boxB.height ||      // A starts below B (gap between them)
-    boxA.y + boxA.height < boxB.y         // A ends above B (gap between them)
+static boxesCollide(box1: Box, box2: Box): boolean {
+  return (
+    box1.x < box2.x + box2.width &&
+    box1.x + box1.width > box2.x &&
+    box1.y < box2.y + box2.height &&
+    box1.y + box1.height > box2.y
   );
 }
+
+
   static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
-  {aFace: Direction, bFace: Direction}
-  {
-    const aRight = a.x + a.width;
-    const aBottom = a.y + a.height;
-    const bRight = b.x + b.width;
-    const bBottom = b.y + b.height;
-
-    const xOverlap = a.x < bRight && aRight > b.x;
-    const yOverlap = a.y < bBottom && aBottom > b.y;
-    const intersects = xOverlap && yOverlap;
-    if (intersects) {
+  {aFace: Direction, bFace: Direction} {
+    if (!this.boxesCollide(a, b)) {
+      // If no collision, fallback to original logic for non-overlapping:
+      // Vertical check
+      if (a.y + a.height <= b.y) return { aFace: "down", bFace: "up" };
+      if (b.y + b.height <= a.y) return { aFace: "up", bFace: "down" };
+      // Horizontal check
+      if (a.x + a.width <= b.x) return { aFace: "right", bFace: "left" };
+      if (b.x + b.width <= a.x) return { aFace: "left", bFace: "right" };
       
-         throw new Error("Enteties intersect, did not determine facing faces")
+      // Ambiguous case
+      throw new Error("Rectangles do not collide but are in ambiguous positions.");
     }
 
-    // If they are vertically apart (priority)
-    if (!yOverlap) {
-        if (aBottom <= b.y) {
-            return { aFace: "down", bFace: "up" };
-        }
-        if (bBottom <= a.y) {
-            return { aFace: "up", bFace: "down" };
-        }
-    }
-  
-    // Otherwise use horizontal position
-    if (aRight <= b.x) {
-        return { aFace: "right", bFace: "left" };
-    }
-    if (bRight <= a.x) {
+    // Calculate overlap on each side
+    const overlapLeft = (a.x + a.width) - b.x;    // How far a extends into b from left side of b
+    const overlapRight = (b.x + b.width) - a.x;   // How far a extends into b from right side of b
+    const overlapTop = (a.y + a.height) - b.y;    // How far a extends into b from top side of b
+    const overlapBottom = (b.y + b.height) - a.y; // How far a extends into b from bottom side of b
+
+    // Find min positive overlaps in horizontal and vertical directions
+    const horizontalPenetration = Math.min(overlapLeft, overlapRight);
+    const verticalPenetration = Math.min(overlapTop, overlapBottom);
+
+    // Determine which penetration depth is smaller - priority to smaller penetration axis
+    if (verticalPenetration < horizontalPenetration) {
+      // Vertical faces
+      if (overlapTop < overlapBottom) {
+        // a faces up, b faces down
+        return { aFace: "up", bFace: "down" };
+      } else {
+        // a faces down, b faces up
+        return { aFace: "down", bFace: "up" };
+      }
+    } else {
+      // Horizontal faces
+      if (overlapLeft < overlapRight) {
+        // a faces left, b faces right
         return { aFace: "left", bFace: "right" };
+      } else {
+        // a faces right, b faces left
+        return { aFace: "right", bFace: "left" };
+      }
     }
-
-    throw new Error("Rectangles are ambiguous or overlapping in unexpected way.");
   }
 }
 
