@@ -130,7 +130,14 @@ applyVelocityToPosition() {
      this.setY(y);
          return this;
   }
-
+get vx() {
+  console.log("getting vx")
+  return this.velocity.x.get();
+}
+get vy() {
+  console.log("getting vy")
+  return this.velocity.y.get();
+}
   setXYWH(x: number, y: number, w: number, h: number) {
     Assert_That_Numbers_Are_Finite({ x, y, w, h });
     Assert_That_Numbers_Are_Zero_Or_Positive({w, h})
