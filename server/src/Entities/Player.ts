@@ -2,15 +2,16 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
-
+import { Game_Loop} from "#root/Game_Loop.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import { Helper_Functions} from "#root/Helper_Functions.js"
+import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Entity_Interactions/Pushable_Entity_With_Unpushable_Entities.js"
 
 import { log } from "console";
 import type { Socket } from "socket.io";
 import type { Position } from "#root/Type_Stuff.js";
-import { Collision_Logger} from "#root/Collision_Stuff/Collision_Logger.js"
+
 export { Player };
 class Player extends Base_Entity {
   controls = {
@@ -79,87 +80,11 @@ class Player extends Base_Entity {
 
   }
 
-
-
-collisionManager(
-  {lastCall=false}:
-  {lastCall?: boolean}
-  ={}) {
-  if(this.intangibility) {
-    return;
-  }
-  
-  const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
-  if(!(closestCollision)) {
-    return;
-  } 
-  
-  
-  const otherEntity = closestCollision.entityB;
-  const Player_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
-  const xDistTraveledBetweenStartingPointAndCollisionPoint = Player_Position_Just_Before_Collision.x - this.x;
-  const yDistTraveledBetweenStartingPointAndCollisionPoint = Player_Position_Just_Before_Collision.y - this.y;
-  console.log(xDistTraveledBetweenStartingPointAndCollisionPoint,yDistTraveledBetweenStartingPointAndCollisionPoint)
-  
-
-   const playerFace = closestCollision.aFacingB;
-   const otherEntityFace = closestCollision.bFacingA;
-   const newPlayerPos = {
-     x:0,
-     y:0
-   }
-   
-   const offset = 0;
-   const offsetX = Math.sign(this.velocity.x.get()) * 0;
-   const offsetY = Math.sign(this.velocity.y.get()) * 0;
-   const playerBeforeCollY= offsetY + Player_Position_Just_Before_Collision.y 
-   const playerBeforeCollX= offsetX + Player_Position_Just_Before_Collision.x; 
-   switch(otherEntityFace) {
-     case "right":
-        newPlayerPos.x = otherEntity.x + otherEntity.width + offset;
-        newPlayerPos.y = playerBeforeCollY;
-      break;
-      
-      case "left":
-        newPlayerPos.x = otherEntity.x - offset - this.width;
-        newPlayerPos.y = playerBeforeCollY;
-      break;
-      
-      case "up":
-        newPlayerPos.x = playerBeforeCollX
-        newPlayerPos.y = otherEntity.y - offset - this.height;
-      break;
-      
-      case "down":
-        newPlayerPos.x = playerBeforeCollX
-        newPlayerPos.y = otherEntity.y + otherEntity.height + offset;
-      break;
-      default:
-       throw new Error("Must neve happen")
-      break;
-      
-   } 
-   this.setPosition(newPlayerPos);
-  switch(playerFace) {
-    case "up":
-      case "down":
-   this.velocity.y.nullify();
-   otherEntity.velocity.y.Add_To(this.velocity.y);
-   break;
-       case "left":
-      case "right":
-    this.velocity.x.nullify();
-    otherEntity.velocity.x.Add_To(this.velocity.x);
-      break;
-  }
-   
-
-    if(lastCall) {
-      return;
-    }
-
-   this.collisionManager({lastCall: true});
+collisionManager() {
+  Pushable_Entity_With_Unpushable_Entities.resolve({pushableEntity: this});
 }
+
+
 
 
   saveStateToFile() {

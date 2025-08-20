@@ -19,6 +19,7 @@ class Base_Entity {
   tags = new Array();
   defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
+  intangibility = false;
   constructor() {
 
     this.addTag("Entity");
@@ -50,11 +51,11 @@ Clean_Up() {
 
 
   calculateNextPositionBasedOnVelocityAndDeltaTime(): Position {
-    const dx = (this.velocity.x.get() * Game_Loop.deltaTime);
-    const dy = (this.velocity.y.get() * Game_Loop.deltaTime);
+    const changeInX = (this.velocity.x.get() * Game_Loop.deltaTime);
+    const changeInY = (this.velocity.y.get() * Game_Loop.deltaTime);
     
-    const x = (this.x + dx);
-    const y = (this.y + dy);
+    const x = (this.x + changeInX);
+    const y = (this.y + changeInY);
     const position: Position = { x, y };
     return position;
   }
