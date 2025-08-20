@@ -31,6 +31,7 @@ class Sliding_Door extends Base_Entity {
   setXYWH(x: number, y: number, w: number, h: number) {
     super.setXYWH(x, y, w, h);
     this.Sensors_Init_Pos();
+    return this;
   }
   Sensors_Init_Pos() {
     World.addEntity(this.sensors.Door_Finished_Opening_Sensor)

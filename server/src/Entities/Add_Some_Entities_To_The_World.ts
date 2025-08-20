@@ -45,12 +45,18 @@ class Add_Some_Entities_To_The_World {
         wall2.setHeight(40);
         wall2.setWidth(400);
         wall2.setColor("pink")
+      const wall3 = World.addEntity(
+        new Wall());
+        wall3.setXY(600, 600);
+        wall3.setHeight(40);
+        wall3.setWidth(400);
+        wall3.setColor("pink")
        
       // random forcefield
         const ff = World.addEntity(new Forcefield());
         
        const bot= World.addEntity(new Bot())
-       bot.setXY(500, 500)
+       bot.setXY(1000, 1000).setHeight(300);
      //  planet.velocity.Add_To_Propagation_List(bot.velocity)
 
 if(1>0)return;

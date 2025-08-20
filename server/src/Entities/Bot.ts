@@ -13,8 +13,7 @@ class Bot extends Base_Entity {
    up:false,
    down:false,
  }
- normalSpeedForBothAxes=0.5;
- spedUpSpeedForBothAxes=5.0;
+ normalSpeedForBothAxes=0.125;
  speedX= this.normalSpeedForBothAxes;
  speedY= this.normalSpeedForBothAxes;
   lastMovDirChange=0;
@@ -22,6 +21,7 @@ class Bot extends Base_Entity {
   constructor() {
     super();
     this.addTag("Bot");
+    this.addTag("Wall")
     this.addTag("Can_Ride_Train");
   }
   

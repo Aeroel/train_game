@@ -95,32 +95,39 @@ applyVelocityToPosition() {
   setX(x: number) {
     Assert_That_Number_Is_Finite(x);
     this.x = x;
+    return this;
   }
   setY(y: number) {
     Assert_That_Number_Is_Finite(y);
     this.y = y;
+    return this;
   }
   Set_To_Square_Of_Size(size: number) {
     Assert_That_Number_Is_Finite(size);
     this.setWidth(size);
     this.setHeight(size);
+    return this;
   }
   setWidth(width: number) {
     Assert_That_Number_Is_Finite(width);
     this.width = width;
+    return this;
   }
   setHeight(height: number) {
     Assert_That_Number_Is_Finite(height);
     this.height = height;
+    return this;
   }
   setPosition(position: Position) {
     this.setX(position.x);
     this.setY(position.y);
+        return this;
   }
   setXY(x: number, y: number) {
     Assert_That_Numbers_Are_Finite({ x, y,});
      this.setX(x);
      this.setY(y);
+         return this;
   }
 
   setXYWH(x: number, y: number, w: number, h: number) {
@@ -130,9 +137,11 @@ applyVelocityToPosition() {
     this.setY(y);
     this.setWidth(w);
     this.setHeight(h);
+        return this;
   }
   setColor(color: string) {
     this.color = color;
+        return this;
   }
 
   getCenterX() {
