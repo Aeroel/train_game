@@ -10,9 +10,9 @@ export type Axis = "x" | "y";
 export { Entity_Velocity_On_Axis };
 
 class Entity_Velocity_On_Axis {
-    private axis: Axis ='x'; //<- "x" is meaningless default
-    private propagationList: Entity_Velocity_On_Axis[] = [];
-    private components: Velocity_Component[] = [];
+     axis: Axis ='x'; //<- "x" is meaningless default
+     propagationList: Entity_Velocity_On_Axis[] = [];
+     components: Velocity_Component[] = [];
 
     constructor(axis: Axis) {
         this.axis=axis;
@@ -47,15 +47,18 @@ class Entity_Velocity_On_Axis {
     }
 
     Add_Component(component: Velocity_Component) {
+      
+      // copy because otherwise... well, we basically assign same object to every entity
+      const componentCopy = {...component};
          const existingComponent = this.components.find(thisComponent => thisComponent.key === component.key);
     if (existingComponent) {
         existingComponent.value = component.value; // update value if component exists
     } else {
-        this.components.push(component); // add new component if not exists
+        this.components.push(componentCopy); // add new component if not exists
     }
             // Propagate to others
         this.propagationList.forEach(otherVelocity=> {
-            otherVelocity.Add_Component(component);
+            otherVelocity.Add_Component(componentCopy);
         });
     }
 

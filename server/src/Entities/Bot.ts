@@ -1,93 +1,79 @@
-import * as fs from 'fs';
-import * as path from 'path';
 
-import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
 
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
-import { SocketStorage } from "#root/SocketStorage.js";
-import { Helper_Functions} from "#root/Helper_Functions.js"
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
 
-import { log } from "console";
-import type { Socket } from "socket.io";
 import type { Position } from "#root/Type_Stuff.js";
-import { Collision_Logger} from "#root/Collision_Stuff/Collision_Logger.js"
-export { Player };
-class Player extends Base_Entity {
-  controls = {
-    right: false,
-    left: false,
-    up: false,
-    down: false,
-  };
-  lastSaveTime=0;
-  speedUp = false;
-  intangibility = false;
+
+export { Bot };
+class Bot extends Base_Entity {
+ controls={
+   right:false,
+   left:false,
+   up:false,
+   down:false,
+ }
  normalSpeedForBothAxes=0.5;
  spedUpSpeedForBothAxes=5.0;
  speedX= this.normalSpeedForBothAxes;
  speedY= this.normalSpeedForBothAxes;
-  socketId: Socket["id"] = "none";
-  
+  lastMovDirChange=0;
+  changeEvery=1000;
   constructor() {
     super();
-    this.addTag("Player");
+    this.addTag("Bot");
     this.addTag("Can_Ride_Train");
-  }
-  setVisionRange(visionRange: number) {
-    this.visionRange = visionRange;
-  }
-  setSocketId(id: Socket["id"]) {
-    this.socketId = id;
-  }
-  getSocket() {
-    return SocketStorage.find(socket => socket.id === this.socketId);
-  }
-  swapSpeedUp() {
-    this.speedUp = !this.speedUp;
-  }
-  swapIntangibility() {
-    this.intangibility = !this.intangibility;
   }
   
   updateState() {
-    if(this.speedUp) {
-      this.speedX = this.spedUpSpeedForBothAxes;
-      this.speedY = this.spedUpSpeedForBothAxes;
-    } else {
-      this.speedX = this.normalSpeedForBothAxes;
-      this.speedY = this.normalSpeedForBothAxes;
-    }
 
+   this.dirUpdate();
     if (this.controls.right) {
-      this.velocity.x.Add_Component({key:"Player_Controls", value:this.speedX});
+      this.velocity.x.Add_Component({key:"Bot_Controls", value:this.speedX});
     } else if (this.controls.left) {
-      this.velocity.x.Add_Component({key:"Player_Controls",value: -this.speedX});
+      this.velocity.x.Add_Component({key:"Bot_Controls",value: -this.speedX});
     }
     if (this.controls.up) {
-      this.velocity.y.Add_Component({key:"Player_Controls", value:-this.speedY});
+      this.velocity.y.Add_Component({key:"Bot_Controls", value:-this.speedY});
     }
     else if (this.controls.down) {
-      this.velocity.y.Add_Component({key:"Player_Controls", value:this.speedY});
+      this.velocity.y.Add_Component({key:"Bot_Controls", value:this.speedY});
     }
-
-  const now = Date.now();
-   const timeToSave = now - this.lastSaveTime >= 1000;
-  if (timeToSave) {
-    this.saveStateToFile();
-    this.lastSaveTime = now;
   }
 
+dirUpdate(){
+  const now = Date.now()
+  if(now < this.lastMovDirChange + this.changeEvery) {
+    return
   }
+  this.lastMovDirChange= now;
+  this.controls.right=false;
+  this.controls.left=false;
+  this.controls.up=false;
+  this.controls.down=false;
 
+if(Math.random()>0.7) {
+  return;
+}
 
+  if(Math.random() > 0.5) {
+    this.controls.right= true;
+  } else {
+    this.controls.left= true;
+  }
+  if(Math.random() > 0.5) {
+    this.controls.up= true;
+  } else {
+    this.controls.down  = true;
+  }
+  
+}
 
 collisionManager(
   {lastCall=false}:
   {lastCall?: boolean}
   ={}) {
-  if(this.intangibility) {
-    return;
-  }
+    console.log(this.x, this.y, this.velocity.x.components)
   
   const closestCollision = Collision_Stuff.getClosestCollision(this, (other)=>other.hasTag("Wall") || other.hasTag("Sliding_Door"));
   if(!(closestCollision)) {
@@ -161,41 +147,6 @@ collisionManager(
    this.collisionManager({lastCall: true});
 }
 
-
-  saveStateToFile() {
-    const savePath = path.resolve("player_save.json");
-
-  const data = {
-    x: this.x,
-    y: this.y,
-    visionRange: this.visionRange,
-    
-  };
-
-  try {
-    fs.writeFileSync(savePath, JSON.stringify(data));
-  } catch (err) {
-    console.error("Failed to save player position:", err);
-  }
-  }
-
-  readSavedState() {
-  const savePath = path.resolve("player_save.json");
-
-  if (!fs.existsSync(savePath)) {
-    console.warn("No save file found. Starting with default position.");
-    return;
-  }
-
-  try {
-    const file = fs.readFileSync(savePath, "utf-8");
-    const data = JSON.parse(file);
-    this.setXY(data.x, data.y);
-    this.visionRange = data.visionRange;
-  } catch (err) {
-    console.error("Failed to read player position:", err);
-  }
-}
 
 
 

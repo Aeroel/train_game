@@ -204,7 +204,7 @@ motionsDirections: Train_Car_Motions_Directions = {
          
       const beginningPos = {x: this.x, y: this.y}
       const nextPos = 
-        this.calculateNextPositionBasedOnForcesAndDeltaTime()
+        this.calculateNextPositionBasedOnVelocityAndDeltaTime()
       
       const supposedNextPos = {
         x:nextPos.x,

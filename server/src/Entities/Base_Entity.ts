@@ -13,8 +13,8 @@ class Base_Entity {
   speedY = 0;
   x = 0;
   y = 0;
-  width = 0;
-  height = 0;
+  width = 50;
+  height = 50;
   color = "white";
   tags = new Array();
   defaultVisionRange = 200;
@@ -49,10 +49,12 @@ Clean_Up() {
 
 
 
-  calculateNextPositionBasedOnForcesAndDeltaTime(): Position {
-
-    const x = (this.x + (this.velocity.x.get() * Game_Loop.deltaTime));
-    const y = (this.y + (this.velocity.y.get() * Game_Loop.deltaTime));
+  calculateNextPositionBasedOnVelocityAndDeltaTime(): Position {
+    const dx = (this.velocity.x.get() * Game_Loop.deltaTime);
+    const dy = (this.velocity.y.get() * Game_Loop.deltaTime);
+    
+    const x = (this.x + dx);
+    const y = (this.y + dy);
     const position: Position = { x, y };
     return position;
   }
@@ -67,7 +69,7 @@ Clean_Up() {
   
   
 applyVelocityToPosition() {
-      const nextPosition = this.calculateNextPositionBasedOnForcesAndDeltaTime();
+      const nextPosition = this.calculateNextPositionBasedOnVelocityAndDeltaTime();
 
     this.x = nextPosition.x;
     this.y = nextPosition.y;

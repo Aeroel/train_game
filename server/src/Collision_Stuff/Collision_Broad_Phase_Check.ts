@@ -22,8 +22,8 @@ export class Collision_Broad_Phase_Check {
     if (a === b) return false;
 
     // Use cached positions if available, otherwise calculate
-    const nextA = a.calculateNextPositionBasedOnForcesAndDeltaTime();
-    const nextB = b.calculateNextPositionBasedOnForcesAndDeltaTime();
+    const nextA = a.calculateNextPositionBasedOnVelocityAndDeltaTime();
+    const nextB = b.calculateNextPositionBasedOnVelocityAndDeltaTime();
 
     // Calculate dynamic margin based on velocities
     const margin = this.calculateDynamicMargin(a, b);

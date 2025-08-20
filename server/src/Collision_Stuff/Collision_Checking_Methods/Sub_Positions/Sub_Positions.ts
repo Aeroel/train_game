@@ -83,8 +83,8 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
     const entityAStartingPosition: Position = { x: entityA.x, y: entityA.y };
     const entityBStartingPosition: Position = { x: entityB.x, y: entityB.y };
 
-    const entityAEndingPosition: Position = entityA.calculateNextPositionBasedOnForcesAndDeltaTime();
-    const entityBEndingPosition: Position = entityB.calculateNextPositionBasedOnForcesAndDeltaTime();
+    const entityAEndingPosition: Position = entityA.calculateNextPositionBasedOnVelocityAndDeltaTime();
+    const entityBEndingPosition: Position = entityB.calculateNextPositionBasedOnVelocityAndDeltaTime();
 
     const entitiesSubpositionsArrays = Sub_Positions.getSubpositions(entityAStartingPosition, entityAEndingPosition, entityBStartingPosition, entityBEndingPosition);
 

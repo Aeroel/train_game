@@ -1,4 +1,5 @@
 import { Planet } from "#root/Entities/Planet.js";
+import { Bot } from "#root/Entities/Bot.js";
 import { Railway_Switch_Wall_Generator } from "#root/Entities/Railway_Switch_Wall_Generator.js"
 import { Base_Entity } from '#root/Entities/Base_Entity.js';
 import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
@@ -47,7 +48,10 @@ class Add_Some_Entities_To_The_World {
        
       // random forcefield
         const ff = World.addEntity(new Forcefield());
-
+        
+       const bot= World.addEntity(new Bot())
+       bot.setXY(500, 500)
+     //  planet.velocity.Add_To_Propagation_List(bot.velocity)
 
 if(1>0)return;
      // the two railways
