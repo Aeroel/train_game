@@ -6,6 +6,7 @@ export {Raycast};
 
 class Raycast {
   static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): null {
+    throw new Error("Unimplemented");
     return null
     
   }

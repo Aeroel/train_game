@@ -53,9 +53,9 @@ export class Pushable_Entity_With_Unpushable_Entities {
      y:0
    }
    
-   const offset = 0;
-   const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0;
-   const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0;
+   const offset = 0.0001;
+   const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0.0001;
+   const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0.0001;
    const playerBeforeCollY= offsetY + Pushable_Position_Just_Before_Collision.y 
    const playerBeforeCollX= offsetX + Pushable_Position_Just_Before_Collision.x; 
    switch(otherEntityFace) {

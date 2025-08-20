@@ -53,7 +53,7 @@ dirUpdate(){
   this.controls.up=false;
   this.controls.down=false;
 
-if(Math.random()>0.7) {
+if(Math.random()>0.5) {
   return;
 }
 

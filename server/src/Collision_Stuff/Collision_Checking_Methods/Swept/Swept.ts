@@ -1,21 +1,23 @@
 import type {Direction, Position, Collision_Info, Box} from "#root/Type_Stuff.js";
 import type {Base_Entity} from "#root/Entities/Base_Entity.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
+import { Game_Loop } from "#root/Game_Loop.js";
 
 export {Swept};
 
 class Swept {
   static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
+    const dt = Game_Loop.deltaTime;
     const startA: Position = {x: entityA.x, y: entityA.y};
     const startB: Position = {x: entityB.x, y: entityB.y};
 
     const endA: Position = {
-      x: startA.x + entityA.velocity.x.get(),
-      y: startA.y + entityA.velocity.y.get()
+      x: startA.x + (entityA.velocity.x.get() * dt),
+      y: startA.y + (entityA.velocity.y.get() * dt)
     };
     const endB: Position = {
-      x: startB.x + entityB.velocity.x.get(),
-      y: startB.y + entityB.velocity.y.get()
+      x: startB.x + (entityB.velocity.x.get()*dt),
+      y: startB.y + (entityB.velocity.y.get()*dt)
     };
 
     const relVel = {
