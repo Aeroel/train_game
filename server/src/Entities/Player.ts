@@ -82,8 +82,8 @@ class Player extends Base_Entity {
   }
 
 collisionManager() {
- // Pushable_Entity_With_Unpushable_Entities.resolve({pushableEntity: this});
- resolvePlayerVsWalls(this)
+ Pushable_Entity_With_Unpushable_Entities.resolve({pushableEntity: this});
+// resolvePlayerVsWalls(this)
 }
 
 
