@@ -1,5 +1,5 @@
-export { Assert }
-class Assert {
+export { My_Assert }
+class My_Assert {
   static that(condition: unknown): asserts condition {
 
     if (!condition) throw new Error(`Assertion failed!`);

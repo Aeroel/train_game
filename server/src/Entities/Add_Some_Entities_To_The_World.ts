@@ -11,7 +11,7 @@ import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Position, Orientation } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Wall } from "#root/Entities/Wall.js";
-import { Assert } from "#root/Assert.js";
+import { My_Assert } from "#root/My_Assert.js";
 import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Railway_Placer, type Railway_Placer_Required_Inputs } from "#root/Entities/Railway_Placer.js";
 import { Chained_Placement } from "#root/Chained_Placement.js";

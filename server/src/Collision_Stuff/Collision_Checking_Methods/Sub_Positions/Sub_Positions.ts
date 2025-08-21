@@ -1,4 +1,4 @@
-import { Assert } from "#root/Assert.js";
+import { My_Assert } from "#root/My_Assert.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
 

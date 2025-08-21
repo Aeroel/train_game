@@ -1,4 +1,4 @@
-import { Assert } from "#root/Assert.js";
+import { My_Assert } from "#root/My_Assert.js";
 import type { Player } from "#root/Entities/Player.js";
 import  { Helper_Functions } from "#root/Helper_Functions.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
@@ -51,7 +51,7 @@ static getClosestCollision(
 
   if (collisions.length === 1) {
     const onlyColl = collisions[0];
-    Assert.notNull(onlyColl);
+    My_Assert.notNull(onlyColl);
     return onlyColl;
   }
 
@@ -61,13 +61,13 @@ static getClosestCollision(
 
   let closest: Collision_Info = collisions[0];
   
-  Assert.notNull(closest)
+  My_Assert.notNull(closest)
   
   let minDistSq = Helper_Functions.distSq(entityStart, closest.Position_Just_Before_Collision_A);
 
   for (let i = 1; i < collisions.length; i++) {
     const curr: Collision_Info = collisions[i];
-          Assert.notNull(curr)
+          My_Assert.notNull(curr)
     const currDistSq = Helper_Functions.distSq(entityStart, curr.Position_Just_Before_Collision_A);
 
     if (currDistSq < minDistSq) {

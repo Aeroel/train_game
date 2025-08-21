@@ -1,4 +1,4 @@
-import { Assert } from "#root/Assert.js"
+import { My_Assert } from "#root/My_Assert.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
@@ -235,7 +235,7 @@ motionsDirections: Train_Car_Motions_Directions = {
       const mustNotGoOverThis = 20; // <-- if it does go over it, I assume I will need to reduce train speed
       while(Budget_Remaining > 0) { 
         timesWeRanTheLoop++;
-        Assert.that(timesWeRanTheLoop < mustNotGoOverThis);
+        My_Assert.that(timesWeRanTheLoop < mustNotGoOverThis);
         const newVel = this.determine_new_velocity_for_movement_along_the_rail();
         for(const vel in newVel) {
           const key = vel as keyof {vx: Velocity_Component, vy: Velocity_Component }
@@ -284,9 +284,9 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   Train_Car_Static.setMotionDirections(this, motion, directions);
 }
   teleportAndBringPassengers(toX: number, toY: number) {
-    Assert.that(
+    My_Assert.that(
       this.currentMovementMotion !== null, );
-    Assert.that(
+    My_Assert.that(
       this.motionsDirections.forwards.length > 0 && this.motionsDirections.backwards.length > 0,
       );
     
