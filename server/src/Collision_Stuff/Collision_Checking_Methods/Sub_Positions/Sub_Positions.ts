@@ -71,10 +71,13 @@ static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | nul
     BLastPosBeforeColl.y = b.y + (imin * BDYPerSubstep)
     
   }
-  return this.genCollInfo(a,b, ALastPosBeforeColl, BLastPosBeforeColl, AEnd, BEnd);
+  return this.genCollInfo(a,b, ALastPosBeforeColl, BLastPosBeforeColl, AEnd, BEnd, collided);
 }
 
-static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position, aEnd: Position, bEnd: Position, ) {
+static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position, aEnd: Position, bEnd: Position, collisionHappened: boolean) {
+  if(!collisionHappened) {
+    return null;
+  }
   const aLastBox = {...aLast, width:a.width,height:a.height}
   const bLastBox = {...bLast, width:b.width,height:b.height}
   const {aFace, bFace}=this.With_Which_Sides_Do_Two_Entities_Face_Each_Other(aLastBox, bLastBox);
