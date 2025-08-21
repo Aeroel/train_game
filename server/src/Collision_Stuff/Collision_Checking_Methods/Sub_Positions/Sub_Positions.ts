@@ -18,7 +18,7 @@ static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | nul
   const BDY = b.vy * dt; 
   const AEnd={x:a.x+ADX, y:a.y+ADY}
   const BEnd={x:b.x+BDX, y:b.y+BDY}
-  const subDivisions = 10000;
+  const subDivisions = 500;
   const ADXPerSubstep  = ADX / subDivisions;
   const ADYPerSubstep   = ADY / subDivisions;
   const BDXPerSubstep  = BDX / subDivisions;
@@ -61,7 +61,7 @@ static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | nul
     if(collided) {
       break;
     }
-    let imin = (i-5);
+    let imin = i;
     if(i<=0) {
       imin=0;
     }
@@ -115,49 +115,41 @@ static boxesCollide(box1: Box, box2: Box): boolean {
 
   static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):
   {aFace: Direction, bFace: Direction} {
-    if (!this.boxesCollide(a, b)) {
-      // If no collision, fallback to original logic for non-overlapping:
-      // Vertical check
-      if (a.y + a.height <= b.y) return { aFace: "down", bFace: "up" };
-      if (b.y + b.height <= a.y) return { aFace: "up", bFace: "down" };
-      // Horizontal check
-      if (a.x + a.width <= b.x) return { aFace: "right", bFace: "left" };
-      if (b.x + b.width <= a.x) return { aFace: "left", bFace: "right" };
-      
-      // Ambiguous case
-      throw new Error("Rectangles do not collide but are in ambiguous positions.");
-    }
+      // Calculate centers
+  const centerA = {
+    x: a.x + a.width / 2,
+    y: a.y + a.height / 2,
+  };
+  const centerB = {
+    x: b.x + b.width / 2,
+    y: b.y + b.height / 2,
+  };
 
-    // Calculate overlap on each side
-    const overlapLeft = (a.x + a.width) - b.x;    // How far a extends into b from left side of b
-    const overlapRight = (b.x + b.width) - a.x;   // How far a extends into b from right side of b
-    const overlapTop = (a.y + a.height) - b.y;    // How far a extends into b from top side of b
-    const overlapBottom = (b.y + b.height) - a.y; // How far a extends into b from bottom side of b
+  // Calculate deltas
+  const deltaX = centerB.x - centerA.x;
+  const deltaY = centerB.y - centerA.y;
 
-    // Find min positive overlaps in horizontal and vertical directions
-    const horizontalPenetration = Math.min(overlapLeft, overlapRight);
-    const verticalPenetration = Math.min(overlapTop, overlapBottom);
-
-    // Determine which penetration depth is smaller - priority to smaller penetration axis
-    if (verticalPenetration < horizontalPenetration) {
-      // Vertical faces
-      if (overlapTop < overlapBottom) {
-        // a faces up, b faces down
-        return { aFace: "up", bFace: "down" };
-      } else {
-        // a faces down, b faces up
-        return { aFace: "down", bFace: "up" };
-      }
+  // Determine primary facing direction based on the larger delta
+  if (Math.abs(deltaX) > Math.abs(deltaY)) {
+    // Horizontal facing
+    if (deltaX > 0) {
+      // b is to the right of a
+      return { aFace: "right", bFace: "left" };
     } else {
-      // Horizontal faces
-      if (overlapLeft < overlapRight) {
-        // a faces left, b faces right
-        return { aFace: "left", bFace: "right" };
-      } else {
-        // a faces right, b faces left
-        return { aFace: "right", bFace: "left" };
-      }
+      // b is to the left of a
+      return { aFace: "left", bFace: "right" };
+    }
+  } else {
+    // Vertical facing
+    if (deltaY > 0) {
+      // b is below a
+      return { aFace: "down", bFace: "up" };
+    } else {
+      // b is above a
+      return { aFace: "up", bFace: "down" };
     }
   }
+
+    }
 }
 
