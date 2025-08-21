@@ -7,22 +7,31 @@ import { Raycast } from "#root/Collision_Stuff/Collision_Checking_Methods/Raycas
 
 
 import { Sub_Positions} from "#root/Collision_Stuff/Collision_Checking_Methods/Sub_Positions/Sub_Positions.js"
-const currentMethod: "Swept" | "Swept2_Test" | "Sub_Positions" | "Raycast" = "Swept";
+const currentMethod: "Swept" | "Swept2_Test" | "Sub_Positions" | "Raycast" = "Sub_Positions";
 
 export function Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
+   let collInfo: Collision_Info | null = null;
    switch(currentMethod) {
        case "Raycast":
-         return Raycast.Check_For_Collision(a, b)
+         collInfo =  Raycast.Check_For_Collision(a, b)
         break;
        case "Swept":
-         return Swept.Check_For_Collision(a, b)
+         collInfo =  Swept.Check_For_Collision(a, b)
         break;
 
         case "Sub_Positions":
-           return Sub_Positions.Check_For_Collision(a, b);
+           collInfo =  Sub_Positions.Check_For_Collision(a, b);
         break;
         case "Swept2_Test":
-          return Swept2_Test.Check_For_Collision(a,b);
+          collInfo =  Swept2_Test.Check_For_Collision(a,b);
         break;
    }
+   if(collInfo) {
+
+    if(!(a.hasTag("Player")))  {
+      return collInfo;
+    }
+    b.markCollisionWithColor();
+   }
+   return collInfo;
 }

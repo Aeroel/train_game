@@ -16,6 +16,9 @@ class Base_Entity {
   width = 50;
   height = 50;
   color = "white";
+  normalColor = "white";
+  tempColorDuration = 100;
+  tempColorTime = -1;
   tags = new Array();
   defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
@@ -39,9 +42,18 @@ collisionManager() {
 
 
   updatePosition() {
+    this.tempColorLogic();
     this.applyVelocityToPosition();
   }
   
+  tempColorLogic() {
+    if(this.tempColorTime === -1) {
+      return;
+    }
+    if(Date.now() > this.tempColorTime + this.tempColorDuration) {
+      this.setColor(this.normalColor);
+    }
+  }
   
 Clean_Up() {
    this.velocity.nullify()
@@ -151,6 +163,10 @@ get vy() {
     this.color = color;
         return this;
   }
+  setTempColor(color: string) {
+    this.setColor(color);
+    this.tempColorTime = Date.now();
+  }
 
   getCenterX() {
     return this.x + (this.width / 2);
@@ -172,4 +188,10 @@ get vy() {
     return this.height;
   }
 
+markBroadphaseWithColor() {
+  this.setTempColor("grey")
+}
+markCollisionWithColor() {
+  this.setTempColor("blue");
+}
 }

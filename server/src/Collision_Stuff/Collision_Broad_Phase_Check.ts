@@ -35,7 +35,11 @@ export class Collision_Broad_Phase_Check {
     const verticalClose = (nextA.y - margin) < (nextB.y + b.height + margin) &&
                          (nextA.y + a.height + margin) > (nextB.y - margin);
 
-    return horizontalClose && verticalClose;
+    const areThey = (horizontalClose && verticalClose);
+    if(areThey && a.hasTag("Player")) {
+      //b.markBroadphaseWithColor();
+    }
+    return areThey;
   }
 
   /**
