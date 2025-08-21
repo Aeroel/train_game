@@ -1,7 +1,8 @@
 export { My_Assert }
 class My_Assert {
-  static that(condition: unknown): asserts condition {
+  static that(condition: unknown, message?: string): asserts condition {
 
+    if(!condition && message) throw new Error(`Assertion failed with message "${message}"!`);
     if (!condition) throw new Error(`Assertion failed!`);
   }
 

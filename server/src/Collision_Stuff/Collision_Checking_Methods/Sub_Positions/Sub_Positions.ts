@@ -2,6 +2,7 @@ import { My_Assert } from "#root/My_Assert.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
 
+import {Collision_Stuff} from "#root/Collision_Stuff/Collision_Stuff.js"
 
 import {World} from "#root/World.js"
 import {Game_Loop} from "#root/Game_Loop.js"
@@ -10,6 +11,7 @@ export { Sub_Positions, };
 class Sub_Positions {
 
 static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
+  const collideAtStart = Collision_Stuff.boxesCollide(this.entityToBox(a),this.entityToBox(b));
 
   const dt = Game_Loop.deltaTime;
   const ADX = a.vx * dt; 
@@ -57,7 +59,7 @@ static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | nul
       width: b.width,
       height: b.height
     }
-     collided = this.boxesCollide(subBBox, subABox)
+     collided = Collision_Stuff.boxesCollide(subBBox, subABox)
     if(collided) {
       break;
     }
@@ -71,10 +73,34 @@ static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | nul
     BLastPosBeforeColl.y = b.y + (imin * BDYPerSubstep)
     
   }
-  return this.genCollInfo(a,b, ALastPosBeforeColl, BLastPosBeforeColl, AEnd, BEnd, collided);
+const collideAtLast =  Collision_Stuff.boxesCollide(
+      this.posToBox(ALastPosBeforeColl, a.width, a.height), 
+      this.posToBox(BLastPosBeforeColl, b.width, b.height)
+      );
+
+  return this.genCollInfo(a,b, ALastPosBeforeColl, BLastPosBeforeColl, AEnd, BEnd, collided, collideAtStart, collideAtLast);
 }
 
-static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position, aEnd: Position, bEnd: Position, collisionHappened: boolean) {
+
+static entityToBox(en: Base_Entity) : Box {
+  return {
+    x:en.x,
+    y:en.y,
+    width:en.width,
+    height:en.height,
+
+  };
+}
+
+static posToBox(pos: Position, width: number, height: number) : Box {
+  return {
+    x: pos.x,
+    y: pos.y,
+    width,
+    height,
+  }
+}
+static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position, aEnd: Position, bEnd: Position, collisionHappened: boolean, collideAtStart: boolean, collideAtLast: boolean) {
   if(!collisionHappened) {
     return null;
   }
@@ -101,17 +127,11 @@ static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position
   Position_Just_Before_Collision_B: bLast,
   bFacingA: bFace,
   aFacingB:aFace,
+  collideAtStart,
+  collideAtLast,
   }
 }
 
-static boxesCollide(box1: Box, box2: Box): boolean {
-  return (
-    box1.x < box2.x + box2.width &&
-    box1.x + box1.width > box2.x &&
-    box1.y < box2.y + box2.height &&
-    box1.y + box1.height > box2.y
-  );
-}
 
 
   static With_Which_Sides_Do_Two_Entities_Face_Each_Other(a: Box, b: Box):

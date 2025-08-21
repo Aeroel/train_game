@@ -1,7 +1,7 @@
-import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Game_Loop} from "#root/Game_Loop.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
-
+import { My_Assert} from "#root/My_Assert.js"
 
 /*
 Todo: a better name. 
@@ -21,10 +21,15 @@ export class Pushable_Entity_With_Unpushable_Entities {
   if(!(closestCollision)) {
     return;
   } 
-  
+  My_Assert.that(closestCollision.collideAtStart === false, "Colliding at start, but I don't want to allow that");
+  My_Assert.that(closestCollision.collideAtLast === false, "Colliding at last before collision, but I do not allow for that");
+  console.log(`coll resolution 1`)
   
   const otherEntity = closestCollision.entityB;
+ 
   const Pushable_Position_Just_Before_Collision = closestCollision.Position_Just_Before_Collision_A; 
+  const otherJustBefore = closestCollision.Position_Just_Before_Collision_B; 
+
   const xDistBetweenStartingPointAndCollisionPoint = Pushable_Position_Just_Before_Collision.x - pushableEntity.x;
   /* example: if player moves left up, colides with an above wall, player's vy is stopped. so now, player moves left only.
     between starting point and collision point, player has spent some x velocity as well. so, we should also decrease player's x velocity by an amount. Otherwise, if player is moving very fast, it will basically move its full speed plus distance between starting x and collision.x. this actually should not create any issues except player moving faster than expected, but I like the logical consistency more.
@@ -46,14 +51,20 @@ export class Pushable_Entity_With_Unpushable_Entities {
     value: spentVY
   })
 
-   const playerFace = closestCollision.aFacingB;
-   const otherEntityFace = closestCollision.bFacingA;
+const aTemp = {x: Pushable_Position_Just_Before_Collision.x, y: Pushable_Position_Just_Before_Collision.y, width: pushableEntity.width, height: pushableEntity.height};
+const bTemp = {x: otherJustBefore.x, y: otherJustBefore.y, width: otherEntity.width, height: otherEntity.height};
+
+  const faces = Collision_Stuff.calculateFaces(
+    aTemp, bTemp);
+
+   const playerFace = faces.aFacingB;
+   const otherEntityFace = faces.bFacingA;
    const newPlayerPos = {
      x:0,
      y:0
    }
    
-   const offset = 0.0001;
+   const offset = 0.0000;
    const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0.0001;
    const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0.0001;
    const playerBeforeCollY= offsetY + Pushable_Position_Just_Before_Collision.y 
@@ -80,7 +91,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
         
       break;
       default:
-       throw new Error("Must neve happen")
+       throw new Error("Must never happen")
       break;
       
    } 
@@ -100,9 +111,12 @@ export class Pushable_Entity_With_Unpushable_Entities {
    
 
     if(lastCall) {
+      console.log(`Coll resolution 2`)
       return;
     }
 
    this.actualResolve({pushableEntity, lastCall: true});
   }
+
+
 }

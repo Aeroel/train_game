@@ -2,7 +2,7 @@
 
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
-import { Pushable_Entity_With_Unpushable_Entities } from "#root/Collision_Stuff/Entity_Interactions/Pushable_Entity_With_Unpushable_Entities.js"
+import { Pushable_Entity_With_Unpushable_Entities } from "#root/Collision_Stuff/Collision_Resolution_Methods/Pushable_Entity_With_Unpushable_Entities.js"
 
 import type { Position } from "#root/Type_Stuff.js";
 

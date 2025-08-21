@@ -3,11 +3,10 @@ import * as path from 'path';
 
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
 import { Game_Loop} from "#root/Game_Loop.js"
-import { resolvePlayerVsWalls } from "#root/Collision_Stuff/Entity_Interactions/PlayerVsWalls.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import { Helper_Functions} from "#root/Helper_Functions.js"
-import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Entity_Interactions/Pushable_Entity_With_Unpushable_Entities.js"
+import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Collision_Resolution_Methods/Pushable_Entity_With_Unpushable_Entities.js"
 
 import { log } from "console";
 import type { Socket } from "socket.io";
@@ -83,7 +82,6 @@ class Player extends Base_Entity {
 
 collisionManager() {
  Pushable_Entity_With_Unpushable_Entities.resolve({pushableEntity: this});
-// resolvePlayerVsWalls(this)
 }
 
 

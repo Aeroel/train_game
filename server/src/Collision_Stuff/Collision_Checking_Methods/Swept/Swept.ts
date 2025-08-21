@@ -59,7 +59,9 @@ class Swept {
         Position_Just_Before_Collision_B: startB,
 
         bFacingA,
-        aFacingB: Helper_Functions.getOppositeDirection(bFacingA)
+        aFacingB: Helper_Functions.getOppositeDirection(bFacingA),
+        collideAtStart: true,
+        collideAtLast: true,
       };
     }
 
@@ -88,9 +90,21 @@ class Swept {
       Position_Just_Before_Collision_B: collisionB,
 
       bFacingA,
-      aFacingB: Helper_Functions.getOppositeDirection(bFacingA)
+      aFacingB: Helper_Functions.getOppositeDirection(bFacingA),
+              collideAtStart: false,
+              collideAtLast: this.boxesCollide({...collisionA, width: entityA.width, height: entityA.height}, {...collisionB, width: entityB.width, height: entityB.height}),
     };
   }
+
+
+static boxesCollide(box1: Box, box2: Box): boolean {
+  return (
+    box1.x < box2.x + box2.width &&
+    box1.x + box1.width > box2.x &&
+    box1.y < box2.y + box2.height &&
+    box1.y + box1.height > box2.y
+  );
+}
 
   private static computeBFacingA(
     xTimes: {tEnter: number, tExit: number},

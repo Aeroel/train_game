@@ -143,11 +143,11 @@ applyVelocityToPosition() {
          return this;
   }
 get vx() {
-  console.log("getting vx")
+ // console.log("getting vx")
   return this.velocity.x.get();
 }
 get vy() {
-  console.log("getting vy")
+ // console.log("getting vy")
   return this.velocity.y.get();
 }
   setXYWH(x: number, y: number, w: number, h: number) {

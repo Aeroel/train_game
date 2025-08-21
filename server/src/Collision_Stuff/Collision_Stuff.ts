@@ -87,9 +87,63 @@ static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_
   return Check_For_Collision(entityA, entityB);
 }
 
+static calculateFaces(a: Box, b: Box):{ aFacingB: Direction, bFacingA: Direction} {
+  console.log(a,b)
+  My_Assert.that(!this.boxesCollide(a,b), "calculateFaces does not want to calculate if boxes collide");
+  let aFacingB: Direction | null = null;
 
+  let triedAllDirections = false;
+  const dirsToTry: Direction[] = ["right", "down", "up", "left"];
+
+  dirsToTry.forEach(dir => {
+ const tempA = {...a}
+    switch(dir) {
+    case "right":
+      tempA.width += 999999;
+      if(this.boxesCollide(tempA, b)) {
+        aFacingB = "right";
+      }
+    break;
+        case "left":
+      tempA.width += 999999;
+      tempA.x -= 99999;
+      if(this.boxesCollide(tempA, b)) {
+        aFacingB = "left";
+      }
+    break;
+        case "up":
+      tempA.height += 9999999;
+      tempA.y -= 999999;
+      if(this.boxesCollide(tempA, b)) {
+        aFacingB = "up";
+      }
+      break;
+         case "down":
+      tempA.height += 999999;
+      if(this.boxesCollide(tempA, b)) {
+        aFacingB = "down";
+      }
+    break;
+    }
+  })
+  
+
+  // end
+  My_Assert.that(aFacingB !== null, "In the end, aFacingB must be assigned")
+  const bFacingA = Helper_Functions.getOppositeDirection(aFacingB);
+  return {aFacingB, bFacingA}
+}
 
   
+  static boxesCollide(box1: Box, box2: Box): boolean {
+  return (
+    box1.x < box2.x + box2.width &&
+    box1.x + box1.width > box2.x &&
+    box1.y < box2.y + box2.height &&
+    box1.y + box1.height > box2.y
+  );
+}
+
   
 
 

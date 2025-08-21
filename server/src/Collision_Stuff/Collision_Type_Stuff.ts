@@ -19,4 +19,6 @@ declare type Collision_Info = {
   Position_Just_Before_Collision_B: Position;
   bFacingA: Direction;
   aFacingB: Direction;
+  collideAtStart: boolean;
+  collideAtLast: boolean;
 }

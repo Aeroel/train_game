@@ -56,7 +56,7 @@ class Add_Some_Entities_To_The_World {
         const ff = World.addEntity(new Forcefield());
         
        const bot= World.addEntity(new Bot())
-       bot.setXY(1000, 1000).setHeight(300);
+       bot.setXY(2000, 2000).setHeight(300);
      //  planet.velocity.Add_To_Propagation_List(bot.velocity)
 
 if(1>0)return;
