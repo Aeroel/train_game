@@ -7,7 +7,7 @@ import { Raycast } from "#root/Collision_Stuff/Collision_Checking_Methods/Raycas
 
 
 import { Sub_Positions} from "#root/Collision_Stuff/Collision_Checking_Methods/Sub_Positions/Sub_Positions.js"
-const currentMethod: "Swept" | "Swept2_Test" | "Sub_Positions" | "Raycast" = "Sub_Positions";
+const currentMethod: "Swept" | "Swept2_Test" | "Sub_Positions" | "Raycast" = "Swept";
 
 export function Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
    let collInfo: Collision_Info | null = null;

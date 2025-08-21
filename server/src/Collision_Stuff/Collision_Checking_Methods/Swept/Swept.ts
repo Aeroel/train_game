@@ -63,7 +63,8 @@ class Swept {
       };
     }
 
-    if (tEnter > tExit || tEnter < 0 || tEnter > 1) return null;
+    if (tEnter > tExit || tEnter < 0 || 
+      tEnter > 1) return null;
 
     const collisionA: Position = {
       x: startA.x + (endA.x - startA.x) * tEnter,
