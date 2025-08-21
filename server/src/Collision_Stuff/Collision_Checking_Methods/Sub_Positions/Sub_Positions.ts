@@ -80,7 +80,8 @@ static genCollInfo(a:Base_Entity,b:Base_Entity, aLast: Position, bLast: Position
   }
   const aLastBox = {...aLast, width:a.width,height:a.height}
   const bLastBox = {...bLast, width:b.width,height:b.height}
-  const {aFace, bFace}=this.With_Which_Sides_Do_Two_Entities_Face_Each_Other(aLastBox, bLastBox);
+  const {aFace, bFace}=this.With_Which_Sides_Do_Two_Entities_Face_Each_Other({x:a.x, y:a.y, width:a.width,height: a.height}, 
+    {x:b.x, y:b.y, width:b.width,height: b.height});
   return {
   Starting_Position_A: {
     x:a.x,y:a.y
