@@ -10,9 +10,11 @@ Basically, this is for player. player cannot push walls, but walls must push pla
 export class Pushable_Entity_With_Unpushable_Entities {
   static resolve({pushableEntity}: {pushableEntity: Base_Entity}) {
     this.actualResolve({pushableEntity})
-  } 
-  static actualResolve({pushableEntity, lastCall=false}:
-  {pushableEntity: Base_Entity, lastCall?: boolean}) {
+  }
+  
+  
+  static actualResolve({pushableEntity, recursionTimes=0}:
+  {pushableEntity: Base_Entity, recursionTimes?: number}) {
   if(pushableEntity.intangibility) {
     return;
   }
@@ -65,11 +67,11 @@ const bTemp = {x: otherJustBefore.x, y: otherJustBefore.y, width: otherEntity.wi
      y:0
    }
    
-   const offset = 0.0000;
-   const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0;
-   const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0;
-   const playerBeforeCollY= offsetY + Pushable_Position_Just_Before_Collision.y 
-   const playerBeforeCollX= offsetX + Pushable_Position_Just_Before_Collision.x; 
+   const offset = 0;
+  // const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0;
+ //  const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0;
+   const playerBeforeCollY= 0 + Pushable_Position_Just_Before_Collision.y 
+   const playerBeforeCollX= 0 + Pushable_Position_Just_Before_Collision.x; 
    switch(otherEntityFace) {
      case "right":
         newPlayerPos.x = otherEntity.x + otherEntity.width + offset;
@@ -101,22 +103,25 @@ const bTemp = {x: otherJustBefore.x, y: otherJustBefore.y, width: otherEntity.wi
     case "up":
       case "down":
    pushableEntity.velocity.y.nullify();
+   if(Collision_Stuff.Check_For_Collision(pushableEntity, otherEntity)) {
    otherEntity.velocity.y.Add_To(pushableEntity.velocity.y);
+   }
    break;
        case "left":
       case "right":
     pushableEntity.velocity.x.nullify();
-    otherEntity.velocity.x.Add_To(pushableEntity.velocity.x);
+   if(Collision_Stuff.Check_For_Collision(pushableEntity, otherEntity)) {
+   otherEntity.velocity.x.Add_To(pushableEntity.velocity.x);
+   }
       break;
   }
    
 
-    if(lastCall) {
-      console.log(`Coll resolution 2`)
-      return;
+    if(recursionTimes >6) {
+         throw new Error(`${recursionTimes}`)
     }
 
-   this.actualResolve({pushableEntity, lastCall: true});
+   this.actualResolve({pushableEntity, recursionTimes: recursionTimes++});
   }
 
 

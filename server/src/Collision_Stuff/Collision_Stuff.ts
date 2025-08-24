@@ -26,7 +26,7 @@ class Collision_Stuff {
           if (!filterOrAll(other)) return;
         
       
-          const collisionInfo = Collision_Stuff.checkForCollision(entity, other);
+          const collisionInfo = Collision_Stuff.Check_For_Collision(entity, other);
       
           if (collisionInfo) {
             allCollisions.push(collisionInfo);
@@ -86,7 +86,7 @@ static getClosestCollision(
    return Collision_Broad_Phase_Check.areCloseEnoughForCollisionCheck(a, b);
  }
 
-static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
+static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
   return Check_For_Collision(entityA, entityB);
 }
 
@@ -149,7 +149,10 @@ static cornerFace(avx: number, avy: number, bvx: number, bvy: number) : Directio
   if(AVelAttempt) {
      face = AVelAttempt;
   } else {
-    face = this.axisVelToFace(bvx, bvy);
+    const bFace  = this.axisVelToFace(bvx, bvy);
+    if(!bFace) throw new Error("Must not be here");
+    const oppFace=Helper_Functions.getOppositeDirection(bFace)
+    face = oppFace
   }
   
    My_Assert.notNull(face, "face must be assigned at this point!" )
