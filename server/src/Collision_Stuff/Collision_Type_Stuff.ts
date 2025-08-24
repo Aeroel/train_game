@@ -9,8 +9,6 @@ import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 
 
 declare type Collision_Info = {
-  Starting_Position_A: Position;
-  Starting_Position_B: Position;
   Theoretical_Ending_Position_A: Position;
   Theoretical_Ending_Position_B: Position;
   entityA: Base_Entity;

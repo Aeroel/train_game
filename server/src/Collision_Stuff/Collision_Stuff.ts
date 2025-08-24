@@ -57,7 +57,10 @@ static getClosestCollision(
 
 
 
-  const entityStart = collisions[0].Starting_Position_A;
+  const entityStart = {
+    x: collisions[0].entityA.x,
+    y: collisions[0].entityA.y
+    };
 
   let closest: Collision_Info = collisions[0];
   
