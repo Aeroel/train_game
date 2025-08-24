@@ -15,8 +15,6 @@ declare type Collision_Info = {
   entityB: Base_Entity;
   Position_Just_Before_Collision_A: Position;
   Position_Just_Before_Collision_B: Position;
-  bFacingA: Direction;
-  aFacingB: Direction;
   collideAtStart: boolean;
   collideAtLast: boolean;
 }

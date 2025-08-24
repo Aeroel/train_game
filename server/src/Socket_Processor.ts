@@ -31,8 +31,8 @@ class Socket_Processor {
 
         newPlayerEntity.readSavedState();
         newPlayerEntity.setX(
-        planet.getX());
-        newPlayerEntity.setY(planet.getY());
+        planet.getCenterX());
+        newPlayerEntity.setY(planet.getCenterY());
         
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);

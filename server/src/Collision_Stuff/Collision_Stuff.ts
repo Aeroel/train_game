@@ -90,7 +90,8 @@ static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_
   return Check_For_Collision(entityA, entityB);
 }
 
-static calculateFaces(a: Box, b: Box):{ aFacingB: Direction, bFacingA: Direction} {
+static calculateFaces(aEn: Base_Entity, a: Box, b: Box):{ aFacingB: Direction, bFacingA: Direction} {
+
   console.log(a,b)
   My_Assert.that(!this.boxesCollide(a,b), "calculateFaces does not want to calculate if boxes collide");
   let aFacingB: Direction | null = null;
@@ -129,7 +130,10 @@ static calculateFaces(a: Box, b: Box):{ aFacingB: Direction, bFacingA: Direction
     break;
     }
   })
-  
+  // this only happens in a corner case where a is above b to the left or something like that. in this face, let's just pick x axis' 
+  if(aFacingB === null) {
+     aFacingB= this.cornerFace(aEn);
+  }
 
   // end
   My_Assert.that(aFacingB !== null, "In the end, aFacingB must be assigned")
@@ -137,6 +141,37 @@ static calculateFaces(a: Box, b: Box):{ aFacingB: Direction, bFacingA: Direction
   return {aFacingB, bFacingA}
 }
 
+static cornerFace(a: Base_Entity) {
+ let face: Direction="left";
+    if(a.vx >0) {
+      face = "right"
+    } else if(a.vx<0) {
+      face="left"
+    } else if(a.vy>0){
+      face="down"
+    }else if (a.vy<0){
+      face="up"
+    } else {
+      throw new Error("Hm, not expected")
+    }
+  return face;
+}
+static entityToBox(a: Base_Entity,): Box{
+   return {
+     y:a.y,
+     x:a.x,
+     width:a.width,
+     height:a.height,
+   }
+}
+
+static posToBox(en: Base_Entity, pos: Position) : Box {
+  return {
+    height: en.height,
+    width: en.width,
+    ...pos
+  }
+}
   
   static boxesCollide(box1: Box, box2: Box): boolean {
   return (

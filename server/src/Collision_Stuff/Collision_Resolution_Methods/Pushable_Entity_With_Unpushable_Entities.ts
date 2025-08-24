@@ -54,7 +54,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
 const aTemp = {x: Pushable_Position_Just_Before_Collision.x, y: Pushable_Position_Just_Before_Collision.y, width: pushableEntity.width, height: pushableEntity.height};
 const bTemp = {x: otherJustBefore.x, y: otherJustBefore.y, width: otherEntity.width, height: otherEntity.height};
 
-  const faces = Collision_Stuff.calculateFaces(
+  const faces = Collision_Stuff.calculateFaces(pushableEntity,
     aTemp, bTemp);
 
    const playerFace = faces.aFacingB;
@@ -65,8 +65,8 @@ const bTemp = {x: otherJustBefore.x, y: otherJustBefore.y, width: otherEntity.wi
    }
    
    const offset = 0.0000;
-   const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0.0001;
-   const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0.0001;
+   const offsetX = Math.sign(pushableEntity.velocity.x.get()) * 0;
+   const offsetY = Math.sign(pushableEntity.velocity.y.get()) * 0;
    const playerBeforeCollY= offsetY + Pushable_Position_Just_Before_Collision.y 
    const playerBeforeCollX= offsetX + Pushable_Position_Just_Before_Collision.x; 
    switch(otherEntityFace) {
