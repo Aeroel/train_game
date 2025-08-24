@@ -22,7 +22,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
     return;
   } 
   My_Assert.that(closestCollision.collideAtStart === false, "Colliding at start, but I don't want to allow that");
-  My_Assert.that(closestCollision.collideAtLast === false, "Colliding at last before collision, but I do not allow for that");
+  My_Assert.that(closestCollision.collideAtJustBefore === false, "Colliding at last before collision, but I do not allow for that in pushableVsUnpushable. if this assertion fails, then this means that either the collision info was invalid and/or the collision was resolved (i.e., pushable) incorrectly in some previous tick");
   console.log(`coll resolution 1`)
   
   const otherEntity = closestCollision.entityB;
