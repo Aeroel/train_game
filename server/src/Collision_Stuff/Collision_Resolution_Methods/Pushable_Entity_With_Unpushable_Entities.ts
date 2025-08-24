@@ -54,8 +54,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
 const aTemp = {x: Pushable_Position_Just_Before_Collision.x, y: Pushable_Position_Just_Before_Collision.y, width: pushableEntity.width, height: pushableEntity.height};
 const bTemp = {x: otherJustBefore.x, y: otherJustBefore.y, width: otherEntity.width, height: otherEntity.height};
 
-  const faces = Collision_Stuff.calculateFaces(pushableEntity,
-    aTemp, bTemp);
+  const faces = Collision_Stuff.calculateFaces(aTemp, bTemp, pushableEntity.vx, pushableEntity.vy, otherEntity.vx, otherEntity.vy);
 
    const playerFace = faces.aFacingB;
    const otherEntityFace = faces.bFacingA;

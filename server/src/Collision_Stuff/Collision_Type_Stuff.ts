@@ -17,4 +17,6 @@ declare type Collision_Info = {
   Position_Just_Before_Collision_B: Position;
   collideAtStart: boolean;
   collideAtLast: boolean;
+  time: number,
+  normal: Position,
 }

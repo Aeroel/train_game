@@ -8,81 +8,36 @@ import{My_Assert} from "#root/My_Assert.js"
 
 export { Sweep };
 
+// {
+type Vec2={x: number,y: number}
+interface copyCollision_Info {
+  entityA: Base_Entity;
+  entityB: Base_Entity;
+  time: number;
+  // collision normal pointing from A toward B at impact (e.g. {x: -1,y:0} means A hit B from right -> resolve A left).
+  normal: Vec2;
+  // theoretical ending positions if there was no collision
+  Theoretical_Ending_Position_A: Position;
+  Theoretical_Ending_Position_B: Position;
+  // positions just before the collision (a small epsilon back)
+  Position_Just_Before_Collision_A: Position;
+  Position_Just_Before_Collision_B: Position;
+  collideAtStart: boolean;
+  // Whether the entities actually collide at the "just before collision" positions. this can happen if a player is walking on top of the ground entity, for example. While in some resolution methods like between wall and player I will make sure the player does not collide with anything at end of every tick and assert that collideAtJustBefore is false (if not false, this means reoslution on previous ticks was invalidly handled)
+  collideAtJustBeforeA: boolean;
+  collideAtJustBeforeB: boolean;
+}
+
 class Sweep {
   static Check_For_Collision(a: Base_Entity, b: Base_Entity, dt: number = 1): Collision_Info | null {
     return this.implementation(a, b, dt);
   }
 
-  private static implementation(a: Base_Entity, b: Base_Entity, dt: number): Collision_Info | null {
-    const epsilon = 1e-4;
-
-    // Initial bounds
-    const Amin = { x: a.x, y: a.y };
-    const Amax = { x: a.x + a.width, y: a.y + a.height };
-    const Bmin = { x: b.x, y: b.y };
-    const Bmax = { x: b.x + b.width, y: b.y + b.height };
-
-    // Relative velocity
-    const vRel = { x: (a.vx - b.vx) * dt, y: (a.vy - b.vy) * dt };
-
-    function axisTimes(Amin: number, Amax: number, Bmin: number, Bmax: number, vRel: number) {
-      if (vRel === 0) {
-        // No relative motion: either overlapping whole step or never
-        if (Amax <= Bmin || Amin >= Bmax) return { tEntry: Infinity, tExit: -Infinity };
-        return { tEntry: 0, tExit: 1 };
-      }
-      let t1 = (Bmin - Amax) / vRel;
-      let t2 = (Bmax - Amin) / vRel;
-      if (t1 > t2) [t1, t2] = [t2, t1];
-      return { tEntry: t1, tExit: t2 };
-    }
-
-    const xTimes = axisTimes(Amin.x, Amax.x, Bmin.x, Bmax.x, vRel.x);
-    const yTimes = axisTimes(Amin.y, Amax.y, Bmin.y, Bmax.y, vRel.y);
-
-    const tEntry = Math.max(xTimes.tEntry, yTimes.tEntry);
-    const tExit = Math.min(xTimes.tExit, yTimes.tExit);
-
-    // Start overlap check (using <= so touching counts)
-    const collideAtStart =
-      Amin.x <= Bmax.x && Amax.x >= Bmin.x && Amin.y <= Bmax.y && Amax.y >= Bmin.y;
-
-    let collide = false;
-    let tCollide = 1;
-
-    if (!collideAtStart && tEntry <= tExit && tEntry >= 0 && tEntry <= 1) {
-      collide = true;
-      tCollide = tEntry;
-    }
-
-    if (!collide && !collideAtStart) return null;
-
-    // Theoretical end positions (ignoring collision)
-    const endingA = { x: a.x + a.vx * dt, y: a.y + a.vy * dt };
-    const endingB = { x: b.x + b.vx * dt, y: b.y + b.vy * dt };
-
-    const t = collideAtStart ? 0 : tCollide;
-
-    const posCollideA = { x: a.x + a.vx * dt * t, y: a.y + a.vy * dt * t };
-    const posCollideB = { x: b.x + b.vx * dt * t, y: b.y + b.vy * dt * t };
-
-    const tBefore = Math.max(0, t - epsilon);
-    const posBeforeA = { x: a.x + a.vx * dt * tBefore, y: a.y + a.vy * dt * tBefore };
-    const posBeforeB = { x: b.x + b.vx * dt * tBefore, y: b.y + b.vy * dt * tBefore };
-  /* console.log({
-     t, tEntry, tExit, tCollide, yTimes, xTimes
-   })
-   */
-    return {
-      Theoretical_Ending_Position_A: endingA,
-      Theoretical_Ending_Position_B: endingB,
-      entityA: a,
-      entityB: b,
-      Position_Just_Before_Collision_A: posBeforeA,
-      Position_Just_Before_Collision_B: posBeforeB,
-      collideAtStart,
-      collideAtLast: collide || collideAtStart,
-    };
+ 
+  private static implementation(a: Base_Entity, b: Base_Entity, dt: number, ): Collision_Info | null {
+    // Todo: implement
+    return null;
   }
-}
 
+// }
+}

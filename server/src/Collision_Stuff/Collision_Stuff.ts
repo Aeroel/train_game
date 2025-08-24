@@ -90,13 +90,13 @@ static checkForCollision(entityA: Base_Entity, entityB: Base_Entity): Collision_
   return Check_For_Collision(entityA, entityB);
 }
 
-static calculateFaces(aEn: Base_Entity, a: Box, b: Box):{ aFacingB: Direction, bFacingA: Direction} {
-
+// assumption for using this: a collision actually occurred and you want to know which face of entity A is looking at entity B. The provided positions must be just a sliver before actual collision points. entity's velocities are used in the corner case
+static calculateFaces(a: Box, b: Box, avx: number, avy:number, bvx: number, bvy: number):{ aFacingB: Direction, bFacingA: Direction} {
+  
   console.log(a,b)
-  My_Assert.that(!this.boxesCollide(a,b), "calculateFaces does not want to calculate if boxes collide");
+  My_Assert.that(this.boxesCollide(a,b) === false, "calculateFaces does not want to calculate if provided boxes are at collsion points");
   let aFacingB: Direction | null = null;
 
-  let triedAllDirections = false;
   const dirsToTry: Direction[] = ["right", "down", "up", "left"];
 
   dirsToTry.forEach(dir => {
@@ -130,9 +130,9 @@ static calculateFaces(aEn: Base_Entity, a: Box, b: Box):{ aFacingB: Direction, b
     break;
     }
   })
-  // this only happens in a corner case where a is above b to the left or something like that. in this face, let's just pick x axis' 
+  // during a collision this presumably only happens in a corner case where A is above B to B's left or something like that so neither projecting A just down or just right will detect overlap. In this case I guess I can just use A's velocity and pick an axis 
   if(aFacingB === null) {
-     aFacingB= this.cornerFace(aEn);
+     aFacingB= this.cornerFace(avx, avy, bvx, bvy);
   }
 
   // end
@@ -141,21 +141,46 @@ static calculateFaces(aEn: Base_Entity, a: Box, b: Box):{ aFacingB: Direction, b
   return {aFacingB, bFacingA}
 }
 
-static cornerFace(a: Base_Entity) {
- let face: Direction="left";
-    if(a.vx >0) {
-      face = "right"
-    } else if(a.vx<0) {
-      face="left"
-    } else if(a.vy>0){
-      face="down"
-    }else if (a.vy<0){
-      face="up"
-    } else {
-      throw new Error("Hm, not expected")
-    }
+static cornerFace(avx: number, avy: number, bvx: number, bvy: number) : Direction {
+  My_Assert.that(avx > 0 || avy > 0 || bvx > 0 || bvy > 0, "Calling cornerFace on zero velocities of both entities is invalid...")
+  
+ let face: Direction | null = null;
+  const AVelAttempt = this.axisVelToFace(avx, avy)
+  if(AVelAttempt) {
+     face = AVelAttempt;
+  } else {
+    face = this.axisVelToFace(bvx, bvy);
+  }
+  
+   My_Assert.notNull(face, "face must be assigned at this point!" )
   return face;
 }
+
+static axisVelToFace(vx: number, vy: number) : Direction | null {
+  let face: Direction | null = null;
+      if(vx >0) {
+      face = "right"
+    } else if(vx<0) {
+      face="left"
+    } else if(vy>0){
+      face="down"
+    }else if (vy<0){
+      face="up"
+    } else {
+      face = null;
+    }
+    return face;
+}
+  static boxesCollide(box1: Box, box2: Box): boolean {
+  return (
+    box1.x < box2.x + box2.width &&
+    box1.x + box1.width > box2.x &&
+    box1.y < box2.y + box2.height &&
+    box1.y + box1.height > box2.y
+  );
+}
+
+
 static entityToBox(a: Base_Entity,): Box{
    return {
      y:a.y,
@@ -173,14 +198,7 @@ static posToBox(en: Base_Entity, pos: Position) : Box {
   }
 }
   
-  static boxesCollide(box1: Box, box2: Box): boolean {
-  return (
-    box1.x < box2.x + box2.width &&
-    box1.x + box1.width > box2.x &&
-    box1.y < box2.y + box2.height &&
-    box1.y + box1.height > box2.y
-  );
-}
+
 
   
 

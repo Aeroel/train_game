@@ -6,8 +6,11 @@ class My_Assert {
     if (!condition) throw new Error(`Assertion failed!`);
   }
 
-  static notNull<T>(value: T | null | undefined): asserts value is T {
+  static notNull<T>(value: T | null | undefined, message?: string): asserts value is T {
     if (value === null || value === undefined) {
+      if(message) {
+        throw new Error(`notNull assertion failed with message: "${message}"`)
+      }
       throw new Error(`Expected value to be not null or undefined, but got ${value}`);
     }
   }

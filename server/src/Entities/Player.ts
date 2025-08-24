@@ -97,7 +97,7 @@ collisionManager() {
     visionRange: this.visionRange,
     percentageOnPlanet: this.getPositionRelativeToPlanet(),
   };
- console.log(data);
+
   try {
     fs.writeFileSync(savePath, JSON.stringify(data));
   } catch (err) {
