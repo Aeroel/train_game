@@ -13,6 +13,7 @@ class Base_Entity {
   velocity = new Entity_Velocity(this);
   speedX = 0;
   speedY = 0;
+  
   x = 0;
   y = 0;
   width = 50;
@@ -143,6 +144,12 @@ applyVelocityToPosition() {
      this.setX(x);
      this.setY(y);
          return this;
+  }
+  get position() {
+    return {x:this.x,y:this.y}
+  }
+  get size(){
+    return {width: this.width, height: this.height}
   }
 get vx() {
  // console.log("getting vx")

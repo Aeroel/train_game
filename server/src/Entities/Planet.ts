@@ -8,8 +8,8 @@ interface Planet_Constructor {
 
 class Planet extends Base_Entity {
   planetDriftKey = `Planet_Id_${this.id}_Drift_Key`
-  planetDriftVX= 2.5;
-  planetDriftVY= -5;
+  planetDriftVX= 0.5;
+  planetDriftVY= -0.25;
   constructor({color="green"}: Planet_Constructor = {}) {
     super();
     this.setColor(color)

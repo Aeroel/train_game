@@ -116,7 +116,6 @@ collisionManager() {
   try {
     const file = fs.readFileSync(savePath, "utf-8");
     const data = JSON.parse(file);
-    this.setXY(data.x, data.y);
     this.visionRange = data.visionRange;
     this.percentageOnPlanet = data.percentageOnPlanet;
     this.setPositionRelativeToPlanet(this.percentageOnPlanet);

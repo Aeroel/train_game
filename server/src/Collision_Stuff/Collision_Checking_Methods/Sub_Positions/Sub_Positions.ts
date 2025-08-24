@@ -1,5 +1,5 @@
 import type {Direction, Position, 
-Collision_Info,
+//Collision_Info,
 Box} from "#root/Type_Stuff.js";
 import{Collision_Stuff} from "#root/Collision_Stuff/Collision_Stuff.js"
 import type {Base_Entity} from "#root/Entities/Base_Entity.js";
@@ -27,14 +27,14 @@ type Collision_Info =  {
   collideAtJustBefore: boolean;
 }
 
-class Sweep {
-  // dt is used to correctly scale positions.
+class Sub_Positions {
   static Check_For_Collision(a: Base_Entity, b: Base_Entity, dt: number = 1): Collision_Info | null {
     return this.implementationCode(a, b, dt);
   }
 
  
   private static implementationCode(a: Base_Entity, b: Base_Entity, dt: number, ): Collision_Info | null {
+    
     // Todo: implement
     return null;
   }
