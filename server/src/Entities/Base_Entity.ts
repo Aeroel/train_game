@@ -1,7 +1,9 @@
 import { Entity_Velocity, type Velocity_Component } from "#root/Entities/Entity_Velocity.js";
 import { Game_Loop } from "#root/Game_Loop.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
-import type { Position, Direction } from "#root/Type_Stuff.js";
+import type { Position,Position_Percentage, Direction } from "#root/Type_Stuff.js";
+import { My_Assert}from "#root/My_Assert.js"
+import { World}from "#root/World.js"
 import { Assert_That_Number_Is_Finite, Assert_That_Numbers_Are_Finite, Assert_That_Numbers_Are_Zero_Or_Positive } from "#root/Type_Validation_Stuff.js";
 
 export { Base_Entity };
@@ -150,6 +152,52 @@ get vy() {
  // console.log("getting vy")
   return this.velocity.y.get();
 }
+
+  setPositionRelativeToPlanet({ xPercentage, yPercentage }: Position_Percentage) {
+    const planet = World.getEntities().find(en => en.hasTag("Planet"));
+    if (!planet) {
+      throw new Error("Planet could not be found");
+    }
+
+    My_Assert.that(
+      xPercentage >= 0 && xPercentage <= 100 &&
+      yPercentage >= 0 && yPercentage <= 100, `Relative position must be given in percentages.`);
+
+    // Planet bounds
+    const px = planet.x;
+    const py = planet.y;
+    const pw = planet.width;
+    const ph = planet.height;
+
+    // Convert percentages to absolute world coords
+    const newX = px + (pw * (xPercentage / 100)) - this.width / 2;
+    const newY = py + (ph * (yPercentage / 100)) - this.height / 2;
+
+    this.x = newX;
+    this.y = newY;
+  }
+
+  getPositionRelativeToPlanet(): Position_Percentage {
+    const planet = World.getEntities().find(en => en.hasTag("Planet"));
+    if (!planet) {
+      throw new Error("Planet could not be found");
+    }
+
+    const px = planet.x;
+    const py = planet.y;
+    const pw = planet.width;
+    const ph = planet.height;
+
+    // Get entity center relative to planet
+    const centerX = this.getCenterX();
+    const centerY = this.getCenterY();
+
+    const xPercentage = ((centerX - px) / pw) * 100;
+    const yPercentage = ((centerY - py) / ph) * 100;
+
+    return { xPercentage, yPercentage };
+  }
+
   setXYWH(x: number, y: number, w: number, h: number) {
     Assert_That_Numbers_Are_Finite({ x, y, w, h });
     Assert_That_Numbers_Are_Zero_Or_Positive({w, h})

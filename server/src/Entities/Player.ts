@@ -23,6 +23,7 @@ class Player extends Base_Entity {
   lastSaveTime=0;
   speedUp = false;
   intangibility = false;
+  percentageOnPlanet = {xPercentage:11,yPercentage:11};
  normalSpeedForBothAxes=0.5;
  spedUpSpeedForBothAxes=2.0;
  speedX= this.normalSpeedForBothAxes;
@@ -94,9 +95,9 @@ collisionManager() {
     x: this.x,
     y: this.y,
     visionRange: this.visionRange,
-    
+    percentageOnPlanet: this.getPositionRelativeToPlanet(),
   };
-
+ console.log(data);
   try {
     fs.writeFileSync(savePath, JSON.stringify(data));
   } catch (err) {
@@ -117,6 +118,8 @@ collisionManager() {
     const data = JSON.parse(file);
     this.setXY(data.x, data.y);
     this.visionRange = data.visionRange;
+    this.percentageOnPlanet = data.percentageOnPlanet;
+    this.setPositionRelativeToPlanet(this.percentageOnPlanet);
   } catch (err) {
     console.error("Failed to read player position:", err);
   }

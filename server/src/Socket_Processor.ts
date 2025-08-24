@@ -30,10 +30,7 @@ class Socket_Processor {
         }
 
         newPlayerEntity.readSavedState();
-        newPlayerEntity.setX(
-        planet.getCenterX());
-        newPlayerEntity.setY(planet.getCenterY());
-        
+
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
         newPlayerEntity.setVisionRange(5000);

@@ -9,24 +9,27 @@ import{My_Assert} from "#root/My_Assert.js"
 export { Sweep };
 
 class Sweep {
-  static Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
-    return this.implementation(a, b, 50);
+  static Check_For_Collision(a: Base_Entity, b: Base_Entity, dt: number = 1): Collision_Info | null {
+    return this.implementation(a, b, dt);
   }
 
-  private static implementation(a: Base_Entity, b: Base_Entity, dt: number = 1): Collision_Info | null {
+  private static implementation(a: Base_Entity, b: Base_Entity, dt: number): Collision_Info | null {
     const epsilon = 1e-4;
 
+    // Initial bounds
     const Amin = { x: a.x, y: a.y };
     const Amax = { x: a.x + a.width, y: a.y + a.height };
     const Bmin = { x: b.x, y: b.y };
     const Bmax = { x: b.x + b.width, y: b.y + b.height };
 
-    const vRel = { x: a.vx - b.vx, y: a.vy - b.vy };
+    // Relative velocity
+    const vRel = { x: (a.vx - b.vx) * dt, y: (a.vy - b.vy) * dt };
 
     function axisTimes(Amin: number, Amax: number, Bmin: number, Bmax: number, vRel: number) {
       if (vRel === 0) {
-        if (Amax < Bmin || Amin > Bmax) return { tEntry: Infinity, tExit: -Infinity };
-        return { tEntry: -Infinity, tExit: Infinity };
+        // No relative motion: either overlapping whole step or never
+        if (Amax <= Bmin || Amin >= Bmax) return { tEntry: Infinity, tExit: -Infinity };
+        return { tEntry: 0, tExit: 1 };
       }
       let t1 = (Bmin - Amax) / vRel;
       let t2 = (Bmax - Amin) / vRel;
@@ -40,8 +43,9 @@ class Sweep {
     const tEntry = Math.max(xTimes.tEntry, yTimes.tEntry);
     const tExit = Math.min(xTimes.tExit, yTimes.tExit);
 
+    // Start overlap check (using <= so touching counts)
     const collideAtStart =
-      Amin.x < Bmax.x && Amax.x > Bmin.x && Amin.y < Bmax.y && Amax.y > Bmin.y;
+      Amin.x <= Bmax.x && Amax.x >= Bmin.x && Amin.y <= Bmax.y && Amax.y >= Bmin.y;
 
     let collide = false;
     let tCollide = 1;
@@ -53,6 +57,7 @@ class Sweep {
 
     if (!collide && !collideAtStart) return null;
 
+    // Theoretical end positions (ignoring collision)
     const endingA = { x: a.x + a.vx * dt, y: a.y + a.vy * dt };
     const endingB = { x: b.x + b.vx * dt, y: b.y + b.vy * dt };
 
@@ -64,7 +69,10 @@ class Sweep {
     const tBefore = Math.max(0, t - epsilon);
     const posBeforeA = { x: a.x + a.vx * dt * tBefore, y: a.y + a.vy * dt * tBefore };
     const posBeforeB = { x: b.x + b.vx * dt * tBefore, y: b.y + b.vy * dt * tBefore };
-
+  /* console.log({
+     t, tEntry, tExit, tCollide, yTimes, xTimes
+   })
+   */
     return {
       Theoretical_Ending_Position_A: endingA,
       Theoretical_Ending_Position_B: endingB,
@@ -73,7 +81,8 @@ class Sweep {
       Position_Just_Before_Collision_A: posBeforeA,
       Position_Just_Before_Collision_B: posBeforeB,
       collideAtStart,
-      collideAtLast: collide,
+      collideAtLast: collide || collideAtStart,
     };
   }
 }
+

@@ -2,6 +2,7 @@ export {
   Typed_Object_Keys,
   type Point,
   type Position,
+  type Position_Percentage,
   type Direction,
   type OpposingDirections,
   type Box,
@@ -27,6 +28,10 @@ declare type Point = {
 declare type Position = {
   x: number,
   y: number
+}
+declare type Position_Percentage = {
+  xPercentage: number,
+  yPercentage: number
 }
 declare type Direction = "right" | "left" | "up" | "down";
 declare type OpposingDirections =
