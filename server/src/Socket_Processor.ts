@@ -29,8 +29,11 @@ class Socket_Processor {
           throw new Error("Could not find planet entity")
         }
 
-        newPlayerEntity.readSavedState();
-
+   //     newPlayerEntity.readSavedState();
+       newPlayerEntity.setPositionRelativeToPlanet({
+         yPercentage:11,
+         xPercentage:11,
+       })
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
         newPlayerEntity.setVisionRange(5000);

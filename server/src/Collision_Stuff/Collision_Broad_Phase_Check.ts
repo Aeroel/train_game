@@ -18,6 +18,7 @@ export class Collision_Broad_Phase_Check {
     a: Base_Entity, 
     b: Base_Entity, 
   ): boolean {
+    if(1>0) return true;
     // Early exit for identical entities
     if (a === b) return false;
 
