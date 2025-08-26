@@ -6,6 +6,7 @@ import { TouchscreenControlsSetup } from "#root/TouchscreenControlsSetup"
 import { KeyboardControlsSetup } from "#root/KeyboardControlsSetup";
 import { ServerConnectionStatusVisualizer } from "#root/ServerConnectionStatusVisualizer";
 import { App } from "#root/App"
+import { mustGetById} from "#root/RandomFuncs"
 
 export { AppSetup };
 class AppSetup {
@@ -20,6 +21,22 @@ class AppSetup {
     AppSetup.runFullscreenButtonSetupCode();
     AppSetup.runTouchscreenControlsSetupCode();
   }
+  
+      static serverConnectionStuff(ip: string) {
+        SocketWrapper.establishConnection(ip);
+        const socket = SocketWrapper.get();
+        socket.on("welcome", (message) => {
+            console.log(message);
+        });
+        socket.on("newWorldState", (newWorldState) => {
+            WorldRenderer.receiveWorldState(newWorldState);
+        });
+
+
+        this.showConnectionStatusAndRetryTextIfConnectionTakesTooLong();
+
+
+    }
   
   
     static initialVisualCSSStyleAdjustments() {
@@ -41,30 +58,13 @@ class AppSetup {
     static setCanvasSizeToAvoidPixelatedRendering() {
               /* unless I manually set canvas size to a big number like 1000, for some reason 
          if I don't set it, it will cause pixelated rendering... */
-        const gameCanvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
-        if (gameCanvas === null) {
-            throw new Error("Could not find full screen button image element");
-
-        }
+        const gameCanvas = <HTMLCanvasElement>mustGetById("gameCanvas");
         gameCanvas.width = 1000;
         gameCanvas.height = 1000;
+   
     }
     
-    static serverConnectionStuff(ip: string) {
-        SocketWrapper.establishConnection(ip);
-        const socket = SocketWrapper.get();
-        socket.on("welcome", (message) => {
-            console.log(message);
-        });
-        socket.on("newWorldState", (newWorldState) => {
-            WorldRenderer.receiveWorldState(newWorldState);
-        });
 
-
-        this.showConnectionStatusAndRetryTextIfConnectionTakesTooLong();
-
-
-    }
     // this is only a visual thingie for fun, I am not doing any actual manual reconnection.
     // I suppose socket.io does it automatically.
     static showConnectionStatusAndRetryTextIfConnectionTakesTooLong() {

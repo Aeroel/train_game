@@ -4,6 +4,7 @@ import { AppSetup } from "#root/AppSetup"
 import { SocketWrapper } from "#root/SocketWrapper"
 import { mustGetById } from "#root/RandomFuncs"
 
+
 export class ClientPreparation {
   static lastPingTime=0;
   static preparationBeforeClientCanConnectToAServer() {
@@ -19,8 +20,8 @@ static ipAddressFieldAndButton() {
       this.runThisUponIPAddressSubmit();
     })
     ip_address_field.addEventListener("keydown", (e) => {
-
-      if (e.key !== 'Enter') {
+      const userPressedTheEnterKey = (e.key === 'Enter')
+      if (!userPressedTheEnterKey) {
         return;
       }
       this.runThisUponIPAddressSubmit();
@@ -41,12 +42,20 @@ static ipAddressFieldAndButton() {
 
     AnimationLoop.start();
 
-    // Example usage of App.movementControlCommands
+  const everyMs = 50;
+   this.sendUserInputToServer({everyMs});
+    
+   this.pingMeasurement();
+   this.consoleStuff();
+
+  }
+  
+  static sendUserInputToServer({everyMs}:{everyMs: number}) {
     // send whatever keys user presses every something secs
     setInterval(() => {
       
       const movementControlKeysArray = Array.from(App.movementControlCommands);
-       //console.log(movementControlKeysArray)
+
       SocketWrapper.emit("controlKeys", {
         movement: movementControlKeysArray,
         speedUp: App.playerWantsToMoveFaster,
@@ -55,11 +64,7 @@ static ipAddressFieldAndButton() {
       });
       // reset zoom after sending so we do not keep zooming in or out more than once when user clicks 
       App.zoom = "no_change";
-    }, 50);
-    
-   this.pingMeasurement();
-   this.consoleStuff();
-
+    }, everyMs);
   }
   static consoleStuff() {
     const consoleCommandInputField = <HTMLInputElement>mustGetById("consoleCommandInputField");
@@ -78,10 +83,11 @@ static ipAddressFieldAndButton() {
     })
         consoleCommandInputField.addEventListener("keydown", (e) => {
 
-      if (e.key !== 'Enter') {
+     const userPressedTheEnterKey = (e.key === 'Enter')
+      if (!userPressedTheEnterKey) {
         return;
       }
-            const cmd = consoleCommandInputField.value;
+      const cmd = consoleCommandInputField.value;
       this.sendCommand(cmd);
       }) 
   }
