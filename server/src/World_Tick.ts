@@ -19,7 +19,7 @@ class World_Tick {
       this.tictac();
 }
 static tictac() {
-      this.tick();
+      World_Tick.tick();
       // Schedule the next tick
      setImmediate(World_Tick.tictac); // More precise than setTimeout in Node.js?  
 }

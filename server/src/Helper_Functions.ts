@@ -3,7 +3,7 @@ import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
 import { networkInterfaces } from "os";
-import type { Direction, Position } from "#root/Type_Stuff.js";
+import type { Direction, Position, Face, Normal } from "#root/Type_Stuff.js";
 
 
 export { Helper_Functions };
@@ -73,4 +73,20 @@ class Helper_Functions {
         }
         throw new Error(`Invalid dir ${dir}`)
     }
+    
+    static normalToFace(normal: Normal) : Face {
+  if(normal.x ===1 ) {
+    return "right";
+  }  
+  if(normal.x === -1 ) {
+    return "left";
+  } 
+  if(normal.y ===1 ) {
+    return "bottom";
+  } 
+  if(normal.y === -1 ) {
+    return "top";
+  } 
+  throw Error(`Invalid normal ${JSON.stringify(normal)}`)
+}
 }
