@@ -22,15 +22,22 @@
     <canvas id="gameCanvas"></canvas>
     
     <!-- BEGIN CONSOLE STUFF -->
-    <button id="showConsoleButton"><img id ="showConsoleButtonImage" src="./images/Show_Console.jpg"></button>
+  
     <div id="consoleContainer">
+      
+         <button id="showConsoleButton"><img id ="showConsoleButtonImage" src="./images/Show_Console.jpg"></button>
+         
+    <div id="console">
       <button id="hideConsoleButton"><img id="hideConsoleButtonImage" src="./images/Hide_Console.jpg"></button>
       <div id="consoleMessagesContainer"></div>
       <div id="commandDiv">
         <input id ="consoleCommandInputField" type="text">
         <button id="consoleCommandSubmitButton">Enter</button>
       </div>
+    </div> 
+      
     </div>
+  
     <!-- END CONSOLE STUFF -->
     
     
@@ -40,10 +47,22 @@
     <div id="ping">Ping: ...</div>
 
     <button id="fullscreenButton"><img id="fullscreenButtonIcon" src=".\images\Fullscreen_icon.jpg" alt="[FS]"></button>
+    
     <button id="speedupButton"><img id="speedupStateImage" src="./images/Speedup_State_False.jpg"></button>
-    <button id="zoomInButton"><img id="zoomInButtonImage" src="./images/Zoom_In.jpg"></button>
+   
+   
+    <div id = "zoomButtonsContainer">
+      <button id="zoomInButton"><img id="zoomInButtonImage" src="./images/Zoom_In.jpg"></button>
     <button id="zoomOutButton"><img id="zoomOutButtonImage" src="./images/Zoom_Out.jpg"></button>
-    <button id="intangibilityButton"><img id="intangibilityStateImage" src="./images/Intangibility_State_False.jpg"></button>
+    </div>
+    
+    
+    <div id ="intangibilityButtonContainer">
+          <button id="intangibilityButton"><img id="intangibilityStateImage" src="./images/Intangibility_State_False.jpg"></button>
+      
+    </div>
+    
+    
     <div id="joystickContainer">
       <div id="joystick"></div>
     </div>
@@ -55,7 +74,7 @@
     }
   }
 </script>
-   <script type="module" src="./build/bundle.js?2123"></script> 
+   <script type="module" src="./build/bundle.js?1234"></script> 
 </body>
 
 </html>
