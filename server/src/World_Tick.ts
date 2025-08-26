@@ -2,43 +2,48 @@ import { EmitStuff } from "#root/World_State_Emission_Stuff/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
 import { World } from "#root/World.js";
 
-export { Game_Loop }
+export { World_Tick }
 
-class Game_Loop {
+class World_Tick {
   static tickRate = 20; // Updates per second
-  static msPerTick = 1000 / Game_Loop.tickRate; // Duration of each update in milliseconds
-  static deltaTime = Game_Loop.msPerTick;
+  static msPerTick = 1000 / World_Tick.tickRate; // Duration of each update in milliseconds
+  static deltaTime = World_Tick.msPerTick;
   static lastUpdateTime = Date.now();
   static accumulatedTime = 0;
   static started = true;
  static emitEveryMs= 50;
  static lastEmitTime =0;
-  static theLoop() {
-
-
+ 
+ 
+  static beginTicking() {
+      this.tictac();
+}
+static tictac() {
+      this.tick();
+      // Schedule the next tick
+     setImmediate(World_Tick.tictac); // More precise than setTimeout in Node.js?  
+}
+static tick() {
     const currentTime = Date.now();
-    const elapsed = currentTime - Game_Loop.lastUpdateTime;
-    Game_Loop.lastUpdateTime = currentTime;
+    const elapsed = currentTime - World_Tick.lastUpdateTime;
+    World_Tick.lastUpdateTime = currentTime;
 
-    Game_Loop.accumulatedTime += elapsed;
+    World_Tick.accumulatedTime += elapsed;
 
     // Process game logic in fixed-size steps
-    while (Game_Loop.accumulatedTime >= Game_Loop.msPerTick) {
-      Game_Loop.simulateNextMoment();
-      Game_Loop.accumulatedTime -= Game_Loop.msPerTick;
+    while (World_Tick.accumulatedTime >= World_Tick.msPerTick) {
+      World_Tick.simulateNextMoment();
+      World_Tick.accumulatedTime -= World_Tick.msPerTick;
     }
-
-    // Schedule the next iteration
-    setImmediate(Game_Loop.theLoop); // More precise than setTimeout in Node.js?
   }
 
   static simulateNextMoment() {
 
-    Game_Loop.Next_Moment_Of_All_Entities();
-    Game_Loop.Collision_Resolutor();
-    Game_Loop.Update_Positions_Of_All_Entities();
-    Game_Loop.Clean_Up();
-    Game_Loop.Emit_To_Players();
+    World_Tick.Next_Moment_Of_All_Entities();
+    World_Tick.Collision_Resolutor();
+    World_Tick.Update_Positions_Of_All_Entities();
+    World_Tick.Clean_Up();
+    World_Tick.Emit_To_Players();
   }
 
   static Next_Moment_Of_All_Entities() {

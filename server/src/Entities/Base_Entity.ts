@@ -1,5 +1,5 @@
 import { Entity_Velocity, type Velocity_Component } from "#root/Entities/Entity_Velocity.js";
-import { Game_Loop } from "#root/Game_Loop.js";
+import { World_Tick } from "#root/World_Tick.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Position,Position_Percentage, Direction } from "#root/Type_Stuff.js";
 import { My_Assert}from "#root/My_Assert.js"
@@ -66,8 +66,8 @@ Clean_Up() {
 
 
   calculateNextPositionBasedOnVelocityAndDeltaTime(): Position {
-    const changeInX = (this.velocity.x.get() * Game_Loop.deltaTime);
-    const changeInY = (this.velocity.y.get() * Game_Loop.deltaTime);
+    const changeInX = (this.velocity.x.get() * World_Tick.deltaTime);
+    const changeInY = (this.velocity.y.get() * World_Tick.deltaTime);
     
     const x = (this.x + changeInX);
     const y = (this.y + changeInY);

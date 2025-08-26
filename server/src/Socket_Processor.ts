@@ -7,7 +7,7 @@ import { Player } from "./Entities/Player.js";
 import { World } from "./World.js";
 import { Helper_Functions } from "./Helper_Functions.js";
 import { Typed_Object_Keys, type Direction } from "./Type_Stuff.js";
-import { Game_Loop } from "#root/Game_Loop.js"
+import { World_Tick } from "#root/World_Tick.js"
 import { Command_Console }  from "#root/Console/Simple_Console.js"
 
  type Control_Keys = {

@@ -1,5 +1,5 @@
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
-import { Game_Loop} from "#root/Game_Loop.js"
+import { World_Tick} from "#root/World_Tick.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { My_Assert} from "#root/My_Assert.js"
 
@@ -43,8 +43,8 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
   const currentVX = pushableEntity.velocity.x.get()
   const currentVY = pushableEntity.velocity.y.get()
-  const spentVX = xDistBetweenStartingPointAndCollisionPoint / Game_Loop.deltaTime;
-  const spentVY = yDistBetweenStartingPointAndCollisionPoint / Game_Loop.deltaTime;
+  const spentVX = xDistBetweenStartingPointAndCollisionPoint / World_Tick.deltaTime;
+  const spentVY = yDistBetweenStartingPointAndCollisionPoint / World_Tick.deltaTime;
   /* / here, I can add both to respective velocities because below I will either nullify or keep it as is. in other words, I can just do this right now in batch */
   pushableEntity.velocity.x.Add_Component({
     key:`Negate_Spent_Velocity`,

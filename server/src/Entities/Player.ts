@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
-import { Game_Loop} from "#root/Game_Loop.js"
+import { World_Tick} from "#root/World_Tick.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import { Helper_Functions} from "#root/Helper_Functions.js"

@@ -4,7 +4,7 @@ Box} from "#root/Type_Stuff.js";
 import{Collision_Stuff} from "#root/Collision_Stuff/Collision_Stuff.js"
 import type {Base_Entity} from "#root/Entities/Base_Entity.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
-import { Game_Loop } from "#root/Game_Loop.js";
+import { World_Tick } from "#root/World_Tick.js";
 import{My_Assert} from "#root/My_Assert.js"
 
 
