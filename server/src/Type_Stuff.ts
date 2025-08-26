@@ -18,9 +18,17 @@ export {
   type Entity_With_Ends_And_Orientation,
   
 };
-export type { Collision_Info, Normal, Face } from "#root/Collision_Stuff/Collision_Type_Stuff.js"
+export type { Collision_Info, Collision_Time_And_Normal, Normal, Face } from "#root/Collision_Stuff/Collision_Type_Stuff.js"
 
 import type { Base_Entity } from "#root/Entities/Base_Entity.js"
+export type Simplified_Enity = {
+  x: number, 
+  y: number,
+  width: number,
+  height: number,
+  vx: number,
+  vy: number
+}
 declare type Point = {
   x: number,
   y: number,

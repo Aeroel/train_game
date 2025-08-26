@@ -21,14 +21,14 @@ export class Pushable_Entity_With_Unpushable_Entities {
   }
   
   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
-  if(!(collision.info.occurred)) {
+  if(!(collision)) {
     return;
   } 
   
   const dt = World_Tick.deltaTime;
-  const beforeCollisonTime = (collision.info.time - 0.01) * dt;
+  const beforeCollisonTime = (collision.time - 0.01) * dt;
   
-  const otherEntity = closestCollision.entityB;
+  const otherEntity = collision.entityB;
  
   const Pushable_Position_Just_Before_Collision = {
     x: pushableEntity.x + (pushableEntity.vx * beforeCollisonTime ),
