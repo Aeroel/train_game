@@ -27,14 +27,12 @@ export class Pushable_Entity_With_Unpushable_Entities {
   const dt = World_Tick.deltaTime;
   const  dtAtCollision = dt * collision.time;
 
-console.log(collision.normal, dt, dtAtCollision, collision.time)
-
 /// end
     if(recursionTimes >6) {
          throw new Error(`${recursionTimes}`)
     }
    const i = 1+recursionTimes
-   this.actualResolve({pushableEntity, recursionTimes: i});
+  // this.actualResolve({pushableEntity, recursionTimes: i});
   }
 
 

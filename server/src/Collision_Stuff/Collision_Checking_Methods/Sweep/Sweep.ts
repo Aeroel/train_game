@@ -22,14 +22,21 @@ class Sweep {
   private static implementationCode(a: Base_Entity, b: Base_Entity): Collision_Time_And_Normal | null {
     const simpA = this.entityToSimplifiedEntity(a);
     const simpB = this.entityToSimplifiedEntity(b);
+    if(!a.hasTag("Player")) return null;
      const collision =  this.codeByGrok(simpA, simpB);
      return collision;
   }
   private static codeByGrok(a: Simplified_Enity, b: Simplified_Enity ): Collision_Time_And_Normal | null{
 
-     const toLog= detectCollision(a, b);
+     const toLog= detectCollision(a, b, World_Tick.deltaTime);
+   if(toLog) {
+     console.log(a.vx, a.vy, b.vx, b.vy)
+   
+   if(toLog.time!==0) {
    console.log("from codeByGrok")
-     console.log(toLog)
+    
+     console.log(toLog.time)
+   }}
      return toLog;
   }
   static entityToSimplifiedEntity(entity: Base_Entity): Simplified_Enity {
@@ -45,53 +52,129 @@ class Sweep {
 }
 
 
-// isolated grokmade code 
-type Entity = Simplified_Enity;
-type CollisionResult = Collision_Time_And_Normal;
-/**
- * Computes the time of first collision between two moving axis-aligned bounding boxes (AABBs)
- * using continuous collision detection with relative velocity, equivalent to raycasting against slabs.
- * Assumes y increases downward.
- * Returns null if no collision within the time step [0, 1].
- * If already colliding at t=0, returns time=0 with an appropriate normal based on minimum translation vector.
- * The normal is axis-aligned for simplicity; corner collisions prefer the x-axis if times are equal.
- * 
- * @param a The first entity (considered moving relative to b)
- * @param b The second entity
- * @returns CollisionResult or null
- */
-function detectCollision(a: Entity, b: Entity): CollisionResult | null {
-  // relative velocity
-  const vx = a.vx - b.vx;
-  const vy = a.vy - b.vy;
+type Rect = Simplified_Enity
 
-  const xInvEntry = (vx > 0 ? b.x - (a.x + a.width) : (b.x + b.width) - a.x);
-  const xInvExit = (vx > 0 ? (b.x + b.width) - a.x : b.x - (a.x + a.width));
+type CollisionResult = null | Collision_Time_And_Normal;
 
-  const yInvEntry = (vy > 0 ? b.y - (a.y + a.height) : (b.y + b.height) - a.y);
-  const yInvExit = (vy > 0 ? (b.y + b.height) - a.y : b.y - (a.y + a.height));
 
-  const xEntry = vx === 0 ? -Infinity : xInvEntry / vx;
-  const xExit = vx === 0 ? Infinity : xInvExit / vx;
+export function detectCollision(
+  entityA: Rect,
+  entityB: Rect,
+  deltaTime: number // ms per frame
+): CollisionResult | null {
+  // Convert velocities to units per frame
+  const vx = (entityA.vx - entityB.vx) * deltaTime;
+  const vy = (entityA.vy - entityB.vy) * deltaTime;
 
-  const yEntry = vy === 0 ? -Infinity : yInvEntry / vy;
-  const yExit = vy === 0 ? Infinity : yInvExit / vy;
+  //console.log('=== COLLISION DEBUG ===');
+  //console.log('Relative velocity (per frame):', { vx, vy });
+
+  // Already overlapping
+  if (vx === 0 && vy === 0) {
+    if (isOverlapping(entityA, entityB)) {
+      //console.log('Already overlapping at t=0');
+      return { time: 0, normal: { x: 0, y: 0 } };
+    }
+    //console.log('No relative movement and not overlapping');
+    return null;
+  }
+
+  // Compute distances to entry and exit along each axis
+  const xInvEntry = vx > 0
+    ? entityB.x - (entityA.x + entityA.width)
+    : (entityB.x + entityB.width) - entityA.x;
+
+  const xInvExit = vx > 0
+    ? (entityB.x + entityB.width) - entityA.x
+    : entityB.x - (entityA.x + entityA.width);
+
+  const yInvEntry = vy > 0
+    ? entityB.y - (entityA.y + entityA.height)
+    : (entityB.y + entityB.height) - entityA.y;
+
+  const yInvExit = vy > 0
+    ? (entityB.y + entityB.height) - entityA.y
+    : entityB.y - (entityA.y + entityA.height);
+
+  //console.log('Distances:', { xInvEntry, xInvExit, yInvEntry, yInvExit });
+
+  // Compute entry and exit times
+  let xEntry: number, xExit: number, yEntry: number, yExit: number;
+
+  if (vx === 0) {
+    if (xInvEntry > 0 || xInvExit < 0) {
+      //console.log('No collision on X axis (vx=0)');
+      return null;
+    }
+    xEntry = -Infinity;
+    xExit = Infinity;
+  } else {
+    xEntry = xInvEntry / vx;
+    xExit = xInvExit / vx;
+    if (xEntry > xExit) [xEntry, xExit] = [xExit, xEntry];
+  }
+
+  if (vy === 0) {
+    if (yInvEntry > 0 || yInvExit < 0) {
+      //console.log('No collision on Y axis (vy=0)');
+      return null;
+    }
+    yEntry = -Infinity;
+    yExit = Infinity;
+  } else {
+    yEntry = yInvEntry / vy;
+    yExit = yInvExit / vy;
+    if (yEntry > yExit) [yEntry, yExit] = [yExit, yEntry];
+  }
+
+  //console.log('Entry/Exit times:', { xEntry, xExit, yEntry, yExit });
 
   const entryTime = Math.max(xEntry, yEntry);
   const exitTime = Math.min(xExit, yExit);
 
-  if (entryTime > exitTime || (xEntry < 0 && yEntry < 0) || entryTime > 1) {
-    // no collision
+  //console.log('Computed entryTime:', entryTime, 'exitTime:', exitTime);
+
+  if (entryTime > exitTime) {
+    //console.log('No collision: entryTime > exitTime');
+    return null;
+  }
+  if (exitTime < 0) {
+    //console.log('No collision: already passed');
+    return null;
+  }
+  if (entryTime > 1) {
+    //console.log('No collision: occurs after this frame');
     return null;
   }
 
-  let normal = { x: 0, y: 0 };
+  const collisionTime = Math.max(0, entryTime);
 
-  if (xEntry > yEntry) {
-    normal = vx < 0 ? { x: 1, y: 0 } : { x: -1, y: 0 };
+  // Determine collision normal
+  let normal = { x: 0, y: 0 };
+  const epsilon = 1e-6;
+
+  if (Math.abs(xEntry - yEntry) < epsilon) {
+    if (Math.abs(vx) > Math.abs(vy)) {
+      normal = vx > 0 ? { x: -1, y: 0 } : { x: 1, y: 0 };
+    } else {
+      normal = vy > 0 ? { x: 0, y: -1 } : { x: 0, y: 1 };
+    }
+  } else if (xEntry > yEntry) {
+    normal = vx > 0 ? { x: -1, y: 0 } : { x: 1, y: 0 };
   } else {
-    normal = vy < 0 ? { x: 0, y: 1 } : { x: 0, y: -1 };
+    normal = vy > 0 ? { x: 0, y: -1 } : { x: 0, y: 1 };
   }
 
-  return { time: entryTime, normal };
+  //console.log('Collision normal:', normal, 'Collision time (0..1):', collisionTime);
+
+  return { time: collisionTime, normal };
+}
+
+function isOverlapping(a: Rect, b: Rect): boolean {
+  return !(
+    a.x + a.width <= b.x ||
+    b.x + b.width <= a.x ||
+    a.y + a.height <= b.y ||
+    b.y + b.height <= a.y
+  );
 }

@@ -29,7 +29,7 @@ class Add_Some_Entities_To_The_World {
     static doItNow() {
 
 
-      const planet =   Add_Some_Entities_To_The_World.addThePlanet();
+   //   const planet =   Add_Some_Entities_To_The_World.addThePlanet();
         
           Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
     // random wall

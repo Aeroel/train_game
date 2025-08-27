@@ -36,16 +36,7 @@ class Collision_Stuff {
       if(allCollisions.length===0)  { 
       return [];
       }
-      console.log("findCollisions")
-      console.log(allCollisions.map(
-        coll=>{
-          return {
-            time: coll.time,
-            normal: coll.normal,
-            tags: coll.entityA.tags
-          }
-        }
-        ))
+
         return allCollisions;
 }
 
@@ -68,14 +59,7 @@ static getClosestCollision(
   const sortedFromClosestToFarthest = collisions.toSorted((a, b) => a.time - b.time);
 
 
-   console.log("sortedFromClosestToFarthest")
-   console.log(
-     sortedFromClosestToFarthest.map(coll=>({
-       time:coll.time, normal: coll.normal
-       
-     })
-     )
-     )
+
   return sortedFromClosestToFarthest[0];
 }
  
