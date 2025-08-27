@@ -37,6 +37,10 @@ declare type Position = {
   x: number,
   y: number
 }
+declare type Velocity = {
+  vx: number,
+  vy: number
+}
 declare type Position_Percentage = {
   xPercentage: number,
   yPercentage: number
@@ -49,6 +53,8 @@ declare type OpposingDirections =
   | ["right", "left"];
   
 declare type Box = { width: number, height: number } & Position;
+declare type Rectangle = Box;
+declare type Rectangle_With_Velocity = Rectangle & Velocity;
 declare type Orientation = "vertical" | "horizontal"
 
 

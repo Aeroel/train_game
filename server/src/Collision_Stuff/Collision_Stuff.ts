@@ -6,6 +6,7 @@ import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuf
 import { Check_For_Collision} from "#root/Collision_Stuff/Check_For_Collision.js"
 import { Collision_Broad_Phase_Check } from "#root/Collision_Stuff/Collision_Broad_Phase_Check.js"
 import {World} from "#root/World.js"
+import {World_Tick} from "#root/World_Tick.js"
 export { Collision_Stuff, };
 class Collision_Stuff {
  
@@ -35,6 +36,16 @@ class Collision_Stuff {
       if(allCollisions.length===0)  { 
       return [];
       }
+      console.log("findCollisions")
+      console.log(allCollisions.map(
+        coll=>{
+          return {
+            time: coll.time,
+            normal: coll.normal,
+            tags: coll.entityA.tags
+          }
+        }
+        ))
         return allCollisions;
 }
 
@@ -54,32 +65,18 @@ static getClosestCollision(
     My_Assert.notNull(onlyColl);
     return onlyColl;
   }
+  const sortedFromClosestToFarthest = collisions.toSorted((a, b) => a.time - b.time);
 
 
-
-  const entityStart = {
-    x: collisions[0].entityA.x,
-    y: collisions[0].entityA.y
-    };
-
-  let closest: Collision_Info = collisions[0];
-  
-  My_Assert.notNull(closest)
-  
-  let minDistSq = Helper_Functions.distSq(entityStart, closest.Position_Just_Before_Collision_A);
-
-  for (let i = 1; i < collisions.length; i++) {
-    const curr: Collision_Info = collisions[i];
-          My_Assert.notNull(curr)
-    const currDistSq = Helper_Functions.distSq(entityStart, curr.Position_Just_Before_Collision_A);
-
-    if (currDistSq < minDistSq) {
-      closest = curr;
-      minDistSq = currDistSq;
-    }
-  }
-
-  return closest;
+   console.log("sortedFromClosestToFarthest")
+   console.log(
+     sortedFromClosestToFarthest.map(coll=>({
+       time:coll.time, normal: coll.normal
+       
+     })
+     )
+     )
+  return sortedFromClosestToFarthest[0];
 }
  
  static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
@@ -90,90 +87,7 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
   return Check_For_Collision(entityA, entityB);
 }
 
-// assumption for using this: a collision actually occurred and you want to know which face of entity A is looking at entity B. The provided positions must be just a sliver before actual collision points. entity's velocities are used in the corner case
-static calculateFaces(a: Box, b: Box, avx: number, avy:number, bvx: number, bvy: number):{ aFacingB: Direction, bFacingA: Direction} {
-  
-  console.log(a,b)
-  My_Assert.that(this.boxesCollide(a,b) === false, "calculateFaces does not want to calculate if provided boxes are at collsion points");
-  let aFacingB: Direction | null = null;
 
-  const dirsToTry: Direction[] = ["right", "down", "up", "left"];
-
-  dirsToTry.forEach(dir => {
- const tempA = {...a}
-    switch(dir) {
-    case "right":
-      tempA.width += 999999;
-      if(this.boxesCollide(tempA, b)) {
-        aFacingB = "right";
-      }
-    break;
-        case "left":
-      tempA.width += 999999;
-      tempA.x -= 99999;
-      if(this.boxesCollide(tempA, b)) {
-        aFacingB = "left";
-      }
-    break;
-        case "up":
-      tempA.height += 9999999;
-      tempA.y -= 999999;
-      if(this.boxesCollide(tempA, b)) {
-        aFacingB = "up";
-      }
-      break;
-         case "down":
-      tempA.height += 999999;
-      if(this.boxesCollide(tempA, b)) {
-        aFacingB = "down";
-      }
-    break;
-    }
-  })
-  // during a collision this presumably only happens in a corner case where A is above B to B's left or something like that so neither projecting A just down or just right will detect overlap. In this case I guess I can just use A's velocity and pick an axis 
-  if(aFacingB === null) {
-     aFacingB= this.cornerFace(avx, avy, bvx, bvy);
-  }
-
-  // end
-  My_Assert.that(aFacingB !== null, "In the end, aFacingB must be assigned")
-  const bFacingA = Helper_Functions.getOppositeDirection(aFacingB);
-  return {aFacingB, bFacingA}
-}
-
-static cornerFace(avx: number, avy: number, bvx: number, bvy: number) : Direction {
-  My_Assert.that(avx > 0 || avy > 0 || bvx > 0 || bvy > 0, "Calling cornerFace on zero velocities of both entities is invalid...")
-  
- let face: Direction | null = null;
-  const AVelAttempt = this.axisVelToFace(avx, avy)
-  if(AVelAttempt) {
-     face = AVelAttempt;
-  } else {
-    const bFace  = this.axisVelToFace(bvx, bvy);
-    if(!bFace) throw new Error("Must not be here");
-    const oppFace=Helper_Functions.getOppositeDirection(bFace)
-    face = oppFace
-  }
-  
-   My_Assert.notNull(face, "face must be assigned at this point!" )
-  return face;
-}
-
-static axisVelToFace(vx: number, vy: number) : Direction | null {
-  let face: Direction | null = null;
-      if(vx >0) {
-      face = "right"
-    } else if(vx<0) {
-      face="left"
-    } else if(vy>0){
-      face="down"
-    }else if (vy<0){
-      face="up"
-    } else {
-      face = null;
-    }
-    return face;
-}
   static boxesCollide(box1: Box, box2: Box): boolean {
   return (
     box1.x < box2.x + box2.width &&
@@ -202,7 +116,13 @@ static posToBox(en: Base_Entity, pos: Position) : Box {
 }
   
 
-
+static timeToPosition(entity: Base_Entity, time: number) : Position {
+  const dt = World_Tick.deltaTime;
+  return {
+    x: entity.x + (entity.vx * dt * time),
+    y: entity.y + (entity.vy * dt * time),
+  }
+}
   
 
 

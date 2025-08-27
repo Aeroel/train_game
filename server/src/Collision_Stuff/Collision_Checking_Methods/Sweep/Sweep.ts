@@ -26,7 +26,11 @@ class Sweep {
      return collision;
   }
   private static codeByGrok(a: Simplified_Enity, b: Simplified_Enity ): Collision_Time_And_Normal | null{
-     return detectCollision(a, b);
+
+     const toLog= detectCollision(a, b);
+   console.log("from codeByGrok")
+     console.log(toLog)
+     return toLog;
   }
   static entityToSimplifiedEntity(entity: Base_Entity): Simplified_Enity {
      return {
@@ -57,108 +61,37 @@ type CollisionResult = Collision_Time_And_Normal;
  * @returns CollisionResult or null
  */
 function detectCollision(a: Entity, b: Entity): CollisionResult | null {
-  const aLeft = a.x;
-  const aRight = a.x + a.width;
-  const aTop = a.y;
-  const aBottom = a.y + a.height;
+  // relative velocity
+  const vx = a.vx - b.vx;
+  const vy = a.vy - b.vy;
 
-  const bLeft = b.x;
-  const bRight = b.x + b.width;
-  const bTop = b.y;
-  const bBottom = b.y + b.height;
+  const xInvEntry = (vx > 0 ? b.x - (a.x + a.width) : (b.x + b.width) - a.x);
+  const xInvExit = (vx > 0 ? (b.x + b.width) - a.x : b.x - (a.x + a.width));
 
-  const rvx = a.vx - b.vx;
-  const rvy = a.vy - b.vy;
+  const yInvEntry = (vy > 0 ? b.y - (a.y + a.height) : (b.y + b.height) - a.y);
+  const yInvExit = (vy > 0 ? (b.y + b.height) - a.y : b.y - (a.y + a.height));
 
-  // Check if already overlapping at t=0
-  const overlapping = aLeft < bRight && aRight > bLeft && aTop < bBottom && aBottom > bTop;
-  if (overlapping) {
-    // Compute minimum translation vector for normal
-    const overlapLeft = aRight - bLeft;
-    const overlapRight = bRight - aLeft;
-    const overlapTop = aBottom - bTop;
-    const overlapBottom = bBottom - aTop;
+  const xEntry = vx === 0 ? -Infinity : xInvEntry / vx;
+  const xExit = vx === 0 ? Infinity : xInvExit / vx;
 
-    const minOverlap = Math.min(overlapLeft, overlapRight, overlapTop, overlapBottom);
-    let nx: Normal['x'] = 0;
-    let ny: Normal['x'] = 0;
-
-    if (minOverlap === overlapLeft) {
-      nx = -1; // Push a left
-    } else if (minOverlap === overlapRight) {
-      nx = 1;  // Push a right
-    } else if (minOverlap === overlapTop) {
-      ny = -1; // Push a up
-    } else {
-      ny = 1;  // Push a down
-    }
-
-    // If multiple minima, prefer x for consistency with dynamic case
-    return { time: 0, normal: { x: nx, y: ny } };
-  }
-
-  // If no relative movement and not overlapping, no collision
-  if (rvx === 0 && rvy === 0) {
-    return null;
-  }
-
-  // Compute invasion distances (ray to slab distances)
-  let xInvEntry: number;
-  let xInvExit: number;
-  if (rvx > 0) {
-    xInvEntry = bLeft - aRight;
-    xInvExit = bRight - aLeft;
-  } else if (rvx < 0) {
-    xInvEntry = bRight - aLeft;
-    xInvExit = bLeft - aRight;
-  } else {
-    // No movement in x; already checked overlap
-    if (aLeft >= bRight || aRight <= bLeft) return null;
-    xInvEntry = -Infinity;
-    xInvExit = Infinity;
-  }
-
-  let yInvEntry: number;
-  let yInvExit: number;
-  if (rvy > 0) {
-    yInvEntry = bTop - aBottom;
-    yInvExit = bBottom - aTop;
-  } else if (rvy < 0) {
-    yInvEntry = bBottom - aTop;
-    yInvExit = bTop - aBottom;
-  } else {
-    // No movement in y; already checked overlap
-    if (aTop >= bBottom || aBottom <= bTop) return null;
-    yInvEntry = -Infinity;
-    yInvExit = Infinity;
-  }
-
-  // Compute times (ray parameter t)
-  const xEntry = (rvx === 0) ? -Infinity : xInvEntry / rvx;
-  const xExit = (rvx === 0) ? Infinity : xInvExit / rvx;
-
-  const yEntry = (rvy === 0) ? -Infinity : yInvEntry / rvy;
-  const yExit = (rvy === 0) ? Infinity : yInvExit / rvy;
+  const yEntry = vy === 0 ? -Infinity : yInvEntry / vy;
+  const yExit = vy === 0 ? Infinity : yInvExit / vy;
 
   const entryTime = Math.max(xEntry, yEntry);
   const exitTime = Math.min(xExit, yExit);
 
-  // No collision if entry after exit or outside [0, 1)
-  if (entryTime > exitTime || entryTime >= 1 || entryTime < 0) {
+  if (entryTime > exitTime || (xEntry < 0 && yEntry < 0) || entryTime > 1) {
+    // no collision
     return null;
   }
 
-  // Determine normal based on which slab (axis) the ray hits first (later entry time)
-  let nx: Normal['x'] = 0;
-  let ny: Normal['y'] = 0;
+  let normal = { x: 0, y: 0 };
+
   if (xEntry > yEntry) {
-    nx = (rvx > 0) ? -1 : 1;  // Hit on x-axis
-  } else if (yEntry > xEntry) {
-    ny = (rvy > 0) ? -1 : 1;  // Hit on y-axis
+    normal = vx < 0 ? { x: 1, y: 0 } : { x: -1, y: 0 };
   } else {
-    // Equal: corner hit, prefer x for consistency
-    nx = (rvx > 0) ? -1 : 1;
+    normal = vy < 0 ? { x: 0, y: 1 } : { x: 0, y: -1 };
   }
 
-  return { time: entryTime, normal: { x: nx, y: ny } };
+  return { time: entryTime, normal };
 }

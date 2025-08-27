@@ -19,32 +19,22 @@ export class Pushable_Entity_With_Unpushable_Entities {
   if(pushableEntity.intangibility) {
     return;
   }
-  
   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
   if(!(collision)) {
     return;
   } 
-  
+  const unpushableEntity = collision.entityB;  
   const dt = World_Tick.deltaTime;
-  const beforeCollisonTime = (collision.time - 0.01) * dt;
-  
-  const otherEntity = collision.entityB;
- 
-  const Pushable_Position_Just_Before_Collision = {
-    x: pushableEntity.x + (pushableEntity.vx * beforeCollisonTime ),
-    y: pushableEntity.y + (pushableEntity.vy * beforeCollisonTime),
-  }; 
-  const otherJustBefore = {
-    x: otherEntity.x + (otherEntity.vx * beforeCollisonTime),
-    y: otherEntity.y + (otherEntity.vy * beforeCollisonTime),
-  }; 
-   
+  const  dtAtCollision = dt * collision.time;
 
+console.log(collision.normal, dt, dtAtCollision, collision.time)
+
+/// end
     if(recursionTimes >6) {
          throw new Error(`${recursionTimes}`)
     }
-
-   this.actualResolve({pushableEntity, recursionTimes: recursionTimes++});
+   const i = 1+recursionTimes
+   this.actualResolve({pushableEntity, recursionTimes: i});
   }
 
 

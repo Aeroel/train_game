@@ -8,8 +8,8 @@ import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 
 type Face = "right"|"left"|"bottom"|"top"
 type Normal =  {
-  x:1|0|-1,
-  y: 1|0|-1
+  x:number,
+  y: number
   
 } 
 

@@ -221,7 +221,8 @@ motionsDirections: Train_Car_Motions_Directions = {
     
       this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
-      let spent = this.teleportAndBringPassengers(closest.Position_Just_Before_Collision_A.x, closest.Position_Just_Before_Collision_A.y)
+      const posAtColl = Collision_Stuff.timeToPosition(this, closest.time);
+      let spent = this.teleportAndBringPassengers(posAtColl.x, posAtColl.y)
 
       if(spent <=0) {
      this.velocity.x.Add_Component({key:this.Rail_Movement_Key,value: 0});
@@ -252,7 +253,7 @@ motionsDirections: Train_Car_Motions_Directions = {
             break;
         }
 
-        const pos = closestSensorCollision.Position_Just_Before_Collision_A;
+        const pos = Collision_Stuff.timeToPosition(this, closestSensorCollision.time);
         const switchWall = closestSensorCollision.entityB as Rail_Switch_Wall;
         spent = this.teleportAndBringPassengers(pos.x, pos.y);
         if(spent <= 0) {

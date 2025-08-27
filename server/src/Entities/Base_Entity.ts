@@ -160,6 +160,17 @@ get vy() {
   return this.velocity.y.get();
 }
 
+set vx(value: number) {
+  this.velocity.x.nullify();
+  const id = Simple_Auto_Increment_Id_Generator.generateId(`Entity_${this.id}_Set_VX`);
+  this.velocity.x.Add_Component({key:`Set_VX_${id}`, value})
+}
+set vy(value: number) {
+  this.velocity.y.nullify();
+  const id = Simple_Auto_Increment_Id_Generator.generateId(`Entity_${this.id}_Set_VY`);
+  this.velocity.x.Add_Component({key:`Set_VY_${id}`, value})
+}
+
 
 
   setPositionRelativeToPlanet({ xPercentage, yPercentage }: Position_Percentage) {
