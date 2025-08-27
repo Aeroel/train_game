@@ -6,6 +6,9 @@ export {
   type Direction,
   type OpposingDirections,
   type Box,
+  type Box_With_Velocity,
+  type Rectangle,
+  type Rectangle_With_Velocity,
   type Orientation,
   type VisibleEdge,
   type VisibleEntity,
@@ -53,8 +56,10 @@ declare type OpposingDirections =
   | ["right", "left"];
   
 declare type Box = { width: number, height: number } & Position;
+declare type Box_With_Velocity = Box & Velocity;
+// alias
 declare type Rectangle = Box;
-declare type Rectangle_With_Velocity = Rectangle & Velocity;
+declare type Rectangle_With_Velocity = Box_With_Velocity;
 declare type Orientation = "vertical" | "horizontal"
 
 

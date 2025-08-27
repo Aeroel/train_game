@@ -2,7 +2,7 @@ import { My_Assert } from "#root/My_Assert.js";
 import type { Player } from "#root/Entities/Player.js";
 import  { Helper_Functions } from "#root/Helper_Functions.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Box, Direction, Position, Collision_Info,  } from "#root/Type_Stuff.js";
+import type { Box, Direction, Position, Collision_Info, Box_With_Velocity  } from "#root/Type_Stuff.js";
 import { Check_For_Collision} from "#root/Collision_Stuff/Check_For_Collision.js"
 import { Collision_Broad_Phase_Check } from "#root/Collision_Stuff/Collision_Broad_Phase_Check.js"
 import {World} from "#root/World.js"
@@ -91,6 +91,16 @@ static entityToBox(a: Base_Entity,): Box{
    }
 }
 
+static entityToBoxWithVelocity(en: Base_Entity) : Box_With_Velocity {
+  return {
+    height: en.height,
+    width: en.width,
+    x: en.x,
+    y: en.y,
+    vx: en.vx,
+    vy: en.vy,
+  }
+}
 static posToBox(en: Base_Entity, pos: Position) : Box {
   return {
     height: en.height,
