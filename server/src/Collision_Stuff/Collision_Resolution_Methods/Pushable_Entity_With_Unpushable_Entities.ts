@@ -27,6 +27,11 @@ export class Pushable_Entity_With_Unpushable_Entities {
   const unpushableEntity = collision.entityB;  
   const dt = World_Tick.deltaTime;
   const  dtAtCollision = dt * collision.time;
+  pushableEntity.x += pushableEntity.vx * dtAtCollision;
+  pushableEntity.y += pushableEntity.vy * dtAtCollision;
+  pushableEntity.velocity.nullify();
+  
+  if(1>0) return;
  let unpushableFace = Collision_Stuff.getOppositeFace( Collision_Stuff.normalToFace(collision.normal));
 
     const pushableAdjustPos = {x:0,y:0}

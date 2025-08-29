@@ -23,9 +23,9 @@ class Sweep {
 
      const collision =  this.codeByGPTWrapper(a, b);
      if(collision) {
-       console.log(collision, {
+      /* console.log(collision, {
         a: Collision_Stuff.entityToBoxWithVelocity(a), b: Collision_Stuff.entityToBoxWithVelocity(b)
-       })
+       })*/
      }
      return collision;
   }
@@ -34,7 +34,7 @@ class Sweep {
     const rectA= Collision_Stuff.entityToBoxWithVelocity(a);
     const rectB= Collision_Stuff.entityToBoxWithVelocity(b);
     const dt = World_Tick.deltaTime;
-     const toLog= CCD(rectA, rectB);
+     const toLog= myCCD(rectA, rectB);
      return toLog;
   }
   
@@ -59,97 +59,7 @@ interface CollRes {
   normal: Normal, time: number
 }
 
-function CCD(a: Rect, b: Rect): null | CollRes {
-  // Calculate relative velocity (a moving relative to b)
-  const vx = a.vx - b.vx;
-  const vy = a.vy - b.vy;
-  
-  // If no relative movement, check if already overlapping
-  if (vx === 0 && vy === 0) {
-    // Check if already overlapping
-    if (a.x < b.x + b.width && 
-        a.x + a.width > b.x && 
-        a.y < b.y + b.height && 
-        a.y + a.height > b.y) {
-      return {
-        normal: { x: 0, y: 0 },
-        time: 0
-      };
-    }
-    return null;
-  }
-  
-  // Calculate time to enter and exit for each axis
-  let txEntry, txExit, tyEntry, tyExit;
-  
-  // X-axis
-  if (vx > 0) {
-    txEntry = (b.x - (a.x + a.width)) / vx;
-    txExit = ((b.x + b.width) - a.x) / vx;
-  } else if (vx < 0) {
-    txEntry = ((b.x + b.width) - a.x) / vx;
-    txExit = (b.x - (a.x + a.width)) / vx;
-  } else {
-    // No movement on x-axis
-    if (a.x >= b.x + b.width || a.x + a.width <= b.x) {
-      return null; // No overlap possible
-    }
-    txEntry = -Infinity;
-    txExit = Infinity;
-  }
-  
-  // Y-axis
-  if (vy > 0) {
-    tyEntry = (b.y - (a.y + a.height)) / vy;
-    tyExit = ((b.y + b.height) - a.y) / vy;
-  } else if (vy < 0) {
-    tyEntry = ((b.y + b.height) - a.y) / vy;
-    tyExit = (b.y - (a.y + a.height)) / vy;
-  } else {
-    // No movement on y-axis
-    if (a.y >= b.y + b.height || a.y + a.height <= b.y) {
-      return null; // No overlap possible
-    }
-    tyEntry = -Infinity;
-    tyExit = Infinity;
-  }
-  
-  // Find the latest entry time and earliest exit time
-  const entryTime = Math.max(txEntry, tyEntry);
-  const exitTime = Math.min(txExit, tyExit);
-  
-  // No collision if:
-  // - Entry time is after exit time
-  // - Entry time is negative (collision would have happened in the past)
-  // - Entry time is greater than 1 (collision happens after this frame)
-  if (entryTime > exitTime || entryTime < 0 || entryTime > 1) {
-    return null;
-  }
-  
-  // Calculate collision normal
-  let normal: Normal;
-  
-  if (txEntry > tyEntry) {
-    // Collision on x-axis
-    if (vx > 0) {
-      normal = { x: -1, y: 0 }; // Hit left side of b
-    } else {
-      normal = { x: 1, y: 0 };  // Hit right side of b
-    }
-  } else {
-    // Collision on y-axis
-    if (vy > 0) {
-      normal = { x: 0, y: -1 }; // Hit top side of b
-    } else {
-      normal = { x: 0, y: 1 };  // Hit bottom side of b
-    }
-  }
-  
-  return {
-    normal,
-    time: entryTime
-  };
-}
+
 
 function myCCD(a: Rect, b: Rect): null | CollRes {
   My_Assert.that(a.width >0 && a.height > 0 && b.width > 0 && b.height > 0);
@@ -173,9 +83,11 @@ function myCCD(a: Rect, b: Rect): null | CollRes {
     return null;
   }
   
-  
+  const res = myCCDSweep(a, b);
+  return res;
   return null
 }
+
 
 function testInitialCollision(a: Rect, b: Rect) : boolean {
   
@@ -184,3 +96,154 @@ function testInitialCollision(a: Rect, b: Rect) : boolean {
 function testIfBothAreStationary(a: Rect, b: Rect) : boolean{
   return a.vx === 0 && a.vy===0 && b.vx===0 && b.vy===0;
 }
+function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
+   const dx = World_Tick.deltaTime * a.vx;
+  const dy = World_Tick.deltaTime * a.vy;
+  let entryTimeX, exitTimeX, entryTimeY, exitTimeY;
+  
+  if(dx ===0) {
+   if(a.x < b.x + b.width && b.x < a.x + a.width) {
+     	entryTimeX = Number.NEGATIVE_INFINITY;
+			exitTimeX = Number.POSITIVE_INFINITY;
+   } else {
+     return null;
+   }
+   } else {
+     let entryDistanceX;
+     		if (dx > 0) {
+			entryDistanceX = b.x - (a.x + a.width)
+		} else{
+			entryDistanceX = a.x - (b.x + b.width)
+   }
+   	entryTimeX = entryDistanceX / Math.abs(dx)
+   	let exitDistanceX;
+   		if (dx > 0){
+			exitDistanceX = b.x + b.width- a.x
+		} else {
+			exitDistanceX = a.x + a.width- b.x
+     		}
+     	exitTimeX = exitDistanceX / Math.abs(dx)
+   }
+   // y
+  	if (dy == 0) {
+		if (a.y < b.y + b.height && b.y < a.y + a.height) {
+			entryTimeY = Number.NEGATIVE_INFINITY
+			exitTimeY = Number.POSITIVE_INFINITY;
+		} else {
+			return null
+		}
+	} else {
+		let entryDistanceY
+		if (dy > 0) {
+			entryDistanceY = b.y - (a.y + a.height)
+		} else {
+			entryDistanceY = a.y - (b.y + b.height)
+		}
+		entryTimeY = entryDistanceY / Math.abs(dy)
+		let exitDistanceY
+		if (dy > 0) {
+			exitDistanceY = b.y + b.height- a.y
+		}else{
+			exitDistanceY = a.y + a.height- - b.y
+		}
+		exitTimeY = exitDistanceY / Math.abs(dy)
+  }
+  
+  // now final stretch
+  	if(entryTimeX > exitTimeY || entryTimeY > exitTimeX){ 
+  	  return null
+  	  
+  	}
+	let entryTime = Math.max(entryTimeX, entryTimeY)
+	if (entryTime < 0 || entryTime > 1) {
+	  return null
+	}
+	let normalX=0;
+	let normalY = 0;
+	if (entryTimeX > entryTimeY) {
+		normalX = dx > 0 && -1 || 1
+	}else{
+		normalY = dy > 0 && -1 || 1
+	}
+	console.log({
+	  entryTimeX, entryTimeY, normalX, normalY, exitTimeX, exitTimeY, entryTime
+	})
+	return {time: entryTime, normal: {x:normalX, y:normalY}}
+  
+  return null
+}
+
+/*
+
+local function sweep(a, dx, dy, b)
+	local entryTimeX, exitTimeX, entryTimeY, exitTimeY
+	if dx == 0 then
+		if a.x < b.x + b.w and b.x < a.x + a.w then
+			entryTimeX = -math.huge
+			exitTimeX = math.huge
+
+		else
+			return false
+		end
+	else
+		local entryDistanceX
+		if dx > 0 then
+			entryDistanceX = b.x - (a.x + a.w)
+		else
+			entryDistanceX = a.x - (b.x + b.w)
+		end
+		entryTimeX = entryDistanceX / math.abs(dx)
+
+		local exitDistanceX
+		if dx > 0 then
+			exitDistanceX = b.x + b.w - a.x
+		else
+			exitDistanceX = a.x + a.w - b.x
+		end
+	
+		-- and the exit time is just distance / speed again
+		exitTimeX = exitDistanceX / math.abs(dx)
+	end
+	-- now we'll do the same for the y-axis.
+	if dy == 0 then
+		if a.y < b.y + b.h and b.y < a.y + a.h then
+			entryTimeY = -math.huge
+			exitTimeY = math.huge
+		else
+			return false
+		end
+	else
+		local entryDistanceY
+		if dy > 0 then
+			entryDistanceY = b.y - (a.y + a.h)
+		else
+			entryDistanceY = a.y - (b.y + b.h)
+		end
+		entryTimeY = entryDistanceY / math.abs(dy)
+		local exitDistanceY
+		if dy > 0 then
+			exitDistanceY = b.y + b.h - a.y
+		else
+			exitDistanceY = a.y + a.h - b.y
+		end
+		exitTimeY = exitDistanceY / math.abs(dy)
+	end
+	--[[
+		now we have the separate time ranges when rectangles A and B
+		overlap on each axis. the time range when they're actually colliding
+		is when both time ranges overlap. if the time ranges never overlap,
+		there's no collision. we can check this the same way we check
+		for overlapping boxes.
+	]]
+	if entryTimeX > exitTimeY or entryTimeY > exitTimeX then return false end
+	local entryTime = math.max(entryTimeX, entryTimeY)
+	if entryTime < 0 or entryTime > 1 then return false end
+	local normalX, normalY = 0, 0
+	if entryTimeX > entryTimeY then
+		normalX = dx > 0 and -1 or 1
+	else
+		normalY = dy > 0 and -1 or 1
+	end
+	return entryTime, normalX, normalY
+end
+*/
