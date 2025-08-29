@@ -42,6 +42,7 @@ export class Digit extends Base_Entity {
   }
  setValue(val: Digit_Value) {
    this.value = val;
+   let seledParts: Digit_Part[]=[];
    switch(val) {
    case 0:
         this.parts.forEach((p)=>{
@@ -58,18 +59,92 @@ export class Digit extends Base_Entity {
         })
         const rightVertA = this.getPart("rightVertA");
         const rightVertB = this.getPart("rightVertB");
-        const topB = this.getPart("topB");
         rightVertA.visibility=true;
         rightVertB.visibility=true;
-        topB.visibility= true;
     break;
     case 2:
          this.parts.forEach((p)=>{
           p.visibility= false;
         })
-        const seledParts=this.getParts("topA", "topB", "rightVertA", "midA", "midB", "leftVertB", "botA", "botB");
+         seledParts=this.getParts("topA", "topB", "rightVertA", "midA", "midB", "leftVertB", "botA", "botB");
        seledParts.forEach(p=>{
          p.visibility = true;
+       })
+    break;
+    case 3:
+         this.parts.forEach((p)=>{
+          p.visibility= false;
+        })
+         seledParts=this.getParts("topA", "topB", "rightVertA", "rightVertB", "midA", "midB", "botA", "botB");
+       seledParts.forEach(p=>{
+         p.visibility = true;
+       })
+    break;
+    case 4:
+         this.parts.forEach((p)=>{
+          p.visibility= false;
+        })
+         seledParts=this.getParts("leftVertA", "midA", "midB", "rightVertA", "rightVertB");
+       seledParts.forEach(p=>{
+         p.visibility = true;
+       })
+    break;
+    case 5:
+         this.parts.forEach((p)=>{
+          p.visibility= false;
+        })
+         seledParts=this.getParts(
+           "topA", "topB", "leftVertA",
+           "midA","midB", "rightVertB",
+           "botA","botB"
+           );
+       seledParts.forEach(p=>{
+         p.visibility = true;
+       })
+    break;
+    case 6:
+         this.parts.forEach((p)=>{
+          p.visibility= false;
+        })
+         seledParts=this.getParts(
+           "topA","topB",
+           "leftVertA","leftVertB",
+           "rightVertB",
+           "midA","midB",
+           "botA", "botB",
+           );
+       seledParts.forEach(p=>{
+         p.visibility = true;
+       })
+    break;
+    case 7:
+         this.parts.forEach((p)=>{
+          p.visibility= false;
+        })
+         seledParts=this.getParts(
+          "topA",
+          "topB",
+          "rightVertA",
+          "rightVertB",
+           );
+       seledParts.forEach(p=>{
+         p.visibility = true;
+       })
+    break;
+     case 8:
+         this.parts.forEach((p)=>{
+          p.visibility= true;
+        })
+    break;
+    case 9:
+         this.parts.forEach((p)=>{
+          p.visibility= true;
+        })
+         seledParts=this.getParts(
+          "leftVertB"
+           );
+       seledParts.forEach(p=>{
+         p.visibility = false;
        })
     break;
    }

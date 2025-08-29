@@ -59,7 +59,7 @@ class Add_Some_Entities_To_The_World {
         
         const digit  = World.addEntity(new Digit({x:240,y:250, width:25, height:25}))
         setInterval(()=>{
-          if(digit.getValue()>=2){
+          if(digit.getValue()>= 9){
             return digit.setValue(0);
           }
           const newDigit = 1 + digit.getValue()
