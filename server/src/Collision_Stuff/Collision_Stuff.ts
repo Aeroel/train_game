@@ -2,7 +2,7 @@ import { My_Assert } from "#root/My_Assert.js";
 import type { Player } from "#root/Entities/Player.js";
 import  { Helper_Functions } from "#root/Helper_Functions.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
-import type { Box, Direction, Position, Collision_Info, Box_With_Velocity  } from "#root/Type_Stuff.js";
+import type { Box, Direction, Position, Collision_Info, Box_With_Velocity, Face, Normal  } from "#root/Type_Stuff.js";
 import { Check_For_Collision} from "#root/Collision_Stuff/Check_For_Collision.js"
 import { Collision_Broad_Phase_Check } from "#root/Collision_Stuff/Collision_Broad_Phase_Check.js"
 import {World} from "#root/World.js"
@@ -39,7 +39,39 @@ class Collision_Stuff {
 
         return allCollisions;
 }
+ 
+    static normalToFace(normal: Normal) : Face {
 
+  if(normal.x ===1 ) {
+    return "right";
+  }  
+  if(normal.x === -1 ) {
+    return "left";
+  } 
+  if(normal.y ===1 ) {
+    return "bottom";
+  } 
+  if(normal.y === -1 ) {
+    return "top";
+  } 
+  throw Error(`Invalid normal ${JSON.stringify(normal)}`)
+}
+
+static getOppositeFace(face: Face): Face {
+  if(face ==="bottom") {
+    return "top"
+  }
+  if(face ==="top") {
+    return "bottom"
+  }
+  if(face ==="left") {
+    return "right"
+  }
+  if(face ==="right") {
+    return "left"
+  }
+  throw new Error(`Could not determine opposite face ${face}`)
+}
 
 static getClosestCollision(
   entity: Base_Entity,

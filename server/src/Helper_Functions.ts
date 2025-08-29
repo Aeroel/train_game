@@ -74,19 +74,5 @@ class Helper_Functions {
         throw new Error(`Invalid dir ${dir}`)
     }
     
-    static normalToFace(normal: Normal) : Face {
-  if(normal.x ===1 ) {
-    return "right";
-  }  
-  if(normal.x === -1 ) {
-    return "left";
-  } 
-  if(normal.y ===1 ) {
-    return "bottom";
-  } 
-  if(normal.y === -1 ) {
-    return "top";
-  } 
-  throw Error(`Invalid normal ${JSON.stringify(normal)}`)
-}
+
 }
