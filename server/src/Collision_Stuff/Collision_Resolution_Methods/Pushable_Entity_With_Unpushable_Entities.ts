@@ -28,7 +28,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
   const dt = World_Tick.deltaTime;
   const  dtAtCollision = dt * collision.time;
  let unpushableFace = Collision_Stuff.getOppositeFace( Collision_Stuff.normalToFace(collision.normal));
-console.log(unpushableFace)
+
     const pushableAdjustPos = {x:0,y:0}
 
     switch(unpushableFace) {
@@ -53,7 +53,11 @@ console.log(unpushableFace)
     }
     pushableEntity.setPosition(pushableAdjustPos)
    
-   
+   console.log({
+     desc:"log from resolutor",
+  unpushableFace,
+  pushableAdjustPos
+})
    // spend velocity on the unaffected axis
  const remainingTime= (dt - dtAtCollision);
   const remainingVel = remainingTime / dt;

@@ -9,10 +9,12 @@ export { Wall }
 class Wall extends Base_Entity implements Entity_With_Ends_And_Orientation {
 
     color = "red";
+    normalColor = "red";
     constructor() {
         super();
         this.addTag("Wall")
     }
+
     updateState() {
 
       

@@ -55,9 +55,11 @@ interface Rect {
 }
 
 
+interface CollRes {
+  normal: Normal, time: number
+}
 
-
-function CCD(a: Rect, b: Rect): null | {normal: Normal, time: number} {
+function CCD(a: Rect, b: Rect): null | CollRes {
   // Calculate relative velocity (a moving relative to b)
   const vx = a.vx - b.vx;
   const vy = a.vy - b.vy;
@@ -149,4 +151,36 @@ function CCD(a: Rect, b: Rect): null | {normal: Normal, time: number} {
   };
 }
 
+function myCCD(a: Rect, b: Rect): null | CollRes {
+  My_Assert.that(a.width >0 && a.height > 0 && b.width > 0 && b.height > 0);
+  My_Assert.that(
+    Number.isFinite(a.width) &&
+    Number.isFinite(a.height) &&
+    Number.isFinite(b.width) &&
+    Number.isFinite(b.height) 
+    )
+  let time = 0;
+  const normal: Normal = {x:0,y:0}
+  const result: CollRes = {normal, time}
+  const initialCollision = testInitialCollision(a, b)
+  if(initialCollision) {
+    // if they collide or overlap initially, then let's return time 0 normal 0,0
+    return result;
+  }
+  const bothAreStationary = testIfBothAreStationary(a,b)
+  if(bothAreStationary) { 
+    // if they passed the initialCollision test yet are stationary then no collision can logically occur.
+    return null;
+  }
+  
+  
+  return null
+}
 
+function testInitialCollision(a: Rect, b: Rect) : boolean {
+  
+  return Collision_Stuff.static_No_Velocity_Collision_Check(a, b);
+}
+function testIfBothAreStationary(a: Rect, b: Rect) : boolean{
+  return a.vx === 0 && a.vy===0 && b.vx===0 && b.vy===0;
+}

@@ -19,7 +19,6 @@ class Collision_Stuff {
 
         World.getCurrentEntities().forEach((other) => {
           if (entity === other) return;
-      
           if (!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(entity, other)) {
             return;
           }
@@ -104,13 +103,14 @@ static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collisio
 }
 
 
-  static boxesCollide(box1: Box, box2: Box): boolean {
-  return (
-    box1.x < box2.x + box2.width &&
-    box1.x + box1.width > box2.x &&
-    box1.y < box2.y + box2.height &&
-    box1.y + box1.height > box2.y
-  );
+  static static_No_Velocity_Collision_Check(boxA: Box, boxB: Box): boolean {
+return (
+      boxA.x < boxB.x + boxB.width &&
+      boxA.x + boxA.width > boxB.x &&
+      boxA.y < boxB.y + boxB.height &&
+      boxA.y + boxA.height > boxB.y
+    )
+
 }
 
 
