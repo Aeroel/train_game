@@ -14,7 +14,8 @@ class World {
       throw new Error('Entity has no entity tag, check stuff');
 
     }
-    World.state.entities.push(entity)
+    World.state.entities.push(entity);
+    entity.addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld:true});
           return entity;
   }
 

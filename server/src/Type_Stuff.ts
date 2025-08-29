@@ -2,6 +2,7 @@ export {
   Typed_Object_Keys,
   type Point,
   type Position,
+  type Size,
   type Position_Percentage,
   type Direction,
   type OpposingDirections,
@@ -35,6 +36,10 @@ export type Simplified_Enity = {
 declare type Point = {
   x: number,
   y: number,
+}
+declare type Size = {
+  height: number,
+  width: number
 }
 declare type Position = {
   x: number,

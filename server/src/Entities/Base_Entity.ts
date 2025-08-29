@@ -26,6 +26,7 @@ class Base_Entity {
   defaultVisionRange = 200;
   visionRange = this.defaultVisionRange;
   intangibility = false;
+  visibility = true;
   constructor() {
 
     this.addTag("Entity");
@@ -83,7 +84,12 @@ Clean_Up() {
       )
   }
   
-  
+ addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld} : { setThisToTrueToIndicateThatYouCalledThisFromWorld: boolean}
+  ) {
+   if(!setThisToTrueToIndicateThatYouCalledThisFromWorld) {
+     throw new Error('addPartsToWorld can only be called from World')
+   }
+ } 
 applyVelocityToPosition() {
       const nextPosition = this.calculateNextPositionBasedOnVelocityAndDeltaTime();
 

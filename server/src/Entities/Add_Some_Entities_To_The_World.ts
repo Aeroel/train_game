@@ -3,6 +3,7 @@ import { Bot } from "#root/Entities/Bot.js";
 import { Railway_Switch_Wall_Generator } from "#root/Entities/Railway_Switch_Wall_Generator.js"
 import { Base_Entity } from '#root/Entities/Base_Entity.js';
 import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
+import { Timer } from "#root/Entities/Timer/Timer.js";
 import { Train_Car, type Train_Car_Motion_Directions } from "#root/Entities/Train_Stuff/Train_Car.js";
 import { World } from "#root/World.js";
 import { Forcefield } from "#root/Entities/Forcefield.js";
@@ -54,6 +55,8 @@ class Add_Some_Entities_To_The_World {
        
       // random forcefield
         const ff = World.addEntity(new Forcefield());
+        
+        const timer  = World.addEntity(new Timer({x:240,y:250, width:100, height:100}))
         
        const bot= World.addEntity(new Bot())
        bot.setXY(2000, 2000).setHeight(300);
