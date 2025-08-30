@@ -191,13 +191,36 @@ motionsDirections: Train_Car_Motions_Directions = {
       let Budget_Remaining=Consumable_Budget;
   
 
-      const posAtColl = Collision_Stuff.timeToPosition(this, closest.time);
-      const posAtBeforeColl = Collision_Stuff.Get_pos_where_A_does_not_overlap_with_B({
-        entityA: this,
-        APos: posAtColl
-        entityB: rail_switch_wall,
-        BPos: rail_switch_wall.getPosAtTime(closest.time)
-      })
+     const dtColl = World_Tick.deltaTime * closest.time;
+      const initialNewCarPos={x:this.x,y:this.y}
+      const BFace = Collision_Stuff.normalToFace(closest.normal);
+   switch(BFace){
+     case "left":
+          initialNewCarPos.x = rail_switch_wall.x - this.width();
+          initialNewCarPos.y += this.vy * dtColl
+      break;
+     case "right":
+          initialNewCarPos.x = rail_switch_wall.x + rail_switch_wall.width;
+           initialNewCarPos.y += this.vy * dtColl
+      break;
+     case "up":
+          initialNewCarPos.y = rail_switch_wall.y  - this.height;
+            initialNewCarPos.x += this.vx * dtColl
+      break;
+     case "down":
+          initialNewCarPos.y = rail_switch_wall.y  + rail_switch_wall.height;
+          initialNewCarPos.x += this.vx * dtColl
+      break;
+   }
+   const finalNewCarPos = Collision_Stuff.separatedBoxAPosition({
+     a: Collision_Stuff.positionAndSizeToBox({position: initialNewCarPos, size:this.getSize()}),
+     b: Collision_Stuff.positionAndSizeToBox({position: , size:this.getSize()}),
+   })
+
+
+
+
+
       let spent = this.teleportAndBringPassengers(posAtBeforeColl.x, posAtBeforeColl.y)
 
       // I dont think spent being 0 is likely to ever happen?
