@@ -171,7 +171,8 @@ motionsDirections: Train_Car_Motions_Directions = {
      } 
   
      this.prevSensor = rail_switch_wall;
-         
+
+        
       const beginningPos = {x: this.x, y: this.y}
       const nextPos = 
         this.calculateNextPositionBasedOnVelocityAndDeltaTime()
@@ -181,33 +182,46 @@ motionsDirections: Train_Car_Motions_Directions = {
       y:nextPos.y}
       
       let Consumable_Budget;
-      const car_Is_Currently_Moving_Vertically = this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down');
-      if(car_Is_Currently_Moving_Vertically) {
+      const Is_car_moving_vertically = this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down');
+      if(Is_car_moving_vertically) {
        Consumable_Budget = Math.abs(beginningPos.y - supposedNextPos.y)
       } else { // else moving horizontally
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
       }
       let Budget_Remaining=Consumable_Budget;
   
-    
-      this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
+
       /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
       const posAtColl = Collision_Stuff.timeToPosition(this, closest.time);
-      let spent = this.teleportAndBringPassengers(posAtColl.x, posAtColl.y)
+      const posAtBeforeColl = Collision_Stuff.Get_pos_where_A_does_not_overlap_with_B({
+        entityA: this,
+        APos: posAtColl
+        entityB: rail_switch_wall,
+        BPos: rail_switch_wall.getPosAtTime(closest.time)
+      })
+      let spent = this.teleportAndBringPassengers(posAtBeforeColl.x, posAtBeforeColl.y)
 
+      // I dont think spent being 0 is likely to ever happen?
       if(spent <=0) {
      this.velocity.x.Add_Component({key:this.Rail_Movement_Key,value: 0});
      this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
            return;
       }
       Budget_Remaining -= spent;
+      if(Budget_Remaining <= 0) {
+        
+        My_Assert.that(Budget_Remaining ===0,"Train_Car,I do not think Budget_Remaining is ever supposed to be less than zero. Why is it less that zero?");
+        return;
+      }
       // now begins the budget loop
       let timesWeRanTheLoop = 0;
 
       const mustNotGoOverThis = 20; // <-- if it does go over it, I assume I will need to reduce train speed
       while(Budget_Remaining > 0) { 
         timesWeRanTheLoop++;
-        My_Assert.that(timesWeRanTheLoop < mustNotGoOverThis);
+        My_Assert.that(timesWeRanTheLoop < mustNotGoOverThis, "Went over budget loop, maybe a bug somewhere or just train speed too high so it loops over the railway too much in a single tick?");
+        
+       this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
         const newVel = this.determine_new_velocity_for_movement_along_the_rail();
         for(const vel in newVel) {
           const key = vel as keyof {vx: Velocity_Component, vy: Velocity_Component }
@@ -218,9 +232,10 @@ motionsDirections: Train_Car_Motions_Directions = {
         }
         this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:newVel.vx.value});
         this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:newVel.vy.value});
-        
-        const closestSensorCollision = this.Get_Closest_Sensor_Collision();
-        if(closestSensorCollision === null || closestSensorCollision.entityB === this.prevSensor) {
+        // I think we always collide at this stage first with same sensor wall due to the way diagonal positioning works, so we do need the NEXT closesr sensor indeed.
+        const nextClosestSensorCollision = this.Get_Next_Closest_Sensor_Collision();
+        if(nextClosestSensorCollision === null) {
+          // this means that the train car is free to move to its desired position without additional logic handling
             break;
         }
 
@@ -322,6 +337,8 @@ Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall: Rail_Switch_
 setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Directions) {
   Train_Car_Static.setMotionDirections(this, motion, directions);
 }
+
+
   teleportAndBringPassengers(toX: number, toY: number) {
     My_Assert.that(
       this.currentMovementMotion !== null, );
