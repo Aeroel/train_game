@@ -77,12 +77,6 @@ Clean_Up() {
   }
 
 
-  isMoving() {
-    return (
-         this.velocity.x.get() !== 0 ||
-         this.velocity.y.get() !== 0 
-      )
-  }
   
  addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld} : { setThisToTrueToIndicateThatYouCalledThisFromWorld: boolean}
   ) {

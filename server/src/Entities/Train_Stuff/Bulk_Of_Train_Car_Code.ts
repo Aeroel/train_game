@@ -3,7 +3,7 @@ import type { Velocity_Component} from "#root/Entities/Entity_Velocity.js";
 
 import { World } from "#root/World.js";
 import { Base_Entity } from "../Base_Entity.js";
-import type { Train_Car, Train_Car_End, Train_Car_End_Name } from "./Train_Car.js";
+import type { Train_Car } from "./Train_Car.js";
 
 export { Bulk_Of_Train_Car_Code }
 

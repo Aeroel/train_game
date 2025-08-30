@@ -29,13 +29,6 @@ interface Train_Car_Constructor {
 
 export type Train_Car_Motion_Directions = Direction[]
 
-  
-  
-export type Train_Car_End = {
-  name: Train_Car_End_Name
-} & Position;
-
-export type Train_Car_End_Name = "firstEnd" | "secondEnd";
 export type Train_Car_Motion = null | "backwards" | "forwards";
 
 export type Train_Car_Motions_Directions = {
@@ -107,58 +100,46 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.Init_Force_Keys();
   }
   
-  setMotionsDirections(forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions) {
-   Train_Car_Static.setMotionsDirections(this, forwards, backwards);
- 
+    updateState() {
+    this.collectCarPassengers();
+    this.addToPropagationList();
+    this.move_handler();
+   super.updateState();
   }
   
-
-  Init_Force_Keys() {
-    const component= {value:0,key:this.Rail_Movement_Key}
-    this.velocity.x.Add_Component(component);
-    this.velocity.y.Add_Component(component);
-  }
   
-  Add_Car_Walls_And_Doors_To_Propagation() {
-    // all walls and doors of the car
-    for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
-      this.velocity.Add_To_Propagation_List(wall_or_door.velocity);
-      if (wall_or_door instanceof Sliding_Door) {
-        for (const sensor of Object.values(wall_or_door.sensors)) {
-          this.velocity.Add_To_Propagation_List(sensor.velocity)
-        }
-      }
-
+  collectCarPassengers() {
+    const passengers: Base_Entity[]=[];
+    const all = Collision_Stuff.findCollisions(this, (other)=>other.hasTag("Can_Ride_Train"));
+    if(all.length ===0) {
+      return
     }
-    // and the central box
-    this.velocity.Add_To_Propagation_List(this.Center_Box_Entity.velocity);
-
-  }
-
-
-
-  Add_Center_Box_Entity() {
-    return this.bulk_of_code.Add_Center_Box_Entity();
-  }
-
-
-
-
-  stopMovement() {
-   
-   if(this.currentMovementMotion === null) {
-     return;
-   }
-    this.lastMovementMotionBeforeNull = this.currentMovementMotion;
     
-    this.currentMovementMotion = null;
-
-    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:0});
-    this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
-
+    all.forEach(coll=>{
+      const passenger = coll.entityB;
+      this.passengers.push(passenger)
+    })
+    this.colectedPassengersForThisTick = true;
   }
 
-
+  
+  Clean_Up() {
+    this.velocity.Clear_Propagation_List();
+    this.colectedPassengersForThisTick = false;
+    this.passengers = [];
+    super.Clean_Up();
+  }
+  
+  addToPropagationList() {
+      this.Add_Car_Walls_And_Doors_To_Propagation();
+      if(!this.colectedPassengersForThisTick) {
+        throw new Error("You forgot to collect passengers");
+      }
+        this.passengers.forEach(passenger=>{
+          this.velocity.Add_To_Propagation_List(passenger.velocity);
+        })
+}
+  
   move_handler() {
   const {vx, vy} = this.determine_new_velocity_for_movement_along_the_rail(); 
    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:vx.value});
@@ -172,17 +153,6 @@ motionsDirections: Train_Car_Motions_Directions = {
   }
   
   
-  Get_Closest_Sensor_Collision() {
-    const closest = Collision_Stuff.getClosestCollision(this, (other)=> {
-      if(!other.hasTag("Rail_Switch_Wall")) {
-        return false;
-        }
-        const Switch_Wall = other as Rail_Switch_Wall;
-        return Switch_Wall.areDirectionsAlignedForTrigger(this.getCurrentMovementDirs());
-      
-    });
-    return closest;
-  }
   
    
   switchHandler() {
@@ -211,9 +181,10 @@ motionsDirections: Train_Car_Motions_Directions = {
       y:nextPos.y}
       
       let Consumable_Budget;
-      if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
+      const car_Is_Currently_Moving_Vertically = this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down');
+      if(car_Is_Currently_Moving_Vertically) {
        Consumable_Budget = Math.abs(beginningPos.y - supposedNextPos.y)
-      } else {
+      } else { // else moving horizontally
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
       }
       let Budget_Remaining=Consumable_Budget;
@@ -267,6 +238,73 @@ motionsDirections: Train_Car_Motions_Directions = {
      this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: 0});
 
   }
+
+  
+  setMotionsDirections(forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions) {
+   Train_Car_Static.setMotionsDirections(this, forwards, backwards);
+ 
+  }
+  
+
+  Init_Force_Keys() {
+    const component= {value:0,key:this.Rail_Movement_Key}
+    this.velocity.x.Add_Component(component);
+    this.velocity.y.Add_Component(component);
+  }
+  
+  Add_Car_Walls_And_Doors_To_Propagation() {
+    // all walls and doors of the car
+    for (const wall_or_door of Object.values(this.Walls_And_Doors)) {
+      this.velocity.Add_To_Propagation_List(wall_or_door.velocity);
+      if (wall_or_door instanceof Sliding_Door) {
+        for (const sensor of Object.values(wall_or_door.sensors)) {
+          this.velocity.Add_To_Propagation_List(sensor.velocity)
+        }
+      }
+
+    }
+    // and the central box
+    this.velocity.Add_To_Propagation_List(this.Center_Box_Entity.velocity);
+
+  }
+
+
+
+  Add_Center_Box_Entity() {
+    return this.bulk_of_code.Add_Center_Box_Entity();
+  }
+
+
+
+
+  stopMovement() {
+   
+   if(this.currentMovementMotion === null) {
+     return;
+   }
+    this.lastMovementMotionBeforeNull = this.currentMovementMotion;
+    
+    this.currentMovementMotion = null;
+
+    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:0});
+    this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
+
+  }
+
+  
+  
+  Get_Closest_Sensor_Collision() {
+    const closest = Collision_Stuff.getClosestCollision(this, (other)=> {
+      if(!other.hasTag("Rail_Switch_Wall")) {
+        return false;
+        }
+        const Switch_Wall = other as Rail_Switch_Wall;
+        return Switch_Wall.areDirectionsAlignedForTrigger(this.getCurrentMovementDirs());
+      
+    });
+    return closest;
+  }
+  
 
 
 
@@ -432,54 +470,7 @@ openDoors(dir: Direction) {
       this.velocity.y.Add_Component(newVel.vy );
   }
 
-addToPropagationList() {
-      this.Add_Car_Walls_And_Doors_To_Propagation();
-      if(!this.colectedPassengersForThisTick) {
-        throw new Error("You forgot to collect passengers");
-      }
-        this.passengers.forEach(passenger=>{
-          this.velocity.Add_To_Propagation_List(passenger.velocity);
-        })
-}
-  updateState() {
-    this.collectCarPassengers();
-    this.addToPropagationList();
-    this.move_handler();
-   super.updateState();
-  }
-  
-  
-  collectCarPassengers() {
-    const passengers: Base_Entity[]=[];
-    const all = Collision_Stuff.findCollisions(this, (other)=>other.hasTag("Can_Ride_Train"));
-    if(all.length ===0) {
-      return
-    }
-    
-    all.forEach(coll=>{
-      const passenger = coll.entityB;
-      this.passengers.push(passenger)
-    })
-    this.colectedPassengersForThisTick = true;
-  }
 
-
-
-
-  /* 
-  
-  */
-
-  
-  
-  Clean_Up() {
-    this.velocity.Clear_Propagation_List();
-    this.colectedPassengersForThisTick = false;
-    this.passengers = [];
-    super.Clean_Up();
-  }
-  
-  
  
 
   Create_And_Return_Car_Walls_And_Doors() {
