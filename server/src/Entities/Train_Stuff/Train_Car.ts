@@ -235,9 +235,10 @@ motionsDirections: Train_Car_Motions_Directions = {
         // I think we always collide at this stage first with same sensor wall due to the way diagonal positioning works, so we do need the NEXT closesr sensor indeed.
         const nextClosestSensorCollision = this.Get_Next_Closest_Sensor_Collision();
         if(nextClosestSensorCollision === null) {
-          // this means that the train car is free to move to its desired position without additional logic handling
-            break;
+          // this means that the train car is free to move to its desired position without additional logic handling. Note: we need to specifically exit the switchHandler here, so return is required
+            return;
         }
+        // if above check did not exit the switchHandler, we have to handle the new sensor
 
         const pos = Collision_Stuff.timeToPosition(this, closestSensorCollision.time);
         const switchWall = closestSensorCollision.entityB as Rail_Switch_Wall;
