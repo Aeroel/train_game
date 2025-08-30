@@ -191,7 +191,6 @@ motionsDirections: Train_Car_Motions_Directions = {
       let Budget_Remaining=Consumable_Budget;
   
 
-      /* and the most complicated thing I need to do is to sync up entities that remain in the car as I snap back the car */
       const posAtColl = Collision_Stuff.timeToPosition(this, closest.time);
       const posAtBeforeColl = Collision_Stuff.Get_pos_where_A_does_not_overlap_with_B({
         entityA: this,
