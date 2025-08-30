@@ -59,7 +59,7 @@ class PreEmitStuff {
       const visiblePortion = PreEmitStuff.getVisiblePortion(player, entity);
       const visibleEdges = PreEmitStuff.getVisibleEdges(player, entity);
       
-      const entityIsVisible = (entity.visibility === true) &&  visiblePortion;
+      const entityIsVisible =  visiblePortion;
       if (!entityIsVisible) {
         return;
       }

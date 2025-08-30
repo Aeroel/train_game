@@ -10,7 +10,7 @@ export { EmitStuff }
 
 class EmitStuff {
   static Emit_To_All_Players_World_State_Stuff() {
-    const entities = World.getEntities();
+    const entities = World.getEntities().filter(e=>e.visibility);
    EntitySorter.Sort_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera(entities);
    
     const allPlayers: Player[] = World.filterEntities(entity => entity.hasTag("Player")) as Player[];
