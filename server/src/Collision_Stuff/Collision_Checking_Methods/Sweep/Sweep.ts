@@ -117,8 +117,16 @@ function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
   
   const {rvx, rvy} = getRelativeVelocity(a,b);
 
-  My_Assert.that(rvx !== 0 || rvy !== 0, "myCCDSwee0 says: Oops buddy, make sure you check that the two entities are moving before invoking me. The reason for this is that there is nothing for me to do if they are not moving.")
- return null; 
+  My_Assert.that(rvx !== 0 || rvy !== 0, "myCCDSweep says: Oops buddy, make sure you check that the two entities are moving before invoking me. The reason for this is that there is nothing for me to do if they are not moving.");
+  
+  // now we can invoke the ccd algo
+  const I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic = true;
+  const result = myCCDSweepLogic({
+    a,
+    b,
+   I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic 
+  });
+ return result
 }
 
 function getRelativeVelocity(a: Rect, b: Rect) : {rvx: number, rvy: number }  {
@@ -150,4 +158,18 @@ function If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collisio
     }
   }
   return collision;
+}
+
+// NOTE: do not call this directly, because
+function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic}: {a: Rect, b: Rect, I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic: boolean}) : null| CollRes{
+  My_Assert.that(I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic, "Oops, call this only after you have");
+ 
+  // finally, here is the sweep algo itself
+ // so we know that at least one entity is moving.
+ // we also know they do not overlap  at initial positions.
+  let result: null | CollRes = null;
+  
+  
+  return result;
+  
 }
