@@ -40,8 +40,8 @@ export function Expand_entities_by_their_velocities_and_check_whether_they_might
     const boxB_bottom = Math.max(boxB.y + boxB.height, nextB.y + boxB.height);
     
     // Check for AABB overlap of the expanded boxes on both axes
-    const xOverlap = boxA_left < boxB_right && boxA_right > boxB_left;
-    const yOverlap = boxA_top < boxB_bottom && boxA_bottom > boxB_top;
+    const xOverlap = boxA_left <= boxB_right && boxA_right >= boxB_left;
+    const yOverlap = boxA_top < boxB_bottom && boxA_bottom >= boxB_top;
     
     areThey = xOverlap && yOverlap;
 
