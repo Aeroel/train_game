@@ -80,8 +80,9 @@ function myCCD(a: Rect, b: Rect): null | CollRes {
     return null;
   }
   if(preSweepResult ==="shouldCheckMorePreciselyUsingSweep") {
-  const res = myCCDSweep(a, b);
-  res.normal = If_both_x_and_y_of_normal_are_not_zero_prefer_x(res.normal);
+  let res = myCCDSweep(a, b);
+  res = If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(res);
+  
   
   return res;
   }
@@ -121,11 +122,16 @@ function testRelativelyStationary(a: Rect, b: Rect) : boolean{
     return relativeVX === 0 && relativeVX === 0;
 }
 
-function If_both_x_and_y_of_normal_are_not_zero_prefer_x(normal: normal) : Normal {
+function If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(collision: null | CollRes) : CollRes | null {
+  if(!collision) {
+    return null;
+  }
+  const normal = collision.normal;
   if(normal.x !== 0 && normal.y !== 0) {
-    return {
+    collision.normal =  {
       x: normal.x,
-      x: 0
+      y: 0
     }
   }
+  return collision;
 }
