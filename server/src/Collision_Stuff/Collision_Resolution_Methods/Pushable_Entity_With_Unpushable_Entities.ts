@@ -133,7 +133,93 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
          }
         break;
     }
- 
+    // adjust unaffected axis to remove hairy floats that might be created by the operation. for exampel, assume x is the unaffected axis. this might lead to some hairy number like 2732.2837295726
+     let signVX = Math.sign(pushableEntity.vx)
+     let signVY = Math.sign(pushableEntity.vy)
+     signVY=<0|1|-1>signVY
+     signVX=<0|1|-1>signVX
+     const negedSignVY=<0|1|-1>-signVY
+    const negedSignVX=<0|1|-1>-signVX
+         My_Assert.that(signVX === 0 || signVX === 1 || signVX === -1)
+     My_Assert.that(signVY === 0 || signVY === 1 || signVY === -1)
+    switch(unpushableFace) {
+      case "top":
+     case "bottom":
+        pushableEntity.vx =  roundToCleanFloat(pushableEntity.vx, negedSignVX)  
+        pushableEntity.x =  roundToCleanFloat(pushableEntity.x, negedSignVX)  
+      break;
+      case "left":
+     case "right":
+              pushableEntity.vy =  roundToCleanFloat(pushableEntity.vy, negedSignVY)  
+        pushableEntity.y =  roundToCleanFloat(pushableEntity.y, negedSignVY)  
+      break;
+    }
  // }
 }
 }
+
+
+
+function roundToCleanFloat(value: number, velocity: -1 | 0 | 1): number{
+    // Define valid fractional values (powers of 1/2 down to 1/32 = 0.03125)
+  const validFractions = [0, 0.03125, 0.0625, 0.125, 0.25, 0.5];
+  return complexCodeByClaude(value, velocity, validFractions);
+}
+function complexCodeByClaude(value: number, velocity: -1|0|1, validFractions: number[]) : number {
+  // Find the fractional part
+  const integerPart = Math.floor(value);
+  const fractionalPart = value - integerPart;
+
+  
+  let targetFraction: number;
+  
+  if (velocity === 0) {
+    // Find closest valid fraction
+    targetFraction = validFractions.reduce((closest, current) => {
+      return Math.abs(current - fractionalPart) < Math.abs(closest - fractionalPart) 
+        ? current : closest;
+    });
+  } else {
+    // Find valid fractions above and below current fraction
+    const below = validFractions.filter(f => f <= fractionalPart);
+    const above = validFractions.filter(f => f >= fractionalPart);
+    
+    const maxBelow = below.length > 0 ? Math.max(...below) : 0;
+    const minAbove = above.length > 0 ? Math.min(...above) : 1; // 1.0 wraps to next integer
+    
+    if (velocity === 1) {
+      // Round up
+      targetFraction = minAbove === 1 ? 0 : minAbove;
+      // If we hit 1.0, carry over to next integer
+      if (minAbove === 1) {
+        return integerPart + 1;
+      }
+    } else { // velocity === -1
+      // Round down
+      targetFraction = maxBelow;
+    }
+  }
+  
+  return integerPart + targetFraction;
+}
+/*
+// Test cases from your examples
+console.log("Testing with your examples:");
+console.log("777.282471838, vel 0 ->", roundToCleanFloat(777.282471838, 0)); // Should be 777.25
+console.log("0.3758173, vel 1 ->", roundToCleanFloat(0.3758173, 1)); // Should be 0.5
+console.log("0.3757173, vel 0 ->", roundToCleanFloat(0.3757173, 0)); // Whatever is closest
+console.log("0.3757173, vel -1 ->", roundToCleanFloat(0.3757173, -1)); // Should be 0.25
+console.log("38482.4769682, vel 1 ->", roundToCleanFloat(38482.4769682, 1)); // Should be 38482.5
+console.log("38482.4769682, vel 0 ->", roundToCleanFloat(38482.4769682, 0)); // Whatever is closest
+console.log("38482.4769682, vel -1 ->", roundToCleanFloat(38482.4769682, -1)); // Should be 38482.25
+console.log("38482.047472, vel 1 ->", roundToCleanFloat(38482.047472, 1)); // Should be 38482.0625
+console.log("38482.047472, vel -1 ->", roundToCleanFloat(38482.047472, -1)); // Should be 38482.03125
+console.log("38482.047472, vel 0 ->", roundToCleanFloat(38482.047472, 0)); // Whatever is closest
+
+// Additional edge cases
+console.log("\nEdge cases:");
+console.log("777.0, vel 1 ->", roundToCleanFloat(777.0, 1)); // Already clean
+console.log("777.5, vel 1 ->", roundToCleanFloat(777.5, 1)); // Should go to 778.0
+console.log("777.03125, vel -1 ->", roundToCleanFloat(777.03125, -1)); // Should go to 777.0
+
+*/

@@ -79,8 +79,11 @@ function myCCD(a: Rect, b: Rect): null | CollRes {
   if(preSweepResult === "Collision_is_impossible") {
     return null;
   }
+  if(preSweepResult ==="shouldCheckMorePreciselyUsingSweep") {
   const res = myCCDSweep(a, b);
   return res;
+  }
+  throw new Error(`Oops, how did the program ever reach this throw line? maybe check what preSweepCheck returned. it returned this:${preSweepResult}`)
 }
 
 
