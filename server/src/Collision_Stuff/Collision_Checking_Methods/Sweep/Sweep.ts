@@ -121,6 +121,7 @@ function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
   
   // now we can invoke the ccd algo
   const I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic = true;
+  console.log(a.x, a.y)
   const result = myCCDSweepLogic({
     a,
     b,
@@ -173,6 +174,8 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
   const dt = World_Tick.deltaTime;
   const {rvx, rvy} = getRelativeVelocity(a,b)
   // maybe we might as well get the positions both entities want to end up in if no collision occurs as well as what are the displacements of position for both
+  const aPos= {x:a.x,y:a.y}
+  const bPos= {x:b.x,y:b.y}
   const aEnd = {x:0,y:0}
   aEnd.x = a.x + (dt * a.vx);
   aEnd.y = a.y + (dt * a.vy);
@@ -186,8 +189,8 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
   aDiff.y = aEnd.y - a.y
 
   const bDiff = {x:0,y:0}
-  bDiff.x = bEnd.x - a.x
-  bDiff.y = bEnd.x - a.y
+  bDiff.x = bEnd.x - b.x
+  bDiff.y = bEnd.x - b.y
 
   
   /* so here we need to figure out the collision time and collision normal. Collision time is a value >0 and <=1 I can multiply dt by to get xy at collision. Collision normal is which side of entity B is looking at entity A at point of collision. For example, if A is going right and collides with B, normal is x -1 y 0.
@@ -196,38 +199,55 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
     I assume one of the axes is always zero in most cases but in cases where the entities collide in a perfect diagonal way, it might be something like x 1 y-1, i.e., a is moving left down and collides with b. This must be returned as is. I will use this normal and I will just pico x axis if both are not zero. because,either way, I think that only one axis is ever needed to handle the collision,
   */
   
-  result= chatgpt(rvx,rvy, a,b);
+  result= chatgpt(rvx,rvy, dt, a,b);
   console.log({
     result,
     dt, rvx, rvy, 
+    aPos, bPos,
     aEnd, aDiff,
     bEnd, bDiff,
   })
   return result;
   
 }
-function chatgpt(rvx: number, rvy: number, a: Rect, b: Rect): null | CollRes {
-  // === swept AABB test ===
-  const invEntry = {x: 0, y: 0};
-  const invExit = {x: 0, y: 0};
 
-  if (rvx > 0) {
-    invEntry.x = (b.x - (a.x + a.width)) / rvx;
-    invExit.x = ((b.x + b.width) - a.x) / rvx;
-  } else if (rvx < 0) {
-    invEntry.x = ((b.x + b.width) - a.x) / rvx;
-    invExit.x = (b.x - (a.x + a.width)) / rvx;
+function chatgpt(
+  rvx: number,
+  rvy: number,
+  dt: number,
+  a: Rect,
+  b: Rect
+): null | CollRes {
+  // convert relative velocity into relative displacement for the timestep
+  const rdx = rvx * dt;
+  const rdy = rvy * dt;
+
+  const invEntry = { x: 0, y: 0 };
+  const invExit = { x: 0, y: 0 };
+
+  // distances from A to B on each axis (gap when A is to the left/top of B)
+  const xEntryDist = b.x - (a.x + a.width);
+  const xExitDist = b.x + b.width - a.x;
+  const yEntryDist = b.y - (a.y + a.height);
+  const yExitDist = b.y + b.height - a.y;
+
+  if (rdx > 0) {
+    invEntry.x = xEntryDist / rdx;
+    invExit.x = xExitDist / rdx;
+  } else if (rdx < 0) {
+    invEntry.x = xExitDist / rdx;
+    invExit.x = xEntryDist / rdx;
   } else {
     invEntry.x = -Infinity;
     invExit.x = Infinity;
   }
 
-  if (rvy > 0) {
-    invEntry.y = (b.y - (a.y + a.height)) / rvy;
-    invExit.y = ((b.y + b.height) - a.y) / rvy;
-  } else if (rvy < 0) {
-    invEntry.y = ((b.y + b.height) - a.y) / rvy;
-    invExit.y = (b.y - (a.y + a.height)) / rvy;
+  if (rdy > 0) {
+    invEntry.y = yEntryDist / rdy;
+    invExit.y = yExitDist / rdy;
+  } else if (rdy < 0) {
+    invEntry.y = yExitDist / rdy;
+    invExit.y = yEntryDist / rdy;
   } else {
     invEntry.y = -Infinity;
     invExit.y = Infinity;
@@ -236,26 +256,36 @@ function chatgpt(rvx: number, rvy: number, a: Rect, b: Rect): null | CollRes {
   const entryTime = Math.max(invEntry.x, invEntry.y);
   const exitTime = Math.min(invExit.x, invExit.y);
 
-  if (entryTime > exitTime || (invEntry.x < 0 && invEntry.y < 0) || entryTime > 1) {
-    return null; // no collision
+  console.log({
+    invEntry,
+    invExit,
+    entryTime,
+    exitTime,
+    rdx,
+    rdy,
+  });
+
+  // collision must happen within this timestep [0..1] and entry <= exit
+  if (entryTime > exitTime || entryTime < 0 || entryTime > 1) {
+    return null;
   }
 
-  const normal = {x: 0, y: 0};
+  const normal = { x: 0, y: 0 };
+  // determine collision normal by comparing which axis produced the entry time
   if (invEntry.x > invEntry.y) {
-    normal.x = rvx < 0 ? 1 : -1;
+    normal.x = rdx < 0 ? 1 : -1;
     normal.y = 0;
   } else if (invEntry.y > invEntry.x) {
-    normal.y = rvy < 0 ? 1 : -1;
+    normal.y = rdy < 0 ? 1 : -1;
     normal.x = 0;
   } else {
-    // diagonal collision
-    normal.x = rvx < 0 ? 1 : -1;
-    normal.y = rvy < 0 ? 1 : -1;
+    // simultaneous entry on both axes (diagonal)
+    normal.x = rdx < 0 ? 1 : -1;
+    normal.y = rdy < 0 ? 1 : -1;
   }
 
-  const  result= {
+  return {
     time: entryTime,
-    normal
+    normal,
   };
-   return result
 }
