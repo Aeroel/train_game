@@ -61,7 +61,7 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
   pushableEntity.y += pushableEntity.vy * dtAtCollision;
   pushableEntity.velocity.nullify();
   
- let unpushableFace = Collision_Stuff.getOppositeFace( Collision_Stuff.normalToFace(collisionNormal));
+ let unpushableFace =  Collision_Stuff.normalToFace(collisionNormal);
 
     const pushableAdjustPos = {x:0,y:0}
 
