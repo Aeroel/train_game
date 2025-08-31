@@ -99,10 +99,13 @@ static getClosestCollision(
 
 
 static Precise_collision_check(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
-  return this.Check_For_Collision(entityA, entityB);
+  return Check_For_Collision(entityA, entityB);
 }
 static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
-  return Check_For_Collision(entityA, entityB);
+ if(!Expand_entities_by_their_velocities_and_check_whether_they_might_collide(entityA, entityB)) {
+   return null;
+ }
+  return this.Precise_collision_check(entityA, entityB);
 }
 
   static static_No_Velocity_Collision_Check(boxA: Box, boxB: Box): boolean {
