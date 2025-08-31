@@ -2,15 +2,14 @@ import type { Position } from "#root/Type_Stuff.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 
-export class Collision_Broad_Phase_Check {
-  
+
   
   /* Purpose: Test in simplest way to see if entities can possibly collide on their movement paths (including no movement)
    Logic: Just make an expanded box from each entity from its current xy up to its endingxy (endingxy is determimed by vxvy times timestep). this will create a box. The box will expand from startxy to endxy. if entity is still, the box is same size as entity. if entity moving, the expanded box is bigger than the entity. 
      Do this for both entities and then check if the expanded boxes overlap. if they dont return false. if they do, this means they might collide so we return true.
     this should work fine for small velocities and for straight line movement and is certainly a good starting point. note though that if some entity is moving very fast diagonally, its expanded box will be very big so this will trigger further collision checking for a lot of entities even if they never would have been close on the entity's actual diagonal linear trajectory. I mean, that is fine for now. there is no reason not to do this expansion, and maybe there are more precise checks I can introduce later that will be both cheaper than running full collision detection and yet actually take the entities' diagonal motions into account without making large expanded axis aligned rectangles but maybe somehow making a diagonal rectangle that more closely traces the entities move if diagonal
   */
-static areCloseEnoughForCollisionCheck(
+export function Expand_entities_by_their_velocities_and_check_whether_they_might_collide(
     a: Base_Entity, 
     b: Base_Entity, 
   ): boolean {
@@ -47,8 +46,4 @@ static areCloseEnoughForCollisionCheck(
     areThey = xOverlap && yOverlap;
 
     return areThey;
-}
-
-
-
 }

@@ -4,7 +4,7 @@ import  { Helper_Functions } from "#root/Helper_Functions.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info, Box_With_Velocity, Face, Normal  } from "#root/Type_Stuff.js";
 import { Check_For_Collision} from "#root/Collision_Stuff/Check_For_Collision.js"
-import { Collision_Broad_Phase_Check } from "#root/Collision_Stuff/Collision_Broad_Phase_Check.js"
+import { Expand_entities_by_their_velocities_and_check_whether_they_might_collide } from "#root/Collision_Stuff/Collision_Broad_Phase_Check.js"
 import {World} from "#root/World.js"
 import {World_Tick} from "#root/World_Tick.js"
 export { Collision_Stuff, };
@@ -19,14 +19,14 @@ class Collision_Stuff {
 
         World.getCurrentEntities().forEach((other) => {
           if (entity === other) return;
-          if (!Collision_Stuff.areCloseEnoughToBotherLookingForACollisionFurther(entity, other)) {
+          if(!Expand_entities_by_their_velocities_and_check_whether_they_might_collide(entity, other)) {
             return;
           }
           
           if (!filterOrAll(other)) return;
         
       
-          const collisionInfo = Collision_Stuff.Check_For_Collision(entity, other);
+          const collisionInfo = Collision_Stuff.Precise_collision_check(entity, other);
       
           if (collisionInfo) {
             allCollisions.push(collisionInfo);
@@ -38,6 +38,8 @@ class Collision_Stuff {
 
         return allCollisions;
 }
+ 
+ 
  
     static normalToFace(normal: Normal) : Face {
 
@@ -94,14 +96,14 @@ static getClosestCollision(
   return sortedFromClosestToFarthest[0];
 }
  
- static areCloseEnoughToBotherLookingForACollisionFurther(a: Base_Entity, b: Base_Entity): boolean {
-   return Collision_Broad_Phase_Check.areCloseEnoughForCollisionCheck(a, b);
- }
 
+
+static Precise_collision_check(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
+  return this.Check_For_Collision(entityA, entityB);
+}
 static Check_For_Collision(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {
   return Check_For_Collision(entityA, entityB);
 }
-
 
   static static_No_Velocity_Collision_Check(boxA: Box, boxB: Box): boolean {
 return (

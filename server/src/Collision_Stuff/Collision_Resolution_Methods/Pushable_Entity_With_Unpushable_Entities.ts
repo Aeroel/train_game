@@ -22,10 +22,14 @@ export class Pushable_Entity_With_Unpushable_Entities {
     return;
   }
   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
-  if(!(collision) || collision.time===0) {
+  if(!(collision)) {
     return;
   } 
-
+ if(collision.time===0) {
+   // Todo: handle this somehow, maybe by separating entities and then recalling the actualResolve?
+   console.log("initial overlap")
+   return;
+ }
   this.resolveCollision(collision);
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
     if(recursionTimes >2 ) {
@@ -57,7 +61,6 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
   pushableEntity.y += pushableEntity.vy * dtAtCollision;
   pushableEntity.velocity.nullify();
   
-  if(1>0) return;
  let unpushableFace = Collision_Stuff.getOppositeFace( Collision_Stuff.normalToFace(collisionNormal));
 
     const pushableAdjustPos = {x:0,y:0}
