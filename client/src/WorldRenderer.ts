@@ -154,15 +154,21 @@ class WorldRenderer {
     }
     static draw_rectangular_entity_and_it_s_outline(scaledEntity: Entity, drawingContext: CanvasRenderingContext2D) {
         this.draw_the_rectangular_entity(scaledEntity, drawingContext);
-        this.draw_the_outline(scaledEntity.edges, drawingContext);
+        this.draw_the_outline(scaledEntity.width, scaledEntity.height, scaledEntity.edges, drawingContext);
     }
     static draw_the_rectangular_entity(scaledEntity: Entity, drawingContext: CanvasRenderingContext2D) {
         drawingContext.fillStyle = scaledEntity.color;
         drawingContext.fillRect(scaledEntity.x, scaledEntity.y, scaledEntity.width, scaledEntity.height);
     }
-    static draw_the_outline(scaledEntityEdges: Edge[], drawingContext: CanvasRenderingContext2D) {
+    static draw_the_outline(
+      entityVisualWidth: number,
+      entityVisualHeight: number,
+      scaledEntityEdges: Edge[], drawingContext: CanvasRenderingContext2D) {
         drawingContext.strokeStyle = "black";
-        drawingContext.lineWidth = 2;
+        drawingContext.lineWidth = 1;
+        if(entityVisualWidth<=1|| entityVisualHeight <=1) {
+                  drawingContext.lineWidth = 0.25;
+        }
         drawingContext.beginPath();
 
         // slight black border for each entity to be able to tell each apart visually

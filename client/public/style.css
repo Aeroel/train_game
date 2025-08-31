@@ -1,5 +1,5 @@
 body {
-  background-color: black !important;
+  background-color: green !important;
   color: white !important;
 }
  /* Main game container */
@@ -14,7 +14,7 @@ body {
 
   /* Canvas fills the container */
   #gameCanvas {
-    background-color: black;
+    background-color: blue;
     width: 100vw;
     height: 100vh;
   }

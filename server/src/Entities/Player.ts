@@ -25,7 +25,7 @@ class Player extends Base_Entity {
   intangibility = false;
 //  percentageOnPlanet = {xPercentage:11,yPercentage:11};
  normalSpeedForBothAxes=0.125;
- spedUpSpeedForBothAxes=2.0;
+ spedUpSpeedForBothAxes=4.0;
  speedX= this.normalSpeedForBothAxes;
  speedY= this.normalSpeedForBothAxes;
   socketId: Socket["id"] = "none";

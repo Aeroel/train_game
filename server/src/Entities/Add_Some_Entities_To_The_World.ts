@@ -70,6 +70,11 @@ class Add_Some_Entities_To_The_World {
        const bot= World.addEntity(new Bot())
        bot.setXY(2000, 2000).setHeight(300);
      //  planet.velocity.Add_To_Propagation_List(bot.velocity)
+      
+      // for collision check 
+     const thinWall = World.addEntity(
+       new Wall())
+       thinWall.setXY(400, -400).setWidth(1).setHeight(5000)
 
 if(1>0)return;
      // the two railways
