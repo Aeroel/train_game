@@ -4,7 +4,9 @@ import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Wall } from "#root/Entities/Wall.js";
 import { World } from "#root/World.js";
+import { World_Tick} from "#root/World_Tick.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
+import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Collision_Resolution_Methods/Pushable_Entity_With_Unpushable_Entities.js"
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import { Train_Car_Static } from "#root/Entities/Train_Stuff/Train_Car_Static.js"
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
@@ -194,18 +196,18 @@ motionsDirections: Train_Car_Motions_Directions = {
       const BFace = Collision_Stuff.normalToFace(closest.normal);
    switch(BFace){
      case "left":
-          newCarPos.x = rail_switch_wall.x - this.width();
+          newCarPos.x = rail_switch_wall.x - this.width;
           newCarPos.y = rail_switch_wall.y
       break;
      case "right":
           newCarPos.x = rail_switch_wall.x + rail_switch_wall.width;
           newCarPos.y = rail_switch_wall.y
       break;
-     case "up":
+     case "top":
           newCarPos.y = rail_switch_wall.y  - this.height;
           newCarPos.x = rail_switch_wall.x
       break;
-     case "down":
+     case "bottom":
           newCarPos.y = rail_switch_wall.y  + rail_switch_wall.height;
           newCarPos.x = rail_switch_wall.x
       break;
@@ -259,18 +261,18 @@ motionsDirections: Train_Car_Motions_Directions = {
         const BFace = Collision_Stuff.normalToFace(closestSensorCollision.normal);
    switch(BFace){
      case "left":
-          pos.x = rail_switch_wall.x - this.width();
+          pos.x = rail_switch_wall.x - this.width;
           pos.y = rail_switch_wall.y
       break;
      case "right":
           pos.x = rail_switch_wall.x + rail_switch_wall.width;
           pos.y = rail_switch_wall.y
       break;
-     case "up":
+     case "top":
           pos.y = rail_switch_wall.y  - this.height;
           pos.x = rail_switch_wall.x
       break;
-     case "down":
+     case "bottom":
           pos.y = rail_switch_wall.y  + rail_switch_wall.height;
           pos.x = rail_switch_wall.x
       break;
@@ -397,10 +399,44 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
       return carDeltaX;
     }
   }
+  
   teleportCarContentsAndPassengersByDelta(dx: number, dy: number) {
+    const allThingsOnCar = this.getCarContentsAndPassengers()
+    const collidableParts = allThingsOnCar.filter(e=>e.hasTag("Wall") || e.hasTag("Sliding_Door"));
+        const carPassengers = allThingsOnCar.filter(e=>{
+      return e.hasTag('Can_Ride_Train')
+    });
+     const addVX = dx / World_Tick.deltaTime;
+      const addVY = dy / World_Tick.deltaTime;
+      
+    for (const entity of collidableParts) {
+      const tempKey = `${Math.random()}`;
+     entity.velocity.x.Add_Component({
+       key: tempKey,
+       value: addVX
+     })
+     entity.velocity.y.Add_Component({
+       key: tempKey,
+       value: addVY
+     })
+     const collisions = Collision_Stuff.findCollisions(entity, other => other.hasTag("Can_Ride_Train")).filter(col=>!(carPassengers.includes(col.entityB)))
+      for(const coll of collisions) {
 
-    const carContentsAndPassengers = this.getCarContentsAndPassengers();
-    for (const entity of carContentsAndPassengers) {
+        Pushable_Entity_With_Unpushable_Entities.resolveCollision(coll)
+      }
+      entity.velocity.x.Remove_Component({
+        key:tempKey
+      })
+      entity.velocity.y.Remove_Component({
+        key:tempKey
+      })
+      
+        const newX = entity.x + dx;
+      const newY = entity.y + dy;
+      entity.setXY(newX, newY);
+    }
+
+    for (const entity of carPassengers) {
       const newX = entity.x + dx;
       const newY = entity.y + dy;
       entity.setXY(newX, newY);

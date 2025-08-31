@@ -34,6 +34,8 @@ class Player extends Base_Entity {
     super();
     this.addTag("Player");
     this.addTag("Can_Ride_Train");
+    this.addTag("Can_Collide_With_Wall")
+    this.addTag("Can_Collide_With_Sliding_Door")
   }
   setVisionRange(visionRange: number) {
     this.visionRange = visionRange;

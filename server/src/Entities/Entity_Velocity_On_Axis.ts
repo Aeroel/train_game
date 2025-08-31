@@ -142,14 +142,16 @@ Remove_All_Components(): void {
    this.components = [];
    
 }
-Remove_Component(key: Velocity_Component['key']) {
-    const index = this.components.findIndex(component => component.key === key);
+Remove_Component(key: Velocity_Component['key'] | {key: Velocity_Component['key']}) {
+ const actualKey = typeof key === 'object' && key !== null && 'key' in key ? key.key : key;
+   
+    const index = this.components.findIndex(component => component.key === actualKey);
     if (index === -1) {
-              throw new Error(`Component with key "${key}" not found.`);
+              throw new Error(`Component with key "${actualKey}" not found.`);
     }
     // Remove from propagation entities first
     this.propagationList.forEach(velocity => {
-        velocity.Remove_Component(key);
+        velocity.Remove_Component(actualKey);
     });
 
 
