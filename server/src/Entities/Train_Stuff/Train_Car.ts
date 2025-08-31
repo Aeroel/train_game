@@ -189,61 +189,52 @@ motionsDirections: Train_Car_Motions_Directions = {
          Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
       }
       let Budget_Remaining=Consumable_Budget;
-  
 
-     const dtColl = World_Tick.deltaTime * closest.time;
-      const initialNewCarPos={x:this.x,y:this.y}
+      const newCarPos={x:this.x,y:this.y}
       const BFace = Collision_Stuff.normalToFace(closest.normal);
    switch(BFace){
      case "left":
-          initialNewCarPos.x = rail_switch_wall.x - this.width();
-          initialNewCarPos.y += this.vy * dtColl
+          newCarPos.x = rail_switch_wall.x - this.width();
+          newCarPos.y = rail_switch_wall.y
       break;
      case "right":
-          initialNewCarPos.x = rail_switch_wall.x + rail_switch_wall.width;
-           initialNewCarPos.y += this.vy * dtColl
+          newCarPos.x = rail_switch_wall.x + rail_switch_wall.width;
+          newCarPos.y = rail_switch_wall.y
       break;
      case "up":
-          initialNewCarPos.y = rail_switch_wall.y  - this.height;
-            initialNewCarPos.x += this.vx * dtColl
+          newCarPos.y = rail_switch_wall.y  - this.height;
+          newCarPos.x = rail_switch_wall.x
       break;
      case "down":
-          initialNewCarPos.y = rail_switch_wall.y  + rail_switch_wall.height;
-          initialNewCarPos.x += this.vx * dtColl
+          newCarPos.y = rail_switch_wall.y  + rail_switch_wall.height;
+          newCarPos.x = rail_switch_wall.x
       break;
    }
-   const finalNewCarPos = Collision_Stuff.separatedBoxAPosition({
-     a: Collision_Stuff.positionAndSizeToBox({position: initialNewCarPos, size:this.getSize()}),
-     b: Collision_Stuff.positionAndSizeToBox({position: , size:this.getSize()}),
-   })
 
 
 
-
-
-      let spent = this.teleportAndBringPassengers(posAtBeforeColl.x, posAtBeforeColl.y)
-
+      let spent = this.teleportAndBringPassengers(newCarPos.x, newCarPos.y)
+      Budget_Remaining -= spent;
       // I dont think spent being 0 is likely to ever happen?
       if(spent <=0) {
      this.velocity.x.Add_Component({key:this.Rail_Movement_Key,value: 0});
      this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
            return;
       }
-      Budget_Remaining -= spent;
+
       if(Budget_Remaining <= 0) {
-        
-        My_Assert.that(Budget_Remaining ===0,"Train_Car,I do not think Budget_Remaining is ever supposed to be less than zero. Why is it less that zero?");
+          My_Assert.that(Budget_Remaining ===0,"Train_Car,I do not think Budget_Remaining is ever supposed to be less than zero. Why is it less that zero?");
         return;
       }
       // now begins the budget loop
       let timesWeRanTheLoop = 0;
 
       const mustNotGoOverThis = 20; // <-- if it does go over it, I assume I will need to reduce train speed
+       this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
       while(Budget_Remaining > 0) { 
         timesWeRanTheLoop++;
         My_Assert.that(timesWeRanTheLoop < mustNotGoOverThis, "Went over budget loop, maybe a bug somewhere or just train speed too high so it loops over the railway too much in a single tick?");
         
-       this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
         const newVel = this.determine_new_velocity_for_movement_along_the_rail();
         for(const vel in newVel) {
           const key = vel as keyof {vx: Velocity_Component, vy: Velocity_Component }
@@ -255,23 +246,46 @@ motionsDirections: Train_Car_Motions_Directions = {
         this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:newVel.vx.value});
         this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:newVel.vy.value});
         // I think we always collide at this stage first with same sensor wall due to the way diagonal positioning works, so we do need the NEXT closesr sensor indeed.
-        const nextClosestSensorCollision = this.Get_Next_Closest_Sensor_Collision();
-        if(nextClosestSensorCollision === null) {
+        const closestSensorCollision = this.Get_Closest_Sensor_Collision();
+        if(closestSensorCollision === null) {
           // this means that the train car is free to move to its desired position without additional logic handling. Note: we need to specifically exit the switchHandler here, so return is required
             return;
         }
         // if above check did not exit the switchHandler, we have to handle the new sensor
 
-        const pos = Collision_Stuff.timeToPosition(this, closestSensorCollision.time);
         const switchWall = closestSensorCollision.entityB as Rail_Switch_Wall;
+        const pos = {x:0,y:0}
+        
+        const BFace = Collision_Stuff.normalToFace(closestSensorCollision.normal);
+   switch(BFace){
+     case "left":
+          pos.x = rail_switch_wall.x - this.width();
+          pos.y = rail_switch_wall.y
+      break;
+     case "right":
+          pos.x = rail_switch_wall.x + rail_switch_wall.width;
+          pos.y = rail_switch_wall.y
+      break;
+     case "up":
+          pos.y = rail_switch_wall.y  - this.height;
+          pos.x = rail_switch_wall.x
+      break;
+     case "down":
+          pos.y = rail_switch_wall.y  + rail_switch_wall.height;
+          pos.x = rail_switch_wall.x
+      break;
+   } 
+        
         spent = this.teleportAndBringPassengers(pos.x, pos.y);
         if(spent <= 0) {
+          if(spent<0) { throw new Error(`Loop break: Why is spent less than 0? val: ${spent}`)
+          }
+          // and if it is just zero, we can break
           break;
         }
         Budget_Remaining -= spent;
         this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWall)
       }
-    
      this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:0});
      this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: 0});
 
