@@ -189,16 +189,73 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
   bDiff.x = bEnd.x - a.x
   bDiff.y = bEnd.x - a.y
 
-  console.log({
-    dt, rvx, rvy, 
-    aEnd, aDiff,
-    bEnd, bDiff,
-  })
+  
   /* so here we need to figure out the collision time and collision normal. Collision time is a value >0 and <=1 I can multiply dt by to get xy at collision. Collision normal is which side of entity B is looking at entity A at point of collision. For example, if A is going right and collides with B, normal is x -1 y 0.
     if A is going up and collides with b, then normal is x 0 y 1
     etc... 
     I assume one of the axes is always zero in most cases but in cases where the entities collide in a perfect diagonal way, it might be something like x 1 y-1, i.e., a is moving left down and collides with b. This must be returned as is. I will use this normal and I will just pico x axis if both are not zero. because,either way, I think that only one axis is ever needed to handle the collision,
   */
+  
+  result= chatgpt(rvx,rvy, a,b);
+  console.log({
+    result,
+    dt, rvx, rvy, 
+    aEnd, aDiff,
+    bEnd, bDiff,
+  })
   return result;
   
+}
+function chatgpt(rvx: number, rvy: number, a: Rect, b: Rect): null | CollRes {
+  // === swept AABB test ===
+  const invEntry = {x: 0, y: 0};
+  const invExit = {x: 0, y: 0};
+
+  if (rvx > 0) {
+    invEntry.x = (b.x - (a.x + a.width)) / rvx;
+    invExit.x = ((b.x + b.width) - a.x) / rvx;
+  } else if (rvx < 0) {
+    invEntry.x = ((b.x + b.width) - a.x) / rvx;
+    invExit.x = (b.x - (a.x + a.width)) / rvx;
+  } else {
+    invEntry.x = -Infinity;
+    invExit.x = Infinity;
+  }
+
+  if (rvy > 0) {
+    invEntry.y = (b.y - (a.y + a.height)) / rvy;
+    invExit.y = ((b.y + b.height) - a.y) / rvy;
+  } else if (rvy < 0) {
+    invEntry.y = ((b.y + b.height) - a.y) / rvy;
+    invExit.y = (b.y - (a.y + a.height)) / rvy;
+  } else {
+    invEntry.y = -Infinity;
+    invExit.y = Infinity;
+  }
+
+  const entryTime = Math.max(invEntry.x, invEntry.y);
+  const exitTime = Math.min(invExit.x, invExit.y);
+
+  if (entryTime > exitTime || (invEntry.x < 0 && invEntry.y < 0) || entryTime > 1) {
+    return null; // no collision
+  }
+
+  const normal = {x: 0, y: 0};
+  if (invEntry.x > invEntry.y) {
+    normal.x = rvx < 0 ? 1 : -1;
+    normal.y = 0;
+  } else if (invEntry.y > invEntry.x) {
+    normal.y = rvy < 0 ? 1 : -1;
+    normal.x = 0;
+  } else {
+    // diagonal collision
+    normal.x = rvx < 0 ? 1 : -1;
+    normal.y = rvy < 0 ? 1 : -1;
+  }
+
+  const  result= {
+    time: entryTime,
+    normal
+  };
+   return result
 }
