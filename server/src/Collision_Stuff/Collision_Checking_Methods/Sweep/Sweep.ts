@@ -81,7 +81,7 @@ function myCCD(a: Rect, b: Rect): null | CollRes {
   }
   if(preSweepResult ==="shouldCheckMorePreciselyUsingSweep") {
   const res = myCCDSweep(a, b);
-  res.normal = handleNormalCornerCase(res.normal);
+  res.normal = If_both_x_and_y_of_normal_are_not_zero_prefer_x(res.normal);
   
   return res;
   }
@@ -121,7 +121,7 @@ function testRelativelyStationary(a: Rect, b: Rect) : boolean{
     return relativeVX === 0 && relativeVX === 0;
 }
 
-function handleNormalCornerCase(normal: normal) : Normal {
+function If_both_x_and_y_of_normal_are_not_zero_prefer_x(normal: normal) : Normal {
   if(normal.x !== 0 && normal.y !== 0) {
     return {
       x: normal.x,
