@@ -81,6 +81,8 @@ function myCCD(a: Rect, b: Rect): null | CollRes {
   }
   if(preSweepResult ==="shouldCheckMorePreciselyUsingSweep") {
   const res = myCCDSweep(a, b);
+  res.normal = handleNormalCornerCase(res.normal);
+  
   return res;
   }
   throw new Error(`Oops, how did the program ever reach this throw line? maybe check what preSweepCheck returned. it returned this:${preSweepResult}`)
@@ -108,6 +110,7 @@ function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
 }
 
 
+
 function testInitialCollision(a: Rect, b: Rect) {
   return Collision_Stuff.static_No_Velocity_Collision_Check(a,b);
 }
@@ -116,4 +119,13 @@ function testRelativelyStationary(a: Rect, b: Rect) : boolean{
     const relativeVY = a.vy - b.vy;
     
     return relativeVX === 0 && relativeVX === 0;
+}
+
+function handleNormalCornerCase(normal: normal) : Normal {
+  if(normal.x !== 0 && normal.y !== 0) {
+    return {
+      x: normal.x,
+      x: 0
+    }
+  }
 }
