@@ -161,33 +161,44 @@ function If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collisio
 }
 
 // NOTE: do not call this directly, because
+// it assumes that 1) a and b do not begin in overlap and b) at least one of them is moving. these checks are done elsewhere before calling this
 function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic}: {a: Rect, b: Rect, I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic: boolean}) : null| CollRes{
   My_Assert.that(I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic, "Oops, call this only after you have");
  
   // finally, here is the sweep algo itself
  // so we know that at least one entity is moving.
- // we also know they do not overlap  at initial positions.
+ // we also know they do not overlap  at initial positions (in other words, in time 0).
   let result: null | CollRes = null;
-  // okay, I assume first things we need is deltaTime (i.e., milliseconds each tick update takes) and relative velocity...
+  // okay, I assume first things we need are deltaTime (i.e., milliseconds each tick update takes) and relative velocity...
   const dt = World_Tick.deltaTime;
   const {rvx, rvy} = getRelativeVelocity(a,b)
   // maybe we might as well get the positions both entities want to end up in if no collision occurs as well as what are the displacements of position for both
-  const aEndX = a.x + (dt * a.vx);
-  const aEndY = a.y + (dt * a.vy);
+  const aEnd = {x:0,y:0}
+  aEnd.x = a.x + (dt * a.vx);
+  aEnd.y = a.y + (dt * a.vy);
  
-  const bEndX = b.x + (dt * b.vx);
-  const bEndY = b.y + (dt * b.vy);
+  const bEnd = {x:0,y:0}
+  bEnd.x = b.x + (dt * b.vx);
+  bEnd.y = b.y + (dt * b.vy);
   
-  const aDiffX = aEndX - a.x
-  const aDiffY = aEndY - a.y
+  const aDiff = {x:0,y:0}
+  aDiff.x = aEnd.x - a.x
+  aDiff.y = aEnd.y - a.y
 
-  const bDiffX = bEndX - b.x
-  const bDiffY = bEndY - b.y
+  const bDiff = {x:0,y:0}
+  bDiff.x = bEnd.x - a.x
+  bDiff.y = bEnd.x - a.y
+
   console.log({
     dt, rvx, rvy, 
-    aEndX, bEndX, aDiffX, bDiffX,
-    aEndY, bEndY, aDiffY, bDiffY,
+    aEnd, aDiff,
+    bEnd, bDiff,
   })
+  /* so here we need to figure out the collision time and collision normal. Collision time is a value >0 and <=1 I can multiply dt by to get xy at collision. Collision normal is which side of entity B is looking at entity A at point of collision. For example, if A is going right and collides with B, normal is x -1 y 0.
+    if A is going up and collides with b, then normal is x 0 y 1
+    etc... 
+    I assume one of the axes is always zero in most cases but in cases where the entities collide in a perfect diagonal way, it might be something like x 1 y-1, i.e., a is moving left down and collides with b. This must be returned as is. I will use this normal and I will just pico x axis if both are not zero. because,either way, I think that only one axis is ever needed to handle the collision,
+  */
   return result;
   
 }
