@@ -142,6 +142,7 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
     const negedSignVX=<0|1|-1>-signVX
          My_Assert.that(signVX === 0 || signVX === 1 || signVX === -1)
      My_Assert.that(signVY === 0 || signVY === 1 || signVY === -1)
+     
     switch(unpushableFace) {
       case "top":
      case "bottom":
