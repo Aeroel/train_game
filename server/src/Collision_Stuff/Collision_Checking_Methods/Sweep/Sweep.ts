@@ -168,8 +168,26 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
  // so we know that at least one entity is moving.
  // we also know they do not overlap  at initial positions.
   let result: null | CollRes = null;
+  // okay, I assume first things we need is deltaTime (i.e., milliseconds each tick update takes) and relative velocity...
+  const dt = World_Tick.deltaTime;
+  const {rvx, rvy} = getRelativeVelocity(a,b)
+  // maybe we might as well get the positions both entities want to end up in if no collision occurs as well as what are the displacements of position for both
+  const aEndX = a.x + (dt * a.vx);
+  const aEndY = a.y + (dt * a.vy);
+ 
+  const bEndX = b.x + (dt * b.vx);
+  const bEndY = b.y + (dt * b.vy);
   
-  
+  const aDiffX = aEndX - a.x
+  const aDiffY = aEndY - a.y
+
+  const bDiffX = bEndX - b.x
+  const bDiffY = bEndY - b.y
+  console.log({
+    dt, rvx, rvy, 
+    aEndX, bEndX, aDiffX, bDiffX,
+    aEndY, bEndY, aDiffY, bDiffY,
+  })
   return result;
   
 }
