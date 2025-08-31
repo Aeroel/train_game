@@ -106,20 +106,36 @@ function preSweepCheck(a: Rect, b: Rect) {
 
 }
 
+/* either rect might be moving on x and/or y axes or standing still
+Input assumptions: 
+1. at least one of the two entities is moving (in other words, we should have filtered out non moving entities so we would not be calling the sweepmethod)
+2. They are not overlapping at time 0, i.e. at their initial positions (a.x, a.y, b.x, b.y) (i.e., we should have checked for static overlap previously, before we invoked the sweep function)
+ 
+*/
 function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
+  My_Assert.that(false === testInitialCollision(a,b),"myCCDSweep says: Oops, make sure to check for initial overlap at time 0 before invoking me");
+  
+  const {rvx, rvy} = getRelativeVelocity(a,b);
+
+  My_Assert.that(rvx !== 0 || rvy !== 0, "myCCDSwee0 says: Oops buddy, make sure you check that the two entities are moving before invoking me. The reason for this is that there is nothing for me to do if they are not moving.")
  return null; 
 }
 
+function getRelativeVelocity(a: Rect, b: Rect) : {rvx: number, rvy: number }  {
+    const rvx = a.vx - b.vx;
+    const rvy = a.vy - b.vy;
+    
+    return {rvx, rvy}
+}
 
 
 function testInitialCollision(a: Rect, b: Rect) {
   return Collision_Stuff.static_No_Velocity_Collision_Check(a,b);
 }
 function testRelativelyStationary(a: Rect, b: Rect) : boolean{
-    const relativeVX = a.vx - b.vx;
-    const relativeVY = a.vy - b.vy;
+   const {rvx, rvy} = getRelativeVelocity(a,b)
     
-    return relativeVX === 0 && relativeVX === 0;
+    return rvx === 0 && rvy === 0;
 }
 
 function If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(collision: null | CollRes) : CollRes | null {
