@@ -81,7 +81,7 @@ function myCCD(a: Rect, b: Rect): null | CollRes {
   }
   if(preSweepResult ==="shouldCheckMorePreciselyUsingSweep") {
   let res = myCCDSweep(a, b);
-  res = If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(res);
+ //res = If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(res);
   
   
   return res;

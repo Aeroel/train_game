@@ -30,16 +30,15 @@ export class Pushable_Entity_With_Unpushable_Entities {
    console.log("initial overlap")
    return;
  }
-//  this.resolveCollision(collision);
+
+// const pushableEntity = collision.entityA;
+const ct = collision.time;
+const normal = collision.normal;
 const unpushableEntity = collision.entityB
-const dt = 50;
- const eps=0.005;
- const t = ((collision.time-eps)*dt) 
- const normal = collision.normal;
-  pushableEntity.x+= t *pushableEntity.vx
-  pushableEntity.y+= t *pushableEntity.vy
-  pushableEntity.vx=0
-  pushableEntity.vy=0
+const dt = 50; // all vels are in meters per millisecond and dt is 50 milliseconds. so, if vel is 1 and time is 0.5 then entity will move 1*0.5*50=25.0 meters
+// write logic here
+
+//  this.resolveCollision(collision);
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
     if(recursionTimes >2 ) {
          throw new Error(`${recursionTimes}`)
