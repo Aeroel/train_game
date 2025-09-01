@@ -31,8 +31,10 @@ class Sweep {
   }
   
   private static codeByGPTWrapper(a: Base_Entity, b: Base_Entity ): Collision_Time_And_Normal | null{
-    const rectA= Collision_Stuff.entityToBoxWithVelocity(a);
-    const rectB= Collision_Stuff.entityToBoxWithVelocity(b);
+    let rectA= Collision_Stuff.entityToBoxWithVelocity(a);
+    let rectB= Collision_Stuff.entityToBoxWithVelocity(b);
+    rectA = Collision_Stuff.increaseBoxSizeBy(rectA, 1)
+    rectB = Collision_Stuff.increaseBoxSizeBy(rectB, 1)
     const dt = World_Tick.deltaTime;
      const toLog= myCCD(rectA, rectB);
      return toLog;

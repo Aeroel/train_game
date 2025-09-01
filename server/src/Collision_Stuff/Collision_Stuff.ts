@@ -9,7 +9,7 @@ import {World} from "#root/World.js"
 import {World_Tick} from "#root/World_Tick.js"
 export { Collision_Stuff, };
 class Collision_Stuff {
- 
+ static Increase_hitbox_when_checking_by = 2;
  static findCollisions(
   entity: Base_Entity,
   filterFn?: (other: Base_Entity) => boolean
@@ -154,9 +154,19 @@ static timeToPosition(entity: Base_Entity, time: number) : Position {
     y: entity.y + (entity.vy * dt * time),
   }
 }
-  
 
-
+function increaseBoxSizeBy(
+  box: Box_With_Velocity,
+  amount: number
+): Box_With_Velocity {
+  return {
+    ...box,
+    x: box.x - amount,
+    y: box.y - amount,
+    width: box.width + amount * 2,
+    height: box.height + amount * 2,
+  }
+}
 
 
 }

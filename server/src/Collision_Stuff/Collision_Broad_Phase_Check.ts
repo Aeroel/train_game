@@ -17,12 +17,21 @@ export function Expand_entities_by_their_velocities_and_check_whether_they_might
     if (a === b) return false;
     
     // Work with proxy objects instead of full entity objects
-    const boxA = Collision_Stuff.entityToBoxWithVelocity(a);
-    const boxB = Collision_Stuff.entityToBoxWithVelocity(b);
+    let boxA = Collision_Stuff.entityToBoxWithVelocity(a);
+    let boxB = Collision_Stuff.entityToBoxWithVelocity(b);
+    boxA = Collision_Stuff.increaseBoxSizeBy(boxA, 1)
+    boxB = Collision_Stuff.increaseBoxSizeBy(boxB, 1)
+    
     
     // endxy
-    const nextA = a.calculateNextPositionBasedOnVelocityAndDeltaTime();
-    const nextB = b.calculateNextPositionBasedOnVelocityAndDeltaTime();
+    const nextA = { 
+      x: boxA.x +(dt * boxA.vx),
+      y: boxA.y +(dt * boxA.vy),
+    };
+     const nextB = { 
+      x: boxB.x +(dt * boxB.vx),
+      y: boxB.y +(dt * boxB.vy),
+    };
     
     let areThey = false;
     
