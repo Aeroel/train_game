@@ -152,13 +152,20 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
     switch(unpushableFace) {
       case "top":
      case "bottom":
+       if(pushableEntity.vx!==0){
         pushableEntity.vx =  roundToCleanFloat(pushableEntity.vx, negedSignVX)  
         pushableEntity.x =  roundToCleanFloat(pushableEntity.x, negedSignVX)  
+                pushableEntity.lastvx=pushableEntity.vx
+       }
       break;
       case "left":
      case "right":
+       if(pushableEntity.vy !==0){
               pushableEntity.vy =  roundToCleanFloat(pushableEntity.vy, negedSignVY)  
-        pushableEntity.y =  roundToCleanFloat(pushableEntity.y, negedSignVY)  
+        pushableEntity.y =  roundToCleanFloat(pushableEntity.y, negedSignVY)
+        pushableEntity.lastvy=pushableEntity.vy
+         
+       }
       break;
     }
  // }
@@ -168,11 +175,13 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
 
 
 function roundToCleanFloat(value: number, velocity: -1 | 0 | 1): number{
-    // Define valid fractional values (powers of 1/2 down to 1/32 = 0.03125)
-  const validFractions = [0, 0.03125, 0.0625, 0.125, 0.25, 0.5];
-  return complexCodeByClaude(value, velocity, validFractions);
+ 
+ // return complexCodeByClaude(value, velocity);
+  return complexCodeByChatGPT(value, velocity);
 }
-function complexCodeByClaude(value: number, velocity: -1|0|1, validFractions: number[]) : number {
+function complexCodeByClaude(value: number, velocity: -1|0|1) : number {
+     // Define valid fractional values (powers of 1/2 down to 1/32 = 0.03125)
+  const validFractions = [0, 0.03125, 0.0625, 0.125, 0.25, 0.5];
   // Find the fractional part
   const integerPart = Math.floor(value);
   const fractionalPart = value - integerPart;
@@ -208,6 +217,35 @@ function complexCodeByClaude(value: number, velocity: -1|0|1, validFractions: nu
   }
   
   return integerPart + targetFraction;
+}
+function complexCodeByChatGPT(value: number, velocity: -1 | 0 | 1, maxDenominator = 32): number {
+    if (velocity === 0) throw new Error("Velocity cannot be zero");
+
+    const integerPart = Math.floor(value);
+    let fractionalPart = value - integerPart;
+
+    // Generate allowed fractions: 1, 1/2, 1/4, 1/8, ... 1/maxDenominator
+    const fractions: number[] = [];
+    for (let denom = 1; denom <= maxDenominator; denom *= 2) {
+        fractions.push(1 / denom);
+    }
+    fractions.push(0); // include 0
+    fractions.sort((a, b) => a - b);
+
+    let targetFraction: number;
+
+    if (velocity === 1) {
+        // Round up to next valid fraction
+        const candidates = fractions.filter(f => f > fractionalPart);
+        targetFraction = candidates.length > 0 ? Math.min(...candidates) : 1;
+        if (targetFraction === 1) return integerPart + 1;
+    } else {
+        // Round down to previous valid fraction
+        const candidates = fractions.filter(f => f < fractionalPart);
+        targetFraction = candidates.length > 0 ? Math.max(...candidates) : 0;
+    }
+
+    return integerPart + targetFraction;
 }
 /*
 // Test cases from your examples
