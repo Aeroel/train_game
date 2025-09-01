@@ -155,7 +155,7 @@ static timeToPosition(entity: Base_Entity, time: number) : Position {
   }
 }
 
-function increaseBoxSizeBy(
+static increaseBoxSizeBy(
   box: Box_With_Velocity,
   amount: number
 ): Box_With_Velocity {

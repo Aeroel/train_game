@@ -1,7 +1,7 @@
 import type { Position } from "#root/Type_Stuff.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
-
+import {World_Tick} from "#root/World_Tick.js"
 
   
   /* Purpose: Test in simplest way to see if entities can possibly collide on their movement paths (including no movement)
@@ -22,7 +22,7 @@ export function Expand_entities_by_their_velocities_and_check_whether_they_might
     boxA = Collision_Stuff.increaseBoxSizeBy(boxA, 1)
     boxB = Collision_Stuff.increaseBoxSizeBy(boxB, 1)
     
-    
+    const dt = World_Tick.deltaTime;
     // endxy
     const nextA = { 
       x: boxA.x +(dt * boxA.vx),
