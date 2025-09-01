@@ -168,7 +168,7 @@ set vx(value: number) {
 set vy(value: number) {
   this.velocity.y.nullify();
   const id = Simple_Auto_Increment_Id_Generator.generateId(`Entity_${this.id}_Set_VY`);
-  this.velocity.x.Add_Component({key:`Set_VY_${id}`, value})
+  this.velocity.y.Add_Component({key:`Set_VY_${id}`, value})
 }
 
 

@@ -31,14 +31,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
    return;
  }
 
-// const pushableEntity = collision.entityA;
-const ct = collision.time;
-const normal = collision.normal;
-const unpushableEntity = collision.entityB
-const dt = 50; // all vels are in meters per millisecond and dt is 50 milliseconds. so, if vel is 1 and time is 0.5 then entity will move 1*0.5*50=25.0 meters
-// write logic here
-
-//  this.resolveCollision(collision);
+  this.resolveCollision(collision);
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
     if(recursionTimes >2 ) {
          throw new Error(`${recursionTimes}`)
@@ -65,55 +58,56 @@ static resolveCollision(collision: Collision_Info) {
 static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity, dt}: {collisionTime: number, collisionNormal: Normal, pushableEntity: Base_Entity, unpushableEntity: Base_Entity, dt: number}) {
   // {
   const  dtAtCollision = dt * collisionTime;
-  pushableEntity.x += pushableEntity.vx * dtAtCollision;
-  pushableEntity.y += pushableEntity.vy * dtAtCollision;
-  pushableEntity.velocity.nullify();
   
  let unpushableFace =  Collision_Stuff.normalToFace(collisionNormal);
 
     const pushableAdjustPos = {x:0,y:0}
-
+    // if we have no offset or it is too low, then entities simply pass through. not sure why. is something wrong with detector returned info or what?
+    const offset = 10;
     switch(unpushableFace) {
       case "top":
-        pushableAdjustPos.y = unpushableEntity.y - pushableEntity.height;
+        pushableAdjustPos.y = unpushableEntity.y - pushableEntity.height - offset;
         pushableAdjustPos.x = pushableEntity.x + (pushableEntity.vx * dtAtCollision);
       break;
       case "bottom":
-        pushableAdjustPos.y = unpushableEntity.y + unpushableEntity.height;
+        pushableAdjustPos.y = unpushableEntity.y + unpushableEntity.height + offset;
          pushableAdjustPos.x = pushableEntity.x + (pushableEntity.vx * dtAtCollision);
       break;
       case "left":
-         pushableAdjustPos.x = unpushableEntity.x - unpushableEntity.width;
+         pushableAdjustPos.x = unpushableEntity.x - pushableEntity.width - offset;
          
                  pushableAdjustPos.y = pushableEntity.y +  (pushableEntity.vy * dtAtCollision);
       break;
       case "right":
-        pushableAdjustPos.x = unpushableEntity.x + unpushableEntity.width;
+        pushableAdjustPos.x = unpushableEntity.x + unpushableEntity.width + offset;
         
          pushableAdjustPos.y = pushableEntity.y +  (pushableEntity.vy * dtAtCollision);
       break;
     }
     pushableEntity.setPosition(pushableAdjustPos)
    
-   console.log({
-     desc:"log from resolutor",
-  unpushableFace,
-  pushableAdjustPos
-})
-   // spend velocity on the unaffected axis
- const remainingTime= (dt - dtAtCollision);
-  const remainingVel = remainingTime / dt;
+
+   // spend some velocity on the unaffected axis since we moved it by time at coll
+  const Unspent_velocity_percentage_on_the_unaffected_axis = ((dt - dtAtCollision)/dt);
   switch(unpushableFace) {
   case "top":
   case "bottom":
-    pushableEntity.vx *= remainingVel; 
+    console.log("vx", pushableEntity.vx)
+    pushableEntity.vx = Unspent_velocity_percentage_on_the_unaffected_axis * pushableEntity.vx
+console.log("newvx", pushableEntity.vx)
     break;
   case "left": 
   case "right":
-    pushableEntity.vy *= remainingVel; 
+    console.log("vy", pushableEntity.vy)
+    pushableEntity.vy = ((dt - dtAtCollision)/dt) * pushableEntity.vy
+console.log("newvy", pushableEntity.vy)
     break;
 }  
-
+   console.log({
+     desc:"log from resolutor",
+  unpushableFace,
+  pushableAdjustPos, dt, dtAtCollision
+})
  // push pushable if wall moving towards it, otherwise, just nulify affected axis
     switch(unpushableFace){
       case "top":
@@ -141,6 +135,7 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
          }
         break;
     }
+    if(1<2) return;
     // adjust unaffected axis to remove hairy floats that might be created by the operation. for exampel, assume x is the unaffected axis. this might lead to some hairy number like 2732.2837295726
      let signVX = Math.sign(pushableEntity.vx)
      let signVY = Math.sign(pushableEntity.vy)
