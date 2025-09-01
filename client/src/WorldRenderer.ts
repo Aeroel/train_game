@@ -11,6 +11,8 @@ type ReceivedWorldState = {
     virtualHeight: number,
     playerX: number,
     playerY: number,
+    playerVX: number,
+    playerVY: number,
     playerSpeedUp: boolean,
     playerIntangibility: boolean,
 
@@ -46,19 +48,20 @@ class WorldRenderer {
         WorldRenderer.worldState.virtualCanvasHeight = worldState.virtualHeight;
         WorldRenderer.worldState.virtualCanvasWidth = worldState.virtualWidth;
 
-        this.updatePlayerPositionText(worldState.playerX, worldState.playerY);
+        this.updatePlayerPositionText(worldState.playerX, worldState.playerY, worldState.playerVX, worldState.playerVY);
         this.speedUpHandler(worldState.playerSpeedUp);
         this.intangibilityHandler(worldState.playerIntangibility);
 
     }
     
-    static updatePlayerPositionText(playerX: number, playerY: number) {
+    static updatePlayerPositionText(playerX: number, playerY: number, playerVX:number, playerVY: number) {
+      
               const coordinatesBox = <HTMLDivElement>document.getElementById("coordinatesLocation");
         if (coordinatesBox === null) {
             throw new Error("Could not get coordinates box");
         }
               // Update coordinates box with player position
-        coordinatesBox.innerText = `Player Position:\n X: ${playerX},\n Y: ${playerY}`;
+        coordinatesBox.innerText = `Player Position:\n X: ${playerX},\n Y: ${playerY} \n VX: ${playerVX} \n VY: ${playerVY} `;
     }
     
     static speedUpHandler(speedUp: boolean) {

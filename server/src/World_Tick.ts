@@ -59,6 +59,8 @@ static tick() {
   static Update_Positions_Of_All_Entities() {
     
     World.getCurrentEntities().forEach(entity => {
+      entity.lastvx= entity.vx
+      entity.lastvy= entity.vy
       entity.updatePosition();
     });
     

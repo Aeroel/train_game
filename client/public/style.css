@@ -37,7 +37,7 @@ body {
   /* ping is below coords*/
   #ping {
     position: absolute;
-    top: 105px;
+    top: 130px;
     left: 10px;
     z-index: 10;
   }

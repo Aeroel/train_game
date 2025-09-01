@@ -13,7 +13,8 @@ class Base_Entity {
   velocity = new Entity_Velocity(this);
   speedX = 0;
   speedY = 0;
-  
+ lastvx=9
+ lastvy=9
   x = 0;
   y = 0;
   width = 50;
