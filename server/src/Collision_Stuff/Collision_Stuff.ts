@@ -35,7 +35,7 @@ class Collision_Stuff {
       if(allCollisions.length===0)  { 
       return [];
       }
-      const sortClosestFirst = (a, b) => a.time - b.time;
+      const sortClosestFirst = (a: Collision_Info, b: Collision_Info) => a.time - b.time;
        allCollisions.sort(sortClosestFirst);
         return allCollisions;
 }

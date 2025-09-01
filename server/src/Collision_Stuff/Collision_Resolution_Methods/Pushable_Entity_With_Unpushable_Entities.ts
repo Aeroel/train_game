@@ -22,21 +22,23 @@ export class Pushable_Entity_With_Unpushable_Entities {
     return;
   }
 
-const closestFirst = (a, b)=> a.time - b.time;
+const closestFirst = (a: Collision_Info, b: Collision_Info)=> a.time - b.time;
   const collisions = Collision_Stuff.findCollisions(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")).toSorted(closestFirst);
+  if(collisions.length===0) {
+  return;
+}
   const minTime = collisions[0].time;
   const simultaneousColls = collisions.filter(coll => coll.time === minTime)
-  const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
-  if(!(collision)) {
-    return;
-  } 
-  
+
+for(const collision of simultaneousColls) {  
  if(collision.time===0) {
    // Todo: handle this somehow, maybe by separating entities and then recalling the actualResolve?
    return;
  }
 
   this.resolveCollision(collision);
+  
+  }
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
     if(recursionTimes >2 ) {
          throw new Error(`${recursionTimes}`)
