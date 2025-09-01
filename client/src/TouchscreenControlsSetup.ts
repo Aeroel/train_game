@@ -12,7 +12,7 @@ export class TouchscreenControlsSetup {
     if(!showConsoleButton) {
       throw new Error('Html element showConsoleButton not found')
     }
-    const consoleContainer = document.getElementById("consoleContainer");
+    const consoleContainer = document.getElementById("console");
    if(!consoleContainer) {
       throw new Error('Html element consoleContainer not found')
     }

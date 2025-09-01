@@ -23,25 +23,31 @@ export class Pushable_Entity_With_Unpushable_Entities {
     return;
   }
 
-const closestFirst = (a: Collision_Info, b: Collision_Info)=> a.time - b.time;
-  const collisions = Collision_Stuff.findCollisions(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")).toSorted(closestFirst);
-  if(collisions.length===0) {
+  const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
+  if(!collision) {
   return;
 }
-  const minTime = collisions[0].time;
-  const simultaneousColls = collisions.filter(coll => coll.time === minTime)
 
-for(const collision of simultaneousColls) {  
  if(collision.time===0) {
+   console.log(collision)
+   const sep = getSeparationNormal(pushableEntity, collision.entityB)
+if (sep) {
+  pushableEntity.x += sep.normal.x * sep.depth;
+  pushableEntity.y += sep.normal.y * sep.depth;
+  pushableEntity.vx=0
+  pushableEntity.vy=0
+}
+   //throw new Error("Do I want to ever allow initual overlap?")
    // Todo: handle this somehow, maybe by separating entities and then recalling the actualResolve?
    return;
  }
 
   this.resolveCollision(collision);
   
-  }
+  
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
-    if(recursionTimes >2 ) {
+    if(recursionTimes >5 ) {
+      console.log(collision);
          throw new Error(`${recursionTimes}`)
     }
    const i = 1+recursionTimes
@@ -65,6 +71,7 @@ static resolveCollision(collision: Collision_Info) {
 }
 static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity, dt}: {collisionTime: number, collisionNormal: Normal, pushableEntity: Base_Entity, unpushableEntity: Base_Entity, dt: number}) {
   // {
+
   const  dtAtCollision = dt * collisionTime;
   
  let unpushableFace =  Collision_Stuff.normalToFace(collisionNormal);
@@ -139,36 +146,8 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
          }
         break;
     }
-   // if(1<2) return;
-    // adjust unaffected axis to remove hairy floats that might be created by the operation. for exampel, assume x is the unaffected axis. this might lead to some hairy number like 2732.2837295726
-     let signVX = Math.sign(pushableEntity.vx)
-     let signVY = Math.sign(pushableEntity.vy)
-     signVY=<0|1|-1>signVY
-     signVX=<0|1|-1>signVX
-     const negedSignVY=<0|1|-1>-signVY
-    const negedSignVX=<0|1|-1>-signVX
-         My_Assert.that(signVX === 0 || signVX === 1 || signVX === -1)
-     My_Assert.that(signVY === 0 || signVY === 1 || signVY === -1)
+
      
-    switch(unpushableFace) {
-      case "top":
-     case "bottom":
-       if(pushableEntity.vx!==0){
-        pushableEntity.vx =  roundToCleanFloat(pushableEntity.vx, negedSignVX)  
-        pushableEntity.x =  roundToCleanFloat(pushableEntity.x, negedSignVX)  
-                pushableEntity.lastvx=pushableEntity.vx
-       }
-      break;
-      case "left":
-     case "right":
-       if(pushableEntity.vy !==0){
-              pushableEntity.vy =  roundToCleanFloat(pushableEntity.vy, negedSignVY)  
-        pushableEntity.y =  roundToCleanFloat(pushableEntity.y, negedSignVY)
-        pushableEntity.lastvy=pushableEntity.vy
-         
-       }
-      break;
-    }
  // }
 }
 }
@@ -219,6 +198,52 @@ function complexCodeByClaude(value: number, velocity: -1|0|1) : number {
   
   return integerPart + targetFraction;
 }
+
+
+
+type Normal = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
+
+function getSeparationNormal(a: Base_Entity, b: Base_Entity): { normal: Normal; depth: number } | null {
+  const aLeft = a.x;
+  const aRight = a.x + a.width;
+  const aTop = a.y;
+  const aBottom = a.y + a.height;
+
+  const bLeft = b.x;
+  const bRight = b.x + b.width;
+  const bTop = b.y;
+  const bBottom = b.y + b.height;
+
+  const overlapX = Math.min(aRight, bRight) - Math.max(aLeft, bLeft);
+  const overlapY = Math.min(aBottom, bBottom) - Math.max(aTop, bTop);
+
+  if (overlapX <= 0 || overlapY <= 0) return null; // no overlap
+
+  // Prefer velocity if present
+  if (a.vx !== 0 || a.vy !== 0) {
+    if (Math.abs(a.vx) > Math.abs(a.vy)) {
+      const normal: Normal = a.vx > 0 ? { x: -1, y: 0 } : { x: 1, y: 0 };
+      return { normal, depth: overlapX };
+    } else {
+      const normal: Normal = a.vy > 0 ? { x: 0, y: -1 } : { x: 0, y: 1 };
+      return { normal, depth: overlapY };
+    }
+  }
+
+  // Fallback: minimal-overlap rule
+  if (overlapX < overlapY) {
+    const aCenterX = (aLeft + aRight) / 2;
+    const bCenterX = (bLeft + bRight) / 2;
+    const normal: Normal = aCenterX < bCenterX ? { x: -1, y: 0 } : { x: 1, y: 0 };
+    return { normal, depth: overlapX };
+  } else {
+    const aCenterY = (aTop + aBottom) / 2;
+    const bCenterY = (bTop + bBottom) / 2;
+    const normal: Normal = aCenterY < bCenterY ? { x: 0, y: -1 } : { x: 0, y: 1 };
+    return { normal, depth: overlapY };
+  }
+}
+
 function complexCodeByChatGPT(value: number, velocity: -1 | 0 | 1, maxDenominator = 32): number {
     if (velocity === 0) throw new Error("Velocity cannot be zero");
 

@@ -42,8 +42,19 @@ class Car extends Base_Entity {
      })
     
   }
+  setColor(val: string){
+    this.color=val;
+    this.parts.forEach(p=>{
+      p.color=val;
+    })
+    return this;
+  }
   updateState() {
-
+   setTimeout(()=>{
+     this.speedX=2
+     this.speedY=2
+     this.setColor("yellow")
+   }, 20000)
    this.dirUpdate();
     if (this.controls.right) {
       this.velocity.x.Add_Component({key:"Car_Controls", value:this.speedX});
