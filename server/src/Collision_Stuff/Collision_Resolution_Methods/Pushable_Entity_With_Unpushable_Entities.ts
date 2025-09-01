@@ -21,20 +21,21 @@ export class Pushable_Entity_With_Unpushable_Entities {
   if(pushableEntity.intangibility) {
     return;
   }
-  const collisions = Collision_Stuff.findCollisions(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
- if(collisions.length>0) console.log("colls",collisions.map(col=>col.time))
+
+const closestFirst = (a, b)=> a.time - b.time;
+  const collisions = Collision_Stuff.findCollisions(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")).toSorted(closestFirst);
+  const minTime = collisions[0].time;
+  const simultaneousColls = collisions.filter(coll => coll.time === minTime)
   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
   if(!(collision)) {
     return;
   } 
   
-  console.log(collision.entityB.width)
  if(collision.time===0) {
    // Todo: handle this somehow, maybe by separating entities and then recalling the actualResolve?
-   console.log("initial overlap")
    return;
  }
-console.log("recursion invoked: ",recursionTimes)
+
   this.resolveCollision(collision);
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
     if(recursionTimes >2 ) {
