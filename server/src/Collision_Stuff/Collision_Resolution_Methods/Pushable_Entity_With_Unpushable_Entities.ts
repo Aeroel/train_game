@@ -138,7 +138,7 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
          }
         break;
     }
-    if(1<2) return;
+   // if(1<2) return;
     // adjust unaffected axis to remove hairy floats that might be created by the operation. for exampel, assume x is the unaffected axis. this might lead to some hairy number like 2732.2837295726
      let signVX = Math.sign(pushableEntity.vx)
      let signVY = Math.sign(pushableEntity.vy)

@@ -26,6 +26,11 @@ class Sweep {
       /* console.log(collision, {
         a: Collision_Stuff.entityToBoxWithVelocity(a), b: Collision_Stuff.entityToBoxWithVelocity(b)
        })*/
+       const oldT = collision.time
+       const newT =Math.floor(collision.time)
+       if(oldT !== newT) {
+         console.log("tdiff",oldT, newT)
+       }
      }
      return collision;
   }
