@@ -1,5 +1,6 @@
 import { Planet } from "#root/Entities/Planet.js";
 import { Bot } from "#root/Entities/Bot.js";
+import { Car } from "#root/Entities/Car.js";
 import { Railway_Switch_Wall_Generator } from "#root/Entities/Railway_Switch_Wall_Generator.js"
 import { Base_Entity } from '#root/Entities/Base_Entity.js';
 import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
@@ -27,15 +28,8 @@ class Add_Some_Entities_To_The_World {
     static railwayFenceWallThickness = 50;
     static rails: Rail[] = [];
    
-  
-    static doItNow() {
-
-
-   //   const planet =   Add_Some_Entities_To_The_World.addThePlanet();
-        
-          Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
-    // random wall
-      const wall = World.addEntity(
+  static randomWalls() {
+          const wall = World.addEntity(
         new Wall());
         wall.setXY(950, 1250);
         wall.setHeight(400);
@@ -53,6 +47,18 @@ class Add_Some_Entities_To_The_World {
         wall3.setHeight(40);
         wall3.setWidth(400);
         wall3.setColor("pink")
+        const thinWall = World.addEntity(
+       new Wall())
+       thinWall.setXY(400, -400).setWidth(1).setHeight(5000)
+  }
+    static doItNow() {
+
+
+   //   const planet =   Add_Some_Entities_To_The_World.addThePlanet();
+        
+          Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
+    // random wall
+     // this.randomWalls()
        
       // random forcefield
         const ff = World.addEntity(new Forcefield());
@@ -67,14 +73,13 @@ class Add_Some_Entities_To_The_World {
           digit.setValue(newDigit)
         },1000)
         
-       const bot= World.addEntity(new Bot())
-       bot.setXY(2000, 2000).setHeight(300);
+      // const bot= World.addEntity(new Bot())
+      // bot.setXY(2000, 2000).setHeight(300);
      //  planet.velocity.Add_To_Propagation_List(bot.velocity)
-      
-      // for collision check 
-     const thinWall = World.addEntity(
-       new Wall())
-       thinWall.setXY(400, -400).setWidth(1).setHeight(5000)
+       const car = World.addEntity(
+         new Car({x:1000,y:1000})
+         .setXY(500,500))
+
 
 if(1>0)return;
      // the two railways

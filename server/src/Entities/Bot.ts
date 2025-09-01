@@ -26,6 +26,7 @@ class Bot extends Base_Entity {
     this.addTag("Can_Ride_Train");
     this.addTag("Can_Collide_With_Wall")
     this.addTag("Can_Collide_With_Sliding_Door")
+    
   }
   
   updateState() {

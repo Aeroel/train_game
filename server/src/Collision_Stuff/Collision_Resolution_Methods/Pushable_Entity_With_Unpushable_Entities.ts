@@ -4,6 +4,7 @@ import { World_Tick} from "#root/World_Tick.js"
 import type { Normal, Collision_Info } from "#root/Type_Stuff.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { My_Assert} from "#root/My_Assert.js"
+import { log } from "#root/My_Log.js"
 import { Helper_Functions} from "#root/Helper_Functions.js"
 
 /*
@@ -106,7 +107,7 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
     pushableEntity.vy = Unspent_velocity_percentage_on_the_unaffected_axis * pushableEntity.vy
     break;
 }  
-   console.log({
+   log({
      desc:"log from resolutor",
   unpushableFace,
   pushableAdjustPos, dt, dtAtCollision
@@ -249,22 +250,22 @@ function complexCodeByChatGPT(value: number, velocity: -1 | 0 | 1, maxDenominato
 }
 /*
 // Test cases from your examples
-console.log("Testing with your examples:");
-console.log("777.282471838, vel 0 ->", roundToCleanFloat(777.282471838, 0)); // Should be 777.25
-console.log("0.3758173, vel 1 ->", roundToCleanFloat(0.3758173, 1)); // Should be 0.5
-console.log("0.3757173, vel 0 ->", roundToCleanFloat(0.3757173, 0)); // Whatever is closest
-console.log("0.3757173, vel -1 ->", roundToCleanFloat(0.3757173, -1)); // Should be 0.25
-console.log("38482.4769682, vel 1 ->", roundToCleanFloat(38482.4769682, 1)); // Should be 38482.5
-console.log("38482.4769682, vel 0 ->", roundToCleanFloat(38482.4769682, 0)); // Whatever is closest
-console.log("38482.4769682, vel -1 ->", roundToCleanFloat(38482.4769682, -1)); // Should be 38482.25
-console.log("38482.047472, vel 1 ->", roundToCleanFloat(38482.047472, 1)); // Should be 38482.0625
-console.log("38482.047472, vel -1 ->", roundToCleanFloat(38482.047472, -1)); // Should be 38482.03125
-console.log("38482.047472, vel 0 ->", roundToCleanFloat(38482.047472, 0)); // Whatever is closest
+log("Testing with your examples:");
+log("777.282471838, vel 0 ->", roundToCleanFloat(777.282471838, 0)); // Should be 777.25
+log("0.3758173, vel 1 ->", roundToCleanFloat(0.3758173, 1)); // Should be 0.5
+log("0.3757173, vel 0 ->", roundToCleanFloat(0.3757173, 0)); // Whatever is closest
+log("0.3757173, vel -1 ->", roundToCleanFloat(0.3757173, -1)); // Should be 0.25
+log("38482.4769682, vel 1 ->", roundToCleanFloat(38482.4769682, 1)); // Should be 38482.5
+log("38482.4769682, vel 0 ->", roundToCleanFloat(38482.4769682, 0)); // Whatever is closest
+log("38482.4769682, vel -1 ->", roundToCleanFloat(38482.4769682, -1)); // Should be 38482.25
+log("38482.047472, vel 1 ->", roundToCleanFloat(38482.047472, 1)); // Should be 38482.0625
+log("38482.047472, vel -1 ->", roundToCleanFloat(38482.047472, -1)); // Should be 38482.03125
+log("38482.047472, vel 0 ->", roundToCleanFloat(38482.047472, 0)); // Whatever is closest
 
 // Additional edge cases
-console.log("\nEdge cases:");
-console.log("777.0, vel 1 ->", roundToCleanFloat(777.0, 1)); // Already clean
-console.log("777.5, vel 1 ->", roundToCleanFloat(777.5, 1)); // Should go to 778.0
-console.log("777.03125, vel -1 ->", roundToCleanFloat(777.03125, -1)); // Should go to 777.0
+log("\nEdge cases:");
+log("777.0, vel 1 ->", roundToCleanFloat(777.0, 1)); // Already clean
+log("777.5, vel 1 ->", roundToCleanFloat(777.5, 1)); // Should go to 778.0
+log("777.03125, vel -1 ->", roundToCleanFloat(777.03125, -1)); // Should go to 777.0
 
 */

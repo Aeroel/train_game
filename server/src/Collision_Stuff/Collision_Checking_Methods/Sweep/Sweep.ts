@@ -6,6 +6,7 @@ import type {Base_Entity} from "#root/Entities/Base_Entity.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
 import { World_Tick } from "#root/World_Tick.js";
 import{My_Assert} from "#root/My_Assert.js"
+import{log} from "#root/My_Log.js"
 
 
 export { Sweep };
@@ -23,13 +24,13 @@ class Sweep {
 
      const collision =  this.codeByGPTWrapper(a, b);
      if(collision) {
-      /* console.log(collision, {
+      /* log(collision, {
         a: Collision_Stuff.entityToBoxWithVelocity(a), b: Collision_Stuff.entityToBoxWithVelocity(b)
        })*/
        const oldT = collision.time
        const newT =Math.floor(collision.time)
        if(oldT !== newT) {
-         console.log("tdiff",oldT, newT)
+         log("tdiff",oldT, newT)
        }
      }
      return collision;
@@ -128,7 +129,7 @@ function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
   
   // now we can invoke the ccd algo
   const I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic = true;
-  console.log(a.x, a.y)
+  log(a.x, a.y)
   const result = myCCDSweepLogic({
     a,
     b,
@@ -207,7 +208,7 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
   */
   
   result= chatgpt(rvx,rvy, dt, a,b);
-  console.log({
+  log({
     result,
     dt, rvx, rvy, 
     aPos, bPos,
@@ -263,7 +264,7 @@ function chatgpt(
   const entryTime = Math.max(invEntry.x, invEntry.y);
   const exitTime = Math.min(invExit.x, invExit.y);
 
-  console.log({
+  log({
     invEntry,
     invExit,
     entryTime,
