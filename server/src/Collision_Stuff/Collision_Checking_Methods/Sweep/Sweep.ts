@@ -39,8 +39,7 @@ class Sweep {
   private static codeByGPTWrapper(a: Base_Entity, b: Base_Entity ): Collision_Time_And_Normal | null{
     let rectA= Collision_Stuff.entityToBoxWithVelocity(a);
     let rectB= Collision_Stuff.entityToBoxWithVelocity(b);
-    rectA = Collision_Stuff.increaseBoxSizeBy(rectA, 1)
-    rectB = Collision_Stuff.increaseBoxSizeBy(rectB, 1)
+
     const dt = World_Tick.deltaTime;
      const toLog= myCCD(rectA, rectB);
      return toLog;
@@ -219,81 +218,108 @@ function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparat
   
 }
 
-function chatgpt(
-  rvx: number,
-  rvy: number,
-  dt: number,
-  a: Rect,
-  b: Rect
-): null | CollRes {
-  // convert relative velocity into relative displacement for the timestep
+const EPS = 1e-8;
+function computePenetration(a: Rect, b: Rect) {
+  // returns minimal translation vector to push A out of B (MTV)
+  const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
+  const overlapY = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
+  if (overlapX <= 0 || overlapY <= 0) return null;
+  // choose smallest axis to avoid corner-stuck; keep sign so MTV points out of B
+  if (overlapX < overlapY) {
+    const sign = (a.x + a.width / 2) < (b.x + b.width / 2) ? -1 : 1;
+    return { x: overlapX * sign, y: 0 };
+  } else {
+    const sign = (a.y + a.height / 2) < (b.y + b.height / 2) ? -1 : 1;
+    return { x: 0, y: overlapY * sign };
+  }
+}
+
+
+function chatgpt(rvx: number, rvy: number, dt: number, a: Rect, b: Rect): null| CollRes {
+
   const rdx = rvx * dt;
   const rdy = rvy * dt;
 
   const invEntry = { x: 0, y: 0 };
-  const invExit = { x: 0, y: 0 };
+  const invExit  = { x: 0, y: 0 };
 
-  // distances from A to B on each axis (gap when A is to the left/top of B)
+  // distances from A to B on each axis
   const xEntryDist = b.x - (a.x + a.width);
-  const xExitDist = b.x + b.width - a.x;
+  const xExitDist  = (b.x + b.width) - a.x;
   const yEntryDist = b.y - (a.y + a.height);
-  const yExitDist = b.y + b.height - a.y;
+  const yExitDist  = (b.y + b.height) - a.y;
 
-  if (rdx > 0) {
-    invEntry.x = xEntryDist / rdx;
-    invExit.x = xExitDist / rdx;
-  } else if (rdx < 0) {
-    invEntry.x = xExitDist / rdx;
-    invExit.x = xEntryDist / rdx;
+  // X axis
+  if (Math.abs(rdx) > EPS) {
+    if (rdx > 0) {
+      invEntry.x = xEntryDist / rdx;
+      invExit.x  = xExitDist  / rdx;
+    } else {
+      invEntry.x = xExitDist  / rdx;
+      invExit.x  = xEntryDist / rdx;
+    }
   } else {
+    // no relative movement on X this frame
+    // if separated on X, no collision possible
+    if (xEntryDist > 0 || xExitDist < 0) return null;
     invEntry.x = -Infinity;
-    invExit.x = Infinity;
+    invExit.x  = Infinity;
   }
 
-  if (rdy > 0) {
-    invEntry.y = yEntryDist / rdy;
-    invExit.y = yExitDist / rdy;
-  } else if (rdy < 0) {
-    invEntry.y = yExitDist / rdy;
-    invExit.y = yEntryDist / rdy;
+  // Y axis (same logic)
+  if (Math.abs(rdy) > EPS) {
+    if (rdy > 0) {
+      invEntry.y = yEntryDist / rdy;
+      invExit.y  = yExitDist  / rdy;
+    } else {
+      invEntry.y = yExitDist  / rdy;
+      invExit.y  = yEntryDist / rdy;
+    }
   } else {
+    if (yEntryDist > 0 || yExitDist < 0) return null;
     invEntry.y = -Infinity;
-    invExit.y = Infinity;
+    invExit.y  = Infinity;
   }
 
   const entryTime = Math.max(invEntry.x, invEntry.y);
-  const exitTime = Math.min(invExit.x, invExit.y);
+  const exitTime  = Math.min(invExit.x, invExit.y);
 
-  log({
-    invEntry,
-    invExit,
-    entryTime,
-    exitTime,
-    rdx,
-    rdy,
-  });
+  // log debug info
+  log({ invEntry, invExit, entryTime, exitTime, rdx, rdy });
 
-  // collision must happen within this timestep [0..1] and entry <= exit
-  if (entryTime > exitTime || entryTime < 0 || entryTime > 1) {
-    return null;
+  // no collision inside [0..1] or invalid
+  if (entryTime > exitTime || entryTime > 1 || exitTime < 0) return null;
+
+  // treat very-small-or-zero entry as overlap/penetration case (do not throw)
+  if (entryTime <= EPS) {
+    // normalize normal using invEntry signs or compute penetration
+    // prefer penetration-based MTV for stability
+    const mtv = computePenetration(a, b);
+    if (mtv) {
+      const normal = { x: Math.sign(mtv.x), y: Math.sign(mtv.y) };
+      return { time: 0, normal };
+    }
+    // fallback to axis-based normal if no mtv available
+    const normal = { x: 0, y: 0 };
+    if (invEntry.x > invEntry.y) { normal.x = rdx < 0 ? 1 : -1; }
+    else if (invEntry.y > invEntry.x) { normal.y = rdy < 0 ? 1 : -1; }
+    else {
+      normal.x = rdx < 0 ? 1 : -1;
+      normal.y = rdy < 0 ? 1 : -1;
+    }
+    return { time: 0, normal };
   }
 
+  // determine normal for non-overlap swept collision
   const normal = { x: 0, y: 0 };
-  // determine collision normal by comparing which axis produced the entry time
   if (invEntry.x > invEntry.y) {
     normal.x = rdx < 0 ? 1 : -1;
-    normal.y = 0;
   } else if (invEntry.y > invEntry.x) {
     normal.y = rdy < 0 ? 1 : -1;
-    normal.x = 0;
   } else {
-    // simultaneous entry on both axes (diagonal)
     normal.x = rdx < 0 ? 1 : -1;
     normal.y = rdy < 0 ? 1 : -1;
   }
 
-  return {
-    time: entryTime,
-    normal,
-  };
+  return { time: entryTime, normal };
 }

@@ -23,29 +23,22 @@ export class Pushable_Entity_With_Unpushable_Entities {
     return;
   }
 
-  const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
+const maxIterationsAllowed=10;
+let itersCount=0;
+while(true) {
+  itersCount++;
+  My_Assert.that(itersCount < maxIterationsAllowed,`Resolution attempts exceeded allocated iterations of ${maxIterationsAllowed}`)
+   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
   if(!collision) {
-  return;
-}
-
- if(collision.time===0) {
-   console.log("t=0 coll")
-   //throw new Error("Do I want to ever allow initual overlap?")
-   // Todo: handle this somehow, maybe by separating entities and then recalling the actualResolve?
-   return;
+  break;
+} 
+if(collision.time===0) {
+   throw new Error("t=0 coll")
+  
+   break;
  }
-
-  this.resolveCollision(collision);
-  
-  
-    // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
-    if(recursionTimes >2 ) {
-      console.log(collision);
-         throw new Error(`${recursionTimes}`)
-    }
-   const i = 1+recursionTimes
-   // since we updated pushable's velocity midtick, we need to check again. this can only get called twice total, because since we have just nullified velocity of one axis, the only other available axis is the other one, so the entity might be moving with a new wall. but once we handle the second time, we know that the lushable must be completely still so all collisions were handled for now.
-   this.actualResolve({pushableEntity, recursionTimes: i});
+   this.resolveCollision(collision);
+}
   }
 
 static resolveCollision(collision: Collision_Info) {
@@ -71,40 +64,32 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
 
     const pushableAdjustPos = {x:0,y:0}
     // if we have no offset or it is too low, then entities simply pass through. not sure why. is something wrong with detector returned info or what?
-    const offset = 10;
-    const unoffset = 0;
-    const unaffectedOffsetX = -((Math.sign(pushableEntity.vx))) * unoffset;
-    const unaffectedOffsetY = -((Math.sign(pushableEntity.vy))) * unoffset;
-    const unaffectedDX = pushableEntity.vx * dtAtCollision
-    const unaffectedDY = pushableEntity.vy * dtAtCollision
-    const xAxisUnaffected = pushableEntity.x + (unaffectedDX + unaffectedOffsetX );
-    const yAxisUnaffected = pushableEntity.y +  (unaffectedDY + unaffectedOffsetY);
     
     switch(unpushableFace) {
       case "top":
-        pushableAdjustPos.y = unpushableEntity.y - pushableEntity.height - offset;
-        pushableAdjustPos.x = xAxisUnaffected;
+        pushableAdjustPos.y = unpushableEntity.y - pushableEntity.height ;
+        pushableAdjustPos.x = pushableEntity.x + (pushableEntity.vx * dtAtCollision);
       break;
       case "bottom":
-        pushableAdjustPos.y = unpushableEntity.y + unpushableEntity.height + offset;
-         pushableAdjustPos.x = xAxisUnaffected;
+        pushableAdjustPos.y = unpushableEntity.y + unpushableEntity.height ;
+        pushableAdjustPos.x = pushableEntity.x + (pushableEntity.vx * dtAtCollision);
       break;
       case "left":
-         pushableAdjustPos.x = unpushableEntity.x - pushableEntity.width - offset;
+         pushableAdjustPos.x = unpushableEntity.x - pushableEntity.width ;
          
-                 pushableAdjustPos.y = yAxisUnaffected
+        pushableAdjustPos.y = pushableEntity.y + (pushableEntity.vy * dtAtCollision);
       break;
       case "right":
-        pushableAdjustPos.x = unpushableEntity.x + unpushableEntity.width + offset;
+        pushableAdjustPos.x = unpushableEntity.x + unpushableEntity.width ;
         
-         pushableAdjustPos.y = yAxisUnaffected
+        pushableAdjustPos.y = pushableEntity.y + (pushableEntity.vy * dtAtCollision);
       break;
     }
     pushableEntity.setPosition(pushableAdjustPos)
    
 
    // spend some velocity on the unaffected axis since we moved it by time at coll
-  const Unspent_velocity_percentage_on_the_unaffected_axis =0* ((dt - dtAtCollision)/dt); // ex: (50-40)/50=?
+  const Unspent_velocity_percentage_on_the_unaffected_axis =((dt - dtAtCollision)/dt); // ex: (50-40)/50=?
   console.log(Unspent_velocity_percentage_on_the_unaffected_axis)
   switch(unpushableFace) {
   case "top":
