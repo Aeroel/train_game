@@ -17,7 +17,7 @@ class Car extends Base_Entity {
    down:false,
  }
  visibility=false;
- normalSpeedForBothAxes=0.250;
+ normalSpeedForBothAxes=0.1250;
  speedX= this.normalSpeedForBothAxes;
  speedY= this.normalSpeedForBothAxes;
   lastMovDirChange=0;

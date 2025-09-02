@@ -72,8 +72,9 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
     const pushableAdjustPos = {x:0,y:0}
     // if we have no offset or it is too low, then entities simply pass through. not sure why. is something wrong with detector returned info or what?
     const offset = 10;
-    const unaffectedOffsetX = ((Math.sign(pushableEntity.vx)) * -1) * offset;
-    const unaffectedOffsetY = ((Math.sign(pushableEntity.vy)) * -1) * offset;
+    const unoffset = 0;
+    const unaffectedOffsetX = -((Math.sign(pushableEntity.vx))) * unoffset;
+    const unaffectedOffsetY = -((Math.sign(pushableEntity.vy))) * unoffset;
     const unaffectedDX = pushableEntity.vx * dtAtCollision
     const unaffectedDY = pushableEntity.vy * dtAtCollision
     const xAxisUnaffected = pushableEntity.x + (unaffectedDX + unaffectedOffsetX );
@@ -103,7 +104,8 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
    
 
    // spend some velocity on the unaffected axis since we moved it by time at coll
-  const Unspent_velocity_percentage_on_the_unaffected_axis = ((dt - dtAtCollision)/dt); // ex: (50-40)/50=?
+  const Unspent_velocity_percentage_on_the_unaffected_axis =0* ((dt - dtAtCollision)/dt); // ex: (50-40)/50=?
+  console.log(Unspent_velocity_percentage_on_the_unaffected_axis)
   switch(unpushableFace) {
   case "top":
   case "bottom":
