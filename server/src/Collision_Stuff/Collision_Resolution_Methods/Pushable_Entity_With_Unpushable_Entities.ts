@@ -29,14 +29,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
 }
 
  if(collision.time===0) {
-   console.log(collision)
-   const sep = getSeparationNormal(pushableEntity, collision.entityB)
-if (sep) {
-  pushableEntity.x += sep.normal.x * sep.depth;
-  pushableEntity.y += sep.normal.y * sep.depth;
-  pushableEntity.vx=0
-  pushableEntity.vy=0
-}
+   console.log("t=0 coll")
    //throw new Error("Do I want to ever allow initual overlap?")
    // Todo: handle this somehow, maybe by separating entities and then recalling the actualResolve?
    return;
@@ -46,7 +39,7 @@ if (sep) {
   
   
     // I don't think this can logically happen because due to the way the world works, if we nullify both axes one after another we will not have any new collisions. of course, we should throw just to be safe
-    if(recursionTimes >5 ) {
+    if(recursionTimes >2 ) {
       console.log(collision);
          throw new Error(`${recursionTimes}`)
     }
@@ -79,31 +72,38 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
     const pushableAdjustPos = {x:0,y:0}
     // if we have no offset or it is too low, then entities simply pass through. not sure why. is something wrong with detector returned info or what?
     const offset = 10;
+    const unaffectedOffsetX = ((Math.sign(pushableEntity.vx)) * -1) * offset;
+    const unaffectedOffsetY = ((Math.sign(pushableEntity.vy)) * -1) * offset;
+    const unaffectedDX = pushableEntity.vx * dtAtCollision
+    const unaffectedDY = pushableEntity.vy * dtAtCollision
+    const xAxisUnaffected = pushableEntity.x + (unaffectedDX + unaffectedOffsetX );
+    const yAxisUnaffected = pushableEntity.y +  (unaffectedDY + unaffectedOffsetY);
+    
     switch(unpushableFace) {
       case "top":
         pushableAdjustPos.y = unpushableEntity.y - pushableEntity.height - offset;
-        pushableAdjustPos.x = pushableEntity.x + (pushableEntity.vx * dtAtCollision);
+        pushableAdjustPos.x = xAxisUnaffected;
       break;
       case "bottom":
         pushableAdjustPos.y = unpushableEntity.y + unpushableEntity.height + offset;
-         pushableAdjustPos.x = pushableEntity.x + (pushableEntity.vx * dtAtCollision);
+         pushableAdjustPos.x = xAxisUnaffected;
       break;
       case "left":
          pushableAdjustPos.x = unpushableEntity.x - pushableEntity.width - offset;
          
-                 pushableAdjustPos.y = pushableEntity.y +  (pushableEntity.vy * dtAtCollision);
+                 pushableAdjustPos.y = yAxisUnaffected
       break;
       case "right":
         pushableAdjustPos.x = unpushableEntity.x + unpushableEntity.width + offset;
         
-         pushableAdjustPos.y = pushableEntity.y +  (pushableEntity.vy * dtAtCollision);
+         pushableAdjustPos.y = yAxisUnaffected
       break;
     }
     pushableEntity.setPosition(pushableAdjustPos)
    
 
    // spend some velocity on the unaffected axis since we moved it by time at coll
-  const Unspent_velocity_percentage_on_the_unaffected_axis = ((dt - dtAtCollision)/dt);
+  const Unspent_velocity_percentage_on_the_unaffected_axis = ((dt - dtAtCollision)/dt); // ex: (50-40)/50=?
   switch(unpushableFace) {
   case "top":
   case "bottom":
@@ -119,6 +119,7 @@ static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity,
   unpushableFace,
   pushableAdjustPos, dt, dtAtCollision
 })
+
  // push pushable if wall moving towards it, otherwise, just nulify affected axis
     switch(unpushableFace){
       case "top":
@@ -201,48 +202,6 @@ function complexCodeByClaude(value: number, velocity: -1|0|1) : number {
 
 
 
-type Normal = { x: -1 | 0 | 1; y: -1 | 0 | 1 };
-
-function getSeparationNormal(a: Base_Entity, b: Base_Entity): { normal: Normal; depth: number } | null {
-  const aLeft = a.x;
-  const aRight = a.x + a.width;
-  const aTop = a.y;
-  const aBottom = a.y + a.height;
-
-  const bLeft = b.x;
-  const bRight = b.x + b.width;
-  const bTop = b.y;
-  const bBottom = b.y + b.height;
-
-  const overlapX = Math.min(aRight, bRight) - Math.max(aLeft, bLeft);
-  const overlapY = Math.min(aBottom, bBottom) - Math.max(aTop, bTop);
-
-  if (overlapX <= 0 || overlapY <= 0) return null; // no overlap
-
-  // Prefer velocity if present
-  if (a.vx !== 0 || a.vy !== 0) {
-    if (Math.abs(a.vx) > Math.abs(a.vy)) {
-      const normal: Normal = a.vx > 0 ? { x: -1, y: 0 } : { x: 1, y: 0 };
-      return { normal, depth: overlapX };
-    } else {
-      const normal: Normal = a.vy > 0 ? { x: 0, y: -1 } : { x: 0, y: 1 };
-      return { normal, depth: overlapY };
-    }
-  }
-
-  // Fallback: minimal-overlap rule
-  if (overlapX < overlapY) {
-    const aCenterX = (aLeft + aRight) / 2;
-    const bCenterX = (bLeft + bRight) / 2;
-    const normal: Normal = aCenterX < bCenterX ? { x: -1, y: 0 } : { x: 1, y: 0 };
-    return { normal, depth: overlapX };
-  } else {
-    const aCenterY = (aTop + aBottom) / 2;
-    const bCenterY = (bTop + bBottom) / 2;
-    const normal: Normal = aCenterY < bCenterY ? { x: 0, y: -1 } : { x: 0, y: 1 };
-    return { normal, depth: overlapY };
-  }
-}
 
 function complexCodeByChatGPT(value: number, velocity: -1 | 0 | 1, maxDenominator = 32): number {
     if (velocity === 0) throw new Error("Velocity cannot be zero");
@@ -273,24 +232,3 @@ function complexCodeByChatGPT(value: number, velocity: -1 | 0 | 1, maxDenominato
 
     return integerPart + targetFraction;
 }
-/*
-// Test cases from your examples
-log("Testing with your examples:");
-log("777.282471838, vel 0 ->", roundToCleanFloat(777.282471838, 0)); // Should be 777.25
-log("0.3758173, vel 1 ->", roundToCleanFloat(0.3758173, 1)); // Should be 0.5
-log("0.3757173, vel 0 ->", roundToCleanFloat(0.3757173, 0)); // Whatever is closest
-log("0.3757173, vel -1 ->", roundToCleanFloat(0.3757173, -1)); // Should be 0.25
-log("38482.4769682, vel 1 ->", roundToCleanFloat(38482.4769682, 1)); // Should be 38482.5
-log("38482.4769682, vel 0 ->", roundToCleanFloat(38482.4769682, 0)); // Whatever is closest
-log("38482.4769682, vel -1 ->", roundToCleanFloat(38482.4769682, -1)); // Should be 38482.25
-log("38482.047472, vel 1 ->", roundToCleanFloat(38482.047472, 1)); // Should be 38482.0625
-log("38482.047472, vel -1 ->", roundToCleanFloat(38482.047472, -1)); // Should be 38482.03125
-log("38482.047472, vel 0 ->", roundToCleanFloat(38482.047472, 0)); // Whatever is closest
-
-// Additional edge cases
-log("\nEdge cases:");
-log("777.0, vel 1 ->", roundToCleanFloat(777.0, 1)); // Already clean
-log("777.5, vel 1 ->", roundToCleanFloat(777.5, 1)); // Should go to 778.0
-log("777.03125, vel -1 ->", roundToCleanFloat(777.03125, -1)); // Should go to 777.0
-
-*/

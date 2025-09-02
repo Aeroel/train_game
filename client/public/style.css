@@ -131,6 +131,11 @@ body {
     right: 5%;
     bottom: 5%;
   }
+  
+  #consoleMessagesContainer {
+    overflow-y: auto;
+    
+  }
     #showConsoleButtonImage {
       position: absolute;
       top: 70px;
