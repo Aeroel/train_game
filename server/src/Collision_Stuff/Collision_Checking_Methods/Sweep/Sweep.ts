@@ -1,6 +1,5 @@
-import type {Direction, Position, 
-Collision_Time_And_Normal, Simplified_Enity, Collision_Info, Normal, 
-Box} from "#root/Type_Stuff.js";
+import type {Direction,  Position, 
+Collision_Time_And_Normal, Simplified_Enity, Collision_Info, Normal, Box_With_Velocity, Box} from "#root/Type_Stuff.js";
 import{Collision_Stuff} from "#root/Collision_Stuff/Collision_Stuff.js"
 import type {Base_Entity} from "#root/Entities/Base_Entity.js";
 import { Helper_Functions } from "#root/Helper_Functions.js";
@@ -22,304 +21,176 @@ class Sweep {
 
   private static implementationCode(a: Base_Entity, b: Base_Entity): Collision_Time_And_Normal | null {
 
-     const collision =  this.codeByGPTWrapper(a, b);
-     if(collision) {
-      /* log(collision, {
-        a: Collision_Stuff.entityToBoxWithVelocity(a), b: Collision_Stuff.entityToBoxWithVelocity(b)
-       })*/
-       const oldT = collision.time
-       const newT =Math.floor(collision.time)
-       if(oldT !== newT) {
-         log("tdiff",oldT, newT)
-       }
-     }
+     const collision =  this.codeByMe(a, b);
+
      return collision;
   }
   
-  private static codeByGPTWrapper(a: Base_Entity, b: Base_Entity ): Collision_Time_And_Normal | null{
+  private static codeByMe(a: Base_Entity, b: Base_Entity ): Collision_Time_And_Normal | null{
     let rectA= Collision_Stuff.entityToBoxWithVelocity(a);
     let rectB= Collision_Stuff.entityToBoxWithVelocity(b);
 
     const dt = World_Tick.deltaTime;
-     const toLog= myCCD(rectA, rectB);
-     return toLog;
+     const result= mySwept(rectA, rectB, dt);
+     return result;
   }
   
   
 
 }
 
-
-
-
-interface Rect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  vx: number;
-  vy: number;
+type Swept_Result = null | {
+  time: number;
+  normal: { x: number, y: number }
 }
 
 
-interface CollRes {
-  normal: Normal, time: number
-}
-
-
-
-function myCCD(a: Rect, b: Rect): null | CollRes {
-  My_Assert.that(a.width >0 && a.height > 0 && b.width > 0 && b.height > 0);
-  My_Assert.that(
-    Number.isFinite(a.vx) &&
-    Number.isFinite(a.vy) &&
-    Number.isFinite(b.vx) &&
-    Number.isFinite(b.vy) 
-    )
-  let time = 0;
-  const normal: Normal = {x:0,y:0}
-  const result: CollRes = { normal, time}
-  const preSweepResult = preSweepCheck(a,b);
-  if(preSweepResult === "initialCollision") {
+// dt is used for creating the expanded box
+function mySwept(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: number): Swept_Result {
+  
+  let result: Swept_Result = {time:0, normal: {
+      x: 0, y:0 
+    }};
+  if(overlap(a,b)) {
+    result = {time:0, normal: {
+      x: 0, y:0 
+    }}
     return result;
   }
-  if(preSweepResult === "Collision_is_impossible") {
-    return null;
+  const relx = a.vx - b.vx;
+  const rely = a.vy - b.vy;
+  // collision impossible if no overlap and no relative velocity
+  if(relx ===0 && rely ===0){
+    result=null
+    return null
   }
-  if(preSweepResult ==="shouldCheckMorePreciselyUsingSweep") {
-  let res = myCCDSweep(a, b);
- //res = If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(res);
-  
-  
-  return res;
+  const expA = expandByVel(a, relx, rely, deltaTime)
+  if(!overlap(expA, b)) { 
+    return null 
   }
-  throw new Error(`Oops, how did the program ever reach this throw line? maybe check what preSweepCheck returned. it returned this:${preSweepResult}`)
-}
+  
+    let xTime0: number =0;
+    let xTime100: number=0;
+    let xOverlapStartPercent = -Infinity
+    let xOverlapEndPercent = Infinity
+    let xOverlapStartPoint: number = 0;
+    let xOverlapEndPoint: number =0;
+        if(relx <0) {
+      xTime0 = expA.x + expA.width;
+      xTime100 = expA.x
+      xOverlapStartPoint = b.x + b.width+ a.width;
+      xOverlapEndPoint = b.x - a.width;
 
-
-function preSweepCheck(a: Rect, b: Rect) {
-      const alreadyOverlapping = testInitialCollision(a, b);
-      
-       if(alreadyOverlapping) {
-          return "initialCollision"
     }
-    const stationaryRelativeToEachOther = testRelativelyStationary(a, b);
-    
-    if(!alreadyOverlapping && stationaryRelativeToEachOther) {
-            return "Collision_is_impossible"; 
-      }
-      
-      return "shouldCheckMorePreciselyUsingSweep"
-
-}
-
-/* either rect might be moving on x and/or y axes or standing still
-Input assumptions: 
-1. at least one of the two entities is moving (in other words, we should have filtered out non moving entities so we would not be calling the sweepmethod)
-2. They are not overlapping at time 0, i.e. at their initial positions (a.x, a.y, b.x, b.y) (i.e., we should have checked for static overlap previously, before we invoked the sweep function)
- 
-*/
-function myCCDSweep(a: Rect, b: Rect) : null| CollRes{
-  My_Assert.that(false === testInitialCollision(a,b),"myCCDSweep says: Oops, make sure to check for initial overlap at time 0 before invoking me");
-  
-  const {rvx, rvy} = getRelativeVelocity(a,b);
-
-  My_Assert.that(rvx !== 0 || rvy !== 0, "myCCDSweep says: Oops buddy, make sure you check that the two entities are moving before invoking me. The reason for this is that there is nothing for me to do if they are not moving.");
-  
-  // now we can invoke the ccd algo
-  const I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic = true;
-  log(a.x, a.y)
-  const result = myCCDSweepLogic({
-    a,
-    b,
-   I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic 
-  });
- return result
-}
-
-function getRelativeVelocity(a: Rect, b: Rect) : {rvx: number, rvy: number }  {
-    const rvx = a.vx - b.vx;
-    const rvy = a.vy - b.vy;
-    
-    return {rvx, rvy}
-}
-
-
-function testInitialCollision(a: Rect, b: Rect) {
-  return Collision_Stuff.static_No_Velocity_Collision_Check(a,b);
-}
-function testRelativelyStationary(a: Rect, b: Rect) : boolean{
-   const {rvx, rvy} = getRelativeVelocity(a,b)
-    
-    return rvx === 0 && rvy === 0;
-}
-
-function If_both_x_and_y_of_normal_are_not_zero_due_to_perfect_diagonal_collision_then_prefer_x(collision: null | CollRes) : CollRes | null {
-  if(!collision) {
-    return null;
-  }
-  const normal = collision.normal;
-  if(normal.x !== 0 && normal.y !== 0) {
-    collision.normal =  {
-      x: normal.x,
-      y: 0
+    if(relx >0) {
+      xTime0 = expA.x;
+      xTime100 = expA.x + expA.width
+      xOverlapStartPoint = b.x - a.width;
+      xOverlapEndPoint = b.x + b.width + a.width ;
     }
-  }
-  return collision;
-}
-
-// NOTE: do not call this directly, because
-// it assumes that 1) a and b do not begin in overlap and b) at least one of them is moving. these checks are done elsewhere before calling this
-function myCCDSweepLogic({a, b, I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic}: {a: Rect, b: Rect, I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic: boolean}) : null| CollRes{
-  My_Assert.that(I_am_sure_I_have_made_all_the_necessary_preparations_before_calling_sweep_logic, "Oops, call this only after you have");
- 
-  // finally, here is the sweep algo itself
- // so we know that at least one entity is moving.
- // we also know they do not overlap  at initial positions (in other words, in time 0).
-  let result: null | CollRes = null;
-  // okay, I assume first things we need are deltaTime (i.e., milliseconds each tick update takes) and relative velocity...
-  const dt = World_Tick.deltaTime;
-  const {rvx, rvy} = getRelativeVelocity(a,b)
-  // maybe we might as well get the positions both entities want to end up in if no collision occurs as well as what are the displacements of position for both
-  const aPos= {x:a.x,y:a.y}
-  const bPos= {x:b.x,y:b.y}
-  const aEnd = {x:0,y:0}
-  aEnd.x = a.x + (dt * a.vx);
-  aEnd.y = a.y + (dt * a.vy);
- 
-  const bEnd = {x:0,y:0}
-  bEnd.x = b.x + (dt * b.vx);
-  bEnd.y = b.y + (dt * b.vy);
-  
-  const aDiff = {x:0,y:0}
-  aDiff.x = aEnd.x - a.x
-  aDiff.y = aEnd.y - a.y
-
-  const bDiff = {x:0,y:0}
-  bDiff.x = bEnd.x - b.x
-  bDiff.y = bEnd.x - b.y
-
-  
-  /* so here we need to figure out the collision time and collision normal. Collision time is a value >0 and <=1 I can multiply dt by to get xy at collision. Collision normal is which side of entity B is looking at entity A at point of collision. For example, if A is going right and collides with B, normal is x -1 y 0.
-    if A is going up and collides with b, then normal is x 0 y 1
-    etc... 
-    I assume one of the axes is always zero in most cases but in cases where the entities collide in a perfect diagonal way, it might be something like x 1 y-1, i.e., a is moving left down and collides with b. This must be returned as is. I will use this normal and I will just pico x axis if both are not zero. because,either way, I think that only one axis is ever needed to handle the collision,
-  */
-  
-  result= chatgpt(rvx,rvy, dt, a,b);
-  log({
-    result,
-    dt, rvx, rvy, 
-    aPos, bPos,
-    aEnd, aDiff,
-    bEnd, bDiff,
-  })
-  return result;
+    if(relx !== 0) {
+          xOverlapStartPercent = percentOf(xOverlapStartPoint, xTime0, xTime100)
+      xOverlapEndPercent = percentOf(xOverlapEndPoint, xTime0, xTime100)
+   
+    }
+    
+    let yTime0: number=0;
+    let yTime100: number=0;
+    let yOverlapStartPercent = -Infinity;
+    let yOverlapEndPercent = Infinity;
+    let yOverlapStartPoint: number=0;
+    let yOverlapEndPoint: number=0;
+    if(rely >0) {
+      yTime0 = expA.y;
+      yTime100 = expA.y + expA.height
+      yOverlapStartPoint = b.y - a.height;
+      yOverlapEndPoint = b.y + b.height +  a.height;
+    }
+        if(rely < 0) {
+      yTime0 = expA.y + expA.height;
+      yTime100 = expA.y
+      yOverlapStartPoint = b.y + b.height + a.height;
+      yOverlapEndPoint = b.y - a.height;
+    }
+    if(rely !== 0) {
+       yOverlapStartPercent = percentOf(yOverlapStartPoint, yTime0, yTime100)
+      yOverlapEndPercent = percentOf(yOverlapEndPoint, yTime0, yTime100)
+    }
+    
+    const overlapStartPercent = Math.max(xOverlapStartPercent, yOverlapStartPercent)
+    const overlapEndPercent = Math.min(xOverlapEndPercent, yOverlapEndPercent);
+    if(overlapStartPercent > overlapEndPercent ) {
+      return null;
+    }
+    const overlapStartNormalizedTime = overlapStartPercent / 100;
+    const normal = preferXIfDiagonal(calculateNormal(xOverlapStartPercent, yOverlapStartPercent, relx, rely));
+    return {time: overlapStartNormalizedTime, normal};
   
 }
+function percentOf(val: number, min: number, max: number) {
+  return ((val - min) / (max - min)) * 100;
+}
+function overlap(a: Box,b: Box){
+  
+  return (
+    a.x <= b.x + b.width &&
+    a.x + a.width >= b.x &&
+    a.y <= b.y + b.height &&
+    a.y + a.height >= b.y
+  );
+}
+function expandByVel(entity: Box, vx: number, vy: number, deltaTime: number) : Box {
+  const ex = { 
+    x: entity.x,
+    y: entity.y,
+    width: entity.width,
+    height: entity.height,
+  };
 
-const EPS = 1e-8;
-function computePenetration(a: Rect, b: Rect) {
-  // returns minimal translation vector to push A out of B (MTV)
-  const overlapX = Math.min(a.x + a.width, b.x + b.width) - Math.max(a.x, b.x);
-  const overlapY = Math.min(a.y + a.height, b.y + b.height) - Math.max(a.y, b.y);
-  if (overlapX <= 0 || overlapY <= 0) return null;
-  // choose smallest axis to avoid corner-stuck; keep sign so MTV points out of B
-  if (overlapX < overlapY) {
-    const sign = (a.x + a.width / 2) < (b.x + b.width / 2) ? -1 : 1;
-    return { x: overlapX * sign, y: 0 };
+  if (vx > 0) {
+    ex.width += vx * deltaTime;
   } else {
-    const sign = (a.y + a.height / 2) < (b.y + b.height / 2) ? -1 : 1;
-    return { x: 0, y: overlapY * sign };
+    ex.x += vx * deltaTime;
+    ex.width += -vx * deltaTime;
   }
+
+  if (vy > 0) {
+    ex.height += vy * deltaTime;
+  } else {
+    ex.y += vy * deltaTime;
+    ex.height += -vy * deltaTime;
+  }
+
+  return ex;
 }
+function calculateNormal(xOverlapStartPercent: number, yOverlapStartPercent: number, relx: number, rely: number) {
+  const normal: Normal = { x: 0, y: 0 };
 
-
-function chatgpt(rvx: number, rvy: number, dt: number, a: Rect, b: Rect): null| CollRes {
-
-  const rdx = rvx * dt;
-  const rdy = rvy * dt;
-
-  const invEntry = { x: 0, y: 0 };
-  const invExit  = { x: 0, y: 0 };
-
-  // distances from A to B on each axis
-  const xEntryDist = b.x - (a.x + a.width);
-  const xExitDist  = (b.x + b.width) - a.x;
-  const yEntryDist = b.y - (a.y + a.height);
-  const yExitDist  = (b.y + b.height) - a.y;
-
-  // X axis
-  if (Math.abs(rdx) > EPS) {
-    if (rdx > 0) {
-      invEntry.x = xEntryDist / rdx;
-      invExit.x  = xExitDist  / rdx;
+  if (xOverlapStartPercent > yOverlapStartPercent) {
+    // collision happened along X axis
+    if (relx > 0) {
+      normal.x = -1; // moving right, hit left side of b
     } else {
-      invEntry.x = xExitDist  / rdx;
-      invExit.x  = xEntryDist / rdx;
+      normal.x = 1; // moving left, hit right side of b
     }
   } else {
-    // no relative movement on X this frame
-    // if separated on X, no collision possible
-    if (xEntryDist > 0 || xExitDist < 0) return null;
-    invEntry.x = -Infinity;
-    invExit.x  = Infinity;
-  }
-
-  // Y axis (same logic)
-  if (Math.abs(rdy) > EPS) {
-    if (rdy > 0) {
-      invEntry.y = yEntryDist / rdy;
-      invExit.y  = yExitDist  / rdy;
+    // collision happened along Y axis
+    if (rely > 0) {
+      normal.y = -1; // moving down, hit top of b
     } else {
-      invEntry.y = yExitDist  / rdy;
-      invExit.y  = yEntryDist / rdy;
+      normal.y = 1; // moving up, hit bottom of b
     }
-  } else {
-    if (yEntryDist > 0 || yExitDist < 0) return null;
-    invEntry.y = -Infinity;
-    invExit.y  = Infinity;
   }
 
-  const entryTime = Math.max(invEntry.x, invEntry.y);
-  const exitTime  = Math.min(invExit.x, invExit.y);
-
-  // log debug info
-  log({ invEntry, invExit, entryTime, exitTime, rdx, rdy });
-
-  // no collision inside [0..1] or invalid
-  if (entryTime > exitTime || entryTime > 1 || exitTime < 0) return null;
-
-  // treat very-small-or-zero entry as overlap/penetration case (do not throw)
-  if (entryTime <= EPS) {
-    // normalize normal using invEntry signs or compute penetration
-    // prefer penetration-based MTV for stability
-    const mtv = computePenetration(a, b);
-    if (mtv) {
-      const normal = { x: Math.sign(mtv.x), y: Math.sign(mtv.y) };
-      return { time: 0, normal };
+  return normal;
+}
+function preferXIfDiagonal(normal: Normal) {
+  
+  if(normal.x !== 0 && normal.y !==0) {
+    return {
+      ...normal,
+      y: 0,
     }
-    // fallback to axis-based normal if no mtv available
-    const normal = { x: 0, y: 0 };
-    if (invEntry.x > invEntry.y) { normal.x = rdx < 0 ? 1 : -1; }
-    else if (invEntry.y > invEntry.x) { normal.y = rdy < 0 ? 1 : -1; }
-    else {
-      normal.x = rdx < 0 ? 1 : -1;
-      normal.y = rdy < 0 ? 1 : -1;
-    }
-    return { time: 0, normal };
-  }
-
-  // determine normal for non-overlap swept collision
-  const normal = { x: 0, y: 0 };
-  if (invEntry.x > invEntry.y) {
-    normal.x = rdx < 0 ? 1 : -1;
-  } else if (invEntry.y > invEntry.x) {
-    normal.y = rdy < 0 ? 1 : -1;
-  } else {
-    normal.x = rdx < 0 ? 1 : -1;
-    normal.y = rdy < 0 ? 1 : -1;
-  }
-
-  return { time: entryTime, normal };
+  } 
+  return normal;
 }

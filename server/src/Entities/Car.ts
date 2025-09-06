@@ -101,9 +101,5 @@ if(Math.random()>0.5) {
   
 }
 
-collisionManager() {
- Pushable_Entity_With_Unpushable_Entities.resolve({pushableEntity: this}); 
-}
-
 
 }
