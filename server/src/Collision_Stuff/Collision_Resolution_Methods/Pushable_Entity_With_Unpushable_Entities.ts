@@ -55,12 +55,27 @@ static resolveCollision(collision: Collision_Info) {
 static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity, dt}: {collisionTime: number, collisionNormal: Normal, pushableEntity: Base_Entity, unpushableEntity: Base_Entity, dt: number}) {
 
   const  dtAtCollision = dt * collisionTime;
+  console.log({dtAtCollision})
+ const remT = 1 - collisionTime;
   const pe = pushableEntity;
   pe.x += pe.vx * dtAtCollision;
   pe.y += pe.vy * dtAtCollision;
   pe.x += collisionNormal.x
   pe.y += collisionNormal.y
-  pe.vx=0;
-  pe.vy=0;
+    pe.x += collisionNormal.x
+  pe.y += collisionNormal.y
+   pe.x = Math.round(pe.x)
+  pe.y = Math.round(pe.y)
+  if(collisionNormal.x !==0){
+    pe.vx=0;
+  } else {
+    pe.vx = pe.vx * remT;
+  }
+  if (collisionNormal.y !==0){ 
+    pe.vy=0;
+    
+  } else {
+    pe.vy = pe.vy * remT;
+  }
 }
 }
