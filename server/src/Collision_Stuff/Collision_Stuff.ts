@@ -40,6 +40,27 @@ class Collision_Stuff {
         return allCollisions;
 }
  
+ static getClosestCollision(
+  entity: Base_Entity,
+  filterFn?: (other: Base_Entity) => boolean
+): Collision_Info | null {
+  const collisions = Collision_Stuff.findCollisions(entity, filterFn);
+
+  if (collisions.length === 0) {
+    return null;
+  }
+
+  if (collisions.length === 1) {
+    const onlyColl = collisions[0];
+    My_Assert.notNull(onlyColl);
+    return onlyColl;
+  }
+  const sortedFromClosestToFarthest = collisions.toSorted((a, b) => a.time - b.time);
+
+
+
+  return sortedFromClosestToFarthest[0];
+}
  
  
     static normalToFace(normal: Normal) : Face {
@@ -75,28 +96,7 @@ static getOppositeFace(face: Face): Face {
   throw new Error(`Could not determine opposite face ${face}`)
 }
 
-static getClosestCollision(
-  entity: Base_Entity,
-  filterFn?: (other: Base_Entity) => boolean
-): Collision_Info | null {
-  const collisions = Collision_Stuff.findCollisions(entity, filterFn);
 
-  if (collisions.length === 0) {
-    return null;
-  }
-
-  if (collisions.length === 1) {
-    const onlyColl = collisions[0];
-    My_Assert.notNull(onlyColl);
-    return onlyColl;
-  }
-  const sortedFromClosestToFarthest = collisions.toSorted((a, b) => a.time - b.time);
-
-
-
-  return sortedFromClosestToFarthest[0];
-}
- 
 
 
 static Precise_collision_check(entityA: Base_Entity, entityB: Base_Entity): Collision_Info | null {

@@ -422,7 +422,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
      const collisions = Collision_Stuff.findCollisions(entity, other => other.hasTag("Can_Ride_Train")).filter(col=>!(carPassengers.includes(col.entityB)))
       for(const coll of collisions) {
 
-        Pushable_Entity_With_Unpushable_Entities.resolveCollision(coll)
+     //   Pushable_Entity_With_Unpushable_Entities.resolveCollision(coll)
       }
       entity.velocity.x.Remove_Component({
         key:tempKey
