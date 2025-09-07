@@ -2,6 +2,7 @@ import { App } from "#root/App"
 import { AnimationLoop } from "#root/AnimationLoop"
 import { AppSetup } from "#root/AppSetup"
 import { SocketWrapper } from "#root/SocketWrapper"
+import {CommandConsole} from "#root/CommandConsole"
 import { mustGetById } from "#root/RandomFuncs"
 
 
@@ -46,7 +47,7 @@ static ipAddressFieldAndButton() {
    this.sendUserInputToServer({everyMs});
     
    this.pingMeasurement();
-   this.consoleStuff();
+   CommandConsole.consoleStuff();
 
   }
   
@@ -66,41 +67,7 @@ static ipAddressFieldAndButton() {
       App.zoom = "no_change";
     }, everyMs);
   }
-  static consoleStuff() {
-    const consoleCommandInputField = <HTMLInputElement>mustGetById("consoleCommandInputField");
-    SocketWrapper.on("consoleMessages", (messages: string[]) =>{
-       for (const msg of messages) {
-         this.appendConsoleMessage(msg);
-       };
-       consoleCommandInputField.value=''
-    });
-    const consoleCommandSubmitButton = mustGetById("consoleCommandSubmitButton");
-
-      
-    consoleCommandSubmitButton.addEventListener("pointerup",()=>{
-      const cmd = consoleCommandInputField.value;
-         this.sendCommand(cmd)
-    })
-        consoleCommandInputField.addEventListener("keydown", (e) => {
-
-     const userPressedTheEnterKey = (e.key === 'Enter')
-      if (!userPressedTheEnterKey) {
-        return;
-      }
-      const cmd = consoleCommandInputField.value;
-      this.sendCommand(cmd);
-      }) 
-  }
-  static sendCommand(cmd:string){
-    SocketWrapper.emit("consoleCommand",cmd)
-  }
-  static appendConsoleMessage(msg: string) {
-     const consoleMessagesContainer = mustGetById("consoleMessagesContainer")
-    const msgDiv = document.createElement('div');
-  msgDiv.textContent = msg;
-  consoleMessagesContainer.appendChild(msgDiv);
-
-  }
+  
   
   
   static pingMeasurement() {

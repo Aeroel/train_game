@@ -122,15 +122,23 @@ body {
   }
   
   #console {
-    overflow: scroll;
+    
+   z-index: 9999;
     background: green;
-    z-index: 9999;
     position: fixed;
     display: none;
     left: 5%;
     top: 5%;
     right: 5%;
     bottom: 5%;
+  }
+  #consoleMessagesContainer {
+  background: darkgreen;
+  scrollbar-color: red orange;
+   scrollbar-width: thin;
+    overflow-y: auto;
+  height: 75vh;
+   white-space: pre-wrap;
   }
     #showConsoleButtonImage {
       position: absolute;

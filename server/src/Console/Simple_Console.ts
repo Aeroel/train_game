@@ -6,17 +6,25 @@ type Command_Callback = (args: string[], socket: Undesirable_Hardcoded_Socket_Ty
 
 
 export class Command_Console {
-  static welcomeMessages = [
-    "Hi, bro, welcome to the console!", 
-    "Available commands:",
-    "tp 1 777 888 <-- teleport entity with id 1 to x 777 y 888",
-    "listentities 7 <-- lists page 7 of all entities",
-    "tpab 1 2 <-- teleport entity with id 1 to entity with id 2",
-    ]
-  private static commands: Record<string, Command_Callback> = {};
-static add(name: string, cb: Command_Callback) {
-        this.commands[name.toLowerCase()] = cb;
-    }
+
+    
+   static get welcomeMessages(): string[] {
+    const baseMessages = [
+        "Hi, bro, welcome to the console!", 
+        "Available commands:"
+    ];
+    const helpCmd = "help"
+     const helpMsg= this.getHelp();
+    
+    return [...baseMessages, ...helpMsg];
+} 
+  private static commands: Record<string, {callback: Command_Callback, description: string}> = {};
+static add(name: string, description: string, cb: Command_Callback) {
+    this.commands[name.toLowerCase()] = {
+        callback: cb,
+        description: description
+    };
+}
 
   static executeCommand(commandStr: string, socket: Undesirable_Hardcoded_Socket_Type,): Command_Result {
     const result: Command_Result={
@@ -28,20 +36,67 @@ static add(name: string, cb: Command_Callback) {
         }
 
         const commandName = parts[0].toLowerCase();
-        const callback = this.commands[commandName];
-        if (!callback) {
+        const command = this.commands[commandName];
+        if (!command) {
           result.message= "error: command not found";
             return result;
         }
 
-       const msg= callback(parts, socket);
+       const msg= command.callback(parts, socket);
         result.message =msg;
         return result;
 
   }
+  
+  static getHelp() : string[] {
+        const commandDescriptions = Object.entries(this.commands)
+        .map(
+        
+        ([name, cmd]) => `${name} - ${cmd.description}`
+        )
+        
+        return commandDescriptions
+  }
 }
 
-Command_Console.add("tp", (args, socket) => {
+Command_Console.add("wallofchars", "sends N random emoji and text characters", (args, socket) => {
+    if (args.length !== 2 || isNaN(Number(args[1]))) {
+        return "Usage: wallofchars <number>";
+    }
+
+    const count = Number(args[1]);
+    if (count <= 0 || count > 10000) {
+        return "Number must be between 1 and 10000";
+    }
+
+    const chars = [
+        // Emoji
+        '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+        '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+        '😋', '😛', '😝', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩',
+        '🥳', '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣',
+        '🎉', '🎊', '🎈', '🎁', '🎀', '🌟', '⭐', '✨', '💫', '⚡',
+        '🔥', '💥', '💯', '💢', '💨', '👍', '👎', '👌', '✌️', '🤞',
+        // Text characters
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+        'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
+        'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
+        'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v',
+        'w', 'x', 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
+        '8', '9', '!', '@', '#', '$', '%', '^', '&', '*', '(', ')',
+        '-', '_', '=', '+', '[', ']', '{', '}', '|', '\\', ':', ';',
+        '"', "'", '<', '>', ',', '.', '?', '/', '~', '`'
+    ];
+
+    let result = '';
+    for (let i = 0; i < count; i++) {
+        const randomChar = chars[Math.floor(Math.random() * chars.length)];
+        result += randomChar;
+    }
+
+    return result;
+});
+Command_Console.add("tp", "tp 1 777 888 <-- teleport entity with id 1 to x 777 y 888", (args, socket) => {
     if (args.length !== 4 || isNaN(Number(args[1])) || isNaN(Number(args[2])) || isNaN(Number(args[3]))) {
         return "args invalid";
     }
@@ -59,7 +114,7 @@ Command_Console.add("tp", (args, socket) => {
     return "tp success";
 });
 
-Command_Console.add("listentities", (args, socket) => {
+Command_Console.add("listentities", "listentities 7 <-- lists page 7 of all entities", (args, socket) => {
     const perPage = 10;
     let page = 1;
 
@@ -84,7 +139,7 @@ Command_Console.add("listentities", (args, socket) => {
 
    return msg;
 });
-Command_Console.add("tpab", (args, socket) => {
+Command_Console.add("tpab","tpab 1 2 <-- teleport entity with id 1 to entity with id 2", (args, socket) => {
     if (args.length !== 3) {
       return "invalid argument count"
     }
@@ -102,3 +157,9 @@ Command_Console.add("tpab", (args, socket) => {
     entityA.setPosition({ x: entityB.x, y: entityB.y });
     return "tp entity a to entity b succeeded"
 });
+Command_Console.add("help", " <- list all available commands", (args, socket)=>{
+       const cmds = Command_Console.getHelp();
+       
+        const cmdsStr= cmds.join('\n\n');
+        return cmdsStr;
+})

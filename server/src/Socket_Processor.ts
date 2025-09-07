@@ -51,7 +51,7 @@ static consoleStuff(socket:Undesirable_Hardcoded_Socket_Type, player: Player){
      const result= Command_Console.executeCommand(cmd, socket);
       socket.emit("consoleMessages", 
       [`You sent the command: ${cmd}`,
-      `Result: ${result.message}`
+      `Result:\n ${result.message}`
       
       ])
 
