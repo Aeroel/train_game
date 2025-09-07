@@ -1,4 +1,5 @@
 import { App } from "#root/App"
+import {mustGetById} from "#root/RandomFuncs"
 
 export class TouchscreenControlsSetup {
   static runTheSetupCode() {
@@ -28,6 +29,15 @@ export class TouchscreenControlsSetup {
     hideConsoleButton.addEventListener('pointerup', ()=>{
       consoleContainer.style.display = "none";
     });
+  mustGetById('scrollToConsoleBottomButton').addEventListener('click', () => {
+    const messagesContainer = mustGetById('consoleMessagesContainer');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+});
+mustGetById('scrollToConsoleTopButton').addEventListener('click', () => {
+    const messagesContainer = mustGetById('consoleMessagesContainer');
+    messagesContainer.scrollTop = 0;
+});
+
   }
     static intangibilityButton() {
           const intangibilityButton = document.getElementById("intangibilityButton");

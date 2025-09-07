@@ -137,7 +137,7 @@ body {
   scrollbar-color: red orange;
    scrollbar-width: thin;
     overflow-y: auto;
-  height: 75vh;
+  height: 70vh;
    white-space: pre-wrap;
   }
     #showConsoleButtonImage {
@@ -157,3 +157,57 @@ body {
   #server_ip_choice {
     background-color: green;
   }
+
+#scrollToConsoleBottomButton {
+    position: absolute;
+    bottom: 60px; /* Above the command input */
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    transition: background 0.2s ease;
+}
+
+#scrollToConsoleBottomButton:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+#scrollToConsoleBottomButton:active {
+    background: rgba(255, 255, 255, 0.7);
+}
+
+#scrollToConsoleTopButton {
+    position: absolute;
+    bottom: 110px; /* Above the scroll-to-bottom button */
+    right: 15px;
+    width: 40px;
+    height: 40px;
+    background: rgba(255, 255, 255, 0.3); /* Semi-transparent white */
+    border: 2px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+    transition: background 0.2s ease;
+}
+
+#scrollToTopButton:hover {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+#scrollToTopButton:active {
+    background: rgba(255, 255, 255, 0.7);
+}
