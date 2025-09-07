@@ -22,7 +22,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
     return;
   }
 
-const maxIterationsAllowed=10;
+const maxIterationsAllowed=3;
 let itersCount=0;
 while(true) {
   itersCount++;
