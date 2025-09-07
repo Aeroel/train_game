@@ -10,13 +10,23 @@ class Wall extends Base_Entity implements Entity_With_Ends_And_Orientation {
 
     color = "red";
     normalColor = "red";
+    speedX=0.125;
+    speedY=0.125;
+    last=0;
+    every=2000;
     constructor() {
         super();
         this.addTag("Wall")
     }
 
     updateState() {
-
+     if(Date.now()>this.every + this.last) {
+       this.last = Date.now();
+       this.speedX = -1*this.speedX
+       this.speedY = -1*this.speedY
+     }
+     this.vx=this.speedX
+     this.vy=this.speedY
       
       super.updateState();
     }

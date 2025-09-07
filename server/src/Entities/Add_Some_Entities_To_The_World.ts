@@ -50,6 +50,7 @@ class Add_Some_Entities_To_The_World {
         const thinWall = World.addEntity(
        new Wall())
        thinWall.setXY(400, -400).setWidth(1).setHeight(5000)
+
   }
     static doItNow() {
 

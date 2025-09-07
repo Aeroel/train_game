@@ -53,33 +53,40 @@ static resolveCollision(collision: Collision_Info) {
 }
 static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity, dt}: {collisionTime: number, collisionNormal: Normal, pushableEntity: Base_Entity, unpushableEntity: Base_Entity, dt: number}) {
 // standing walls only
-const roundNum = 1/16384;
-const roundCT = roundTo(collisionTime, roundNum);
-const tJustBefore = roundCT - (roundCT/100)
+const roundNum = 1/8192;
+const CT = collisionTime;
+const tJustBefore = CT - ( CT / 100)
+const remT = 1 - tJustBefore;
   const  dtAtJustBeforeCollision = dt * (tJustBefore);
 
- const remT = 1 - tJustBefore;
  
   const pe = pushableEntity;
+  const une = unpushableEntity;
   pe.x += pe.vx * dtAtJustBeforeCollision;
   pe.y += pe.vy * dtAtJustBeforeCollision;
-  pe.x += collisionNormal.x *10
-  pe.y += collisionNormal.y*10
-// pe.x =roundTo(pe.x, roundNum)
-// pe.y = roundTo(pe.y, roundNum)
+  pe.x += collisionNormal.x *5
+  pe.y += collisionNormal.y*5
+ pe.x =roundTo(pe.x, roundNum)
+ pe.y = roundTo(pe.y, roundNum)
   if(collisionNormal.x !==0){
     pe.vx=0;
+    if(Math.sign(une.vx) === collisionNormal.x) {
+      pe.vx = une.vx * remT;
+    }
   } else {
     pe.vx = pe.vx * remT;
   }
   if (collisionNormal.y !==0){ 
     pe.vy=0;
-    
+        if(Math.sign(une.vy) === collisionNormal.y) {
+      pe.vy = une.vy * remT;
+    }
   } else {
     pe.vy = pe.vy * remT;
   }
- // pe.vx = roundTo(pe.vx, roundNum) 
- // pe.vy = roundTo(pe.vy, roundNum)
+
+  pe.vx = roundTo(pe.vx, roundNum) 
+  pe.vy = roundTo(pe.vy, roundNum)
 }
 }
 
