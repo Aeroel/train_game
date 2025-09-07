@@ -29,11 +29,12 @@ const handledEntities: Base_Entity[]=[];
 while(true) {
   My_Assert.that(itersCount < maxIterationsAllowed,`Resolution attempts exceeded allocated iterations of ${maxIterationsAllowed}`)
    const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-   !(handledEntities.includes(unpushableEntity)) &&(unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")) 
+  (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")) 
    );
   if(!collision) {
   break;
 } 
+I_Expect_That(!(handledEntities.includes(collision.entityB)), "I expect that if an unpushableEntity already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question te answer then is why did it fail the first time and how to avoid this issue?   ")
 //console.log(collision.time, collision.normal)
 
    this.resolveCollision(collision);
