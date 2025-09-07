@@ -27,15 +27,17 @@ let itersCount=0;
 const handledEntities: Base_Entity[]=[];
 while(true) {
   My_Assert.that(itersCount < maxIterationsAllowed,`Resolution attempts exceeded allocated iterations of ${maxIterationsAllowed}`)
-   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
-  if(!collision || handledEntities.includes(collision.entityB)) {
+   const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
+   !(handledEntities.includes(unpushableEntity)) &&(unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")) 
+   );
+  if(!collision) {
   break;
 } 
 //console.log(collision.time, collision.normal)
 
    this.resolveCollision(collision);
-     itersCount++;
    handledEntities.push(collision.entityB)
+     itersCount++
 }
   }
 
