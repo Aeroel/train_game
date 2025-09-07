@@ -77,6 +77,9 @@ Clean_Up() {
     return position;
   }
 
+getEndPos() {
+  return this.calculateNextPositionBasedOnVelocityAndDeltaTime()
+}
 
   
  addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld} : { setThisToTrueToIndicateThatYouCalledThisFromWorld: boolean}
@@ -236,6 +239,8 @@ set vy(value: number) {
     this.setColor(color);
     this.tempColorTime = Date.now();
   }
+
+  
 
   getCenterX() {
     return this.x + (this.width / 2);

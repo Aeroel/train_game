@@ -4,6 +4,7 @@ import { World_Tick} from "#root/World_Tick.js"
 import type { Normal, Collision_Info } from "#root/Type_Stuff.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { My_Assert} from "#root/My_Assert.js"
+import { I_Expect_That} from "#root/I_Expect_That.js"
 import { log } from "#root/My_Log.js"
 import { Helper_Functions} from "#root/Helper_Functions.js"
 
@@ -91,6 +92,14 @@ const remT = 1 - tJustBefore;
 
   pe.vx = roundTo(pe.vx, roundNum) 
   pe.vy = roundTo(pe.vy, roundNum)
+  
+  const uneEnd = unpushableEntity.getEndPos();
+  const peEnd = pushableEntity.getEndPos();
+  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(
+    Collision_Stuff.posToBox(pe, peEnd),
+    Collision_Stuff.posToBox(une, uneEnd)
+    );
+  I_Expect_That(false === collideAtEndPositions, "I expect that they do not collide at ending positions after resolution")
 }
 }
 
