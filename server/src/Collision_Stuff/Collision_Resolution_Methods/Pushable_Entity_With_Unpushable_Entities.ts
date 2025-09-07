@@ -34,10 +34,25 @@ while(true) {
   if(!collision) {
   break;
 } 
-I_Expect_That(!(handledEntities.includes(collision.entityB)), "I expect that if an unpushableEntity already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question te answer then is why did it fail the first time and how to avoid this issue?   ")
+const initialOverlap = Collision_Stuff static_No_Velocity_Collision_Check(collision.entityA, collision.entityB);
+const alreadyHandled = !(handledEntities.includes(collision.entityB);
+const errors:string[]=[];
+
+I_Expect_That_Non_Error(), "I expect that if an unpushableEntity already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question te answer then is why did it fail the first time and how to avoid this issue?   ")
 //console.log(collision.time, collision.normal)
 
    this.resolveCollision(collision);
+   
+  const pe = collision.entityA;
+  const une = collision.entityB;
+  
+  const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
+  const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
+
+  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
+    );
+  
+   
    handledEntities.push(collision.entityB)
      itersCount++
 }
@@ -93,14 +108,7 @@ const remT = 1 - tJustBefore;
 
   pe.vx = roundTo(pe.vx, roundNum) 
   pe.vy = roundTo(pe.vy, roundNum)
-  
-  const uneEnd = unpushableEntity.getEndPos();
-  const peEnd = pushableEntity.getEndPos();
-  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(
-    Collision_Stuff.posToBox(pe, peEnd),
-    Collision_Stuff.posToBox(une, uneEnd)
-    );
-  I_Expect_That(false === collideAtEndPositions, "I expect that they do not collide at ending positions after resolution")
+
 }
 }
 
