@@ -24,16 +24,18 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
 const maxIterationsAllowed=3;
 let itersCount=0;
+const handledEntities: Base_Entity[]=[];
 while(true) {
-  itersCount++;
   My_Assert.that(itersCount < maxIterationsAllowed,`Resolution attempts exceeded allocated iterations of ${maxIterationsAllowed}`)
    const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"));
-  if(!collision) {
+  if(!collision || handledEntities.includes(collision.entityB)) {
   break;
 } 
-console.log(collision.time, collision.normal)
+//console.log(collision.time, collision.normal)
 
    this.resolveCollision(collision);
+     itersCount++;
+   handledEntities.push(collision.entityB)
 }
   }
 
