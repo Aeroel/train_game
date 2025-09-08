@@ -43,16 +43,16 @@ const exp2 = Add_Expectation(!initialOverlap,"I expect that the entities do not 
 Verify_Expectations(exp1, exp2);
 
    this.resolveCollision(collision);
-   
-  const pe = collision.entityA;
-  const une = collision.entityB;
+ 
+ 
+ const pe = collision.entityA
+ const une = collision.entityB
+   const overlapAfterResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
+  const exp3 = Add_Expectation(!overlapAfterResolution, "I expect xy of entities to not overlap after resolution handle logic")
   
-  const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
-  const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
-
-  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
-    );
-  
+  const overlapAtEnd = doOverlapAtEnd(pe, une)
+  const exp4 = Add_Expectation(!overlapAtEnd, "I expect entities not to overlap at ending positions");
+  Verify_Expectations(exp3, exp4);
    
    handledEntities.push(collision.entityB)
      itersCount++
@@ -112,4 +112,13 @@ const remT = 1 - tJustBefore;
 
 function roundTo(num: number, step: number): number {
   return Math.round(num / step) * step;
+}
+
+function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
+  const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
+  const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
+
+  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
+    );
+    return collideAtEndPositions
 }
