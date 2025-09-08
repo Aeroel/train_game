@@ -19,6 +19,7 @@ export function Expand_entities_by_their_velocities_and_check_whether_they_might
     // Work with proxy objects instead of full entity objects
     let boxA = Collision_Stuff.entityToBoxWithVelocity(a);
     let boxB = Collision_Stuff.entityToBoxWithVelocity(b);
+    // expand slightly though not really necessary
     boxA = Collision_Stuff.increaseBoxSizeBy(boxA, 1)
     boxB = Collision_Stuff.increaseBoxSizeBy(boxB, 1)
     

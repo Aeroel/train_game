@@ -4,7 +4,7 @@ import { World_Tick} from "#root/World_Tick.js"
 import type { Normal, Collision_Info } from "#root/Type_Stuff.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { My_Assert} from "#root/My_Assert.js"
-import { I_Expect_That} from "#root/I_Expect_That.js"
+import { I_Expect_That, Verify_Expectations, Add_Expectation} from "#root/I_Expect_That.js"
 import { log } from "#root/My_Log.js"
 import { Helper_Functions} from "#root/Helper_Functions.js"
 
@@ -34,12 +34,13 @@ while(true) {
   if(!collision) {
   break;
 } 
-const initialOverlap = Collision_Stuff static_No_Velocity_Collision_Check(collision.entityA, collision.entityB);
-const alreadyHandled = !(handledEntities.includes(collision.entityB);
+const initialOverlap = Collision_Stuff.static_No_Velocity_Collision_Check(collision.entityA, collision.entityB);
+const alreadyHandled = handledEntities.includes(collision.entityB);
 const errors:string[]=[];
 
-I_Expect_That_Non_Error(), "I expect that if an unpushableEntity already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question te answer then is why did it fail the first time and how to avoid this issue?   ")
-//console.log(collision.time, collision.normal)
+const exp1 = Add_Expectation(!alreadyHandled, `I expect that if an unpushableEntity (debug: tags:${JSON.stringify(collision.entityB.tags)}) already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question te answer then is why did it fail the first time and how to avoid this issue?   `)
+const exp2 = Add_Expectation(!initialOverlap,"I expect that the entities do not begin in overlap")
+Verify_Expectations(exp1, exp2);
 
    this.resolveCollision(collision);
    
@@ -87,8 +88,7 @@ const remT = 1 - tJustBefore;
   pe.y += pe.vy * dtAtJustBeforeCollision;
   pe.x += collisionNormal.x *5
   pe.y += collisionNormal.y*5
- pe.x =roundTo(pe.x, roundNum)
- pe.y = roundTo(pe.y, roundNum)
+
   if(collisionNormal.x !==0){
     pe.vx=0;
     if(Math.sign(une.vx) === collisionNormal.x) {
@@ -106,8 +106,6 @@ const remT = 1 - tJustBefore;
     pe.vy = pe.vy * remT;
   }
 
-  pe.vx = roundTo(pe.vx, roundNum) 
-  pe.vy = roundTo(pe.vy, roundNum)
 
 }
 }

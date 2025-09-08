@@ -29,10 +29,18 @@ class Car extends Base_Entity {
     this.y=y;
     this.addTag("Car");
     this.color="purple"
-    this.parts.push(new Wall().setXY(x,y).setWidth(400).setHeight(40).setColor(this.color))
-    this.parts.push(new Wall().setXY(x,y).setWidth(40).setHeight(400).setColor(this.color))
-    this.parts.push(new Wall().setXY(x+400,y).setWidth(40).setHeight(400).setColor(this.color))
-    this.parts.push(new Wall().setXY(x,y+400).setWidth(400).setHeight(40).setColor(this.color))
+    const topWall= new Wall().setXY(x,y).setWidth(400).setHeight(40).setColor(this.color)
+    this.parts.push(topWall)
+    const leftWall = new Wall().setXY(x,y).setWidth(40).setHeight(400).setColor(this.color)
+    this.parts.push(leftWall)
+    const rightWall = new Wall().setXY(x+400,y).setWidth(40).setHeight(400).setColor(this.color)
+    this.parts.push(rightWall)
+    const bottomWall = new Wall().setXY(x,y+400).setWidth(400).setHeight(40).setColor(this.color)
+    this.parts.push(bottomWall)
+    topWall.addTag("Top")
+    bottomWall.addTag("Bottom")
+    leftWall.addTag("Left")
+    rightWall.addTag("Right")
   }
   
   addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld}: {setThisToTrueToIndicateThatYouCalledThisFromWorld: boolean}) {
