@@ -17,8 +17,9 @@ export class Pushable_Entity_With_Unpushable_Entities {
   }
   
   
-  static resolveCode({pushableEntity, recursionTimes=0}:
-  {pushableEntity: Base_Entity, recursionTimes?: number}) {
+  static resolveCode({pushableEntity}:
+  {pushableEntity: Base_Entity
+  }) {
   if(pushableEntity.intangibility) {
     return;
   }
@@ -29,24 +30,26 @@ const handledEntities: Base_Entity[]=[];
 while(true) {
   My_Assert.that(itersCount < maxIterationsAllowed,`Resolution attempts exceeded allocated iterations of ${maxIterationsAllowed}`)
    const collision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-  (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door")) 
+  (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
    );
   if(!collision) {
   break;
 } 
-const initialOverlap = Collision_Stuff.static_No_Velocity_Collision_Check(collision.entityA, collision.entityB);
-const alreadyHandled = handledEntities.includes(collision.entityB);
-const errors:string[]=[];
+// pushableEntity and unpushableEntity
+const pe = pushableEntity
+ const une = collision.entityB
 
-const exp1 = Add_Expectation(!alreadyHandled, `I expect that if an unpushableEntity (debug: tags:${JSON.stringify(collision.entityB.tags)}) already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question te answer then is why did it fail the first time and how to avoid this issue?   `)
+
+const initialOverlap = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une);
+const alreadyHandled = handledEntities.includes(une);
+
+const exp1 = Add_Expectation(!alreadyHandled, `I expect that if an unpushableEntity (debug: tags:${JSON.stringify(une.tags)}) already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question to answer then is why did it fail the first time and how to avoid this issue?   `)
 const exp2 = Add_Expectation(!initialOverlap,"I expect that the entities do not begin in overlap")
 Verify_Expectations(exp1, exp2);
 
    this.resolveCollision(collision);
  
  
- const pe = collision.entityA
- const une = collision.entityB
    const overlapAfterResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
   const exp3 = Add_Expectation(!overlapAfterResolution, "I expect xy of entities to not overlap after resolution handle logic")
   
@@ -54,7 +57,7 @@ Verify_Expectations(exp1, exp2);
   const exp4 = Add_Expectation(!overlapAtEnd, "I expect entities not to overlap at ending positions");
   Verify_Expectations(exp3, exp4);
    
-   handledEntities.push(collision.entityB)
+   handledEntities.push(une)
      itersCount++
 }
   }
@@ -74,21 +77,21 @@ static resolveCollision(collision: Collision_Info) {
   })
 }
 static handle({collisionTime, collisionNormal, pushableEntity, unpushableEntity, dt}: {collisionTime: number, collisionNormal: Normal, pushableEntity: Base_Entity, unpushableEntity: Base_Entity, dt: number}) {
-// standing walls only
-const roundNum = 1/8192;
+
 const CT = collisionTime;
-const tJustBefore = CT - ( CT / 100)
-const remT = 1 - tJustBefore;
-  const  dtAtJustBeforeCollision = dt * (tJustBefore);
+const tAt = CT
+const remT = 1 - tAt;
+  const  dtAtAtCollision = dt * tAt;
 
  
   const pe = pushableEntity;
   const une = unpushableEntity;
-  pe.x += pe.vx * dtAtJustBeforeCollision;
-  pe.y += pe.vy * dtAtJustBeforeCollision;
+  pe.x += pe.vx * dtAtAtCollision;
+  pe.y += pe.vy * dtAtAtCollision;
   pe.x += collisionNormal.x *5
   pe.y += collisionNormal.y*5
-
+ 
+ 
   if(collisionNormal.x !==0){
     pe.vx=0;
     if(Math.sign(une.vx) === collisionNormal.x) {
