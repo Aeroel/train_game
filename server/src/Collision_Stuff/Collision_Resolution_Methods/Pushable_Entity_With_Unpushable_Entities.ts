@@ -51,7 +51,7 @@ Verify_Expectations(exp1, exp2);
  
  
    const overlapAfterResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
-  const exp3 = Add_Expectation(!overlapAfterResolution, "I expect xy of entities to not overlap after resolution handle logic")
+  const exp3 = Add_Expectation(!overlapAfterResolution, `I expect xy of entities to not overlap after resolution handle logic. Debug info: ${JSON.stringify({peBox: Collision_Stuff.entityToBoxWithVelocity(pe), uneBox: Collision_Stuff.entityToBoxWithVelocity(une)})}`)
   
   const overlapAtEnd = doOverlapAtEnd(pe, une)
   const exp4 = Add_Expectation(!overlapAtEnd, "I expect entities not to overlap at ending positions");
@@ -88,9 +88,8 @@ const remT = 1 - tAt;
   const une = unpushableEntity;
   pe.x += pe.vx * dtAtAtCollision;
   pe.y += pe.vy * dtAtAtCollision;
-  pe.x += collisionNormal.x *5
-  pe.y += collisionNormal.y*5
- 
+  pe.x += collisionNormal.x * ((1+ pe.vx)**2 );
+  pe.y += collisionNormal.y *((1+pe.vy)**2);
  
   if(collisionNormal.x !==0){
     pe.vx=0;
