@@ -45,7 +45,7 @@ class Train_Car extends Base_Entity {
   prevSensor: Rail_Switch_Wall = new Rail_Switch_Wall(0,0, [],  [],0, 0);
   train: Train;
  passengers: Base_Entity[] = [];
- colectedPassengersForThisTick = false;
+ collectedPassengersForThisTick = false;
   Wall_And_Door_Thickness = 5;
 
   Center_Box_Entity: Base_Entity = new Base_Entity();
@@ -111,6 +111,7 @@ motionsDirections: Train_Car_Motions_Directions = {
   
   
   collectCarPassengers() {
+        this.collectedPassengersForThisTick = true;
     const passengers: Base_Entity[]=[];
     const all = Collision_Stuff.findCollisions(this, (other)=>other.hasTag("Can_Ride_Train"));
     if(all.length ===0) {
@@ -121,20 +122,19 @@ motionsDirections: Train_Car_Motions_Directions = {
       const passenger = coll.entityB;
       this.passengers.push(passenger)
     })
-    this.colectedPassengersForThisTick = true;
   }
 
   
   Clean_Up() {
     this.velocity.Clear_Propagation_List();
-    this.colectedPassengersForThisTick = false;
+    this.collectedPassengersForThisTick = false;
     this.passengers = [];
     super.Clean_Up();
   }
   
   addToPropagationList() {
       this.Add_Car_Walls_And_Doors_To_Propagation();
-      if(!this.colectedPassengersForThisTick) {
+      if(!this.collectedPassengersForThisTick) {
         throw new Error("You forgot to collect passengers");
       }
         this.passengers.forEach(passenger=>{

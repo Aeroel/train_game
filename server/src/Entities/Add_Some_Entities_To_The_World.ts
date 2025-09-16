@@ -55,7 +55,7 @@ class Add_Some_Entities_To_The_World {
     static doItNow() {
 
 
-   //   const planet =   Add_Some_Entities_To_The_World.addThePlanet();
+     const planet =   Add_Some_Entities_To_The_World.addThePlanet();
         
           Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
     // random wall
@@ -80,6 +80,11 @@ class Add_Some_Entities_To_The_World {
  /**/      const car = World.addEntity(
          new Car({x:1000,y:1000})
          .setXY(500,500))/**/
+
+       const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
+       
+        this.Put_A_Train_On_Rail(firstRailOutOfThirdRailway, ["up"], ["down"], "forwards");
+       this.surroundThirdWithWalls()
 
 //this.randomWalls();
 if(1>0)return;
@@ -111,14 +116,6 @@ if(1>0)return;
           
         })
         );
-        
-
-        
-        
-       const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
-       
-        this.Put_A_Train_On_Rail(firstRailOutOfThirdRailway, ["up"], ["down"], "forwards");
-       this.surroundThirdWithWalls()
         
 
     }

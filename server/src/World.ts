@@ -3,8 +3,8 @@ import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 
 export { World }
 class World {
-  static width: number = 20_000;
-  static height: number = 20_000;
+  static width: number = 50_000;
+  static height: number = 50_000;
   static state = {
     entities: new Array(),
   };
