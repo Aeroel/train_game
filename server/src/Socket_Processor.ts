@@ -34,6 +34,10 @@ class Socket_Processor {
          yPercentage:11,
          xPercentage:11,
        })*/
+       newPlayerEntity.setPosition({
+         x:1325,
+         y: 9000,
+       })
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
         newPlayerEntity.setVisionRange(5000);

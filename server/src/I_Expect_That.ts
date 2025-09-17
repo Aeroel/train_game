@@ -1,4 +1,5 @@
 import {My_Assert} from "#root/My_Assert.js"
+const debug = false;
 
 export function I_Expect_That(condition: unknown, msgOnFalse?: string): asserts condition{
   return My_Assert.that(condition, msgOnFalse)
@@ -22,12 +23,12 @@ export function Verify_Expectations(...expectations: Expectation[]): void {
   expectations.forEach((exp, index) => {
     if (!exp.passed) {
           msg= `❌ Expectation ${index + 1} failed: ${exp.description}`;
-         console.error(msg);
+        if(debug) console.error(msg);
                   errorMsgs.push(msg);
       
     } else {
       msg= `✅ Expectation ${index + 1} passed: ${exp.description}`;
-     console.log(msg);
+    if(debug) console.log(msg);
     }
   });
   if(errorMsgs.length > 0) {

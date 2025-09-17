@@ -1,4 +1,5 @@
 import { Planet } from "#root/Entities/Planet.js";
+import { log } from "#root/My_Log.js";
 import { Bot } from "#root/Entities/Bot.js";
 import { Car } from "#root/Entities/Car.js";
 import { Railway_Switch_Wall_Generator } from "#root/Entities/Railway_Switch_Wall_Generator.js"
@@ -77,11 +78,12 @@ class Add_Some_Entities_To_The_World {
       // const bot= World.addEntity(new Bot())
       // bot.setXY(2000, 2000).setHeight(300);
      //  planet.velocity.Add_To_Propagation_List(bot.velocity)
- /**/      const car = World.addEntity(
+ /**/    /*  const car = World.addEntity(
          new Car({x:1000,y:1000})
-         .setXY(500,500))/**/
+         .setXY(500,500))*/
 
        const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
+       log(firstRailOutOfThirdRailway)
        
         this.Put_A_Train_On_Rail(firstRailOutOfThirdRailway, ["up"], ["down"], "forwards");
        this.surroundThirdWithWalls()
@@ -323,6 +325,7 @@ const offset = carSquareSize * 2;
         }
         const train = new Train(rail, forwards, backwards, movementDirection, 4, Add_Some_Entities_To_The_World.carSquareSize);
         World.addEntity(train)
+        log(`Train spawned on ${JSON.stringify({x: train.x, y: train.y})}`)
 
 
     }
@@ -385,12 +388,7 @@ static surroundThirdWithWalls() {
    const something = (this.carSquareSize-10)/4*2;
    const wall5= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: something  });
    wall5.setY(wall5.y+something)
-   
-           World.addEntity(new Station_Stop_Spot({
-          x:1375, y:7600, Which_Door_Of_A_Car_To_Open_And_Close:"right"
-          
-        })
-        );
+  
    
    
    /*

@@ -1,11 +1,11 @@
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { log } from "#root/My_Log.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js"
 import { Train_Car, type Train_Car_Motion_Directions } from "#root/Entities/Train_Stuff/Train_Car.js";
 import type { Box, Direction, Position, Collision_Info } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
-import { log } from "console";
 
 export type Train_Movement_Motion = null| "backwards" | "forwards"
 
@@ -122,6 +122,8 @@ alignCars(collision: Collision_Info) {
 
 getStartingPosition(rail: Rail, carSquareSize: number) {
   let startPosition = {x:0,y:0};
+  const orientation = rail.getOrientation;
+  log("Train.ts:getStartingPosition:rail",rail)
           if (rail.getOrientation() === 'horizontal') {
             startPosition = {
                 x: rail.getX() +(0.5*rail.width),
@@ -133,10 +135,11 @@ getStartingPosition(rail: Rail, carSquareSize: number) {
                 y: rail.getY() + (rail.height*0.5)
             }
         }
-        
+        log("getStartingPosition:", startPosition)
         return startPosition;
 }
 spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
+  log("spawnCar:startPosition",startPosition)
               let carX;
             let carY;
             if (rail.getOrientation() === 'horizontal') {

@@ -3,6 +3,7 @@ import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Wall } from "#root/Entities/Wall.js";
+import { log } from "#root/My_Log.js";
 import { World } from "#root/World.js";
 import { World_Tick} from "#root/World_Tick.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
@@ -146,7 +147,7 @@ motionsDirections: Train_Car_Motions_Directions = {
   const {vx, vy} = this.determine_new_velocity_for_movement_along_the_rail(); 
    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:vx.value});
    this.velocity.y.Add_Component({key:this.Rail_Movement_Key,value: vy.value});
- //   console.log(this.x, this.y)
+
     if (this.currentMovementMotion === null) {
       return false;
     }
@@ -158,139 +159,12 @@ motionsDirections: Train_Car_Motions_Directions = {
   
    
   switchHandler() {
-      if (this.currentMovementMotion === null) {
-        return;
-      }
-    let closest = this.Get_Closest_Sensor_Collision();
-
-    if(closest === null) {
-       return;
-     }
-      const rail_switch_wall = closest.entityB as Rail_Switch_Wall;
-      const sameSensorAsPreviousTick = rail_switch_wall===this.prevSensor;
-     if(sameSensorAsPreviousTick) {
-       return; // we could also deliberately check for second closest collision in case the sensors are too close. but do I want to bother? I can just not place them too close together
-     } 
-  
-     this.prevSensor = rail_switch_wall;
-
-        
-      const beginningPos = {x: this.x, y: this.y}
-      const nextPos = 
-        this.calculateNextPositionBasedOnVelocityAndDeltaTime()
-      
-      const supposedNextPos = {
-        x:nextPos.x,
-      y:nextPos.y}
-      
-      let Consumable_Budget;
-      const Is_car_moving_vertically = this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down');
-      if(Is_car_moving_vertically) {
-       Consumable_Budget = Math.abs(beginningPos.y - supposedNextPos.y)
-      } else { // else moving horizontally
-         Consumable_Budget = Math.abs(beginningPos.x - supposedNextPos.x)
-      }
-      let Budget_Remaining=Consumable_Budget;
-
-      const newCarPos={x:this.x,y:this.y}
-      const BFace = Collision_Stuff.normalToFace(closest.normal);
-   switch(BFace){
-     case "left":
-          newCarPos.x = rail_switch_wall.x - this.width;
-          newCarPos.y = rail_switch_wall.y
-      break;
-     case "right":
-          newCarPos.x = rail_switch_wall.x + rail_switch_wall.width;
-          newCarPos.y = rail_switch_wall.y
-      break;
-     case "top":
-          newCarPos.y = rail_switch_wall.y  - this.height;
-          newCarPos.x = rail_switch_wall.x
-      break;
-     case "bottom":
-          newCarPos.y = rail_switch_wall.y  + rail_switch_wall.height;
-          newCarPos.x = rail_switch_wall.x
-      break;
-   }
-
-
-
-      let spent = this.teleportAndBringPassengers(newCarPos.x, newCarPos.y)
-      Budget_Remaining -= spent;
-      // I dont think spent being 0 is likely to ever happen?
-      if(spent <=0) {
-     this.velocity.x.Add_Component({key:this.Rail_Movement_Key,value: 0});
-     this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:0});
-           return;
-      }
-
-      if(Budget_Remaining <= 0) {
-          My_Assert.that(Budget_Remaining ===0,"Train_Car,I do not think Budget_Remaining is ever supposed to be less than zero. Why is it less that zero?");
-        return;
-      }
-      // now begins the budget loop
-      let timesWeRanTheLoop = 0;
-
-      const mustNotGoOverThis = 20; // <-- if it does go over it, I assume I will need to reduce train speed
-       this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(rail_switch_wall);
-      while(Budget_Remaining > 0) { 
-        timesWeRanTheLoop++;
-        My_Assert.that(timesWeRanTheLoop < mustNotGoOverThis, "Went over budget loop, maybe a bug somewhere or just train speed too high so it loops over the railway too much in a single tick?");
-        
-        const newVel = this.determine_new_velocity_for_movement_along_the_rail();
-        for(const vel in newVel) {
-          const key = vel as keyof {vx: Velocity_Component, vy: Velocity_Component }
-          if(newVel[key].value === 0) {
-            continue;
-          }
-            newVel[key].value = Budget_Remaining;
-        }
-        this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:newVel.vx.value});
-        this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value:newVel.vy.value});
-        // I think we always collide at this stage first with same sensor wall due to the way diagonal positioning works, so we do need the NEXT closesr sensor indeed.
-        const closestSensorCollision = this.Get_Closest_Sensor_Collision();
-        if(closestSensorCollision === null) {
-          // this means that the train car is free to move to its desired position without additional logic handling. Note: we need to specifically exit the switchHandler here, so return is required
-            return;
-        }
-        // if above check did not exit the switchHandler, we have to handle the new sensor
-
-        const switchWall = closestSensorCollision.entityB as Rail_Switch_Wall;
-        const pos = {x:0,y:0}
-        
-        const BFace = Collision_Stuff.normalToFace(closestSensorCollision.normal);
-   switch(BFace){
-     case "left":
-          pos.x = rail_switch_wall.x - this.width;
-          pos.y = rail_switch_wall.y
-      break;
-     case "right":
-          pos.x = rail_switch_wall.x + rail_switch_wall.width;
-          pos.y = rail_switch_wall.y
-      break;
-     case "top":
-          pos.y = rail_switch_wall.y  - this.height;
-          pos.x = rail_switch_wall.x
-      break;
-     case "bottom":
-          pos.y = rail_switch_wall.y  + rail_switch_wall.height;
-          pos.x = rail_switch_wall.x
-      break;
-   } 
-        
-        spent = this.teleportAndBringPassengers(pos.x, pos.y);
-        if(spent <= 0) {
-          if(spent<0) { throw new Error(`Loop break: Why is spent less than 0? val: ${spent}`)
-          }
-          // and if it is just zero, we can break
-          break;
-        }
-        Budget_Remaining -= spent;
-        this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWall)
-      }
-     this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:0});
-     this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: 0});
-
+    const switchWallCollision = this .Get_Closest_Switch_Wall_Collision();
+    if(!switchWallCollision) {
+      return;
+    }
+    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWallCollision.entityB)
+    
   }
 
   
@@ -347,7 +221,7 @@ motionsDirections: Train_Car_Motions_Directions = {
 
   
   
-  Get_Closest_Sensor_Collision() {
+  Get_Closest_Switch_Wall_Collision() {
     const closest = Collision_Stuff.getClosestCollision(this, (other)=> {
       if(!other.hasTag("Rail_Switch_Wall")) {
         return false;
@@ -394,9 +268,9 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
    this.teleportCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
    
     if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
-    return carDeltaY;
+    return Math.abs(carDeltaY);
     } else {
-      return carDeltaX;
+      return Math.abs(carDeltaX);
     }
   }
   

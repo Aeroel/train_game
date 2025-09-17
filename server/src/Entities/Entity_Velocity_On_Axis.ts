@@ -147,7 +147,7 @@ Remove_Component(key: Velocity_Component['key'] | {key: Velocity_Component['key'
    
     const index = this.components.findIndex(component => component.key === actualKey);
     if (index === -1) {
-              throw new Error(`Component with key "${actualKey}" not found.`);
+         return;
     }
     // Remove from propagation entities first
     this.propagationList.forEach(velocity => {

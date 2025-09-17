@@ -44,7 +44,16 @@ const initialOverlap = Collision_Stuff.static_No_Velocity_Collision_Check(pe, un
 const alreadyHandled = handledEntities.includes(une);
 
 const exp1 = Add_Expectation(!alreadyHandled, `I expect that if an unpushableEntity (debug: tags:${JSON.stringify(une.tags)}) already triggered resolution once this tick then it will not again collide with pushableEntity this tick. If it does collide again and again, this means the first resolution failed. The question to answer then is why did it fail the first time and how to avoid this issue?   `)
-const exp2 = Add_Expectation(!initialOverlap,"I expect that the entities do not begin in overlap")
+const exp2 = Add_Expectation(!initialOverlap,`I expect that the entities do not begin in overlap. Debug: ${
+  JSON.stringify({
+  une:Collision_Stuff.entityToBoxWithVelocity(une),
+  pe:Collision_Stuff.entityToBoxWithVelocity(pe),
+  uneTags:une.tags,
+  peTaga: pe.tags,
+    
+  })
+  
+}`)
 Verify_Expectations(exp1, exp2);
 
    this.resolveCollision(collision);
