@@ -42,14 +42,29 @@ class Rail_Switch_Wall extends Base_Entity {
       if(directions === null) {
         throw new Error("areDirectionsAlignedForTrigger does not expect directions to be null. Do not call it like this. Check beforehand.")
       }
-      let identical = true;
-      directions.forEach((dir: Direction) => {
-        if(!(this.triggersUponContactWithCarIf.includes(dir))) {
-          identical = false;
-        }
-      })
+        // check for duplicates
+  const hasDuplicates =(arr: Direction[])=> new Set(arr).size !== arr.length;
+  if (hasDuplicates(directions)) {
+    throw new Error("Directions input contains duplicates — corrupted data");
+  }
+  if (hasDuplicates(this.triggersUponContactWithCarIf)) {
+    throw new Error("Triggers input contains duplicates — corrupted data");
+  }
+
+  // compare sets
+  const setA = new Set(directions);
+  const setB = new Set(this.triggersUponContactWithCarIf);
+ let identical = true;
+  if (setA.size !== setB.size) {identical = false;}
+
+  for (let dir of setA) {
+    if (!setB.has(dir)) {identical = false;}
+  }
+   console.log("????", this.triggersUponContactWithCarIf, directions, identical)
       return identical;
     }
+    
+    
     static getInstance(params: Static_Instance_Creator): Rail_Switch_Wall {
 
       let result: Static_Instance_Creator_With_WH = {...params, width:0, height:0};

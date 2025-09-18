@@ -11,7 +11,7 @@ import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Co
 import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
 import { Train_Car_Static } from "#root/Entities/Train_Stuff/Train_Car_Static.js"
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
-import type { Direction, Orientation, Point, Position, Collision_Info } from "#root/Type_Stuff.js";
+import type { Direction, Orientation, Point, Position, Collision_Info, Face} from "#root/Type_Stuff.js";
 
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Train } from "#root/Entities/Train_Stuff/Train.js";
@@ -54,7 +54,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  normalSpeedForBothAxes = 0.10 * 10;
+  normalSpeedForBothAxes = 0.10 * 2.5;
   currentSpeedForBothAxes = this.normalSpeedForBothAxes;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
@@ -166,19 +166,33 @@ motionsDirections: Train_Car_Motions_Directions = {
     if(!switchWallCollision) {
       return;
     }
-        if(switchWallCollision.time===0){
-      throw new Error("Car begins in overlap")
-    }
-    const wall = switchWallCollision.entityB as Rail_Switch_Wall;
-    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall)
+        const wall = switchWallCollision.entityB as Rail_Switch_Wall;
+        log("wallId", wall.id)
+      /*  if(switchWallCollision.time===0){
 
-    const face = Collision_Stuff.normalToFace(switchWallCollision.normal);
+      throw new Error(`
+      Car begins in overlap.
+      Debug info: ${
+        JSON.stringify({
+        carId: this.debug_id,
+        modifiesCarTo: wall.modifiesCarTo,
+        triggersUponContactWithCarIf: wall.triggersUponContactWithCarIf,
+        })
+      }
+      `)
+    }*/
+        const face = this.getFace(wall)
+    log(`motioons 1`, this.motionsDirections)
+    log("want", wall.modifiesCarTo)
+    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall)
+        log(`motioons 2`, this.motionsDirections)
     
     const newPos={
       x: wall.x,
       y: wall.y
     }
-    const offset = 5;
+    const offset = 0;
+    log("face", face)
     switch(face) {
       case "bottom":
         newPos.y = wall.y + wall.height + offset;
@@ -203,10 +217,26 @@ motionsDirections: Train_Car_Motions_Directions = {
     let updatedVel = this.determine_new_velocity_for_movement_along_the_rail();
     this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value: updatedVel.vx.value})
     this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: updatedVel.vy.value})
-  this.switchHandler();
+
     
   }
+  
 
+ getFace(wall: Rail_Switch_Wall): Face {
+  const { modifiesCarTo, triggersUponContactWithCarIf } = wall;
+ let face: null | Face =null;
+ if(triggersUponContactWithCarIf.length === 1) {
+   if(triggersUponContactWithCarIf.includes('right'))  {
+     
+   }
+ }
+  if (!face) {
+    throw new Error("face must be determined");
+  }
+
+  return face;
+}
+ 
   Get_Velocity_Budget(){
 if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
     return this.velocity.y.Get_Component_By_Key(this.Rail_Movement_Key).value;
@@ -326,6 +356,11 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
         const carPassengers = allThingsOnCar.filter(e=>{
       return e.hasTag('Can_Ride_Train')
     });
+    const otherParts= allThingsOnCar.filter(e=>{
+      return !(e.hasTag("Can_Ride_Train")) 
+      && !(e.hasTag("Wall"))
+      && !(e.hasTag("Sliding_Door"))
+    })
      const addVX = dx / World_Tick.deltaTime;
       const addVY = dy / World_Tick.deltaTime;
       
@@ -357,6 +392,12 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     }
 
     for (const entity of carPassengers) {
+      const newX = entity.x + dx;
+      const newY = entity.y + dy;
+      entity.setXY(newX, newY);
+
+    }
+    for (const entity of otherParts) {
       const newX = entity.x + dx;
       const newY = entity.y + dy;
       entity.setXY(newX, newY);
