@@ -55,6 +55,7 @@ class Train_Car extends Base_Entity {
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
   normalSpeedForBothAxes = 0.10 * 10;
+  currentSpeedForBothAxes = this.normalSpeedForBothAxes;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
   currentMovementMotion: Train_Car_Motion = "backwards";
@@ -130,6 +131,7 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.velocity.Clear_Propagation_List();
     this.collectedPassengersForThisTick = false;
     this.passengers = [];
+
     super.Clean_Up();
   }
   
@@ -153,6 +155,7 @@ motionsDirections: Train_Car_Motions_Directions = {
     }
     
     this.switchHandler();
+    this.currentSpeedForBothAxes = this.normalSpeedForBothAxes;
   }
   
   
@@ -163,11 +166,54 @@ motionsDirections: Train_Car_Motions_Directions = {
     if(!switchWallCollision) {
       return;
     }
-    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(switchWallCollision.entityB)
+        if(switchWallCollision.time===0){
+      throw new Error("Car begins in overlap")
+    }
+    const wall = switchWallCollision.entityB as Rail_Switch_Wall;
+    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall)
+
+    const face = Collision_Stuff.normalToFace(switchWallCollision.normal);
+    
+    const newPos={
+      x: wall.x,
+      y: wall.y
+    }
+    const offset = 5;
+    switch(face) {
+      case "bottom":
+        newPos.y = wall.y + wall.height + offset;
+      break;
+      case "top":
+        newPos.y = wall.y - this.height - offset;
+      break;
+      case "right":
+        newPos.x = wall.x + wall.width - offset;
+      break;
+      case "left":
+        newPos.x = wall.x - this.width + offset;
+      break;
+
+    }
+    let velocity_budget = this.Get_Velocity_Budget();
+    let displacement = this.teleportAndBringPassengers(newPos);
+    let spent_velocity = displacement / World_Tick.deltaTime;
+    velocity_budget -= spent_velocity;
+    
+    this.currentSpeedForBothAxes = velocity_budget;
+    let updatedVel = this.determine_new_velocity_for_movement_along_the_rail();
+    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value: updatedVel.vx.value})
+    this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: updatedVel.vy.value})
+  this.switchHandler();
     
   }
 
-  
+  Get_Velocity_Budget(){
+if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
+    return this.velocity.y.Get_Component_By_Key(this.Rail_Movement_Key).value;
+    } else {
+    return this.velocity.x.Get_Component_By_Key(this.Rail_Movement_Key).value;
+    }
+  }
   setMotionsDirections(forwards: Train_Car_Motion_Directions, backwards: Train_Car_Motion_Directions) {
    Train_Car_Static.setMotionsDirections(this, forwards, backwards);
  
@@ -252,25 +298,25 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
 }
 
 
-  teleportAndBringPassengers(toX: number, toY: number) {
+  teleportAndBringPassengers(newPos: Position) {
     My_Assert.that(
       this.currentMovementMotion !== null, );
     My_Assert.that(
       this.motionsDirections.forwards.length > 0 && this.motionsDirections.backwards.length > 0,
       );
     
-    const carDeltaX = toX - this.x;
-    const carDeltaY = toY - this.y;
+    const carDeltaX = newPos.x - this.x;
+    const carDeltaY = newPos.y - this.y;
 
-    this.x = toX;
-    this.y = toY;
+    this.x = newPos.x;
+    this.y = newPos.y;
 
    this.teleportCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
    
     if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
-    return Math.abs(carDeltaY);
+    return carDeltaY;
     } else {
-      return Math.abs(carDeltaX);
+      return carDeltaX;
     }
   }
   

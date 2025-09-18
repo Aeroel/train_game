@@ -65,7 +65,7 @@ class Bulk_Of_Train_Car_Code {
         this.car.motionsDirections[this.car.currentMovementMotion].forEach((dir: Direction) => {
             const {axis, value} = this.car.velocity.directionToAxisVelocity({
                key:this.car.Rail_Movement_Key,
-               value: this.car.normalSpeedForBothAxes,
+               value: this.car.currentSpeedForBothAxes,
                direction: dir
              })
              if(axis==='y') {
