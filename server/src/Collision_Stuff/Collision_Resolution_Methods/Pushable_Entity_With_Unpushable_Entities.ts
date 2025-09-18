@@ -121,10 +121,6 @@ const remT = 1 - tAt;
 }
 }
 
-function roundTo(num: number, step: number): number {
-  return Math.round(num / step) * step;
-}
-
 function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
   const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
   const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
@@ -132,4 +128,8 @@ function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
   const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
     );
     return collideAtEndPositions
+}
+
+function roundTo(num: number, step: number): number {
+  return Math.round(num / step) * step;
 }
