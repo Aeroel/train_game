@@ -165,7 +165,7 @@ export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: n
 log('xOverlapStartPercent:', xOverlapStartPercent, 'xOverlapEndPercent:', xOverlapEndPercent);
 log('yOverlapStartPercent:', yOverlapStartPercent, 'yOverlapEndPercent:', yOverlapEndPercent);
 log('expA:',expA)
-
+log("collision time:", overlapStartNormalizedTime)
   return {
     time: overlapStartNormalizedTime,
     normal
