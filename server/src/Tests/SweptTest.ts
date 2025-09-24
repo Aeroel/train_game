@@ -20,7 +20,7 @@ const a = <Box_With_Velocity>{
   y: 0,
   width:8,
   height:8,
-  vx: 0.5,
+  vx: 1,
   vy: 1
 }
 const b = <Box_With_Velocity>{

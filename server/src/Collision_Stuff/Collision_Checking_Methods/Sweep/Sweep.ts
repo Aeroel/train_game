@@ -112,17 +112,17 @@ export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: n
   let xOverlapStartPoint: number = 0;
   let xOverlapEndPoint: number = 0;
   if (relx < 0) {
-    xTime0 = expA.x + expA.width;
-    xTime100 = expA.x
-    xOverlapStartPoint = b.x + b.width+ a.width;
+    xTime0 = expA.x + expA.width - a.width;
+    xTime100 = expA.x;
+    xOverlapStartPoint = b.x + b.width;
     xOverlapEndPoint = b.x - a.width;
 
   }
   if (relx > 0) {
     xTime0 = expA.x;
-    xTime100 = expA.x + expA.width
+    xTime100 = expA.x + expA.width - a.width;
     xOverlapStartPoint = b.x - a.width;
-    xOverlapEndPoint = b.x + b.width + a.width;
+    xOverlapEndPoint = b.x + b.width;
   }
   if (relx !== 0) {
     xOverlapStartPercent = percentOf(xOverlapStartPoint, xTime0, xTime100)
@@ -138,14 +138,14 @@ export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: n
   let yOverlapEndPoint: number = 0;
   if (rely > 0) {
     yTime0 = expA.y;
-    yTime100 = expA.y + expA.height
+    yTime100 = expA.y + expA.height - a.height;
     yOverlapStartPoint = b.y - a.height;
-    yOverlapEndPoint = b.y + b.height + a.height;
+    yOverlapEndPoint = b.y + b.height;
   }
   if (rely < 0) {
-    yTime0 = expA.y + expA.height;
-    yTime100 = expA.y
-    yOverlapStartPoint = b.y + b.height + a.height;
+    yTime0 = expA.y + expA.height - a.height;
+    yTime100 = expA.y;
+    yOverlapStartPoint = b.y + b.height;
     yOverlapEndPoint = b.y - a.height;
   }
   if (rely !== 0) {
