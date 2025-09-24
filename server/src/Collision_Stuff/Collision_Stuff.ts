@@ -62,6 +62,25 @@ class Collision_Stuff {
   return sortedFromClosestToFarthest[0];
 }
  
+ static getClosestCollisionsWithSameTime(
+  entity: Base_Entity,
+  filterFn?: (other: Base_Entity) => boolean
+): Collision_Info[] {
+  const collisions = Collision_Stuff.findCollisions(entity, filterFn);
+
+  if (collisions.length === 0) {
+    return [];
+  }
+
+  // Get the closest time
+  const closestTime = collisions[0].time; // already sorted in findCollisions
+  const EPS = 1e-9;
+
+  // Collect all with effectively the same time
+  return collisions.filter(c => Math.abs(c.time - closestTime) < EPS);
+}
+ 
+ 
  
     static normalToFace(normal: Normal) : Face {
 

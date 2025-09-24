@@ -59,7 +59,15 @@ export class Pushable_Entity_With_Unpushable_Entities {
       if (!firstCollision) {
         return;
       }
-      
+          const closestCollisions1 = Collision_Stuff.getClosestCollisionsWithSameTime(
+      pushableEntity, (unpushableEntity)=>
+        (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
+      );
+      if(closestCollisions1.length >1){
+        console.log("1: more than two colls at time ", closestCollisions1[0].time)
+      } else {
+        console.log("1: nothing to say")
+      }
     const dt = World_Tick.deltaTime;
     const pe = pushableEntity;
 
@@ -154,6 +162,16 @@ if(cn.y===0) {
       const overlapAtEndAfterFirstResolution = doOverlapAtEnd(pe, une)
      My_Assert.that(!overlapAtEndAfterFirstResolution, "overlapAtEndAfterFirstResolution: I expect entities not to overlap at first collision after resolution ending positions");
 
+    const closestCollisions2 = Collision_Stuff.getClosestCollisionsWithSameTime(
+      pushableEntity, (unpushableEntity)=>
+        (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
+      );
+      if(closestCollisions2.length >1){
+        console.log("2: more than two colls at time ", closestCollisions2[0].time)
+      } else {
+        console.log("2: nothing to say")
+      }
+      
     const secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
