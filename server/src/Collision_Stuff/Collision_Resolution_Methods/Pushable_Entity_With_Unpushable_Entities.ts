@@ -131,9 +131,9 @@ if(cn.y===0) {
 }else {
     pe.y = Math.trunc(newPe.y);
 }
-
-  pe.vx = ceilERN(newPe.vx);
-  pe.vy = ceilERN(newPe.vy);
+ const ceilLvl = 3;
+  pe.vx = ceilERN(newPe.vx, ceilLvl);
+  pe.vy = ceilERN(newPe.vy, ceilLvl);
 
 // FIRST resolution END 
 
