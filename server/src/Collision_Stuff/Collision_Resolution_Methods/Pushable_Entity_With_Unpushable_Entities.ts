@@ -16,10 +16,8 @@ import {
   My_Assert
 } from "#root/My_Assert.js"
 import {
-  I_Expect_That,
-  Verify_Expectations,
-  Add_Expectation
-} from "#root/I_Expect_That.js"
+  ceilERN
+} from "#root/Utilities/Numerical.js"
 import {
   log
 } from "#root/My_Log.js"
@@ -58,14 +56,18 @@ export class Pushable_Entity_With_Unpushable_Entities {
       if (!firstCollision) {
         return;
       }
-      // pushableEntity and unpushableEntity
-      const pe = pushableEntity
-      const une = firstCollision.entityB
+      
+    const dt = World_Tick.deltaTime;
+    const pe = pushableEntity;
 
+    let une=  firstCollision.entityB;
+    let ct =firstCollision.time
+    let rt = 1 - ct;
+    let cn =firstCollision.normal
 
-      const initialOverlap = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une);
+  const initialOverlapAtFirst = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une);
 
-        My_Assert.that(!initialOverlap, `I expect that the entities do not begin in overlap. Debug: ${
+        My_Assert.that(!initialOverlapAtFirst, `initialOverlapAtFirst: I expect that the entities do not begin in overlap. Debug: ${
         JSON.stringify({
           une: Collision_Stuff.entityToBoxWithVelocity(une),
           pe: Collision_Stuff.entityToBoxWithVelocity(pe),
@@ -76,15 +78,73 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
         }`)
 
-      this.resolveFirstCollision(firstCollision);
+// FIRST resolution BEGIN
+
+
+ const uneOldPos = {
+    x: une.x,
+    y: une.y,
+  }
+  const uneTransX = une.x + (une.vx * ct * dt);
+  const uneTransY = une.y + (une.vy * ct * dt);
+  
+  const newPe = {
+    x: pe.x + ((pe.vx * dt * ct)),
+    y: pe.y + ((pe.vy * dt * ct)),
+    vx: pe.vx,
+    vy: pe.vy,
+  }
+  const offset = 2;
+  if(cn.x === 1) {
+    newPe.x = uneTransX + une.width + offset;
+    newPe.vx=0;
+    if(une.vx > 0) {
+      newPe.vx = une.vx * rt;
+    }
+  }
+  if(cn.x === -1) {
+    newPe.x = uneTransX - pe.width - offset;
+       newPe.vx=0;
+      if(une.vx < 0) {
+         newPe.vx = une.vx * rt;
+    }
+  }
+  
+  if(cn.y === 1) {
+    newPe.y = uneTransY + une.height + offset;
+        newPe.vy=0;
+            if(une.vy > 0) {
+      newPe.vy = une.vy * rt;
+    }
+  }
+  if(cn.y === -1) {
+    newPe.y = uneTransY - pe.height - offset;
+        newPe.vy=0;
+                    if(une.vy < 0) {
+      newPe.vy = une.vy * rt;
+    }
+  }
+  pe.x = newPe.x;
+  pe.y = newPe.y;
+if(cn.y===0) {
+   pe.x = Math.trunc(newPe.x); 
+}else {
+    pe.y = Math.trunc(newPe.y);
+}
+
+  pe.vx = ceilERN(newPe.vx);
+  pe.vy = ceilERN(newPe.vy);
+
+// FIRST resolution END 
+
 
 
       const overlapAfterFirstResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
-        My_Assert.that(!overlapAfterFirstResolution, `I expect xy of entities to not overlap after first resolution handle logic. Debug info: ${JSON.stringify({
+        My_Assert.that(!overlapAfterFirstResolution, `overlapAfterFirstResolution: I expect xy of entities to not overlap after first resolution handle logic. Debug info: ${JSON.stringify({
         peBox: Collision_Stuff.entityToBoxWithVelocity(pe), uneBox: Collision_Stuff.entityToBoxWithVelocity(une)})}`)
 
-      const overlapAtFirstEnd = doOverlapAtEnd(pe, une)
-     My_Assert.that(!overlapAtFirstEnd, "I expect entities not to overlap at first collision after resolution ending positions");
+      const overlapAtEndAfterFirstResolution = doOverlapAtEnd(pe, une)
+     My_Assert.that(!overlapAtEndAfterFirstResolution, "overlapAtEndAfterFirstResolution: I expect entities not to overlap at first collision after resolution ending positions");
 
     const secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
@@ -92,147 +152,25 @@ export class Pushable_Entity_With_Unpushable_Entities {
       if (!secondCollision) {
         return;
       }
+     let une2=  secondCollision.entityB;
+    let ct2 =secondCollision.time
+    let rt2 = 1 - ct;
+    let cn2 =secondCollision.normal
+
       My_Assert.that(secondCollision.entityB !== firstCollision.entityB, "Got same wall second time, meaning first time resolution was incorrect")
-     this.resolveSecondCollision(secondCollision);
+
 
       const overlapAfterSecondResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
         My_Assert.that(!overlapAfterSecondResolution, `I expect xy of entities to not overlap after second resolution handle logic. Debug info: ${JSON.stringify({
         peBox: Collision_Stuff.entityToBoxWithVelocity(pe), uneBox: Collision_Stuff.entityToBoxWithVelocity(une)})}`)
 
-      const overlapAtSecondEnd = doOverlapAtEnd(pe, une)
-     My_Assert.that(!overlapAtSecondEnd, "I expect entities not to overlap at second collision after resolution ending positions");
+      const overlapAtEndAfterSecondResolution = doOverlapAtEnd(pe, une)
+     My_Assert.that(!overlapAtEndAfterSecondResolution, "overlapAtEndAfterSecondResolution: I expect entities not to overlap at second collision after resolution ending positions");
 
 
 
     
   }
-
-  static resolveFirstCollision(collision: Collision_Info) {
-    const une=  collision.entityB;
-    const pe = collision.entityA;
-    const ct = collision.time
-    const rt = 1 - ct;
-    const cn = collision.normal
-    const dt = World_Tick.deltaTime;
-
- const uneOldPos = {
-    x: une.x,
-    y: une.y,
-  }
-  
-  const uneTransX = une.x + (une.vx * ct * dt);
-  const uneTransY = une.y + (une.vy * ct * dt);
-  
-  const newPe = {
-    x: pe.x + ((pe.vx * dt * ct)),
-    y: pe.y + ((pe.vy * dt * ct)),
-    vx: pe.vx,
-    vy: pe.vy,
-  }
-  const offset = 1;
-  if(cn.x === 1) {
-    newPe.x = uneTransX + une.width + offset;
-    newPe.vx=0;
-    if(une.vx > 0) {
-      newPe.vx = une.vx * rt;
-    }
-  }
-  if(cn.x === -1) {
-    newPe.x = uneTransX - pe.width - offset;
-       newPe.vx=0;
-      if(une.vx < 0) {
-         newPe.vx = une.vx * rt;
-    }
-  }
-  
-  if(cn.y === 1) {
-    newPe.y = uneTransY + une.height + offset;
-        newPe.vy=0;
-            if(une.vy > 0) {
-      newPe.vy = une.vy * rt;
-    }
-  }
-  if(cn.y === -1) {
-    newPe.y = uneTransY - pe.height - offset;
-        newPe.vy=0;
-                    if(une.vy < 0) {
-      newPe.vy = une.vy * rt;
-    }
-  }
-
-
-  pe.x = newPe.x
-  pe.y = newPe.y
-  pe.vx = newPe.vx;
-  pe.vy = newPe.vy;
-
-  
-  
-  }
-  
-  static resolveSecondCollision(collision: Collision_Info) {
-    const une=  collision.entityB;
-    const pe = collision.entityA;
-    const ct = collision.time
-    const rt = 1 - ct;
-    const cn = collision.normal
-    const dt = World_Tick.deltaTime;
-
- const uneOldPos = {
-    x: une.x,
-    y: une.y,
-  }
-  
-  const uneTransX = une.x + (une.vx * ct * dt);
-  const uneTransY = une.y + (une.vy * ct * dt);
-  
-  const newPe = {
-    x: pe.x + ((pe.vx * dt * ct)),
-    y: pe.y + ((pe.vy * dt * ct)),
-    vx: pe.vx,
-    vy: pe.vy,
-  }
-  const offset = 1;
-  if(cn.x === 1) {
-    newPe.x = uneTransX + une.width + offset;
-    newPe.vx=0;
-    if(une.vx > 0) {
-      newPe.vx = une.vx * rt;
-    }
-  }
-  if(cn.x === -1) {
-    newPe.x = uneTransX - pe.width - offset;
-       newPe.vx=0;
-      if(une.vx < 0) {
-         newPe.vx = une.vx * rt;
-    }
-  }
-  
-  if(cn.y === 1) {
-    newPe.y = uneTransY + une.height + offset;
-        newPe.vy=0;
-            if(une.vy > 0) {
-      newPe.vy = une.vy * rt;
-    }
-  }
-  if(cn.y === -1) {
-    newPe.y = uneTransY - pe.height - offset;
-        newPe.vy=0;
-                    if(une.vy < 0) {
-      newPe.vy = une.vy * rt;
-    }
-  }
-
-
-  pe.x = newPe.x
-  pe.y = newPe.y
-  pe.vx = newPe.vx;
-  pe.vy = newPe.vy;
-
-  
-  
-  }
-
 
 
 
@@ -247,6 +185,3 @@ function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
   return collideAtEndPositions
 }
 
-function roundTo(num: number, step: number): number {
-  return Math.round(num / step) * step;
-}

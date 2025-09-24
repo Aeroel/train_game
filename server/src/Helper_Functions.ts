@@ -10,9 +10,6 @@ export { Helper_Functions };
 class Helper_Functions {
 
 
-    static isNumber(num: number) {
-        return (typeof num === 'number' && isFinite(num));
-    }
     static getLocalIP(): string {
         const nets = networkInterfaces();
         console.log(nets);
