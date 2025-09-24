@@ -190,7 +190,7 @@ if(cn.y===0) {
      pe.x = Math.trunc(pe.x); 
    } else if (cn.y !== 0) {
       const xSign = Math.sign(pe.vx);
-     const xNormal = ySign * -1;
+     const xNormal = xSign * -1;
      if(xNormal >0) {
        pe.x = une2TransX + une2.width + offset;
        pe.vx = 0;
@@ -208,7 +208,6 @@ if(cn.y===0) {
    }
    
 
- const ceilLvl = 3;
   pe.vx = ceilERN(pe.vx, ceilLvl);
   pe.vy = ceilERN(pe.vy, ceilLvl);
    // SECOND RESOLUTION END
