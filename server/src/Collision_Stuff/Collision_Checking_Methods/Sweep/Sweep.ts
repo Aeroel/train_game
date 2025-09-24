@@ -75,7 +75,7 @@ type Swept_Result = null | {
 
 
 // dt is used for creating the expanded box
-export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: number): Swept_Result {
+export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: number,): Swept_Result {
 
   let result: Swept_Result = {
     time: 0,
@@ -94,6 +94,7 @@ export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: n
   }
   const relx = a.vx - b.vx;
   const rely = a.vy - b.vy;
+
   // collision impossible if no overlap and no relative velocity
   if (relx === 0 && rely === 0) {
     result = null
@@ -159,12 +160,20 @@ export function mySweep(a: Box_With_Velocity, b: Box_With_Velocity, deltaTime: n
   }
   const overlapStartNormalizedTime = overlapStartPercent / 100;
   const normal = preferXIfDiagonal(calculateNormal(xOverlapStartPercent, yOverlapStartPercent, relx, rely));
+  
+  log('relx:', relx, 'rely:', rely);
+log('xOverlapStartPercent:', xOverlapStartPercent, 'xOverlapEndPercent:', xOverlapEndPercent);
+log('yOverlapStartPercent:', yOverlapStartPercent, 'yOverlapEndPercent:', yOverlapEndPercent);
+log('expA:',expA)
+
   return {
     time: overlapStartNormalizedTime,
     normal
   };
 
 }
+
+
 export function percentOf(val: number, min: number, max: number) {
   return ((val - min) / (max - min)) * 100;
 }
@@ -236,3 +245,78 @@ export function preferXIfDiagonal(normal: Normal) {
   }
   return normal;
 }
+
+
+/**
+ * Symmetric swept AABB using relative velocity.
+ * Returns null for no collision in [0, deltaTime].
+ * If overlapping at t=0 returns {time:0, normal:{0,0}}.
+ */
+export function gptSweep(
+  boxA: Box_With_Velocity,
+  boxB: Box_With_Velocity,
+  deltaTime: number
+): Swept_Result | null {
+  // immediate overlap
+  if (overlap(boxA, boxB)) {
+    return { time: 0, normal: { x: 0, y: 0 } };
+  }
+
+  // relative velocity: treat A moving, B stationary
+  const relx = boxA.vx - boxB.vx;
+  const rely = boxA.vy - boxB.vy;
+
+  // if no relative motion -> no future collision
+  if (relx === 0 && rely === 0) return null;
+
+  // compute inverse entry/exit distances on X
+  const xInvEntry =
+    relx > 0 ? boxB.x - (boxA.x + boxA.width) : (boxB.x + boxB.width) - boxA.x;
+  const xInvExit =
+    relx > 0 ? (boxB.x + boxB.width) - boxA.x : boxB.x - (boxA.x + boxA.width);
+
+  // compute inverse entry/exit distances on Y
+  const yInvEntry =
+    rely > 0
+      ? boxB.y - (boxA.y + boxA.height)
+      : (boxB.y + boxB.height) - boxA.y;
+  const yInvExit =
+    rely > 0
+      ? (boxB.y + boxB.height) - boxA.y
+      : boxB.y - (boxA.y + boxA.height);
+
+  // times (seconds). If velocity is zero on an axis, set entry/exit to +/- Infinity
+  const xEntry = relx === 0 ? -Infinity : xInvEntry / relx;
+  const xExit = relx === 0 ? Infinity : xInvExit / relx;
+  const yEntry = rely === 0 ? -Infinity : yInvEntry / rely;
+  const yExit = rely === 0 ? Infinity : yInvExit / rely;
+
+  // earliest/latest times of contact
+  const entryTime = Math.max(xEntry, yEntry);
+  const exitTime = Math.min(xExit, yExit);
+
+  // no collision if there is no overlap time window or it's outside [0, deltaTime]
+  if (entryTime > exitTime) return null;
+  if (entryTime > deltaTime || exitTime < 0) return null;
+
+  // normalized time in [0,1] relative to deltaTime
+  const normalizedTime = clamp01(entryTime <= 0 ? 0 : entryTime / deltaTime);
+
+  // compute normal. prefer X when tie or when xEntry >= yEntry
+  const normal: Normal = { x: 0, y: 0 };
+  if (xEntry >= yEntry) {
+    // collision happened on X axis
+    normal.x = relx > 0 ? -1 : 1; // moving right -> hit left side of B
+  } else {
+    // collision happened on Y axis
+    normal.y = rely > 0 ? -1 : 1; // moving down -> hit top of B
+  }
+
+  return { time: normalizedTime, normal };
+}
+
+/* --- helpers --- */
+function clamp01(v: number) {
+  return Math.max(0, Math.min(1, v));
+}
+

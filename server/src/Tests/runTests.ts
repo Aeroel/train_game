@@ -1,2 +1,3 @@
 import {SweptTest} from "#root/Tests/SweptTest.js";
-SweptTest();
+SweptTest(1);
+SweptTest(2);
