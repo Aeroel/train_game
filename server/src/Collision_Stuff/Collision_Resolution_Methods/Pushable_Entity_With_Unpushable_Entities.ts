@@ -40,7 +40,10 @@ export class Pushable_Entity_With_Unpushable_Entities {
     })
   }
 
+/* the logic here relies on:
+1. only one axis being prefered as normal in case actual collision is perfect diagonal. if I modify collision detevtion to return true diagonal normal in rare cases when it occurs, I would need to rework the resolution logic. I do not need to have perfect diagonal normals, I think, but even if I find later I want them, I do not expect rewriting to be specially complicated.
 
+*/
   static resolveCode( {
     pushableEntity
   }:
@@ -98,13 +101,16 @@ export class Pushable_Entity_With_Unpushable_Entities {
   if(cn.x === 1) {
     newPe.x = uneTransX + une.width + offset;
     newPe.vx=0;
+    newPe.vy *= rt;
     if(une.vx > 0) {
       newPe.vx = une.vx * rt;
     }
+    
   }
   if(cn.x === -1) {
     newPe.x = uneTransX - pe.width - offset;
        newPe.vx=0;
+        newPe.vy *= rt;
       if(une.vx < 0) {
          newPe.vx = une.vx * rt;
     }
@@ -113,6 +119,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
   if(cn.y === 1) {
     newPe.y = uneTransY + une.height + offset;
         newPe.vy=0;
+            newPe.vx *= rt;
             if(une.vy > 0) {
       newPe.vy = une.vy * rt;
     }
@@ -120,7 +127,8 @@ export class Pushable_Entity_With_Unpushable_Entities {
   if(cn.y === -1) {
     newPe.y = uneTransY - pe.height - offset;
         newPe.vy=0;
-                    if(une.vy < 0) {
+            newPe.vx *= rt;
+          if(une.vy < 0) {
       newPe.vy = une.vy * rt;
     }
   }
@@ -152,12 +160,58 @@ if(cn.y===0) {
       if (!secondCollision) {
         return;
       }
+      
+            My_Assert.that(secondCollision.entityB !== firstCollision.entityB, "Got same wall second time, meaning first time resolution was incorrect")
      let une2=  secondCollision.entityB;
-    let ct2 =secondCollision.time
-    let rt2 = 1 - ct;
-    let cn2 =secondCollision.normal
 
-      My_Assert.that(secondCollision.entityB !== firstCollision.entityB, "Got same wall second time, meaning first time resolution was incorrect")
+    let ct2 =secondCollision.time
+    let rt2 = 1 - ct2;
+    let cn2 =secondCollision.normal
+     let une2TransY = une2.y + (une2.vy * dt * ct2 )
+     let une2TransX = une2.x + (une2.vx * dt * ct2 )
+   // SECOND RESOLUTION BEGIN
+   
+   if(cn.x !==0) {
+     const ySign = Math.sign(pe.vy);
+     const yNormal = ySign * -1;
+     if(yNormal > 0) {
+       pe.y = une2TransY + une2.height + offset;
+       pe.vy =0
+       if(une2.vy > 0) {
+         pe.vy = une2.vy * rt2;
+       }
+     } else if (yNormal < 0){
+        pe.y = une2TransY - pe.height - offset;
+        pe.vy=0;
+        if(une2.vy < 0) {
+         pe.vy = une2.vy * rt2;
+       }
+     }
+     pe.x = Math.trunc(pe.x); 
+   } else if (cn.y !== 0) {
+      const xSign = Math.sign(pe.vx);
+     const xNormal = ySign * -1;
+     if(xNormal >0) {
+       pe.x = une2TransX + une2.width + offset;
+       pe.vx = 0;
+       if(une2.vx > 0) {
+         pe.vx = une2.vx * rt2;
+       }
+     } else if(xNormal < 0) {
+      pe.x = une2TransX - pe.width - offset;
+       pe.vx = 0;
+       if(une2.vx < 0) {
+         pe.vx = une2.vx * rt2;
+       }
+     }
+         pe.y = Math.trunc(pe.y);
+   }
+   
+
+ const ceilLvl = 3;
+  pe.vx = ceilERN(pe.vx, ceilLvl);
+  pe.vy = ceilERN(pe.vy, ceilLvl);
+   // SECOND RESOLUTION END
 
 
       const overlapAfterSecondResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
