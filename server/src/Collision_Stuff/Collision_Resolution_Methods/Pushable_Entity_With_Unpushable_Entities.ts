@@ -214,13 +214,13 @@ export class Pushable_Entity_With_Unpushable_Entities {
   pe.x = newPe.x;
   pe.y = newPe.y;
 if(cn.y===0) {
-   pe.x = Math.trunc(newPe.x); 
+  // pe.x = Math.trunc(newPe.x); 
 }else {
-    pe.y = Math.trunc(newPe.y);
+  //  pe.y = Math.trunc(newPe.y);
 }
  const ceilLvl = 3;
-  pe.vx = ceilERN(newPe.vx, ceilLvl);
-  pe.vy = ceilERN(newPe.vy, ceilLvl);
+  //pe.vx = ceilERN(newPe.vx, ceilLvl);
+  //pe.vy = ceilERN(newPe.vy, ceilLvl);
 
 // FIRST resolution END 
 

@@ -60,7 +60,7 @@ class Add_Some_Entities_To_The_World {
         
           Add_Some_Entities_To_The_World.addAWhiteRectangleForMovementReference();
     // random wall
-      this.randomWalls()
+    //  this.randomWalls()
        
       // random forcefield
         const ff = World.addEntity(new Forcefield());
