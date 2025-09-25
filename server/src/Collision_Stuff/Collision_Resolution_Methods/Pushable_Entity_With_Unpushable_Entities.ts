@@ -85,10 +85,12 @@ export class Pushable_Entity_With_Unpushable_Entities {
          if(clcoll1.normal.x >0) { 
           pe.x = clune1TransX + clune1.width + offset;
          } 
+         
          if(clcoll1.normal.x < 0) { 
           pe.x = clune1TransX - pe.width - offset;
          } 
          
+         pe.vx = 0;
           if(clcoll1.normal.x === Math.sign(clune1.vx)) {
             pe.vx = clune1.vx * rt;
           }
@@ -100,6 +102,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
          if(clcoll1.normal.y < 0) {
             pe.y = clune1TransY - pe.height - offset;
         }
+        pe.vy=0;
           if(clcoll1.normal.y === Math.sign(clune1.vy)) {
             pe.vy = clune1.vy * rt;
           }
@@ -115,6 +118,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
           pe.x = clune2TransX - pe.width - offset;
          } 
          
+           pe.vx=0;
           if(clcoll2.normal.x === Math.sign(clune2.vx)) {
             pe.vx = clune2.vx * rt;
           }
@@ -126,6 +130,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
          if(clcoll2.normal.y < 0) {
             pe.y = clune2TransY - pe.height - offset;
         }
+        pe.vy=0;
           if(clcoll2.normal.y === Math.sign(clune2.vy)) {
             pe.vy = clune2.vy * rt;
           }
