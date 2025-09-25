@@ -62,22 +62,47 @@ class Collision_Stuff {
   return sortedFromClosestToFarthest[0];
 }
  
- static getClosestCollisionsWithSameTime(
+ static getRepresentativeCollisions(
   entity: Base_Entity,
   filterFn?: (other: Base_Entity) => boolean
-): Collision_Info[] {
+): {collisions: Collision_Info[], axes: ('y'|'x')[]} {
   const collisions = Collision_Stuff.findCollisions(entity, filterFn);
+   const result: {collisions: Collision_Info[], axes: ('y'|'x')[]} = {
+    collisions: [],
+    axes: [],
+  }; 
+  if (collisions.length === 0) return result;
 
-  if (collisions.length === 0) {
-    return [];
+  // Find the earliest collision time
+  const firstTime = collisions[0].time;
+  // Collect all collisions that happen at exactly the same first time
+  const simultaneous = collisions.filter(c => c.time === firstTime);
+
+  // Representatives: one vertical, one horizontal
+  let vertical: Collision_Info | null = null;
+  let horizontal: Collision_Info | null = null;
+
+  for (const c of simultaneous) {
+    if (c.normal.x !== 0 && !vertical) {
+      vertical = c;
+      continue;
+    }
+    if (c.normal.y !== 0 && !horizontal) {
+      horizontal = c;
+    }
   }
 
-  // Get the closest time
-  const closestTime = collisions[0].time; // already sorted in findCollisions
-  const EPS = 1e-9;
 
-  // Collect all with effectively the same time
-  return collisions.filter(c => Math.abs(c.time - closestTime) < EPS);
+  if (vertical) {
+    result.collisions.push(vertical);
+    result.axes.push('x');
+  }
+  if (horizontal) { 
+    result.collisions.push(horizontal);
+    result.axes.push('y');
+  }
+
+  return result;
 }
  
  

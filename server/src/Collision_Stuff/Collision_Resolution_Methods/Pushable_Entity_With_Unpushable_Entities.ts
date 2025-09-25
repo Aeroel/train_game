@@ -59,17 +59,83 @@ export class Pushable_Entity_With_Unpushable_Entities {
       if (!firstCollision) {
         return;
       }
-          const closestCollisions1 = Collision_Stuff.getClosestCollisionsWithSameTime(
+          const closestCollisions1 = Collision_Stuff.getRepresentativeCollisions(
       pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
-      if(closestCollisions1.length >1){
-        console.log("1: more than two colls at time ", closestCollisions1[0].time)
-      } else {
-        console.log("1: nothing to say")
+          const pe = pushableEntity;
+          const dt = World_Tick.deltaTime;
+        const offset = 2;
+
+      if(closestCollisions1.collisions.length ===2){
+        const rt = 1 - closestCollisions1.collisions[0].time;
+        // closest unpushables
+        const clcoll1 = closestCollisions1.collisions[0];
+        const clcoll2 = closestCollisions1.collisions[1];
+ 
+        const clune1 = clcoll1.entityB;
+        const clune1TransX = clune1.x + (clune1.vx * dt * clcoll1.time)
+        const clune1TransY = clune1.y + (clune1.vy * dt * clcoll1.time)
+   
+        const clune2 = clcoll2.entityB;
+        const clune2TransX = clune2.x + (clune2.vx * dt * clcoll2.time)
+        const clune2TransY = clune2.y + (clune2.vy * dt * clcoll2.time)
+        
+        if(clcoll1.normal.x !== 0) {
+         if(clcoll1.normal.x >0) { 
+          pe.x = clune1TransX + clune1.width + offset;
+         } 
+         if(clcoll1.normal.x < 0) { 
+          pe.x = clune1TransX - pe.width - offset;
+         } 
+         
+          if(clcoll1.normal.x === Math.sign(clune1.vx)) {
+            pe.vx = clune1.vx * rt;
+          }
+        }
+        if(clcoll1.normal.y !== 0) {
+         if(clcoll1.normal.y >0) {
+            pe.y = clune1TransY + clune1.height + offset;
+        }
+         if(clcoll1.normal.y < 0) {
+            pe.y = clune1TransY - pe.height - offset;
+        }
+          if(clcoll1.normal.y === Math.sign(clune1.vy)) {
+            pe.vy = clune1.vy * rt;
+          }
+        }
+        
+        // clcoll2
+    
+              if(clcoll2.normal.x !== 0) {
+         if(clcoll2.normal.x >0) { 
+          pe.x = clune2TransX + clune2.width + offset;
+         } 
+         if(clcoll2.normal.x < 0) { 
+          pe.x = clune2TransX - pe.width - offset;
+         } 
+         
+          if(clcoll2.normal.x === Math.sign(clune2.vx)) {
+            pe.vx = clune2.vx * rt;
+          }
+        }
+        if(clcoll2.normal.y !== 0) {
+         if(clcoll2.normal.y >0) {
+            pe.y = clune2TransY + clune2.height + offset;
+        }
+         if(clcoll2.normal.y < 0) {
+            pe.y = clune2TransY - pe.height - offset;
+        }
+          if(clcoll2.normal.y === Math.sign(clune2.vy)) {
+            pe.vy = clune2.vy * rt;
+          }
+        }
+        
+        // end clcoll2 
+        return;
       }
-    const dt = World_Tick.deltaTime;
-    const pe = pushableEntity;
+
+
 
     let une=  firstCollision.entityB;
     let ct =firstCollision.time
@@ -105,7 +171,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
     vx: pe.vx,
     vy: pe.vy,
   }
-  const offset = 2;
+
   if(cn.x === 1) {
     newPe.x = uneTransX + une.width + offset;
     newPe.vx=0;
@@ -162,15 +228,7 @@ if(cn.y===0) {
       const overlapAtEndAfterFirstResolution = doOverlapAtEnd(pe, une)
      My_Assert.that(!overlapAtEndAfterFirstResolution, "overlapAtEndAfterFirstResolution: I expect entities not to overlap at first collision after resolution ending positions");
 
-    const closestCollisions2 = Collision_Stuff.getClosestCollisionsWithSameTime(
-      pushableEntity, (unpushableEntity)=>
-        (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
-      );
-      if(closestCollisions2.length >1){
-        console.log("2: more than two colls at time ", closestCollisions2[0].time)
-      } else {
-        console.log("2: nothing to say")
-      }
+
       
     const secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
