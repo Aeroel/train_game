@@ -165,7 +165,7 @@ const uneEnd = {
    
    //    
     let secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-        ( (unpushableEntity.hasTag("Wall") 
+        (unpushableEntity !== une &&  (unpushableEntity.hasTag("Wall") 
             || unpushableEntity.hasTag("Sliding_Door")))
       );
       if (!secondCollision) {
@@ -176,9 +176,7 @@ const uneEnd = {
        let dy = 0;
        if(secondCollision.time===0) {
          console.log("time 0 enter")
-        
-         if(1>0)throw new Error(`
-         ${JSON.stringify(secondCollision.normal)}`)
+
           const prevX = pe.x;
           const prevY = pe.y;
         if(cn.y === 1){
@@ -197,7 +195,7 @@ const uneEnd = {
         My_Assert.that(!stillOverlappingWithThirdParty, "Overlap with third party wall must be resolved")
   
        secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-        ( (unpushableEntity.hasTag("Wall") 
+        ( unpushableEntity !== une2 && unpushableEntity !== une && (unpushableEntity.hasTag("Wall") 
             || unpushableEntity.hasTag("Sliding_Door")))
       );
       if (!secondCollision) {
