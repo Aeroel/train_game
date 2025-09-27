@@ -127,6 +127,8 @@ const uneEnd = {
             || unpushableEntity.hasTag("Sliding_Door")))
       );
       if (!secondCollision) {
+        pe.x = resolvedPe1.x;
+        pe.y = resolvedPe1.y;
         return;
       }
        let une2=  secondCollision.entityB;
