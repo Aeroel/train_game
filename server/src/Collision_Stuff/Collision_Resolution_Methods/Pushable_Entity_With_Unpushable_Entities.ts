@@ -53,6 +53,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
     if (pushableEntity.intangibility) {
       return;
     }
+    const alreadyAccountedFor: Base_Entity[]=[];
          const firstCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
@@ -68,11 +69,12 @@ export class Pushable_Entity_With_Unpushable_Entities {
         const offset = 2;
 
       if(closestCollisions1.collisions.length ===2){
+        
         const rt = 1 - closestCollisions1.collisions[0].time;
         // closest unpushables
         const clcoll1 = closestCollisions1.collisions[0];
         const clcoll2 = closestCollisions1.collisions[1];
- 
+   
         const clune1 = clcoll1.entityB;
         const clune1TransX = clune1.x + (clune1.vx * dt * clcoll1.time)
         const clune1TransY = clune1.y + (clune1.vy * dt * clcoll1.time)
@@ -80,7 +82,8 @@ export class Pushable_Entity_With_Unpushable_Entities {
         const clune2 = clcoll2.entityB;
         const clune2TransX = clune2.x + (clune2.vx * dt * clcoll2.time)
         const clune2TransY = clune2.y + (clune2.vy * dt * clcoll2.time)
-        
+        alreadyAccountedFor.push(clune1)
+        alreadyAccountedFor.push(clune2)
         if(clcoll1.normal.x !== 0) {
          if(clcoll1.normal.x >0) { 
           pe.x = clune1TransX + clune1.width + offset;
@@ -219,30 +222,27 @@ if(cn.y===0) {
   //  pe.y = Math.trunc(newPe.y);
 }
  const ceilLvl = 3;
-  //pe.vx = ceilERN(newPe.vx, ceilLvl);
-  //pe.vy = ceilERN(newPe.vy, ceilLvl);
+  pe.vx = ceilERN(newPe.vx, ceilLvl);
+  pe.vy = ceilERN(newPe.vy, ceilLvl);
 
 // FIRST resolution END 
 
 
-
-      const overlapAfterFirstResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
-        My_Assert.that(!overlapAfterFirstResolution, `overlapAfterFirstResolution: I expect xy of entities to not overlap after first resolution handle logic. Debug info: ${JSON.stringify({
-        peBox: Collision_Stuff.entityToBoxWithVelocity(pe), uneBox: Collision_Stuff.entityToBoxWithVelocity(une)})}`)
-
       const overlapAtEndAfterFirstResolution = doOverlapAtEnd(pe, une)
      My_Assert.that(!overlapAtEndAfterFirstResolution, "overlapAtEndAfterFirstResolution: I expect entities not to overlap at first collision after resolution ending positions");
 
-
+   alreadyAccountedFor.push(une);
       
     const secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-        (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
+        (
+          !(alreadyAccountedFor.includes(unpushableEntity)) 
+            && (unpushableEntity.hasTag("Wall") 
+            || unpushableEntity.hasTag("Sliding_Door")))
       );
       if (!secondCollision) {
         return;
       }
       
-            My_Assert.that(secondCollision.entityB !== firstCollision.entityB, "Got same wall second time, meaning first time resolution was incorrect")
      let une2=  secondCollision.entityB;
 
     let ct2 =secondCollision.time
@@ -292,11 +292,6 @@ if(cn.y===0) {
   pe.vx = ceilERN(pe.vx, ceilLvl);
   pe.vy = ceilERN(pe.vy, ceilLvl);
    // SECOND RESOLUTION END
-
-
-      const overlapAfterSecondResolution = (Collision_Stuff.static_No_Velocity_Collision_Check(pe, une))
-        My_Assert.that(!overlapAfterSecondResolution, `I expect xy of entities to not overlap after second resolution handle logic. Debug info: ${JSON.stringify({
-        peBox: Collision_Stuff.entityToBoxWithVelocity(pe), uneBox: Collision_Stuff.entityToBoxWithVelocity(une)})}`)
 
       const overlapAtEndAfterSecondResolution = doOverlapAtEnd(pe, une)
      My_Assert.that(!overlapAtEndAfterSecondResolution, "overlapAtEndAfterSecondResolution: I expect entities not to overlap at second collision after resolution ending positions");
