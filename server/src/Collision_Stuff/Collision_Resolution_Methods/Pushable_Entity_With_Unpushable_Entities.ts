@@ -210,7 +210,8 @@ export class Pushable_Entity_With_Unpushable_Entities {
   }
   pe.x = newPe.x;
   pe.y = newPe.y;
-
+ pe.vx = newPe.vx
+ pe.vy = newPe.vy
 
 
 // FIRST resolution END 
