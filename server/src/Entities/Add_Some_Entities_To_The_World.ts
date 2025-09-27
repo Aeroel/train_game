@@ -78,10 +78,12 @@ class Add_Some_Entities_To_The_World {
       // const bot= World.addEntity(new Bot())
       // bot.setXY(2000, 2000).setHeight(300);
      //  planet.velocity.Add_To_Propagation_List(bot.velocity)
- /**/   const car = World.addEntity(
+   // /*  
+ const car = World.addEntity(
          new Car({x:1000,y:1000})
-         .setXY(500,500))
-if(1>0)return;
+         .setXY(500,500)) 
+        // */
+        
        const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
        log(firstRailOutOfThirdRailway)
        
