@@ -50,10 +50,14 @@ export class Pushable_Entity_With_Unpushable_Entities {
     {
       pushableEntity: Base_Entity
     }) {
+        const pe = pushableEntity;
+        const dt = World_Tick.deltaTime;
+        const offset = 2;
+        
     if (pushableEntity.intangibility) {
       return;
     }
-    const alreadyAccountedFor: Base_Entity[]=[];
+
          const firstCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
@@ -64,80 +68,20 @@ export class Pushable_Entity_With_Unpushable_Entities {
       pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
-          const pe = pushableEntity;
-          const dt = World_Tick.deltaTime;
-        const offset = 2;
+
 
       if(closestCollisions1.collisions.length ===2){
-        
-        const rt = 1 - closestCollisions1.collisions[0].time;
         // closest unpushables
         const clcoll1 = closestCollisions1.collisions[0];
         const clcoll2 = closestCollisions1.collisions[1];
-   
-        const clune1 = clcoll1.entityB;
-        const clune1TransX = clune1.x + (clune1.vx * dt * clcoll1.time)
-        const clune1TransY = clune1.y + (clune1.vy * dt * clcoll1.time)
-   
-        const clune2 = clcoll2.entityB;
-        const clune2TransX = clune2.x + (clune2.vx * dt * clcoll2.time)
-        const clune2TransY = clune2.y + (clune2.vy * dt * clcoll2.time)
-        alreadyAccountedFor.push(clune1)
-        alreadyAccountedFor.push(clune2)
-        if(clcoll1.normal.x !== 0) {
-         if(clcoll1.normal.x >0) { 
-          pe.x = clune1TransX + clune1.width + offset;
-         } 
-         
-         if(clcoll1.normal.x < 0) { 
-          pe.x = clune1TransX - pe.width - offset;
-         } 
-         
-         pe.vx = 0;
-          if(clcoll1.normal.x === Math.sign(clune1.vx)) {
-            pe.vx = clune1.vx * rt;
-          }
-        }
-        if(clcoll1.normal.y !== 0) {
-         if(clcoll1.normal.y >0) {
-            pe.y = clune1TransY + clune1.height + offset;
-        }
-         if(clcoll1.normal.y < 0) {
-            pe.y = clune1TransY - pe.height - offset;
-        }
-        pe.vy=0;
-          if(clcoll1.normal.y === Math.sign(clune1.vy)) {
-            pe.vy = clune1.vy * rt;
-          }
-        }
+
+
+
+       this.clune(clcoll1, pe);
         
         // clcoll2
     
-              if(clcoll2.normal.x !== 0) {
-         if(clcoll2.normal.x >0) { 
-          pe.x = clune2TransX + clune2.width + offset;
-         } 
-         if(clcoll2.normal.x < 0) { 
-          pe.x = clune2TransX - pe.width - offset;
-         } 
-         
-           pe.vx=0;
-          if(clcoll2.normal.x === Math.sign(clune2.vx)) {
-            pe.vx = clune2.vx * rt;
-          }
-        }
-        if(clcoll2.normal.y !== 0) {
-         if(clcoll2.normal.y >0) {
-            pe.y = clune2TransY + clune2.height + offset;
-        }
-         if(clcoll2.normal.y < 0) {
-            pe.y = clune2TransY - pe.height - offset;
-        }
-        pe.vy=0;
-          if(clcoll2.normal.y === Math.sign(clune2.vy)) {
-            pe.vy = clune2.vy * rt;
-          }
-        }
+        this.clune(clcoll2, pe);
         
         // end clcoll2 
         console.log("222222")
@@ -168,45 +112,34 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
   
   const newPe = {
-    x: pe.x,
-    y: pe.y,
+    x: pe.x + (pe.vx * dt * rt),
+    y: pe.y + (pe.vy * dt * rt),
     vx: pe.vx,
     vy: pe.vy,
   }
 
   if(cn.x === 1) {
     newPe.x = une.x + une.width + offset;
-    newPe.vx=0;
     newPe.vy *= rt;
-    if(une.vx > 0) {
-      newPe.vx = une.vx;
-    }
+    newPe.vx=0;
     
   }
   if(cn.x === -1) {
     newPe.x = une.x - pe.width - offset;
-       newPe.vx=0;
-        newPe.vy *= rt;
-      if(une.vx < 0) {
-         newPe.vx = une.vx;
-    }
+    newPe.vx=0;
+    newPe.vy *= rt;
   }
   
   if(cn.y === 1) {
     newPe.y = une.y + une.height + offset;
-        newPe.vy=0;
-            newPe.vx *= rt;
-            if(une.vy > 0) {
-      newPe.vy = une.vy;
-    }
+    newPe.vy=0;
+    newPe.vx *= rt;
+
   }
   if(cn.y === -1) {
     newPe.y = une.y - pe.height - offset;
-        newPe.vy=0;
-            newPe.vx *= rt;
-          if(une.vy < 0) {
-      newPe.vy = une.vy;
-    }
+    newPe.vy=0;
+    newPe.vx *= rt;
   }
   pe.x = newPe.x;
   pe.y = newPe.y;
@@ -220,21 +153,52 @@ export class Pushable_Entity_With_Unpushable_Entities {
       const overlapAtEndAfterFirstResolution = doOverlapAtEnd(pe, une)
      My_Assert.that(!overlapAtEndAfterFirstResolution, "overlapAtEndAfterFirstResolution: I expect entities not to overlap at first collision after resolution ending positions");
 
-   alreadyAccountedFor.push(une);
-      
-    const secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-        (
-          !(alreadyAccountedFor.includes(unpushableEntity)) 
-            && (unpushableEntity.hasTag("Wall") 
+   
+   //    
+    let secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
+        ( (unpushableEntity.hasTag("Wall") 
             || unpushableEntity.hasTag("Sliding_Door")))
       );
       if (!secondCollision) {
         return;
       }
-      
-     let une2=  secondCollision.entityB;
+       let une2=  secondCollision.entityB;
+       let dx = 0;
+       let dy = 0;
+       if(secondCollision.time===0) {
+          const prevX = pe.x;
+          const prevY = pe.y;
+        if(cn.y === 1){
+          pe.y = une2.y - pe.height - offset;
+        } else if (cn.y === -1) {
+          pe.y = une.y + une.height + offset;
+        } else if (cn.x ===1) {
+                    pe.x = une2.x - pe.width - offset;
+        } else if (cn.x===-1){
+                    pe.x = une.x + une.width + offset;
+        }
+          dx = pe.x - prevX;
+          dy = pe.y - prevY;
+          
+          const stillOverlappingWithThirdParty = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une2)
+        My_Assert.that(!stillOverlappingWithThirdParty, "Overlap with third party wall must be resolved")
+  
+       secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
+        ( (unpushableEntity.hasTag("Wall") 
+            || unpushableEntity.hasTag("Sliding_Door")))
+      );
+      if (!secondCollision) {
+        return;
+      }
+       une2=  secondCollision.entityB;
+      }
+ 
+ 
+
 
     let ct2 =secondCollision.time
+  
+      
     let rt2 = 1 - ct2;
     let cn2 =secondCollision.normal
 
@@ -246,15 +210,11 @@ export class Pushable_Entity_With_Unpushable_Entities {
      if(yNormal > 0) {
        pe.y = une2.y + une2.height + offset;
        pe.vy =0
-       if(une2.vy > 0) {
-         pe.vy = une2.vy;
-       }
+
      } else if (yNormal < 0){
-        pe.y = une2.y- pe.height - offset;
+        pe.y = une2.y - pe.height - offset;
         pe.vy=0;
-        if(une2.vy < 0) {
-         pe.vy = une2.vy
-       }
+
      }
    } else if (cn.y !== 0) {
       const xSign = Math.sign(pe.vx);
@@ -262,15 +222,11 @@ export class Pushable_Entity_With_Unpushable_Entities {
      if(xNormal >0) {
        pe.x = une2.x+ une2.width + offset;
        pe.vx = 0;
-       if(une2.vx > 0) {
-         pe.vx = une2.vx;
-       }
+
      } else if(xNormal < 0) {
       pe.x = une2.x - pe.width - offset;
        pe.vx = 0;
-       if(une2.vx < 0) {
-         pe.vx = une2.vx;
-       }
+
      }
 
    }
@@ -278,10 +234,13 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
    // SECOND RESOLUTION END
 
-      const overlapAtEndAfterSecondResolution = doOverlapAtEnd(pe, une)
+
+
+      const overlapAtEndAfterSecondResolution = doOverlapAtEnd(pe, une2)
      My_Assert.that(!overlapAtEndAfterSecondResolution, "overlapAtEndAfterSecondResolution: I expect entities not to overlap at second collision after resolution ending positions");
 
-
+   pe.x += dx
+   pe.y += dy
 
     
   }
@@ -299,3 +258,53 @@ function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
   return collideAtEndPositions
 }
 
+
+static clune( clcoll: Collision_Info, pe: Base_Entity) {
+        const clune = clcoll.entityB;
+        const cluneEndX = clune.x + (clune.vx * dt);
+        const cluneEndY = clune.y + (clune.vy * dt);
+          if(clcoll.normal.x !== 0) {
+         if(clcoll.normal.x >0) { 
+          pe.x = cluneEndX + clune.width + offset;
+         } 
+         
+         if(clcoll.normal.x < 0) { 
+          pe.x = cluneEndX - pe.width - offset;
+         } 
+         
+         if((pe.vx < 0 && clune.vx > 0) ||
+            (pe.vx > 0 && clune.vx < 0)
+            ) {
+         pe.vx = 0;
+         } else if (
+           (clune.vx > 0 && (pe.vx > 0 || pe.vx === 0) ||
+           (clune.vx < 0 && (pe.vx < 0 || pe.vx === 0))
+           ) {
+             // the above else if can only trigger if 1. collision occurred and 2. this means that wall moved faster than player. so, I guess this is a correct way to handle this?
+             pe.vx=0
+         } 
+         
+        }
+        if(clcoll.normal.y !== 0) {
+         if(clcoll.normal.y >0) {
+            pe.y = cluneEndY + clune.height + offset;
+        }
+         if(clcoll.normal.y < 0) {
+            pe.y = cluneEndY - pe.height - offset;
+        }
+
+         if((pe.vy < 0 && clune.vy > 0) ||
+            (pe.vy > 0 && clune.vy < 0)
+            ) {
+         pe.vy = 0;
+         } else if (
+           (clune.vy > 0 && (pe.vy > 0 || pe.vy === 0) ||
+           (clune.vy < 0 && (pe.vy < 0 || pe.vy === 0))
+           ) {
+             // the above else if can only trigger if 1. collision occurred and 2. this means that wall moved faster than player. so, I guess this is a correct way to handle this?
+             pe.vy=0
+         } 
+
+
+        }
+}
