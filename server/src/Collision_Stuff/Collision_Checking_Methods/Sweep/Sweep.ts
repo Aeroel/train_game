@@ -166,6 +166,7 @@ log('xOverlapStartPercent:', xOverlapStartPercent, 'xOverlapEndPercent:', xOverl
 log('yOverlapStartPercent:', yOverlapStartPercent, 'yOverlapEndPercent:', yOverlapEndPercent);
 log('expA:',expA)
 log("collision time:", overlapStartNormalizedTime)
+log("collision normal:", normal)
   return {
     time: overlapStartNormalizedTime,
     normal
