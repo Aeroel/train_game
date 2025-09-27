@@ -77,11 +77,11 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
 
 
-       this.clune(clcoll1, pe);
+       this.cluneResolve(clcoll1, pe, dt, offset);
         
         // clcoll2
     
-        this.clune(clcoll2, pe);
+        this.cluneResolve(clcoll2, pe, dt, offset);
         
         // end clcoll2 
         console.log("222222")
@@ -246,20 +246,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
   }
 
 
-
-}
-
-function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
-  const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
-  const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
-
-  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
-  );
-  return collideAtEndPositions
-}
-
-
-static clune( clcoll: Collision_Info, pe: Base_Entity) {
+static cluneResolve( clcoll: Collision_Info, pe: Base_Entity, dt: number, offset: number) {
         const clune = clcoll.entityB;
         const cluneEndX = clune.x + (clune.vx * dt);
         const cluneEndY = clune.y + (clune.vy * dt);
@@ -272,17 +259,10 @@ static clune( clcoll: Collision_Info, pe: Base_Entity) {
           pe.x = cluneEndX - pe.width - offset;
          } 
          
-         if((pe.vx < 0 && clune.vx > 0) ||
-            (pe.vx > 0 && clune.vx < 0)
-            ) {
-         pe.vx = 0;
-         } else if (
-           (clune.vx > 0 && (pe.vx > 0 || pe.vx === 0) ||
-           (clune.vx < 0 && (pe.vx < 0 || pe.vx === 0))
-           ) {
-             // the above else if can only trigger if 1. collision occurred and 2. this means that wall moved faster than player. so, I guess this is a correct way to handle this?
-             pe.vx=0
-         } 
+         
+         // VX BEGiN 
+          pe.vx = this.vel(pe.vx, clune.vx)
+          // VX END 
          
         }
         if(clcoll.normal.y !== 0) {
@@ -293,18 +273,40 @@ static clune( clcoll: Collision_Info, pe: Base_Entity) {
             pe.y = cluneEndY - pe.height - offset;
         }
 
-         if((pe.vy < 0 && clune.vy > 0) ||
-            (pe.vy > 0 && clune.vy < 0)
-            ) {
-         pe.vy = 0;
-         } else if (
-           (clune.vy > 0 && (pe.vy > 0 || pe.vy === 0) ||
-           (clune.vy < 0 && (pe.vy < 0 || pe.vy === 0))
-           ) {
-             // the above else if can only trigger if 1. collision occurred and 2. this means that wall moved faster than player. so, I guess this is a correct way to handle this?
-             pe.vy=0
-         } 
+
+       // VY BEGIN {
+         pe.vy = this.vel(pe.vy, clune.vy)
+         // } // VY END 
 
 
         }
 }
+
+   static vel(pev: number, clunev: number) {
+           let wantedv=pev;
+         if((pev < 0 && clunev > 0) ||
+            (pev > 0 && clunev < 0)
+            ) {
+         wantedv = 0;
+         } else if (
+           (clunev > 0 && (pev > 0 || pev === 0))
+           ||
+           (clunev < 0 && (pev < 0 || pev === 0))
+           ) {
+             // the above else if can only trigger if 1. collision occurred and 2. this means that wall moved faster than player. so, I guess this is a correct way to handle this?
+             wantedv=0
+         }
+         return wantedv;
+          }
+
+}
+
+function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
+  const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
+  const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
+
+  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
+  );
+  return collideAtEndPositions
+}
+
