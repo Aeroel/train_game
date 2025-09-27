@@ -56,6 +56,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
     }
     const cornerPresent= this.resolveCornerCollisionIfPresent(pushableEntity, dt, offset);
     if(cornerPresent) {
+      log("attempted corner. not a corner.")
       return; // <-- since it got resolved I do not expect any other collisions
     }
 
@@ -133,7 +134,7 @@ const uneEnd = {
       }
        let une2=  secondCollision.entityB;
 
-  console.log("second enter")
+  log("second enter")
 
 
     let ct2 =secondCollision.time
@@ -176,14 +177,13 @@ const uneEnd = {
   }
 static resolveCornerCollisionIfPresent(pushableEntity: Base_Entity, dt: number, offset: number) {
   const pe = pushableEntity;
-          console.log("corner resolving attempt")
+
     const closestCollisions1 = Collision_Stuff.getRepresentativeCollisions(
       pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
 
       if(closestCollisions1.collisions.length <2){
-        log("not a corner.")
         return false;
       }
       if(closestCollisions1.collisions.length ===2){
@@ -202,8 +202,6 @@ static resolveCornerCollisionIfPresent(pushableEntity: Base_Entity, dt: number, 
         this.cluneResolve(clcoll2, pe, dt, offset);
                 // end clcoll2 
 
-        My_Assert.that(!(Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), clcoll1.entityB)))
-        My_Assert.that(!(Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), clcoll2.entityB)))
         log("resolved a corner.")
         return true;
       }

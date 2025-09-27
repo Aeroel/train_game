@@ -238,7 +238,7 @@ export function calculateNormal(xOverlapStartPercent: number, yOverlapStartPerce
 export function preferXIfDiagonal(normal: Normal) {
 
   if (normal.x !== 0 && normal.y !== 0) {
-    console.log("diagonal normal")
+    log("diagonal normal")
     return {
       ...normal,
       y: 0,
