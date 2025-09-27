@@ -116,8 +116,8 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
   
   const newPe = {
-    x: pe.x + (pe.vx * dt * ct),
-    y: pe.y + (pe.vy * dt * ct),
+    x: pe.x + ((pe.vx -(offset/dt)) * dt * ct),
+    y: pe.y + ((pe.vy -(offset/dt)) * dt * ct),
     vx: pe.vx,
     vy: pe.vy,
   }
@@ -186,7 +186,7 @@ const uneEnd = {
         }
           dx = pe.x - prevX;
           dy = pe.y - prevY;
-          
+          log("dx dy",dx, dy)
           const stillOverlappingWithThirdParty = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une2)
         My_Assert.that(!stillOverlappingWithThirdParty, "Overlap with third party wall must be resolved")
   
@@ -209,7 +209,6 @@ const uneEnd = {
    // SECOND RESOLUTION BEGIN
    const une2End = une2.getEndPos();
    
-   if(cn2.y !==0) {
      if(cn2.y > 0) {
        pe.y = une2End.y + une2.height + offset;
        pe.vy =0
@@ -219,7 +218,6 @@ const uneEnd = {
         pe.vy=0;
 
      }
-   } else if (cn2.x !== 0) {
      if(cn2.x >0) {
        pe.x = une2End.x+ une2.width + offset;
        pe.vx = 0;
@@ -230,7 +228,7 @@ const uneEnd = {
 
      }
 
-   }
+   
 
    // SECOND RESOLUTION END
 
