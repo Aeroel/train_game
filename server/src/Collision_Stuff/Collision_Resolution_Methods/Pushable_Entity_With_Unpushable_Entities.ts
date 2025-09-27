@@ -40,10 +40,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
     })
   }
 
-/* the logic here relies on:
-1. only one axis being prefered as normal in case actual collision is perfect diagonal. if I modify collision detevtion to return true diagonal normal in rare cases when it occurs, I would need to rework the resolution logic. I do not need to have perfect diagonal normals, I think, but even if I find later I want them, I do not expect rewriting to be specially complicated.
 
-*/
   static resolveCode( {
     pushableEntity
   }:
@@ -57,6 +54,10 @@ export class Pushable_Entity_With_Unpushable_Entities {
     if (pushableEntity.intangibility) {
       return;
     }
+    const cornerPresent= this.resolveCornerCollisionIfPresent(pushableEntity, dt, offset);
+    if(cornerPresent) {
+      return; // <-- since it got resolved I do not expect any other collisions
+    }
 
          const firstCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
@@ -64,12 +65,125 @@ export class Pushable_Entity_With_Unpushable_Entities {
       if (!firstCollision) {
         return;
       }
-          const closestCollisions1 = Collision_Stuff.getRepresentativeCollisions(
+
+
+
+    let une=  firstCollision.entityB;
+    let ct =firstCollision.time
+    let rt = 1 - ct;
+    let cn =firstCollision.normal
+
+// FIRST resolution BEGIN
+
+
+  const resolvedPe1 = {
+    x: pe.x + (pe.vx * dt * ct),
+    y: pe.y + (pe.vy * dt * ct),
+    vx: pe.vx,
+    vy: pe.vy,
+  }
+  
+const uneEnd = {
+  x: une.x + (une.vx * dt),
+  y: une.y + (une.vy * dt),
+}
+
+  if(cn.x === 1) {
+    resolvedPe1.x = uneEnd.x + une.width + offset;
+    resolvedPe1.vy *= rt;
+    resolvedPe1.vx=0;
+    
+  }
+ else if(cn.x === -1) {
+    resolvedPe1.x = uneEnd.x - pe.width - offset;
+    resolvedPe1.vx=0;
+    resolvedPe1.vy *= rt;
+  }
+  
+ else if(cn.y === 1) {
+    resolvedPe1.y = uneEnd.y + une.height + offset;
+    resolvedPe1.vy=0;
+    resolvedPe1.vx *= rt;
+
+  }
+ else if(cn.y === -1) {
+    resolvedPe1.y = uneEnd.y - pe.height - offset;
+    resolvedPe1.vy=0;
+    resolvedPe1.vx *= rt;
+  }
+
+ pe.vx = resolvedPe1.vx
+ pe.vy = resolvedPe1.vy
+
+
+// FIRST resolution END 
+
+   
+   /* do not apppy resolvedPe.xy to Pe yet
+    
+    */
+    let secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
+        (unpushableEntity !== une &&  (unpushableEntity.hasTag("Wall") 
+            || unpushableEntity.hasTag("Sliding_Door")))
+      );
+      if (!secondCollision) {
+        return;
+      }
+       let une2=  secondCollision.entityB;
+
+  console.log("second enter")
+
+
+    let ct2 =secondCollision.time
+  
+    let cn2 =secondCollision.normal
+   // SECOND RESOLUTION BEGIN
+   const une2End = une2.getEndPos();
+   
+     if(cn2.y > 0) {
+       pe.x = resolvedPe1.x;
+       pe.y = une2End.y + une2.height + offset;
+       pe.vy =0
+
+     } else if (cn2.y < 0){
+        pe.x = resolvedPe1.x;
+        pe.y = une2End.y - pe.height - offset;
+        pe.vy=0;
+
+     }
+     if(cn2.x >0) {
+              pe.y = resolvedPe1.y;
+       pe.x = une2End.x+ une2.width + offset;
+       pe.vx = 0;
+
+     } else if(cn2.x < 0) {
+       pe.y = resolvedPe1.y;
+      pe.x = une2End.x - pe.width - offset;
+       pe.vx = 0;
+
+     }
+
+   
+
+   // SECOND RESOLUTION END
+
+// So, this is it?
+
+
+    
+  }
+static resolveCornerCollisionIfPresent(pushableEntity: Base_Entity, dt: number, offset: number) {
+  const pe = pushableEntity;
+          console.log("corner resolving attempt")
+    const closestCollisions1 = Collision_Stuff.getRepresentativeCollisions(
       pushableEntity, (unpushableEntity)=>
         (unpushableEntity.hasTag("Wall") || unpushableEntity.hasTag("Sliding_Door"))
       );
 
-
+      if(closestCollisions1.collisions.length <2){
+        log("not a corner.")
+        return false;
+      }
       if(closestCollisions1.collisions.length ===2){
         // closest unpushables
         const clcoll1 = closestCollisions1.collisions[0];
@@ -85,164 +199,13 @@ export class Pushable_Entity_With_Unpushable_Entities {
     
         this.cluneResolve(clcoll2, pe, dt, offset);
                 // end clcoll2 
-        console.log("222222")
+
         My_Assert.that(!(Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), clcoll1.entityB)))
         My_Assert.that(!(Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), clcoll2.entityB)))
-
-        return;
+        log("resolved a corner.")
+        return true;
       }
-
-
-
-    let une=  firstCollision.entityB;
-    let ct =firstCollision.time
-    let rt = 1 - ct;
-    let cn =firstCollision.normal
-
-  const initialOverlapAtFirst = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une);
-
-        My_Assert.that(!initialOverlapAtFirst, `initialOverlapAtFirst: I expect that the entities do not begin in overlap. Debug: ${
-        JSON.stringify({
-          une: Collision_Stuff.entityToBoxWithVelocity(une),
-          pe: Collision_Stuff.entityToBoxWithVelocity(pe),
-          uneTags: une.tags,
-          peTags: pe.tags,
-
-        })
-
-        }`)
-
-// FIRST resolution BEGIN
-
-  
-  const newPe = {
-    x: pe.x + ((pe.vx -(offset/dt)) * dt * ct),
-    y: pe.y + ((pe.vy -(offset/dt)) * dt * ct),
-    vx: pe.vx,
-    vy: pe.vy,
-  }
-  
-const uneEnd = {
-  x: une.x + (une.vx * dt),
-  y: une.y + (une.vy * dt),
 }
-
-  if(cn.x === 1) {
-    newPe.x = uneEnd.x + une.width + offset;
-    newPe.vy *= rt;
-    newPe.vx=0;
-    
-  }
- else if(cn.x === -1) {
-    newPe.x = uneEnd.x - pe.width - offset;
-    newPe.vx=0;
-    newPe.vy *= rt;
-  }
-  
- else if(cn.y === 1) {
-    newPe.y = uneEnd.y + une.height + offset;
-    newPe.vy=0;
-    newPe.vx *= rt;
-
-  }
- else if(cn.y === -1) {
-    newPe.y = uneEnd.y - pe.height - offset;
-    newPe.vy=0;
-    newPe.vx *= rt;
-  }
-  pe.x = newPe.x;
-  pe.y = newPe.y;
- pe.vx = newPe.vx
- pe.vy = newPe.vy
-
-
-// FIRST resolution END 
-
-   
-   //    
-    let secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-        (unpushableEntity !== une &&  (unpushableEntity.hasTag("Wall") 
-            || unpushableEntity.hasTag("Sliding_Door")))
-      );
-      if (!secondCollision) {
-        return;
-      }
-       let une2=  secondCollision.entityB;
-       let dx = 0;
-       let dy = 0;
-       if(secondCollision.time===0) {
-         console.log("time 0 enter")
-
-          const prevX = pe.x;
-          const prevY = pe.y;
-        if(cn.y === 1){
-          pe.y = une2.y - pe.height - offset;
-        } else if (cn.y === -1) {
-          pe.y = une2.y + une.height + offset;
-        } else if (cn.x ===1) {
-                    pe.x = une2.x - pe.width - offset;
-        } else if (cn.x===-1){
-                    pe.x = une2.x + une.width + offset;
-        }
-          dx = pe.x - prevX;
-          dy = pe.y - prevY;
-          log("dx dy",dx, dy)
-          const stillOverlappingWithThirdParty = Collision_Stuff.static_No_Velocity_Collision_Check(pe, une2)
-        My_Assert.that(!stillOverlappingWithThirdParty, "Overlap with third party wall must be resolved")
-  
-       secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
-        ( unpushableEntity !== une2 && unpushableEntity !== une && (unpushableEntity.hasTag("Wall") 
-            || unpushableEntity.hasTag("Sliding_Door")))
-      );
-      if (!secondCollision) {
-        return;
-      }
-       une2=  secondCollision.entityB;
-      }
- 
-  console.log("second enter")
-
-
-    let ct2 =secondCollision.time
-  
-    let cn2 =secondCollision.normal
-   // SECOND RESOLUTION BEGIN
-   const une2End = une2.getEndPos();
-   
-     if(cn2.y > 0) {
-       pe.y = une2End.y + une2.height + offset;
-       pe.vy =0
-
-     } else if (cn2.y < 0){
-        pe.y = une2End.y - pe.height - offset;
-        pe.vy=0;
-
-     }
-     if(cn2.x >0) {
-       pe.x = une2End.x+ une2.width + offset;
-       pe.vx = 0;
-
-     } else if(cn2.x < 0) {
-      pe.x = une2End.x - pe.width - offset;
-       pe.vx = 0;
-
-     }
-
-   
-
-   // SECOND RESOLUTION END
-
-
-
-      const overlapAtEndAfterSecondResolution = Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), une2.endBox())
-     My_Assert.that(!overlapAtEndAfterSecondResolution, "overlapAtEndAfterSecondResolution: I expect entities not to overlap at second collision after resolution ending positions");
-
-   pe.x += dx
-   pe.y += dy
-
-    
-  }
-
 
 static cluneResolve( clcoll: Collision_Info, pe: Base_Entity, dt: number, offset: number) {
         const clune = clcoll.entityB;
