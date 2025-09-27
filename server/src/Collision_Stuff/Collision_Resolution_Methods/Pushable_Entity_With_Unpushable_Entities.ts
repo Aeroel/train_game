@@ -178,11 +178,11 @@ const uneEnd = {
         if(cn.y === 1){
           pe.y = une2.y - pe.height - offset;
         } else if (cn.y === -1) {
-          pe.y = une.y + une.height + offset;
+          pe.y = une2.y + une.height + offset;
         } else if (cn.x ===1) {
                     pe.x = une2.x - pe.width - offset;
         } else if (cn.x===-1){
-                    pe.x = une.x + une.width + offset;
+                    pe.x = une2.x + une.width + offset;
         }
           dx = pe.x - prevX;
           dy = pe.y - prevY;
@@ -207,26 +207,24 @@ const uneEnd = {
   
     let cn2 =secondCollision.normal
    // SECOND RESOLUTION BEGIN
-   const une2End = Collision_Stuff.posToBox(une2, une2.getEndPos());
+   const une2End = une2.getEndPos();
    
-   let xNormal = cn2.x
-   let yNormal = cn2.y
    if(cn2.y !==0) {
-     if(yNormal > 0) {
+     if(cn2.y > 0) {
        pe.y = une2End.y + une2.height + offset;
        pe.vy =0
 
-     } else if (yNormal < 0){
+     } else if (cn2.y < 0){
         pe.y = une2End.y - pe.height - offset;
         pe.vy=0;
 
      }
    } else if (cn2.x !== 0) {
-     if(xNormal >0) {
+     if(cn2.x >0) {
        pe.x = une2End.x+ une2.width + offset;
        pe.vx = 0;
 
-     } else if(xNormal < 0) {
+     } else if(cn2.x < 0) {
       pe.x = une2End.x - pe.width - offset;
        pe.vx = 0;
 
@@ -238,7 +236,7 @@ const uneEnd = {
 
 
 
-      const overlapAtEndAfterSecondResolution = doOverlapAtEnd(pe, une2)
+      const overlapAtEndAfterSecondResolution = Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), une2.endBox())
      My_Assert.that(!overlapAtEndAfterSecondResolution, "overlapAtEndAfterSecondResolution: I expect entities not to overlap at second collision after resolution ending positions");
 
    pe.x += dx
@@ -279,14 +277,5 @@ static cluneResolve( clcoll: Collision_Info, pe: Base_Entity, dt: number, offset
         }
 }
 
-}
-
-function doOverlapAtEnd(pe: Base_Entity, une: Base_Entity): boolean {
-  const peEndBox = Collision_Stuff.posToBox(pe, pe.getEndPos());
-  const uneEndBox = Collision_Stuff.posToBox(une, une.getEndPos());
-
-  const collideAtEndPositions = Collision_Stuff.static_No_Velocity_Collision_Check(peEndBox, uneEndBox
-  );
-  return collideAtEndPositions
 }
 
