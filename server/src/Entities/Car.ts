@@ -59,8 +59,8 @@ class Car extends Base_Entity {
   }
   updateState() {
    setTimeout(()=>{
-     this.speedX=2
-     this.speedY=2
+     this.speedX=this.normalSpeedForBothAxes
+     this.speedY=this.normalSpeedForBothAxes
      this.setColor("yellow")
    }, 20000)
    this.dirUpdate();
@@ -87,25 +87,10 @@ dirUpdate(){
     return
   }
   this.lastMovDirChange= now;
-  this.controls.right=false;
-  this.controls.left=false;
-  this.controls.up=false;
-  this.controls.down=false;
-
-if(Math.random()>0.5) {
-  return;
-}
-
-  if(Math.random() > 0.5) {
-    this.controls.right= true;
-  } else {
-    this.controls.left= true;
-  }
-  if(Math.random() > 0.5) {
-    this.controls.up= true;
-  } else {
-    this.controls.down  = true;
-  }
+  this.controls.right= !(this.controls.right);
+  this.controls.left= !(this.controls.left)
+  this.controls.up=!(this.controls.up);
+  this.controls.down=!(this.controls.up);
   
 }
 

@@ -80,7 +80,18 @@ Clean_Up() {
 getEndPos() {
   return this.calculateNextPositionBasedOnVelocityAndDeltaTime()
 }
-
+endBox() {
+  const endBox = {
+    width: this.width,
+    height: this.height,
+    x:0,
+    y:0
+  }
+  const endPos = this.getEndPos();
+  endBox.x= endPos.x
+  endBox.y= endPos.y
+  return endBox;
+}
   
  addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld} : { setThisToTrueToIndicateThatYouCalledThisFromWorld: boolean}
   ) {

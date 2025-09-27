@@ -81,10 +81,14 @@ export class Pushable_Entity_With_Unpushable_Entities {
         
         // clcoll2
     
+    
+    
         this.cluneResolve(clcoll2, pe, dt, offset);
-        
-        // end clcoll2 
+                // end clcoll2 
         console.log("222222")
+        My_Assert.that(!(Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), clcoll1.entityB)))
+        My_Assert.that(!(Collision_Stuff.static_No_Velocity_Collision_Check(pe.endBox(), clcoll2.entityB)))
+
         return;
       }
 
@@ -112,32 +116,37 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
   
   const newPe = {
-    x: pe.x + (pe.vx * dt * rt),
-    y: pe.y + (pe.vy * dt * rt),
+    x: pe.x + (pe.vx * dt * ct),
+    y: pe.y + (pe.vy * dt * ct),
     vx: pe.vx,
     vy: pe.vy,
   }
+  
+const uneEnd = {
+  x: une.x + (une.vx * dt),
+  y: une.y + (une.vy * dt),
+}
 
   if(cn.x === 1) {
-    newPe.x = une.x + une.width + offset;
+    newPe.x = uneEnd.x + une.width + offset;
     newPe.vy *= rt;
     newPe.vx=0;
     
   }
-  if(cn.x === -1) {
-    newPe.x = une.x - pe.width - offset;
+ else if(cn.x === -1) {
+    newPe.x = uneEnd.x - pe.width - offset;
     newPe.vx=0;
     newPe.vy *= rt;
   }
   
-  if(cn.y === 1) {
-    newPe.y = une.y + une.height + offset;
+ else if(cn.y === 1) {
+    newPe.y = uneEnd.y + une.height + offset;
     newPe.vy=0;
     newPe.vx *= rt;
 
   }
-  if(cn.y === -1) {
-    newPe.y = une.y - pe.height - offset;
+ else if(cn.y === -1) {
+    newPe.y = uneEnd.y - pe.height - offset;
     newPe.vy=0;
     newPe.vx *= rt;
   }
@@ -166,6 +175,10 @@ export class Pushable_Entity_With_Unpushable_Entities {
        let dx = 0;
        let dy = 0;
        if(secondCollision.time===0) {
+         console.log("time 0 enter")
+        
+         if(1>0)throw new Error(`
+         ${JSON.stringify(secondCollision.normal)}`)
           const prevX = pe.x;
           const prevY = pe.y;
         if(cn.y === 1){
@@ -193,44 +206,39 @@ export class Pushable_Entity_With_Unpushable_Entities {
        une2=  secondCollision.entityB;
       }
  
- 
+  console.log("second enter")
 
 
     let ct2 =secondCollision.time
   
-      
-    let rt2 = 1 - ct2;
     let cn2 =secondCollision.normal
-
    // SECOND RESOLUTION BEGIN
+   const une2End = Collision_Stuff.posToBox(une2, une2.getEndPos());
    
-   if(cn.x !==0) {
-     const ySign = Math.sign(pe.vy);
-     const yNormal = ySign * -1;
+   let xNormal = cn2.x
+   let yNormal = cn2.y
+   if(cn2.y !==0) {
      if(yNormal > 0) {
-       pe.y = une2.y + une2.height + offset;
+       pe.y = une2End.y + une2.height + offset;
        pe.vy =0
 
      } else if (yNormal < 0){
-        pe.y = une2.y - pe.height - offset;
+        pe.y = une2End.y - pe.height - offset;
         pe.vy=0;
 
      }
-   } else if (cn.y !== 0) {
-      const xSign = Math.sign(pe.vx);
-     const xNormal = xSign * -1;
+   } else if (cn2.x !== 0) {
      if(xNormal >0) {
-       pe.x = une2.x+ une2.width + offset;
+       pe.x = une2End.x+ une2.width + offset;
        pe.vx = 0;
 
      } else if(xNormal < 0) {
-      pe.x = une2.x - pe.width - offset;
+      pe.x = une2End.x - pe.width - offset;
        pe.vx = 0;
 
      }
 
    }
-   
 
    // SECOND RESOLUTION END
 
@@ -259,13 +267,9 @@ static cluneResolve( clcoll: Collision_Info, pe: Base_Entity, dt: number, offset
           pe.x = cluneEndX - pe.width - offset;
          } 
          
-         
-         // VX BEGiN 
-          pe.vx = this.vel(pe.vx, clune.vx)
-          // VX END 
-         
-        }
-        if(clcoll.normal.y !== 0) {
+ 
+          pe.vx = 0;
+        } else if(clcoll.normal.y !== 0) {
          if(clcoll.normal.y >0) {
             pe.y = cluneEndY + clune.height + offset;
         }
@@ -274,30 +278,12 @@ static cluneResolve( clcoll: Collision_Info, pe: Base_Entity, dt: number, offset
         }
 
 
-       // VY BEGIN {
-         pe.vy = this.vel(pe.vy, clune.vy)
-         // } // VY END 
+
+         pe.vy = 0
 
 
         }
 }
-
-   static vel(pev: number, clunev: number) {
-           let wantedv=pev;
-         if((pev < 0 && clunev > 0) ||
-            (pev > 0 && clunev < 0)
-            ) {
-         wantedv = 0;
-         } else if (
-           (clunev > 0 && (pev > 0 || pev === 0))
-           ||
-           (clunev < 0 && (pev < 0 || pev === 0))
-           ) {
-             // the above else if can only trigger if 1. collision occurred and 2. this means that wall moved faster than player. so, I guess this is a correct way to handle this?
-             wantedv=0
-         }
-         return wantedv;
-          }
 
 }
 
