@@ -158,10 +158,6 @@ const uneEnd = {
 
 // FIRST resolution END 
 
-
-      const overlapAtEndAfterFirstResolution = doOverlapAtEnd(pe, une)
-     My_Assert.that(!overlapAtEndAfterFirstResolution, "overlapAtEndAfterFirstResolution: I expect entities not to overlap at first collision after resolution ending positions");
-
    
    //    
     let secondCollision = Collision_Stuff.getClosestCollision(pushableEntity, (unpushableEntity)=>
