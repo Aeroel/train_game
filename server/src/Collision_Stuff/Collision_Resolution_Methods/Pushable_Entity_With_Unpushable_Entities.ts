@@ -140,6 +140,7 @@ export class Pushable_Entity_With_Unpushable_Entities {
         }
         
         // end clcoll2 
+        console.log("222222")
         return;
       }
 
@@ -165,65 +166,52 @@ export class Pushable_Entity_With_Unpushable_Entities {
 
 // FIRST resolution BEGIN
 
-
- const uneOldPos = {
-    x: une.x,
-    y: une.y,
-  }
-  const uneTransX = une.x + (une.vx * ct * dt);
-  const uneTransY = une.y + (une.vy * ct * dt);
   
   const newPe = {
-    x: pe.x + ((pe.vx * dt * ct)),
-    y: pe.y + ((pe.vy * dt * ct)),
+    x: pe.x,
+    y: pe.y,
     vx: pe.vx,
     vy: pe.vy,
   }
 
   if(cn.x === 1) {
-    newPe.x = uneTransX + une.width + offset;
+    newPe.x = une.x + une.width + offset;
     newPe.vx=0;
     newPe.vy *= rt;
     if(une.vx > 0) {
-      newPe.vx = une.vx * rt;
+      newPe.vx = une.vx;
     }
     
   }
   if(cn.x === -1) {
-    newPe.x = uneTransX - pe.width - offset;
+    newPe.x = une.x - pe.width - offset;
        newPe.vx=0;
         newPe.vy *= rt;
       if(une.vx < 0) {
-         newPe.vx = une.vx * rt;
+         newPe.vx = une.vx;
     }
   }
   
   if(cn.y === 1) {
-    newPe.y = uneTransY + une.height + offset;
+    newPe.y = une.y + une.height + offset;
         newPe.vy=0;
             newPe.vx *= rt;
             if(une.vy > 0) {
-      newPe.vy = une.vy * rt;
+      newPe.vy = une.vy;
     }
   }
   if(cn.y === -1) {
-    newPe.y = uneTransY - pe.height - offset;
+    newPe.y = une.y - pe.height - offset;
         newPe.vy=0;
             newPe.vx *= rt;
           if(une.vy < 0) {
-      newPe.vy = une.vy * rt;
+      newPe.vy = une.vy;
     }
   }
   pe.x = newPe.x;
   pe.y = newPe.y;
-if(cn.y===0) {
-  // pe.x = Math.trunc(newPe.x); 
-}else {
-  //  pe.y = Math.trunc(newPe.y);
-}
- const ceilLvl = 3;
-  pe.vx = ceilERN(newPe.vx, ceilLvl);
-  pe.vy = ceilERN(newPe.vy, ceilLvl);
+
+
 
 // FIRST resolution END 
 
@@ -248,49 +236,45 @@ if(cn.y===0) {
     let ct2 =secondCollision.time
     let rt2 = 1 - ct2;
     let cn2 =secondCollision.normal
-     let une2TransY = une2.y + (une2.vy * dt * ct2 )
-     let une2TransX = une2.x + (une2.vx * dt * ct2 )
+
    // SECOND RESOLUTION BEGIN
    
    if(cn.x !==0) {
      const ySign = Math.sign(pe.vy);
      const yNormal = ySign * -1;
      if(yNormal > 0) {
-       pe.y = une2TransY + une2.height + offset;
+       pe.y = une2.y + une2.height + offset;
        pe.vy =0
        if(une2.vy > 0) {
-         pe.vy = une2.vy * rt2;
+         pe.vy = une2.vy;
        }
      } else if (yNormal < 0){
-        pe.y = une2TransY - pe.height - offset;
+        pe.y = une2.y- pe.height - offset;
         pe.vy=0;
         if(une2.vy < 0) {
-         pe.vy = une2.vy * rt2;
+         pe.vy = une2.vy
        }
      }
-     pe.x = Math.trunc(pe.x); 
    } else if (cn.y !== 0) {
       const xSign = Math.sign(pe.vx);
      const xNormal = xSign * -1;
      if(xNormal >0) {
-       pe.x = une2TransX + une2.width + offset;
+       pe.x = une2.x+ une2.width + offset;
        pe.vx = 0;
        if(une2.vx > 0) {
-         pe.vx = une2.vx * rt2;
+         pe.vx = une2.vx;
        }
      } else if(xNormal < 0) {
-      pe.x = une2TransX - pe.width - offset;
+      pe.x = une2.x - pe.width - offset;
        pe.vx = 0;
        if(une2.vx < 0) {
-         pe.vx = une2.vx * rt2;
+         pe.vx = une2.vx;
        }
      }
-         pe.y = Math.trunc(pe.y);
+
    }
    
 
-  pe.vx = ceilERN(pe.vx, ceilLvl);
-  pe.vy = ceilERN(pe.vy, ceilLvl);
    // SECOND RESOLUTION END
 
       const overlapAtEndAfterSecondResolution = doOverlapAtEnd(pe, une)
