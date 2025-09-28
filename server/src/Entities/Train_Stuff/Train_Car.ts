@@ -167,75 +167,13 @@ motionsDirections: Train_Car_Motions_Directions = {
       return;
     }
         const wall = switchWallCollision.entityB as Rail_Switch_Wall;
-        log("wallId", wall.id)
-      /*  if(switchWallCollision.time===0){
 
-      throw new Error(`
-      Car begins in overlap.
-      Debug info: ${
-        JSON.stringify({
-        carId: this.debug_id,
-        modifiesCarTo: wall.modifiesCarTo,
-        triggersUponContactWithCarIf: wall.triggersUponContactWithCarIf,
-        })
-      }
-      `)
-    }*/
-        const face = this.getFace(wall)
-    log(`motioons 1`, this.motionsDirections)
-    log("want", wall.modifiesCarTo)
     this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall)
-        log(`motioons 2`, this.motionsDirections)
-    
-    const newPos={
-      x: wall.x,
-      y: wall.y
-    }
-    const offset = 0;
-    log("face", face)
-    switch(face) {
-      case "bottom":
-        newPos.y = wall.y + wall.height + offset;
-      break;
-      case "top":
-        newPos.y = wall.y - this.height - offset;
-      break;
-      case "right":
-        newPos.x = wall.x + wall.width - offset;
-      break;
-      case "left":
-        newPos.x = wall.x - this.width + offset;
-      break;
 
-    }
-    let velocity_budget = this.Get_Velocity_Budget();
-    let displacement = this.teleportAndBringPassengers(newPos);
-    let spent_velocity = displacement / World_Tick.deltaTime;
-    velocity_budget -= spent_velocity;
     
-    this.currentSpeedForBothAxes = velocity_budget;
-    let updatedVel = this.determine_new_velocity_for_movement_along_the_rail();
-    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value: updatedVel.vx.value})
-    this.velocity.y.Add_Component({key:this.Rail_Movement_Key, value: updatedVel.vy.value})
-
     
   }
   
-
- getFace(wall: Rail_Switch_Wall): Face {
-  const { modifiesCarTo, triggersUponContactWithCarIf } = wall;
- let face: null | Face =null;
- if(triggersUponContactWithCarIf.length === 1) {
-   if(triggersUponContactWithCarIf.includes('right'))  {
-     
-   }
- }
-  if (!face) {
-    throw new Error("face must be determined");
-  }
-
-  return face;
-}
  
   Get_Velocity_Budget(){
 if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {

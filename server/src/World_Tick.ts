@@ -1,8 +1,30 @@
 import { EmitStuff } from "#root/World_State_Emission_Stuff/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
 import { World } from "#root/World.js";
+import { newLog } from "#root/My_Log.js"
 
 export { World_Tick }
+
+class Stopwatch {
+  static startTime=0;
+  static totalLapsTime=0;
+  static start() {
+    this.startTime = this.getCurrentTimeInMs();
+    this.totalLapsTime = 0;
+  }
+  static lap() {
+    const currTime = this.getCurrentTimeInMs();
+    const elapsed = currTime - this.startTime;
+    this.totalLapsTime += elapsed;
+    return elapsed;
+  }
+  static getCurrentTimeInMs() {
+    return Date.now();
+  }
+  static total() {
+    return this.totalLapsTime;
+  }
+}
 
 class World_Tick {
   static tickRate = 20; // Updates per second
@@ -13,7 +35,7 @@ class World_Tick {
   static started = true;
  static emitEveryMs= 50;
  static lastEmitTime =0;
- 
+ static tickCount=0;
  
   static beginTicking() {
       this.tictac();
@@ -21,15 +43,23 @@ class World_Tick {
 static tictac() {
       World_Tick.tick();
       // Schedule the next tick
-     setImmediate(World_Tick.tictac); // More precise than setTimeout in Node.js?  
+     setTimeout(World_Tick.tictac, World_Tick.deltaTime); 
 }
 static tick() {
+  newLog({logCategory:
+    "World_Tick",message:`Tick #${this.tickCount}`}
+    )
+    this.tickCount++;
+    
     const currentTime = Date.now();
     const elapsed = currentTime - World_Tick.lastUpdateTime;
     World_Tick.lastUpdateTime = currentTime;
 
     World_Tick.accumulatedTime += elapsed;
-
+   newLog({
+     logCategory:"World_Tick",
+     message:`accumulatedTime=${World_Tick.accumulatedTime}`
+   })
     // Process game logic in fixed-size steps
     while (World_Tick.accumulatedTime >= World_Tick.msPerTick) {
       World_Tick.simulateNextMoment();
@@ -38,12 +68,37 @@ static tick() {
   }
 
   static simulateNextMoment() {
-
+   Stopwatch.start();
     World_Tick.Next_Moment_Of_All_Entities();
+    newLog({
+      logCategory:"World_Tick",
+      message:`Next_Moment_Of_All_Entities took ${Stopwatch.lap()} milliseconds`
+    })
     World_Tick.Collision_Resolutor();
+       newLog({
+      logCategory:"World_Tick",
+      message:`Collision_Resolutor took ${Stopwatch.lap()} milliseconds`
+    })
     World_Tick.Update_Positions_Of_All_Entities();
+        newLog({
+      logCategory:"World_Tick",
+      message:`Update_Positions_Of_All_Entities took ${Stopwatch.lap()} milliseconds`
+    })
     World_Tick.Clean_Up();
+        newLog({
+      logCategory:"World_Tick",
+      message:`Clean_Up took ${Stopwatch.lap()} milliseconds`
+    })
     World_Tick.Emit_To_Players();
+        newLog({
+      logCategory:"World_Tick",
+      message:`Emit_To_Players took ${Stopwatch.lap()} milliseconds`
+    })
+        newLog({
+      logCategory:"World_Tick",
+      message:`simulateNextMoment as a whole took ${Stopwatch.total()} milliseconds`
+    })
+
   }
 
   static Next_Moment_Of_All_Entities() {
