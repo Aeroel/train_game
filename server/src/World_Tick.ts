@@ -27,7 +27,7 @@ class Stopwatch {
 }
 
 class World_Tick {
-  static tickRate = 20; // Updates per second
+  static tickRate = 10; // Updates per second
   static msPerTick = 1000 / World_Tick.tickRate; // Duration of each update in milliseconds
   static deltaTime = World_Tick.msPerTick;
   static lastUpdateTime = Date.now();
