@@ -21,10 +21,10 @@
         "test": "ts-node -r tsconfig-paths/register build/Tests/runTests.js",
         "devtsc": "tsc --watch --noEmit",
         "devserver": "pnpm run devservertsx",
-        "devservertsx": "tsx watch --clear-screen=false src/startThisToStartTheGameServer.ts",
-        "devservernode": "node --watch --enable-source-maps build/startThisToStartTheGameServer.js",
+        "devservertsx": "tsx watch --env-file=.env --clear-screen=false src/startThisToStartTheGameServer.ts",
+        "devservernode": "node --watch --enable-source-maps --env-file=.env build/startThisToStartTheGameServer.js",
         "devserverprof": "pnpm run devservertsxprof",
-        "devservertsxprof": "tsx watch --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
-        "devservernodeprof": "node --prof --watch --enable-source-maps build/startThisToStartTheGameServer.js"
+        "devservertsxprof": "tsx watch --env-file=.env --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
+        "devservernodeprof": "node --prof --watch --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js"
     }
 }

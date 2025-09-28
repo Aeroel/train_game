@@ -2,7 +2,6 @@
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
-
 import { Socket_Processor } from "#root/Socket_Processor.js"
 import { Helper_Functions } from "./Helper_Functions.js";
 
@@ -26,16 +25,23 @@ class Server_Stuff {
   } 
  static  createAndStartServer() {
   const httpServer = this.create();
- const arbitrary_number = 3000;
- const port = arbitrary_number;
+ if(!(process.env.PORT)) {
+    throw new Error("Specify PORT env var inside server/.env file")
+ }
+ if(!(process.env.IP)) {
+    throw new Error("Specify IP env var inside server/.env file")
+ }
+ const envPORT = process.env.PORT;
+ const envIP= process.env.IP;
  
-      httpServer.listen(port);
+      httpServer.listen(Number(envPORT), Number(envIP));
 
 const LANIP = Helper_Functions.getLocalIP();
 const localhostIP = "127.0.0.1";
-console.log(`Yaaaay. Started a server on port ${port}.`);
-console.log(`LAN IP: ${LANIP}:${port}`);
-console.log(`localhost IP: ${localhostIP}:${port}.`);
+console.log(`Yaaaay. Started a server on port ${envPORT}.`);
+console.log(`LAN IP: ${LANIP}:${envPORT}`);
+console.log(`localhost IP: ${localhostIP}:${envPORT}.`);
+console.log('ENV IP: ', envIP)
 
   }
     static getHttpServerAndIO() {
