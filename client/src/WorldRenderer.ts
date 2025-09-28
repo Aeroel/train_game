@@ -3,12 +3,19 @@ export { WorldRenderer };
 type WorldState = {
     entities: Entity[],
     virtualCanvasWidth: number
-    virtualCanvasHeight: number
+    virtualCanvasHeight: number,
 }
 type ReceivedWorldState = {
     entities: Entity[],
     virtualWidth: number
-    virtualHeight: number
+    virtualHeight: number,
+    playerX: number,
+    playerY: number,
+    playerVX: number,
+    playerVY: number,
+    playerSpeedUp: boolean,
+    playerIntangibility: boolean,
+
 }
 type Edge = {
     x1: number,
@@ -40,7 +47,49 @@ class WorldRenderer {
         WorldRenderer.worldState.entities = worldState.entities;
         WorldRenderer.worldState.virtualCanvasHeight = worldState.virtualHeight;
         WorldRenderer.worldState.virtualCanvasWidth = worldState.virtualWidth;
+
+        this.updatePlayerPositionText(worldState.playerX, worldState.playerY, worldState.playerVX, worldState.playerVY);
+        this.speedUpHandler(worldState.playerSpeedUp);
+        this.intangibilityHandler(worldState.playerIntangibility);
+
     }
+    
+    static updatePlayerPositionText(playerX: number, playerY: number, playerVX:number, playerVY: number) {
+      
+              const coordinatesBox = <HTMLDivElement>document.getElementById("coordinatesLocation");
+        if (coordinatesBox === null) {
+            throw new Error("Could not get coordinates box");
+        }
+              // Update coordinates box with player position
+        coordinatesBox.innerText = `Player Position:\n X: ${playerX},\n Y: ${playerY} \n VX: ${playerVX} \n VY: ${playerVY} `;
+    }
+    
+    static speedUpHandler(speedUp: boolean) {
+              const speedup_state_image= document.getElementById("speedupStateImage") as HTMLImageElement;
+   if(speedup_state_image === null) {
+     throw new Error("speedup_state_image not found");
+   }
+        const baseImg = "./images/Speedup_State";
+      let image = "False.jpg";
+     if(speedUp) {
+       image = "True.jpg";
+     }
+    speedup_state_image.src = `${baseImg}_${image}`;
+    }
+    
+    static intangibilityHandler(intangibility: boolean) {
+    const intangibilityStateImage= document.getElementById("intangibilityStateImage") as HTMLImageElement;
+   if(intangibilityStateImage === null) {
+     throw new Error("intangibilityStateImage not found");
+   }
+        const baseImg = "./images/Intangibility_State";
+      let image = "False.jpg";
+     if(intangibility) {
+       image = "True.jpg";
+     }
+    intangibilityStateImage.src = `${baseImg}_${image}`;
+    }
+    
     static render() {
         // Get canvas and context
         const canvas = <HTMLCanvasElement>document.getElementById("gameCanvas");
@@ -108,15 +157,21 @@ class WorldRenderer {
     }
     static draw_rectangular_entity_and_it_s_outline(scaledEntity: Entity, drawingContext: CanvasRenderingContext2D) {
         this.draw_the_rectangular_entity(scaledEntity, drawingContext);
-        this.draw_the_outline(scaledEntity.edges, drawingContext);
+        this.draw_the_outline(scaledEntity.width, scaledEntity.height, scaledEntity.edges, drawingContext);
     }
     static draw_the_rectangular_entity(scaledEntity: Entity, drawingContext: CanvasRenderingContext2D) {
         drawingContext.fillStyle = scaledEntity.color;
         drawingContext.fillRect(scaledEntity.x, scaledEntity.y, scaledEntity.width, scaledEntity.height);
     }
-    static draw_the_outline(scaledEntityEdges: Edge[], drawingContext: CanvasRenderingContext2D) {
+    static draw_the_outline(
+      entityVisualWidth: number,
+      entityVisualHeight: number,
+      scaledEntityEdges: Edge[], drawingContext: CanvasRenderingContext2D) {
         drawingContext.strokeStyle = "black";
-        drawingContext.lineWidth = 2;
+        drawingContext.lineWidth = 1;
+        if(entityVisualWidth<=1|| entityVisualHeight <=1) {
+                  drawingContext.lineWidth = 0.25;
+        }
         drawingContext.beginPath();
 
         // slight black border for each entity to be able to tell each apart visually

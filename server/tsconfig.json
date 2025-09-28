@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "sourceMap": true,
     "noEmitOnError": true,
     "incremental": true,
     "tsBuildInfoFile": "./tsconfig.tsbuildinfo",
@@ -18,6 +19,6 @@
     "#root/*": ["*"],
   }
   },
-  "include": ["./"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "build"]
 }

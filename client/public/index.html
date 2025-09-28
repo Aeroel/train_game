@@ -6,25 +6,74 @@
   <link rel="icon" type="image/png" href="./images/Rails_and_stations_site_icon.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loop game client 000</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
 
 <div id="server_ip_choice_container">
-      <div id="description">Enter server ip and port you would like to connect to. For example, 6.6.6.1:337</div>
+      <div id="description">Enter the server ip and port you would like to connect to. For example, 127.0.0.1:3000</div>
       <div id="ip">
-        <input type="text" id="ip_address_input">
+        <input type="text" value ="127.0.0.1:3000" id="ip_address_field" autofocus>
         <input type="submit" id="ip_address_button" name="Go and connect">
         </div>
 </div>
   <div id="gameContainer">
     <canvas id="gameCanvas"></canvas>
+    
+    <!-- BEGIN CONSOLE STUFF { -->
+  
+    <div id="consoleContainer">
+      
+         <button id="showConsoleButton"><img id ="showConsoleButtonImage" src="./images/Show_Console.jpg"></button>
+         
+    <div id="console">
+      <button id="hideConsoleButton"><img id="hideConsoleButtonImage" src="./images/Hide_Console.jpg"></button>
+     
+      <div id="consoleMessagesContainer"></div>
+         <button id="scrollToConsoleTopButton">↑</button>
+    <button id="scrollToConsoleBottomButton">↓</button>
+
+      <div id="commandDiv">
+        <input id ="consoleCommandInputField" type="text">
+        <button id="consoleCommandSubmitButton">Enter</button>
+      </div>
+    </div> 
+      
+    </div>
+  
+    <!-- END CONSOLE STUFF }-->
+    
+    
     <div id="serverMessage"></div>
+    
+    <div id="coordinatesLocation"></div>
+    <div id="ping">Ping: ...</div>
+
+   <!-- BEGIN CONTROLS STUFF -->
+   
     <button id="fullscreenButton"><img id="fullscreenButtonIcon" src=".\images\Fullscreen_icon.jpg" alt="[FS]"></button>
+    
+    <button id="speedupButton"><img id="speedupStateImage" src="./images/Speedup_State_False.jpg"></button>
+   
+   
+    <div id = "zoomButtonsContainer">
+      <button id="zoomInButton"><img id="zoomInButtonImage" src="./images/Zoom_In.jpg"></button>
+    <button id="zoomOutButton"><img id="zoomOutButtonImage" src="./images/Zoom_Out.jpg"></button>
+    </div>
+    
+    
+    <div id ="intangibilityButtonContainer">
+          <button id="intangibilityButton"><img id="intangibilityStateImage" src="./images/Intangibility_State_False.jpg"></button>
+      
+    </div>
+    
+    
     <div id="joystickContainer">
       <div id="joystick"></div>
     </div>
+     <!-- END CONTROLS STUFF -->
+     
   </div>
   <script type="importmap">
     {
@@ -33,9 +82,7 @@
     }
   }
 </script>
-  <!-- <script type="module" src="./build/StartApp.js"></script> -->
-   <script type="module" src="./build/bundle.js"></script> 
-  </script>
+   <script type="module" src="./build/bundle.js?1234"></script> 
 </body>
 
 </html>

@@ -1,6 +1,7 @@
 .vs/
 
 server/package-lock.json
+server/player_save.json
 
 server/node_modules/
 client/node_modules/
@@ -8,8 +9,8 @@ client/node_modules/
 server/pnpm-lock.yaml
 client/pnpm-lock.yaml
 
-client/public/javascript/*
-!client/public/javascript/.gitkeep
+client/public/build/*
+!client/public/build/.gitkeep
 client/tsconfig.tsbuildinfo
 
 server/build/*

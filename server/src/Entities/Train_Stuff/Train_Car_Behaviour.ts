@@ -1,7 +1,7 @@
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { World } from "#root/World.js";
 import type { Station_Stop_Spot } from "../Station_Stop_Spot.js";
-import type { Train_Car, Train_Car_Movement_Direction } from "./Train_Car.js";
+import type { Train_Car, Train_Car_Motion } from "./Train_Car.js";
 
 export { Train_Car_Behaviour };
 
@@ -14,7 +14,7 @@ class Train_Car_Behaviour {
     lastSpot: null | Station_Stop_Spot = null;
     Is_Waiting_For_Five_Seconds: boolean  = false;
     Closing_Doors: boolean = false;
-    storedMovementDirection: Train_Car_Movement_Direction = null;
+    storedMotionDirection: Train_Car_Motion = null;
     pauseBegunAt = 0;
     constructor(ofThisCar: Train_Car) {
         if(!ofThisCar.hasTag("Train_Car")) {
@@ -40,7 +40,7 @@ class Train_Car_Behaviour {
         }
         if(this.Closing_Doors) {
         let A_Random_Representative_Door
-        if(this.car.currentRail.orientation==='vertical') {
+        if(this.car.orientation==='vertical') {
           A_Random_Representative_Door = this.car.Walls_And_Doors.Left_Side_Top_Door;
         } else {
           A_Random_Representative_Door = this.car.Walls_And_Doors.Top_Left_Door;
@@ -55,9 +55,9 @@ class Train_Car_Behaviour {
     }
 
     Pause_Movement() {
-        this.storedMovementDirection = this.car.currentMovementDirection;
+        this.storedMotionDirection = this.car.currentMovementMotion;
         this.pauseBegunAt = Date.now();
-        this.car.stopMovement();
+        this.car.train.stopMovement();
 
     }
 
@@ -68,7 +68,8 @@ class Train_Car_Behaviour {
     }
 
     Continue_Moving() {
-        this.car.setMovementDirection(this.storedMovementDirection);
+
+        this.car.train.setMovementMotion(this.storedMotionDirection);
         this.Is_Waiting_For_Five_Seconds = false;
     }
     Get_Touching_Stop_Spot() : null | Station_Stop_Spot {
@@ -80,8 +81,9 @@ class Train_Car_Behaviour {
             if (!entity.hasTag("Station_Stop_Spot")) {
                 return null;
 
-            }
-            if (!Collision_Stuff.areEntitiesTouching(this.car, entity)) {
+            } 
+            const collision = Collision_Stuff.Check_For_Collision(this.car, entity)
+            if (!collision) {
                 return null;
 
             }
@@ -91,7 +93,7 @@ class Train_Car_Behaviour {
     }
 
     Open_Doors() {
-        if(this.car.currentRail.orientation === 'horizontal') {
+        if(this.car.orientation === 'horizontal') {
             this.car.Walls_And_Doors.Top_Left_Door.open();
             this.car.Walls_And_Doors.Top_Right_Door.open();
             this.car.Walls_And_Doors.Bottom_Left_Door.open();
@@ -105,7 +107,7 @@ class Train_Car_Behaviour {
     }
 
     Close_Doors() {
-        if(this.car.currentRail.orientation === 'horizontal') {
+        if(this.car.orientation === 'horizontal') {
             this.car.Walls_And_Doors.Top_Left_Door.close();
             this.car.Walls_And_Doors.Top_Right_Door.close();
             this.car.Walls_And_Doors.Bottom_Left_Door.close();

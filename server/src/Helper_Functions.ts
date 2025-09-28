@@ -2,18 +2,37 @@ import { SocketDataStorage } from "#root/SocketDataStorage.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
 import type { Socket } from "socket.io";
+import { networkInterfaces } from "os";
+import type { Direction, Position, Face, Normal } from "#root/Type_Stuff.js";
 
 
 export { Helper_Functions };
 class Helper_Functions {
 
-    /* This does not do much conceptually. I store various pieces of data related to each socket in a separate container located inside SocketDataStorage. I also store the references to each socket inside SocketStorage (as opposed to using io methods to get sockets) mainly because I am not that familiar with io functions and it is kinda confusing using them. Using a separate SocketStorage container seems cleaner.
-    // Same goes for the insertion of helper functions, I then use them like socket.helperFunction to do some operation, like to get last move request time, for example or to indicate that such a request just occurred and the value should be set to be now to be recalled later when checking the cooldown time
-    */
 
-    static isNumber(num: number) {
-       return (typeof num === 'number' && isFinite(num));
+    static getLocalIP(): string {
+        const nets = networkInterfaces();
+        console.log(nets);
+        if (nets['wlan0']) {
+            return nets['wlan0'][1].address;
+        }
+        else if (nets['Wi-Fi']) {
+            return nets['Wi-Fi'][0].address;
+        } else if (nets['swlan0']) {
+            return nets['swlan0'][2].address;
+        } else if(nets["rmnet4"]) {
+          return nets["rmnet4"][1].address;
+         } else {
+            return "Couldn't get LAN IP";
+        }
     }
+
+  // Helper: squared distance between two positions
+  static distSq(a: Position, b: Position): number {
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    return dx * dx + dy * dy;
+  }
 
     static Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket: Socket) {
         SocketStorage.add(socket);
@@ -36,4 +55,21 @@ class Helper_Functions {
         const index = World.state.entities.indexOf(playerAssociatedWithSocket);
         World.state.entities.splice(index, 1);
     }
+    static getOppositeDirection(dir: Direction): Direction {
+      if(dir==="up") {
+         return "down";
+      }
+      if(dir==="down") {
+         return "up";
+      }
+      if(dir==="left") {
+         return "right";
+      }
+      if(dir==="right") {
+         return "left";
+        }
+        throw new Error(`Invalid dir ${dir}`)
+    }
+    
+
 }

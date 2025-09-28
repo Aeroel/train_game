@@ -2,25 +2,69 @@ export {
   Typed_Object_Keys,
   type Point,
   type Position,
+  type Size,
+  type Position_Percentage,
   type Direction,
+  type OpposingDirections,
   type Box,
+  type Box_With_Velocity,
+  type Rectangle,
+  type Rectangle_With_Velocity,
   type Orientation,
   type VisibleEdge,
   type VisibleEntity,
   type VirtualizedEntity,
   type CleanedEntity,
+  type End,
+  type End_Name,
+  type End_Name_Alternative,
+  type Connections,
+  type Entity_With_Ends_And_Orientation,
+  
 };
+export type { Collision_Info, Collision_Time_And_Normal, Normal, Face } from "#root/Collision_Stuff/Collision_Type_Stuff.js"
 
+import type { Base_Entity } from "#root/Entities/Base_Entity.js"
+export type Simplified_Enity = {
+  x: number, 
+  y: number,
+  width: number,
+  height: number,
+  vx: number,
+  vy: number
+}
 declare type Point = {
   x: number,
   y: number,
+}
+declare type Size = {
+  height: number,
+  width: number
 }
 declare type Position = {
   x: number,
   y: number
 }
-declare type Direction = "right" | "left" | "up" | "down"
+declare type Velocity = {
+  vx: number,
+  vy: number
+}
+declare type Position_Percentage = {
+  xPercentage: number,
+  yPercentage: number
+}
+declare type Direction = "right" | "left" | "up" | "down";
+declare type OpposingDirections =
+  | ["up", "down"]
+  | ["down", "up"]
+  | ["left", "right"]
+  | ["right", "left"];
+  
 declare type Box = { width: number, height: number } & Position;
+declare type Box_With_Velocity = Box & Velocity;
+// alias
+declare type Rectangle = Box;
+declare type Rectangle_With_Velocity = Box_With_Velocity;
 declare type Orientation = "vertical" | "horizontal"
 
 
@@ -44,7 +88,29 @@ declare type VisibleEntity = {
 declare type VirtualizedEntity = VisibleEntity;
 declare type CleanedEntity = VisibleEntity;
  
-// same as calling Object.keys but avoids as ... cast in random usages
+ 
+declare type End_Name = "firstEnd" | "secondEnd";
+declare type End_Name_Alternative =  "topEnd" | "bottomEnd" | "leftEnd" | "rightEnd";
+
+declare type End = {
+    name: End_Name,
+} & Position;
+
+declare type Connections = {
+    [EndName in End_Name]: End | null;
+}
+
+interface Entity_With_Ends_And_Orientation {
+  getOrientation(): Orientation;
+  getEnd(endName: End_Name | End_Name_Alternative): End;
+}
+
+/* same as calling Object.keys but avoids as ... cast in random usages
+example:
+for (const key of Object.keys(user)) {
+becomes
+for (const key of Typed_Object_Keys(user)) {
+*/
 function Typed_Object_Keys<T extends object>(obj: T): Array<keyof T> {
   return Object.keys(obj) as Array<keyof T>;
 }

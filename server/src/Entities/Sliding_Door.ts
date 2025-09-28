@@ -1,8 +1,9 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sensor } from "#root/Entities/Sensor.js"
 import { World } from "#root/World.js"
-import { Collision_Stuff } from "#root/Collision_Stuff.js"
-import { Entity_Forces } from "#root/Entities/Entity_Forces.js"
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
+import { Entity_Velocity } from "#root/Entities/Entity_Velocity.js"
+import {Helper_Functions } from "#root/Helper_Functions.js"
 
 export { Sliding_Door };
 
@@ -26,10 +27,11 @@ class Sliding_Door extends Base_Entity {
 
   };
   Door_Sliding_Speed = 0.01;
-  Sliding_Key = 'Sliding';
+  Sliding_Key = `Sliding_Door_${this.id}`;
   setXYWH(x: number, y: number, w: number, h: number) {
     super.setXYWH(x, y, w, h);
     this.Sensors_Init_Pos();
+    return this;
   }
   Sensors_Init_Pos() {
     World.addEntity(this.sensors.Door_Finished_Opening_Sensor)
@@ -78,13 +80,14 @@ class Sliding_Door extends Base_Entity {
   constructor(Sliding_Open_Direction: Door_Sliding_Open_Direction) {
     super();
     this.addTag('Sliding_Door');
-    this.forces.Init_A_Key_For_Each_Force(this.Sliding_Key);
+    this.velocity.x.Add_Component({key:this.Sliding_Key,value:0});
+    this.velocity.y.Add_Component({key:this.Sliding_Key,value:0});
 
     if (!Sliding_Door.Possible_Sliding_Open_Directions.includes(Sliding_Open_Direction)) {
       throw new Error(`Invalid opening direction "${Sliding_Open_Direction}". `);
     }
     this.Which_Direction_The_Door_Slides_When_Opening = Sliding_Open_Direction;
-    this.Which_Direction_The_Door_Slides_When_Closing = this.forces.Get_Opposite_Force_Name(this.Which_Direction_The_Door_Slides_When_Opening) as Door_Sliding_Closed_Direction;
+    this.Which_Direction_The_Door_Slides_When_Closing = Helper_Functions.getOppositeDirection(Sliding_Open_Direction) as Door_Sliding_Closed_Direction;
   }
   updateState() {
     if (this.getState() === 'opening') {
@@ -93,20 +96,26 @@ class Sliding_Door extends Base_Entity {
     else if (this.getState() === 'closing') {
       this.handleClosing();
     }
+
+
     super.updateState();
   }
+
   handleClosing() {
     if (!(this.getState() === 'closing')) {
       return;
     }
-    const Door_Finished_Closing = Collision_Stuff.areEntitiesTouching(this, this.sensors.Door_Finished_Closing_Sensor);
+    const Door_Finished_Closing = Collision_Stuff.Check_For_Collision(this, this.sensors.Door_Finished_Closing_Sensor);
     if (Door_Finished_Closing) {
       this.Handle_Door_Finished_Closing();
       return;
     }
-    let neededForces = this.forces.Get_No_Movement_Forces();
-    neededForces[this.Which_Direction_The_Door_Slides_When_Closing] = this.Door_Sliding_Speed;
-    this.forces.setAll(this.Sliding_Key, neededForces)
+   this.velocity.x.Remove_Component(this.Sliding_Key);
+   this.velocity.y.Remove_Component(this.Sliding_Key);
+
+this.velocity.directionToVelocity({key:this.Sliding_Key,direction:this.Which_Direction_The_Door_Slides_When_Closing, value:this.Door_Sliding_Speed})
+  
+
   }
   Handle_Door_Finished_Closing() {
     let neededX;
@@ -130,8 +139,8 @@ class Sliding_Door extends Base_Entity {
         neededY = this.getY()
         break;
     }
-    let neededForces = this.forces.Get_No_Movement_Forces();
-    this.forces.setAll(this.Sliding_Key, neededForces);
+   this.velocity.x.Remove_Component(this.Sliding_Key)
+   this.velocity.y.Remove_Component(this.Sliding_Key)
     this.setX(neededX);
     this.setY(neededY);
     this.setState("closed");
@@ -141,14 +150,14 @@ class Sliding_Door extends Base_Entity {
     if (!(this.getState() === 'opening')) {
       return;
     }
-    const Door_Finished_Opening = Collision_Stuff.areEntitiesTouching(this, this.sensors.Door_Finished_Opening_Sensor);
+    const Door_Finished_Opening = Collision_Stuff.Check_For_Collision(this, this.sensors.Door_Finished_Opening_Sensor);
     if (Door_Finished_Opening) {
       this.Handle_Door_Finished_Opening();
       return;
     }
-    let neededForces = this.forces.Get_No_Movement_Forces();
-    neededForces[this.Which_Direction_The_Door_Slides_When_Opening] = this.Door_Sliding_Speed;
-    this.forces.setAll(this.Sliding_Key, neededForces)
+   this.velocity.x.Remove_Component(this.Sliding_Key);
+   this.velocity.y.Remove_Component(this.Sliding_Key);
+  this.velocity.directionToVelocity({key:this.Sliding_Key,direction:this.Which_Direction_The_Door_Slides_When_Opening, value:this.Door_Sliding_Speed})
   }
   Handle_Door_Finished_Opening() {
     let neededX;
@@ -172,8 +181,8 @@ class Sliding_Door extends Base_Entity {
         neededY = this.getY()
         break;
     }
-    let neededForces = this.forces.Get_No_Movement_Forces();
-    this.forces.setAll(this.Sliding_Key, neededForces);
+    this.velocity.x.Remove_Component(this.Sliding_Key)
+    this.velocity.y.Remove_Component(this.Sliding_Key)
     this.setX(neededX);
     this.setY(neededY);
     this.setState("opened");

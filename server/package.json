@@ -1,12 +1,30 @@
 {
     "type": "module",
     "dependencies": {
-        "@types/express": "^5.0.2",
-        "@types/node": "^22.15.19",
-        "express": "^4.21.2",
-        "socket.io": "^4.8.1"
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.5.2",
+        "colors": "^1.4.0",
+        "express": "^5.1.0",
+        "socket.io": "^4.8.1",
+        "source-map-support": "^0.5.21",
+        "tsconfig-paths": "^4.2.0"
     },
     "imports": {
         "#root/*": "./build/*"
+    },
+    "devDependencies": {
+        "ts-node": "^10.9.2",
+        "tsx": "^4.20.5",
+        "typescript": "^5.9.2"
+    },
+    "scripts": {
+        "test": "ts-node -r tsconfig-paths/register build/Tests/runTests.js",
+        "devtsc": "tsc --watch --noEmit",
+        "devserver": "pnpm run devservertsx",
+        "devservertsx": "tsx watch --clear-screen=false src/startThisToStartTheGameServer.ts",
+        "devservernode": "node --watch --enable-source-maps build/startThisToStartTheGameServer.js",
+        "devserverprof": "pnpm run devservertsxprof",
+        "devservertsxprof": "tsx watch --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
+        "devservernodeprof": "node --prof --watch --enable-source-maps build/startThisToStartTheGameServer.js"
     }
 }

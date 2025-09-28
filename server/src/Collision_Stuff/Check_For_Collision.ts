@@ -1,0 +1,19 @@
+import type { Collision_Info } from "#root/Type_Stuff.js";
+import type { Base_Entity } from "#root/Entities/Base_Entity.js";
+import { Sweep } from "#root/Collision_Stuff/Collision_Checking_Methods/Sweep/Sweep.js"
+
+const currentMethod: "Sweep"  = "Sweep";
+
+export function Check_For_Collision(a: Base_Entity, b: Base_Entity): Collision_Info | null {
+   let collInfo: Collision_Info | null = null;
+   switch(currentMethod) {
+       case "Sweep":
+         collInfo =  Sweep.Check_For_Collision(a, b)
+        break;
+
+   }
+   if(collInfo && a.hasTag("Player")) {
+    b.markCollisionWithColor();
+   }
+   return collInfo;
+}

@@ -1,11 +1,10 @@
-import { World } from "#root/World.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js"
 import type { Player } from "#root/Entities/Player.js";
 import {Complicated_Pre_Emission_Functions} from "#root/World_State_Emission_Stuff/Complicated_Pre_Emission_Functions.js";
-import {type VisibleEdge,
-type VisibleEntity,
-type VirtualizedEntity,
-type CleanedEntity} from "#root/Type_Stuff.js";
+import type { VisibleEdge,
+VisibleEntity,
+VirtualizedEntity,
+CleanedEntity} from "#root/Type_Stuff.js";
 
 
 export { PreEmitStuff }
@@ -18,8 +17,8 @@ class PreEmitStuff {
   static virtualWidth = this.someArbitraryNumber;
   static virtualHeight = this.anotherArbitraryNumber;
 
-  static get_visible_to_player_entities_and_virtual_width_and_virtual_height_and_hide_all_the_real_world_entities_xy_coordinates_by_returning_virtual_ones_instead(player: Player) {
-    const visibleEntities = this.getVisibleEntities(player)
+  static get_visible_to_player_entities_and_virtual_width_and_virtual_height_and_hide_all_the_real_world_entities_xy_coordinates_by_returning_virtual_ones_instead(player: Player, entities: Base_Entity[]) {
+    const visibleEntities = this.getVisibleEntities(player, entities)
     const virtualizedEntities = this.virtualizeXYToAvoidExposingRealWorldXY(visibleEntities, player, PreEmitStuff.virtualWidth, PreEmitStuff.virtualHeight);
     const entitiesWithOnlyProperties = this.onlyIncludeEntityPropertiesThatClientNeeds(virtualizedEntities);
     return {
@@ -29,6 +28,8 @@ class PreEmitStuff {
       virtualWidth: this.virtualWidth,
     };
   }
+  
+  
   static onlyIncludeEntityPropertiesThatClientNeeds(entities: VirtualizedEntity[]) : CleanedEntity[] {
     const cleanedEntities: CleanedEntity[] = [];
     entities.forEach(entity => {
@@ -52,13 +53,13 @@ class PreEmitStuff {
     })
     return cleanedEntities;
   }
-  static getVisibleEntities(player: Player) {
+  static getVisibleEntities(player: Player, entities: Base_Entity[]) {
     const visibleEntities: VisibleEntity[] = new Array();
-    World.getCurrentEntities().forEach((entity: Base_Entity) => {
+      entities.forEach((entity: Base_Entity) => {
       const visiblePortion = PreEmitStuff.getVisiblePortion(player, entity);
       const visibleEdges = PreEmitStuff.getVisibleEdges(player, entity);
       
-      const entityIsVisible = visiblePortion;
+      const entityIsVisible =  visiblePortion;
       if (!entityIsVisible) {
         return;
       }

@@ -4,14 +4,13 @@
         "socket.io-client": "^4.8.1"
     },
     "devDependencies": {
-        "ts-loader": "^9.5.2",
-        "webpack": "^5.99.9",
-        "webpack-cli": "^6.0.1",
-        "webpack-dev-server": "^5.2.1"
+        "live-server": "^1.2.2",
+        "ts-loader": "^9.5.4",
+        "webpack": "^5.101.3",
+        "webpack-cli": "^6.0.1"
     },
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "develop": "webpack-dev-server --mode development",
-        "build": "webpack --mode production"
+        "devwebpack": "webpack --watch --mode development",
+        "devliveserver": "live-server public/ --no-browser"
     }
 }

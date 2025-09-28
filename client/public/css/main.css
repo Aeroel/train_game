@@ -1,0 +1,131 @@
+@import url('/css/console.css');
+
+body {
+  background-color: green !important;
+  color: white !important;
+}
+ /* Main game container */
+ #gameContainer {
+    position: relative;
+    width: 90vw;
+    height: 90vh;
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Canvas fills the container */
+  #gameCanvas {
+    background-color: blue;
+    width: 100vw;
+    height: 100vh;
+  }
+
+
+    /* serverMessage box positioned relative to canvas top-left */
+  #serverMessage {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+  }
+  
+      #server_ip_choice {
+    background-color: green;
+  }
+  
+    /* coordinatesLocation box positioned relative to canvas top-left, below serverMessage*/
+  #coordinatesLocation {
+    position: absolute;
+    top: 40px;
+    left: 10px;
+    z-index: 10;
+  }
+  /* ping is below coords*/
+  #ping {
+    position: absolute;
+    top: 130px;
+    left: 10px;
+    z-index: 10;
+  }
+
+  /* Fullscreen button positioned at canvas top-right */
+  #fullscreenButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+  }
+  
+  /* below fs button */
+  #speedupButton {
+    position: absolute;
+    top: 80px;
+    right: 20px;
+    z-index: 10;
+  }
+  #speedupStateImage {
+    width:40px;
+    height:40px;
+  }
+  /* left of fs button*/
+  #intangibilityButton {
+    position: absolute;
+    top: 10px;
+    right: 80px;
+    z-index: 10;
+  }
+  #intangibilityStateImage {
+    width:40px;
+    height:40px;
+  }
+  
+    #zoomInButton {
+    position: absolute;
+    top: 150px;
+    right: 20px;
+    z-index: 10;
+  } 
+  #zoomOutButton {
+    position: absolute;
+    top: 200px;
+    right: 20px;
+    z-index: 10;
+  }
+  #zoomInButtonImage {
+    width:50px;
+    height:50px;
+  }
+  #zoomOutButtonImage {
+    width:50px;
+    height:50px;
+  }
+
+  /* Joystick positioned relative to canvas bottom-right */
+  #joystickContainer {
+    display: none;
+    position: absolute;
+    bottom: 65px;
+    left: 80px;
+    width: 80px;
+    height: 80px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    z-index: 10;
+    touch-action: none;
+    user-select: none;
+  }
+
+  /* Joystick inner circle */
+  #joystick {
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+

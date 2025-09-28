@@ -14,7 +14,10 @@ class KeyboardControlsSetup {
         document.addEventListener("keydown", event => {
             // Iterate through the mapping to find a match for the pressed key
             for (const [controlCommandName, keyNames] of Object.entries(controlCommandsToKeyNamesMapping)) {
-
+                if(event.code === "KeyQ") {
+                    App.playerWantsToMoveFaster = !App.playerWantsToMoveFaster;
+                    break;
+                }
                 if (keyNames.includes(event.code)) {
                     App.movementControlCommands.add(controlCommandName); // Add the control name to the active keys
                     break; // Exit the loop once a match is found

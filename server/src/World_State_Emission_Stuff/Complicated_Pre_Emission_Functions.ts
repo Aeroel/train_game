@@ -1,9 +1,9 @@
 import {PreEmitStuff} from "#root/World_State_Emission_Stuff/PreEmitStuff.js";
 import type {Base_Entity} from "#root/Entities/Base_Entity.js";
-import {type VisibleEdge,
-type VisibleEntity,
-type VirtualizedEntity,
-type CleanedEntity } from "#root/Type_Stuff.js";
+import type { VisibleEdge,
+VisibleEntity,
+VirtualizedEntity,
+CleanedEntity } from "#root/Type_Stuff.js";
 
 
 export {Complicated_Pre_Emission_Functions}

@@ -1,11 +1,17 @@
-import { Collision_Stuff } from "#root/Collision_Stuff.js";
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js"
+import { World_Tick} from "#root/World_Tick.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
-import { Entity_Forces, type Force_Name as Force_Name } from "#root/Entities/Entity_Forces.js";
 import { SocketStorage } from "#root/SocketStorage.js";
-import type { Direction, Orientation, Position } from "#root/Type_Stuff.js";
-import { World } from "#root/World.js";
+import { Helper_Functions} from "#root/Helper_Functions.js"
+import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Collision_Resolution_Methods/Pushable_Entity_With_Unpushable_Entities.js"
+
 import { log } from "console";
 import type { Socket } from "socket.io";
+import type { Position } from "#root/Type_Stuff.js";
+
 export { Player };
 class Player extends Base_Entity {
   controls = {
@@ -14,12 +20,22 @@ class Player extends Base_Entity {
     up: false,
     down: false,
   };
-  standardMovementSpeed = 0.12;
+  lastSaveTime=0;
+  speedUp = false;
+  intangibility = false;
+//  percentageOnPlanet = {xPercentage:11,yPercentage:11};
+ normalSpeedForBothAxes=0.125;
+ spedUpSpeedForBothAxes=4.0;
+ speedX= this.normalSpeedForBothAxes;
+ speedY= this.normalSpeedForBothAxes;
   socketId: Socket["id"] = "none";
+  
   constructor() {
     super();
     this.addTag("Player");
     this.addTag("Can_Ride_Train");
+    this.addTag("Can_Collide_With_Wall")
+    this.addTag("Can_Collide_With_Sliding_Door")
   }
   setVisionRange(visionRange: number) {
     this.visionRange = visionRange;
@@ -30,58 +46,86 @@ class Player extends Base_Entity {
   getSocket() {
     return SocketStorage.find(socket => socket.id === this.socketId);
   }
+  swapSpeedUp() {
+    this.speedUp = !this.speedUp;
+  }
+  swapIntangibility() {
+    this.intangibility = !this.intangibility;
+  }
+  
   updateState() {
-    if (this.controls.right) {
-      this.forces.set("Player_Controls", "right", this.standardMovementSpeed);
+    if(this.speedUp) {
+      this.speedX = this.spedUpSpeedForBothAxes;
+      this.speedY = this.spedUpSpeedForBothAxes;
+    } else {
+      this.speedX = this.normalSpeedForBothAxes;
+      this.speedY = this.normalSpeedForBothAxes;
     }
-    if (this.controls.left) {
-      this.forces.set("Player_Controls", "left", this.standardMovementSpeed);
+
+    if (this.controls.right) {
+      this.velocity.x.Add_Component({key:"Player_Controls", value:this.speedX});
+    } else if (this.controls.left) {
+      this.velocity.x.Add_Component({key:"Player_Controls",value: -this.speedX});
     }
     if (this.controls.up) {
-      this.forces.set("Player_Controls", "up", this.standardMovementSpeed);
+      this.velocity.y.Add_Component({key:"Player_Controls", value:-this.speedY});
     }
-    if (this.controls.down) {
-      this.forces.set("Player_Controls", "down", this.standardMovementSpeed);
+    else if (this.controls.down) {
+      this.velocity.y.Add_Component({key:"Player_Controls", value:this.speedY});
     }
-    this.Collision_Manager();
-    super.updateState();
+
+  const now = Date.now();
+   const timeToSave = now - this.lastSaveTime >= 1000;
+  if (timeToSave) {
+    this.saveStateToFile();
+    this.lastSaveTime = now;
   }
-  Collision_Manager() {
-    const player = this;
-    const collisionDirs = {right:false, left: false, up: false, down: false};
-    World.getCurrentEntities().forEach((entity: Base_Entity) => {
-      if (player === entity) {
-        return;
-      }
-      const Can_Collide = (entity.hasTag("Wall") || entity.hasTag("Sliding_Door"));
-      if (!Can_Collide) {
-        return;
-      }
-      const wall_or_door = entity;
 
-      const Answer = Collision_Stuff.Did_A_Collision_Occur_And_What_Is_The_Position_Just_Before_Collision(player, wall_or_door);
-      if (Answer.Collision_Occurred === false) {
-        return;
-      }
-      
-      const playerSide = Collision_Stuff.Which_Side_Of_Entity_Is_Facing_Another_Entity(player, wall_or_door);
-      const playerCollisionDirection = { "right": "right", "left": "left", "bottom": "down", "top": "up" }[playerSide] as Direction;
-      collisionDirs[playerCollisionDirection] = true;
-      const neededKeys = player.forces.Get_Keys_Of_Force_Components_Of_A_Force_That_Are_Not_Present_In_Another_Entity_Forces(playerCollisionDirection, wall_or_door.forces);
-
-      player.forces.set(
-        `Pushback_${Math.random()}`,
-        player.forces.Get_Opposite_Force_Name(playerCollisionDirection),
-        player.standardMovementSpeed);
-
-      neededKeys.forEach(key => {
-        const value = player.forces.Get_By_Key(key, playerCollisionDirection);
-        player.forces.set(key, playerCollisionDirection, 0);
-        player.forces.set(key, player.forces.Get_Opposite_Force_Name(playerCollisionDirection), value);
-      })
-
-      return;
-
-    })
   }
+
+collisionManager() {
+ Pushable_Entity_With_Unpushable_Entities.resolve({pushableEntity: this});
+}
+
+
+
+
+  saveStateToFile() {
+    const savePath = path.resolve("player_save.json");
+
+  const data = {
+    x: this.x,
+    y: this.y,
+    visionRange: this.visionRange,
+ //   percentageOnPlanet: this.getPositionRelativeToPlanet(),
+  };
+
+  try {
+    fs.writeFileSync(savePath, JSON.stringify(data));
+  } catch (err) {
+    console.error("Failed to save player position:", err);
+  }
+  }
+
+  readSavedState() {
+  const savePath = path.resolve("player_save.json");
+
+  if (!fs.existsSync(savePath)) {
+    console.warn("No save file found. Starting with default position.");
+    return;
+  }
+
+  try {
+    const file = fs.readFileSync(savePath, "utf-8");
+    const data = JSON.parse(file);
+    this.visionRange = data.visionRange;
+  //  this.percentageOnPlanet = data.percentageOnPlanet;
+//    this.setPositionRelativeToPlanet(this.percentageOnPlanet);
+  } catch (err) {
+    console.error("Failed to read player position:", err);
+  }
+}
+
+
+
 }
