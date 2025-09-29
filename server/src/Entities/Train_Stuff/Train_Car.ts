@@ -194,8 +194,8 @@ motionsDirections: Train_Car_Motions_Directions = {
     }
         wall = switchWallCollision.entityB as Rail_Switch_Wall;
         collisionNormal = switchWallCollision.normal;
-    destinationX = null;
-    destinationY = null;
+    destinationX = this.x;
+    destinationY = this.y;
     if(collisionNormal.x === -1) {
       destinationX = wall.x - this.width;
       destinationY = wall.y

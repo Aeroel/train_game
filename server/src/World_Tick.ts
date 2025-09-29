@@ -92,7 +92,7 @@ static getTickIdStr() {
    const averageMs= totalMs / count;
    let msg = `Tick Operations: `
    let i=0;
-   for (const e of stopwatch.getMeasurements()) {
+   for (const e of stopwatch.getMeasurements().sort((a, b) => b.ms - a.ms)) {
      msg = `${msg} 
      ${i}. ${e.tags[2]} (${getPercentOfWhole(e.ms, totalMs)}%, ${e.ms}ms)
      `;
