@@ -113,7 +113,7 @@ alignCars(collision: Collision_Info) {
 
     // Apply the delta to every car and update their internals
     for (const car of this.cars) {
-        car.teleportCarContentsAndPassengersByDelta(deltaX, deltaY);
+        car.moveCarContentsAndPassengersByDelta(deltaX, deltaY);
         car.setXY(car.x + deltaX, car.y + deltaY);
     }
 }

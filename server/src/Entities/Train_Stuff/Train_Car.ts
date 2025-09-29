@@ -162,15 +162,60 @@ motionsDirections: Train_Car_Motions_Directions = {
   
    
   switchHandler() {
-    const switchWallCollision = this .Get_Closest_Switch_Wall_Collision();
+    let switchWallCollision = this .Get_Closest_Switch_Wall_Collision();
     if(!switchWallCollision) {
       return;
     }
-        const wall = switchWallCollision.entityB as Rail_Switch_Wall;
-
-    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall)
-
+        let wall = switchWallCollision.entityB as Rail_Switch_Wall;
+        let collisionNormal = switchWallCollision.normal;
+    let destinationX: number | null = null;
+    let destinationY: number | null = null;
+    if(collisionNormal.x === -1) {
+      destinationX = wall.x - this.width;
+      destinationY = wall.y
+    } else if (collisionNormal.x === 1){
+      destinationX = wall.x + wall.width;
+      destinationY = wall.y
+    } else if (collisionNormal.y === -1){
+      destinationY = wall.y - this.height;
+      destinationX = wall.x
+    } else if (collisionNormal.y === 1){
+      destinationY = wall.y - this.height;
+      destinationX = wall.x
+    }
+    My_Assert.that(destinationX !== null && destinationY !== null);
     
+    this.moveCarAndItsContentsAndPassengers({x: destinationX, y:destinationY});
+    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall);
+    
+ // second time. I am not making this a loop for simplicity. If I did, the faster the train, the more sensor walls it might hits per tick. 
+    switchWallCollision = this .Get_Closest_Switch_Wall_Collision();
+    if(!switchWallCollision) {
+      return;
+    }
+        wall = switchWallCollision.entityB as Rail_Switch_Wall;
+        collisionNormal = switchWallCollision.normal;
+    destinationX = null;
+    destinationY = null;
+    if(collisionNormal.x === -1) {
+      destinationX = wall.x - this.width;
+      destinationY = wall.y
+    } else if (collisionNormal.x === 1){
+      destinationX = wall.x + wall.width;
+      destinationY = wall.y
+    } else if (collisionNormal.y === -1){
+      destinationY = wall.y - this.height;
+      destinationX = wall.x
+    } else if (collisionNormal.y === 1){
+      destinationY = wall.y - this.height;
+      destinationX = wall.x
+    }
+    My_Assert.that(destinationX !== null && destinationY !== null);
+    
+    this.moveCarAndItsContentsAndPassengers({x: destinationX, y:destinationY});
+    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall);
+    
+    // add as many more layers if you want train to move faster.
     
   }
   
@@ -266,7 +311,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
 }
 
 
-  teleportAndBringPassengers(newPos: Position) {
+  moveCarAndItsContentsAndPassengers(newPos: Position) {
     My_Assert.that(
       this.currentMovementMotion !== null, );
     My_Assert.that(
@@ -279,7 +324,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     this.x = newPos.x;
     this.y = newPos.y;
 
-   this.teleportCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
+   this.moveCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
    
     if(this.motionsDirections["forwards"].includes('up') || this.motionsDirections["forwards"].includes('down')) {
     return carDeltaY;
@@ -288,12 +333,15 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     }
   }
   
-  teleportCarContentsAndPassengersByDelta(dx: number, dy: number) {
+  moveCarContentsAndPassengersByDelta(dx: number, dy: number) {
+
     const allThingsOnCar = this.getCarContentsAndPassengers()
     const collidableParts = allThingsOnCar.filter(e=>e.hasTag("Wall") || e.hasTag("Sliding_Door"));
         const carPassengers = allThingsOnCar.filter(e=>{
       return e.hasTag('Can_Ride_Train')
     });
+    /* other parts can be something like... small parts of doors and so on. I think they probably have their own propagation from the walls and doors, I dunno. Maybe I can add a function moveByDX and moveByDY that willcalso automatically move entity parts?
+    */
     const otherParts= allThingsOnCar.filter(e=>{
       return !(e.hasTag("Can_Ride_Train")) 
       && !(e.hasTag("Wall"))
@@ -302,8 +350,10 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
      const addVX = dx / World_Tick.deltaTime;
       const addVY = dy / World_Tick.deltaTime;
       
+          const playersThatNeedResolution = new Set<Base_Entity>();
+                const tempKey = `${Math.random()}`;
     for (const entity of collidableParts) {
-      const tempKey = `${Math.random()}`;
+
      entity.velocity.x.Add_Component({
        key: tempKey,
        value: addVX
@@ -312,12 +362,30 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
        key: tempKey,
        value: addVY
      })
-     const collisions = Collision_Stuff.findCollisions(entity, other => other.hasTag("Can_Ride_Train")).filter(col=>!(carPassengers.includes(col.entityB)))
-      for(const coll of collisions) {
+     /* we exclude passengers because they don't need to be pushed by car walls due to submovement. the reason for that is that they move with the car and its walls and the only way they can collide with a wall is if they move towards it which is resolved in player.collisionManager(). But outside players need to be made aware of this movement due to the fact that it is a subtick movement. */
+     const collisions = Collision_Stuff.findCollisions(entity, other => other.hasTag("Player") && !(carPassengers.includes(other)));
 
-     //   Pushable_Entity_With_Unpushable_Entities.resolveCollision(coll)
+      for(const coll of collisions) {
+        // entityB because it is the found entity compared against entityA (the check originator)
+        const player = coll.entityB;
+      
+        playersThatNeedResolution.add(player);
+          
       }
-      entity.velocity.x.Remove_Component({
+    
+    }
+
+      for (const player of playersThatNeedResolution) {
+          player.collisionManager();
+      }
+    for (const entity of carPassengers) {
+      const newX = entity.x + dx;
+      const newY = entity.y + dy;
+      entity.setXY(newX, newY);
+
+    }
+    for (const entity of collidableParts) {
+            entity.velocity.x.Remove_Component({
         key:tempKey
       })
       entity.velocity.y.Remove_Component({
@@ -327,13 +395,6 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
         const newX = entity.x + dx;
       const newY = entity.y + dy;
       entity.setXY(newX, newY);
-    }
-
-    for (const entity of carPassengers) {
-      const newX = entity.x + dx;
-      const newY = entity.y + dy;
-      entity.setXY(newX, newY);
-
     }
     for (const entity of otherParts) {
       const newX = entity.x + dx;

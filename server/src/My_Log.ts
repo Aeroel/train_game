@@ -12,17 +12,28 @@ export function log(...args: any) {
   }
   console.log(...args);
 }
-export function newLog({logCategory, message} : {logCategory: Log_Category, message: string}) {
+export function newLog({logCategory = '', logCategories = [], message} : {logCategory?: Log_Category, logCategories?: Log_Category[], message: string}) {
   if (!newLoggingEnabled) {
     return;
   }
-  if(!categoryExists(logCategory)){
+if(logCategories.length===0) {
+    if(!categoryExists(logCategory)){
     throw new Error(`Cannot find category '${logCategory}' in the list of possible log categories`)
   } 
   if(!categoryHasLoggingEnabled(logCategory)) {
     return;
   }
-    console.log(`[${logCategory}]: ${message}`);
+} else if(logCategories.length > 0) {
+  for (const lc of logCategories) {
+      if(!categoryExists(lc)){
+    throw new Error(`Cannot find category '${lc}' in the list of possible log categories`)
+  } 
+  if(!categoryHasLoggingEnabled(lc)) {
+    return;
+  }
+  }
+}
+    console.log(`[${logCategory}] ${message}`);
 }
 
 
