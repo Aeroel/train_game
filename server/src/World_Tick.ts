@@ -47,36 +47,73 @@ static getTickIdStr() {
   return `#${World_Tick.tickId}`
 }
   static simulateNextMoment() {
-    Stopwatch.start();
-   Stopwatch.beginMeasure({tags:["World_Tick",
+    const stopwatch = new Stopwatch();
+   stopwatch.beginMeasure({tags:["World_Tick",
    `${World_Tick.getTickIdStr()}`, "Next_Moment_Of_All_Entities"]});
     World_Tick.Next_Moment_Of_All_Entities();
-   Stopwatch.endMeasure();
+   stopwatch.endMeasure();
    
-      Stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Collision_Resolutor"]});
+      stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Collision_Resolutor"]});
     World_Tick.Collision_Resolutor();
-   Stopwatch.endMeasure();
+   stopwatch.endMeasure();
 
  
-      Stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Update_Positions_Of_All_Entities"]});
+      stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Update_Positions_Of_All_Entities"]});
     World_Tick.Update_Positions_Of_All_Entities();
-   Stopwatch.endMeasure();
+   stopwatch.endMeasure();
    
    
-      Stopwatch.beginMeasure({tags:["World_Tick",   `${World_Tick.getTickIdStr()}`, "Clean_Up"]});
+      stopwatch.beginMeasure({tags:["World_Tick",   `${World_Tick.getTickIdStr()}`, "Clean_Up"]});
     World_Tick.Clean_Up();
-    Stopwatch.endMeasure();
+    stopwatch.endMeasure();
 
-   Stopwatch.beginMeasure({tags:["World_Tick",   `${World_Tick.getTickIdStr()}`, "Emit_To_Players"]});
+   stopwatch.beginMeasure({tags:["World_Tick",   `${World_Tick.getTickIdStr()}`, "Emit_To_Players"]});
     World_Tick.Emit_To_Players();
-    Stopwatch.endMeasure();
+    stopwatch.endMeasure();
 
   }
 
   static Next_Moment_Of_All_Entities() {
+
+   const nextMomentMainTags = ["World_Tick",
+   `${World_Tick.getTickIdStr()}`,
+  "Next_Moment_Of_All_Entities"];
+  const measures: {entityClassName: string, ms: number}[] =[];
+      const stopwatch = new Stopwatch();
+    
     World.getCurrentEntities().forEach(entity => {
+      stopwatch.beginMeasure({tags:[...nextMomentMainTags, `${entity.id}` ]})
       entity.updateState();
+      measures.push({entityClassName: entity.constructor.name, ms: stopwatch.lap()})
     });
+    
+    let maxTime = 0;
+    let slowestEntity: string | null = null;
+    
+    for (const measure of measures) {
+        if (measure.ms > maxTime) {
+            maxTime = measure.ms;
+            slowestEntity = measure.entityClassName;
+        }
+    }
+    
+     const totalMs = measures.reduce((sum, measure) => sum + measure.ms, 0);
+    const averageMs = measures.length > 0 ? totalMs / measures.length : 0;
+    
+    const slowestInfo = slowestEntity 
+        ? `Slowest entity: ${slowestEntity} (${maxTime} ms)`
+        : "No entities to measure";
+    
+    const averageInfo = `Average ms per entity: ${averageMs}`;
+    newLog({
+      logCategory:"World_Tick",
+      message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${averageInfo}`
+    })
+    newLog({
+      logCategory:"World_Tick",
+      message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${slowestInfo}`
+    })
+
   }
   static Collision_Resolutor() {
         World.getCurrentEntities().forEach(entity => {

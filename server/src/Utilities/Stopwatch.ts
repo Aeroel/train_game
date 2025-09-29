@@ -1,29 +1,29 @@
 import {newLog} from "#root/My_Log.js"
 
 export class Stopwatch {
-  static startTime=0;
-  static totalLapsTime=0;
-  static tags: string[] = [];
-  static start() {
+   startTime=0;
+   totalLapsTime=0;
+   tags: string[] = [];
+   constructor() {
     this.totalLapsTime = 0;
   }
-   static beginMeasure({tags}: {tags: string[]}) {
+    beginMeasure({tags}: {tags: string[]}) {
     this.startTime = this.getCurrentTimeInMs();
      this.tags = tags;
   }
-  static lap() {
+   lap() {
     const currTime = this.getCurrentTimeInMs();
     const elapsed = currTime - this.startTime;
     this.totalLapsTime += elapsed;
     return elapsed;
   }
-  static getCurrentTimeInMs() {
+   getCurrentTimeInMs() {
     return Date.now();
   }
-  static total() {
+   total() {
     return this.totalLapsTime;
   }
-  static endMeasure() {
+   endMeasure() {
     let tagsStr = ``;
    for(const tag of this.tags) {
      if(tag===this.tags[0]) continue;
