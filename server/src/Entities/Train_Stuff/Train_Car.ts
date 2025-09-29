@@ -321,8 +321,7 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     const carDeltaX = newPos.x - this.x;
     const carDeltaY = newPos.y - this.y;
 
-    this.x = newPos.x;
-    this.y = newPos.y;
+    this.setXY(newPos.x, newPos.y);
 
    this.moveCarContentsAndPassengersByDelta(carDeltaX, carDeltaY);
    
@@ -337,6 +336,8 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
 
     const allThingsOnCar = this.getCarContentsAndPassengers()
     const collidableParts = allThingsOnCar.filter(e=>e.hasTag("Wall") || e.hasTag("Sliding_Door"));
+       
+       
         const carPassengers = allThingsOnCar.filter(e=>{
       return e.hasTag('Can_Ride_Train')
     });

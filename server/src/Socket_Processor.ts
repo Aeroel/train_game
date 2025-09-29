@@ -1,6 +1,7 @@
 export { Socket_Processor }
 import type { Undesirable_Hardcoded_Socket_Type } from "#root/Socket_Type_Stuff.js" 
 import { Socket_Functions } from "./Socket_Functions.js";
+import { My_Assert } from "#root/My_Assert.js";
 import { SocketDataStorage } from "#root/SocketDataStorage.js";
 import { Settings } from "#root/Settings.js";
 import { Player } from "./Entities/Player.js";
@@ -84,7 +85,13 @@ static consoleStuff(socket:Undesirable_Hardcoded_Socket_Type, player: Player){
     static onControl(socket: Undesirable_Hardcoded_Socket_Type) {
 
         socket.on("controlKeys", (receivedControlKeys: Control_Keys) => {
-            const playerAssociatedWithSocket: Player = World.state.entities.find((entity: Player) => entity.socketId === socket.id);
+            const playerAssociatedWithSocket: Player = <Player>World.getEntities().find((entity) => {
+              if(!(entity.hasTag("Player"))) {
+                return false;
+              }
+              const player = <Player>entity;
+              return player.socketId === socket.id});
+              My_Assert.that(playerAssociatedWithSocket !== undefined);
             this.movement(playerAssociatedWithSocket, receivedControlKeys.movement, socket);
 
             this.speedUp(playerAssociatedWithSocket, receivedControlKeys.speedUp);

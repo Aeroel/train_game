@@ -26,6 +26,7 @@ class Sliding_Door extends Base_Entity {
     Door_Finished_Closing_Sensor: new Sensor()
 
   };
+  addedSensorsToWorld = false;
   Door_Sliding_Speed = 0.01;
   Sliding_Key = `Sliding_Door_${this.id}`;
   setXYWH(x: number, y: number, w: number, h: number) {
@@ -33,10 +34,18 @@ class Sliding_Door extends Base_Entity {
     this.Sensors_Init_Pos();
     return this;
   }
+  setXY(x:number,y:number) {
+    super.setXY(x,y);
+    this.Sensors_Init_Pos();
+    return this;
+  }
+
   Sensors_Init_Pos() {
+  if(!(this.addedSensorsToWorld)) { 
     World.addEntity(this.sensors.Door_Finished_Opening_Sensor)
     World.addEntity(this.sensors.Door_Finished_Closing_Sensor)
-
+    this.addedSensorsToWorld= true;
+  }
     let Finished_Opening_X: number;
     let Finished_Opening_Y: number;
 

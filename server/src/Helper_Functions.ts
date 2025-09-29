@@ -1,6 +1,8 @@
 import { SocketDataStorage } from "#root/SocketDataStorage.js";
+import { My_Assert } from "#root/My_Assert.js";
 import { SocketStorage } from "#root/SocketStorage.js";
 import { World } from "#root/World.js";
+import type { Player } from "#root/Entities/Player.js";
 import type { Socket } from "socket.io";
 import { networkInterfaces } from "os";
 import type { Direction, Position, Face, Normal } from "#root/Type_Stuff.js";
@@ -49,11 +51,16 @@ class Helper_Functions {
         SocketDataStorage.removeSocketDataSlot(socket);
     }
     static removePlayerEntityFromTheWorld(socket: Socket) {
-        const playerAssociatedWithSocket = World.state.entities.find((entity) => {
-            return entity.socketId === socket.id;
+        const playerAssociatedWithSocket = World.getEntities().find((entity) => {
+          if(!entity.hasTag("Player")) {
+            return false;
+          }
+          const player  = <Player>entity;
+            return player.socketId === socket.id;
         });
-        const index = World.state.entities.indexOf(playerAssociatedWithSocket);
-        World.state.entities.splice(index, 1);
+        My_Assert.that(playerAssociatedWithSocket !== undefined)
+        const index = World.getEntities().indexOf(playerAssociatedWithSocket);
+        World.removeEntity(index, 1);
     }
     static getOppositeDirection(dir: Direction): Direction {
       if(dir==="up") {

@@ -28,6 +28,10 @@ static tick() {
   newLog({logCategory:
   "World_Tick",message:`[#${World_Tick.tickId}] Tick starting`}
     )
+  newLog({logCategory:
+  "World_Tick",message:`[#${World_Tick.tickId}] Count entities: ${World.getCurrentEntities().length}`}
+    )
+  
     
     const startTime = Date.now();
 
@@ -104,7 +108,7 @@ static getTickIdStr() {
         ? `Slowest entity: ${slowestEntity} (${maxTime} ms)`
         : "No entities to measure";
     
-    const averageInfo = `Average ms per entity: ${averageMs}`;
+    const averageInfo = `Average ms per entity: ${averageMs.toFixed(0)}`;
     newLog({
       logCategory:"World_Tick",
       message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${averageInfo}`
