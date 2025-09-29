@@ -96,10 +96,10 @@ static getTickIdStr() {
     });
 
     measures.sort((a, b) => b.ms - a.ms);
-
-    
      const totalMs = measures.reduce((sum, measure) => sum + measure.ms, 0);
     const averageMs = measures.length > 0 ? totalMs / measures.length : 0;
+
+ 
     
 
    let slowestInfo = `Slowest entities: `;
@@ -116,8 +116,10 @@ static getTickIdStr() {
       `
       i++;
    }
+
+        
+    const averageInfo = `Average ms per entity: ${averageMs} (${totalMs}/${measures.length})`;
     
-    const averageInfo = `Average ms per entity: ${averageMs}`;
     Internal_Messaging.send("averageNextMomentTime", {
       logCategory:"World_Tick",
       message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${averageInfo}`
