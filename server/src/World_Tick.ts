@@ -1,7 +1,9 @@
 import { EmitStuff } from "#root/World_State_Emission_Stuff/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
 import { World } from "#root/World.js";
-import { newLog } from "#root/My_Log.js"
+import { newLog, type New_Log_Input} from "#root/My_Log.js"
+import { My_Assert} from "#root/My_Assert.js"
+import { getPercentOfWhole } from "#root/Utilities/Numerical.js"
 import { Stopwatch } from "#root/Utilities/Stopwatch.js"
 export { World_Tick }
 
@@ -55,6 +57,8 @@ static getTickIdStr() {
    stopwatch.beginMeasure({tags:["World_Tick",
    `${World_Tick.getTickIdStr()}`, "Next_Moment_Of_All_Entities"]});
     World_Tick.Next_Moment_Of_All_Entities();
+    newLog(Internal_Messaging.getMessage("topSlowestEntities") as New_Log_Input)
+    newLog(Internal_Messaging.getMessage("averageNextMomentTime") as New_Log_Input)
    stopwatch.endMeasure();
    
       stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Collision_Resolutor"]});
@@ -90,33 +94,39 @@ static getTickIdStr() {
       entity.updateState();
       measures.push({entityClassName: entity.constructor.name, ms: stopwatch.lap()})
     });
-    
-    let maxTime = 0;
-    let slowestEntity: string | null = null;
-    
-    for (const measure of measures) {
-        if (measure.ms > maxTime) {
-            maxTime = measure.ms;
-            slowestEntity = measure.entityClassName;
-        }
-    }
+
+    measures.sort((a, b) => b.ms - a.ms);
+
     
      const totalMs = measures.reduce((sum, measure) => sum + measure.ms, 0);
     const averageMs = measures.length > 0 ? totalMs / measures.length : 0;
     
-    const slowestInfo = slowestEntity 
-        ? `Slowest entity: ${slowestEntity} (${maxTime} ms)`
-        : "No entities to measure";
+
+   let slowestInfo = `Slowest entities: `;
+   const limit = 10;
+   let i = 0;
+   for(const measure of measures) {
+     if(i>=limit){
+       break;
+     }
+       const entityInfo = `
+       ${i}. ${measure.entityClassName} (${getPercentOfWhole(measure.ms, totalMs)}%, ${measure.ms}ms)`
+
+      slowestInfo = `${slowestInfo} ${entityInfo},
+      `
+      i++;
+   }
     
-    const averageInfo = `Average ms per entity: ${averageMs.toFixed(0)}`;
-    newLog({
+    const averageInfo = `Average ms per entity: ${averageMs}`;
+    Internal_Messaging.send("averageNextMomentTime", {
       logCategory:"World_Tick",
       message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${averageInfo}`
     })
-    newLog({
+    Internal_Messaging.send("topSlowestEntities", {
       logCategory:"World_Tick",
       message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${slowestInfo}`
     })
+    
 
   }
   static Collision_Resolutor() {
@@ -146,5 +156,19 @@ static  Emit_To_Players() {
    EmitStuff.Emit_To_All_Players_World_State_Stuff();
      this.lastEmitTime = Date.now();
     
+  }
+}
+
+export class Internal_Messaging {
+  static messages = new Map<string, any>();
+  static send(key: string, val: any) {
+    Internal_Messaging.messages.set(key, val)
+  }
+  static getMessage(key: string) : any {
+
+    
+    My_Assert.that(Internal_Messaging.messages.has(key), `[Internal_Messaging] Could not find message with id ${key} `);
+    const msg =  Internal_Messaging.messages.get(key);
+    return msg;
   }
 }
