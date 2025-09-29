@@ -42,7 +42,12 @@ static tick() {
           const elapsed = endTime - startTime;
             newLog({
       logCategory:"World_Tick",
-      message:`[#${World_Tick.tickId}] Took ${elapsed} milliseconds`
+      message:`[#${World_Tick.tickId}] Tick completed.Took ${elapsed} milliseconds`
+    })
+            newLog({
+      logCategory:"World_Tick",
+      message:`[#${World_Tick.tickId}] Performance stats:
+      ${Internal_Messaging.getMessage("simulationPerformance")}`
     })
              World_Tick.tickId++;
            // Schedule the next tick
@@ -54,12 +59,15 @@ static getTickIdStr() {
 }
   static simulateNextMoment() {
     const stopwatch = new Stopwatch();
+    
+    
    stopwatch.beginMeasure({tags:["World_Tick",
    `${World_Tick.getTickIdStr()}`, "Next_Moment_Of_All_Entities"]});
     World_Tick.Next_Moment_Of_All_Entities();
      stopwatch.endMeasure();
-    newLog(Internal_Messaging.getMessage("topSlowestEntities") as New_Log_Input)
-    newLog(Internal_Messaging.getMessage("averageNextMomentTime") as New_Log_Input)
+     
+     
+
    
       stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Collision_Resolutor"]});
     World_Tick.Collision_Resolutor();
@@ -78,6 +86,27 @@ static getTickIdStr() {
    stopwatch.beginMeasure({tags:["World_Tick",   `${World_Tick.getTickIdStr()}`, "Emit_To_Players"]});
     World_Tick.Emit_To_Players();
     stopwatch.endMeasure();
+    
+   const totalMs = stopwatch.total();
+   const count = stopwatch.countMeasurements();
+   const averageMs= totalMs / count;
+   let msg = `Tick Operations: `
+   let i=0;
+   for (const e of stopwatch.getMeasurements()) {
+     msg = `${msg} 
+     ${i}. ${e.tags[2]} (${getPercentOfWhole(e.ms, totalMs)}%, ${e.ms}ms)
+     `;
+     i++;
+   }
+
+              const topSlowestNextMomentEntities = Internal_Messaging.getMessage("topSlowestNextMomentEntities")
+    const averageNextMomentTime = Internal_Messaging.getMessage("averageNextMomentTime");
+    msg =`${msg}
+    [Next_Moment_Of_All_Entities] ${averageNextMomentTime}
+    [Next_Moment_Of_All_Entities] ${topSlowestNextMomentEntities}`
+     
+   
+ Internal_Messaging.send("simulationPerformance", msg)
 
   }
 
@@ -120,14 +149,12 @@ static getTickIdStr() {
         
     const averageInfo = `Average ms per entity: ${averageMs} (${totalMs}/${measures.length})`;
     
-    Internal_Messaging.send("averageNextMomentTime", {
-      logCategory:"World_Tick",
-      message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${averageInfo}`
-    })
-    Internal_Messaging.send("topSlowestEntities", {
-      logCategory:"World_Tick",
-      message: `[${World_Tick.getTickIdStr()}] [Next_Moment_Of_All_Entities] ${slowestInfo}`
-    })
+    Internal_Messaging.send("averageNextMomentTime",
+      `${averageInfo}`
+    )
+    Internal_Messaging.send("topSlowestNextMomentEntities",
+      `${slowestInfo}`
+    )
     
 
   }

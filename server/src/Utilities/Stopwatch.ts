@@ -4,12 +4,19 @@ export class Stopwatch {
    startTime=0;
    totalLapsTime=0;
    tags: string[] = [];
+   measurements:{ms: number, tags: string[]}[]=[];
    constructor() {
     this.totalLapsTime = 0;
   }
     beginMeasure({tags}: {tags: string[]}) {
     this.startTime = this.getCurrentTimeInMs();
      this.tags = tags;
+  }
+  countMeasurements() {
+    return this.measurements.length;
+  }
+  getMeasurements() {
+    return this.measurements;
   }
    lap() {
     const currTime = this.getCurrentTimeInMs();
@@ -24,14 +31,9 @@ export class Stopwatch {
     return this.totalLapsTime;
   }
    endMeasure() {
-    let tagsStr = ``;
-   for(const tag of this.tags) {
-     if(tag===this.tags[0]) continue;
-     tagsStr = `${tagsStr} [${tag}] `
-   }
-    newLog({
-      message:`${tagsStr} Took ${this.lap()} ms`,
-      logCategory: this.tags[0]
-    })
+     this.measurements.push({
+       ms:this.lap(),
+       tags: this.tags,
+     })
   }
 }

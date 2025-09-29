@@ -11,6 +11,7 @@ let newLoggingEnabled = true;
 
 const logCategories: {categoryName:Log_Category, loggingEnabled: boolean}[] = [
   {categoryName:"World_Tick", loggingEnabled: true},
+  {categoryName:"Planet", loggingEnabled: true},
   ];
 
 export function log(...args: any) {
