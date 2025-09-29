@@ -168,22 +168,21 @@ motionsDirections: Train_Car_Motions_Directions = {
     }
         let wall = switchWallCollision.entityB as Rail_Switch_Wall;
         let collisionNormal = switchWallCollision.normal;
-    let destinationX: number | null = null;
-    let destinationY: number | null = null;
+    let destinationX: number = this.x;
+    let destinationY: number  = this.y;
     if(collisionNormal.x === -1) {
       destinationX = wall.x - this.width;
-      destinationY = wall.y
+      destinationY = this.y
     } else if (collisionNormal.x === 1){
       destinationX = wall.x + wall.width;
-      destinationY = wall.y
+      destinationY = this.y
     } else if (collisionNormal.y === -1){
       destinationY = wall.y - this.height;
-      destinationX = wall.x
+      destinationX = this.x
     } else if (collisionNormal.y === 1){
       destinationY = wall.y - this.height;
-      destinationX = wall.x
+      destinationX = this.x
     }
-    My_Assert.that(destinationX !== null && destinationY !== null);
     
     this.moveCarAndItsContentsAndPassengers({x: destinationX, y:destinationY});
     this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall);
