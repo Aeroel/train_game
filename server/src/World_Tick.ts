@@ -57,9 +57,9 @@ static getTickIdStr() {
    stopwatch.beginMeasure({tags:["World_Tick",
    `${World_Tick.getTickIdStr()}`, "Next_Moment_Of_All_Entities"]});
     World_Tick.Next_Moment_Of_All_Entities();
+     stopwatch.endMeasure();
     newLog(Internal_Messaging.getMessage("topSlowestEntities") as New_Log_Input)
     newLog(Internal_Messaging.getMessage("averageNextMomentTime") as New_Log_Input)
-   stopwatch.endMeasure();
    
       stopwatch.beginMeasure({tags:["World_Tick",    `${World_Tick.getTickIdStr()}`, "Collision_Resolutor"]});
     World_Tick.Collision_Resolutor();
