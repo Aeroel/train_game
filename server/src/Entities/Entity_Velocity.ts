@@ -18,8 +18,8 @@ export class Entity_Velocity {
   
   
   nullify() {
-    this.x.components =[]
-    this.y.components=[];
+    this.x.nullify();
+    this.y.nullify();
 }
 
 
