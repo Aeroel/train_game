@@ -470,6 +470,10 @@ static surroundThirdWithWalls() {
   const s4Reference = wall17;
   
   const stationSize = 800;
+  const s1DistBetweenPlatforms = 700;
+  const s2DistBetweenPlatforms = 600;
+  const s3DistBetweenPlatforms = 800;
+  const s4DistBetweenPlatforms = 600;
   // station1 walls
   const s1x = s1Reference.x;
   const s1y = 7400;
@@ -479,7 +483,7 @@ static surroundThirdWithWalls() {
      const station1Wall3 = this.wallHelperPlaceNextTo({wall: station1Wall2 ,direction:"right", length:stationSize});
      
      // right platform
-      const station1Wall4 = this.wallHelperPlace({x: s1x+700 ,y: s1y,direction:"right", length:stationSize});
+      const station1Wall4 = this.wallHelperPlace({x: s1x+s1DistBetweenPlatforms ,y: s1y,direction:"right", length:stationSize});
          const station1Wall5 = this.wallHelperPlaceNextTo({wall: station1Wall4 ,direction:"down", length:stationSize});
      const station1Wall6 = this.wallHelperPlaceNextTo({wall: station1Wall5 ,direction:"left", length:stationSize});
      
@@ -493,7 +497,7 @@ static surroundThirdWithWalls() {
      const station2Wall3 = this.wallHelperPlaceNextTo({wall: station2Wall2 ,direction:"up", length:stationSize});
      
      // right platform
-      const station2Wall4 = this.wallHelperPlace({x: s2x ,y: s2y - 700,direction:"up", length:stationSize});
+      const station2Wall4 = this.wallHelperPlace({x: s2x ,y: s2y - s2DistBetweenPlatforms,direction:"up", length:stationSize});
          const station2Wall5 = this.wallHelperPlaceNextTo({wall: station2Wall4 ,direction:"right", length:stationSize});
      const station2Wall6 = this.wallHelperPlaceNextTo({wall: station2Wall5 ,direction:"down", length:stationSize});
      
@@ -506,7 +510,7 @@ static surroundThirdWithWalls() {
      const station3Wall3 = this.wallHelperPlaceNextTo({wall: station3Wall2 ,direction:"right", length:stationSize});
      
      // right platform
-      const station3Wall4 = this.wallHelperPlace({x: s3x + 700 ,y: s3y, direction:"right", length:stationSize});
+      const station3Wall4 = this.wallHelperPlace({x: s3x + s3DistBetweenPlatforms ,y: s3y, direction:"right", length:stationSize});
          const station3Wall5 = this.wallHelperPlaceNextTo({wall: station3Wall4 ,direction:"down", length:stationSize});
      const station3Wall6 = this.wallHelperPlaceNextTo({wall: station3Wall5 ,direction:"left", length:stationSize});
      
@@ -518,7 +522,7 @@ static surroundThirdWithWalls() {
      const station4Wall3 = this.wallHelperPlaceNextTo({wall: station4Wall2 ,direction:"up", length:stationSize});
      
      // bottom platform
-      const station4Wall4 = this.wallHelperPlace({x: s4x ,y: s4y - 700, direction:"up", length:stationSize});
+      const station4Wall4 = this.wallHelperPlace({x: s4x ,y: s4y - s4DistBetweenPlatforms, direction:"up", length:stationSize});
          const station4Wall5 = this.wallHelperPlaceNextTo({wall: station4Wall4 ,direction:"right", length:stationSize});
      const station4Wall6 = this.wallHelperPlaceNextTo({wall: station4Wall5 ,direction:"down", length:stationSize});
    
