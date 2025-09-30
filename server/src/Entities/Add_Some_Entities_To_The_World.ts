@@ -387,24 +387,15 @@ static surroundThirdWithWalls() {
    const wall2= this.wallHelperPlaceNextTo({wall: wall1, direction:"down",length: 1500  });
    const wall3= this.wallHelperPlaceNextTo({wall: wall2, direction:"left",length: 970  });
    const wall4= this.wallHelperPlaceNextTo({wall: wall3, direction:"down",length: 1045  });
-   const something = (this.carSquareSize-10)/4*2;
-   const wall5= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: something  });
-   wall5.setY(wall5.y+something)
-   const wall6 = this.wallHelperPlaceNextTo({
-     wall: wall5, direction:"down", length: something
-   })
-      wall6.setY(wall6.y+something)
-      
-   const wall7 = this.wallHelperPlaceNextTo({
-     wall: wall6, direction:"down", length: something
-   })
-      wall7.setY(wall7.y+something)
+   // small walls to let player through
+
+   const wall5= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: 500  });
       
    const wall8 = this.wallHelperPlaceNextTo({
-     wall: wall7, direction:"down", length: 2000
+     wall: wall5, direction:"down", length: 2000
    })
-      wall8.setY(wall8.y+something)
       
+      // end of small walls
    const wall9 = this.wallHelperPlaceNextTo({
      wall: wall8, direction:"right", length: 700
    })
