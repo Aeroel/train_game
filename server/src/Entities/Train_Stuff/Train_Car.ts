@@ -170,11 +170,14 @@ motionsDirections: Train_Car_Motions_Directions = {
     if(!switchWallCollision) {
       return;
     }
-        let wall = switchWallCollision.entityB as Rail_Switch_Wall;
-        let collisionNormal = switchWallCollision.normal;
+    let wall = switchWallCollision.entityB as Rail_Switch_Wall;
+    let collisionNormal = switchWallCollision.normal;
     let destinationX: number = this.x;
     let destinationY: number  = this.y;
-    if(collisionNormal.x === -1) {
+    const max=3;
+    const i=0;
+    while(i<max) {
+        if(collisionNormal.x === -1) {
       destinationX = wall.x - this.width;
       destinationY = this.y
     } else if (collisionNormal.x === 1){
@@ -190,35 +193,15 @@ motionsDirections: Train_Car_Motions_Directions = {
     
     this.moveCarAndItsContentsAndPassengers({x: destinationX, y:destinationY});
     this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall);
-    
- // second time. I am not making this a loop for simplicity. If I did, the faster the train, the more sensor walls it might hits per tick. 
-    switchWallCollision = this .Get_Closest_Switch_Wall_Collision();
+        switchWallCollision = this .Get_Closest_Switch_Wall_Collision();
     if(!switchWallCollision) {
-      return;
+      break;
     }
-        wall = switchWallCollision.entityB as Rail_Switch_Wall;
-        collisionNormal = switchWallCollision.normal;
+    wall = switchWallCollision.entityB as Rail_Switch_Wall;
+    collisionNormal = switchWallCollision.normal;
     destinationX = this.x;
     destinationY = this.y;
-    if(collisionNormal.x === -1) {
-      destinationX = wall.x - this.width;
-      destinationY = wall.y
-    } else if (collisionNormal.x === 1){
-      destinationX = wall.x + wall.width;
-      destinationY = wall.y
-    } else if (collisionNormal.y === -1){
-      destinationY = wall.y - this.height;
-      destinationX = wall.x
-    } else if (collisionNormal.y === 1){
-      destinationY = wall.y - this.height;
-      destinationX = wall.x
     }
-    My_Assert.that(destinationX !== null && destinationY !== null);
-    
-    this.moveCarAndItsContentsAndPassengers({x: destinationX, y:destinationY});
-    this.Modify_Car_Motion_Directions_On_Switch_Wall_Touch(wall);
-    
-    // add as many more layers if you want train to move faster.
     
   }
   
