@@ -14,8 +14,8 @@ class World_Tick {
   static tickRate = 20; // Updates per second
   static msPerTick = 1000 / World_Tick.tickRate; // Duration of each update in milliseconds
   static deltaTime = World_Tick.msPerTick;
-  static lastUpdateTime = Date.now();
-  static accumulatedTime = 0;
+  static lastSimulationTime = Date.now();
+  static simulateEveryMs = World_Tick.msPerTick;
   static started = true;
  static emitEveryMs= 50;
  static lastEmitTime =0;
@@ -29,6 +29,13 @@ static tictac() {
  
 }
 static tick() {
+      const currentTime = Date.now();
+      const ItsTickTime = currentTime > World_Tick.lastSimulationTime + World_Tick.simulateEveryMs;
+        if(!ItsTickTime) {
+          setTimeout(World_Tick.tick, 10); 
+          return;
+        }
+         World_Tick.lastSimulationTime = currentTime; 
   const most = <Most_Freq>Internal_Messaging.getMessage("mostPopulatedVelocity") 
   if(most) {
   newLog({logCategory:"Entity_Velocity", message:`mostPopulatedVelocity so far: ${most.entityName} length ${most.components.length} 
