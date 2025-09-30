@@ -174,21 +174,22 @@ motionsDirections: Train_Car_Motions_Directions = {
     let collisionNormal = switchWallCollision.normal;
     let destinationX: number = this.x;
     let destinationY: number  = this.y;
-    const max=3;
+    // limit might need to be increased to accomodate faster moving trains
+    const limit=3;
     const i=0;
-    while(i<max) {
+    while(i<limit) {
         if(collisionNormal.x === -1) {
       destinationX = wall.x - this.width;
-      destinationY = this.y
+      destinationY = wall.y
     } else if (collisionNormal.x === 1){
       destinationX = wall.x + wall.width;
-      destinationY = this.y
+      destinationY = wall.y
     } else if (collisionNormal.y === -1){
       destinationY = wall.y - this.height;
-      destinationX = this.x
+      destinationX = wall.x
     } else if (collisionNormal.y === 1){
       destinationY = wall.y + wall.height;
-      destinationX = this.x
+      destinationX = wall.x
     }
     
     this.moveCarAndItsContentsAndPassengers({x: destinationX, y:destinationY});

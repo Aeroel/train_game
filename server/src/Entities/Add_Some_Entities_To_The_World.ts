@@ -333,12 +333,12 @@ const offset = carSquareSize * 2;
     }
     
     static addThePlanet() {
-        const planetTwo = new Planet({color: "darkgreen"});
-        planetTwo.setX(0);
-        planetTwo.setY(0);
-        planetTwo.setWidth(World.width);
-        planetTwo.setHeight(World.height);
-       return World.addEntity(planetTwo);
+        const planetOne = new Planet({color: "darkgreen"});
+        planetOne.setX(0);
+        planetOne.setY(0);
+        planetOne.setWidth(World.width);
+        planetOne.setHeight(World.height);
+       return World.addEntity(planetOne);
   
     }
 
