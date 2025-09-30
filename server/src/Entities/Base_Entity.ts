@@ -1,5 +1,6 @@
 import { Entity_Velocity, type Velocity_Component } from "#root/Entities/Entity_Velocity.js";
 import { World_Tick } from "#root/World_Tick.js";
+import { Stopwatch } from "#root/Utilities/Stopwatch.js";
 import { Simple_Auto_Increment_Id_Generator } from "#root/Simple_Auto_Increment_Id_Generator.js";
 import type { Position,Position_Percentage, Direction } from "#root/Type_Stuff.js";
 import { My_Assert}from "#root/My_Assert.js"
@@ -168,11 +169,17 @@ applyVelocityToPosition() {
   }
 get vx() {
  // console.log("getting vx")
-  return this.velocity.x.get();
+
+    const vx= this.velocity.x.get();
+
+  return vx;
 }
 get vy() {
  // console.log("getting vy")
-  return this.velocity.y.get();
+ 
+  const vy= this.velocity.y.get();
+  
+  return vy;
 }
 
 set vx(value: number) {

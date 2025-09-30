@@ -12,6 +12,9 @@ let newLoggingEnabled = true;
 const logCategories: {categoryName:Log_Category, loggingEnabled: boolean}[] = [
   {categoryName:"World_Tick", loggingEnabled: true},
   {categoryName:"Planet", loggingEnabled: true},
+  {categoryName:"Train_Car", loggingEnabled: true},
+  {categoryName:"Rail_Switch_Wall", loggingEnabled: true},
+  
   ];
 
 export function log(...args: any) {

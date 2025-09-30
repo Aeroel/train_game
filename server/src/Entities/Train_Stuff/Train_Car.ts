@@ -1,4 +1,6 @@
 import { My_Assert } from "#root/My_Assert.js"
+import { newLog } from "#root/My_Log.js"
+import { Stopwatch } from "#root/Utilities/Stopwatch.js"
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { Sliding_Door } from "#root/Entities/Sliding_Door.js";
 import { Rail_Switch_Wall } from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
@@ -147,8 +149,10 @@ motionsDirections: Train_Car_Motions_Directions = {
   
   move_handler() {
   const {vx, vy} = this.determine_new_velocity_for_movement_along_the_rail(); 
+
    this.velocity.x.Add_Component({key:this.Rail_Movement_Key, value:vx.value});
    this.velocity.y.Add_Component({key:this.Rail_Movement_Key,value: vy.value});
+
 
     if (this.currentMovementMotion === null) {
       return false;
@@ -408,7 +412,6 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
     entities.push(this.Center_Box_Entity);
     entities.push(...Object.values(this.Walls_And_Doors));
     entities.push(...this.passengers);
-    console.log(entities.length);
     return entities
   }
   

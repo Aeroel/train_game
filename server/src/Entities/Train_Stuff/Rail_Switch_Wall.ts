@@ -1,6 +1,7 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Direction, Orientation } from "#root/Type_Stuff.js";
 import type {Rail_End_Name } from '#root/Entities/Train_Stuff/Rail.js'
+import { newLog } from "#root/My_Log.js"
 export {Rail_Switch_Wall}
 interface Static_Instance_Creator {
   modifiesCarTo: Direction[],
@@ -60,7 +61,9 @@ class Rail_Switch_Wall extends Base_Entity {
   for (let dir of setA) {
     if (!setB.has(dir)) {identical = false;}
   }
-   console.log("????", this.triggersUponContactWithCarIf, directions, identical)
+   newLog({
+     logCategory:"Rail_Switch_Wall",
+     message:`Wall: triggersUponContactWithCarIf: ${this.triggersUponContactWithCarIf}, directions"): ${directions}, identical: ${identical}`})
       return identical;
     }
     
