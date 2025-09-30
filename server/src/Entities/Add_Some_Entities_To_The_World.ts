@@ -455,16 +455,23 @@ static surroundThirdWithWalls() {
      wall: wall19, direction:"up", length: 300
    })
   
+  // ref for station 2
    const wall21= this.wallHelperPlaceNextTo({
      wall: wall20, direction:"left", length: 4700
    })
+   // 22 is to be used as reference for station 1
    const wall22= this.wallHelperPlaceNextTo({
      wall: wall21, direction:"up", length: 6300
    })
   
+  const s1Reference = wall22;
+  const s2Reference = wall21;
+  const s3Reference = wall18;
+  const s4Reference = wall17;
+  
   const stationSize = 800;
   // station1 walls
-  const s1x = 800;
+  const s1x = s1Reference.x;
   const s1y = 7400;
   
      const station1Wall1 = this.wallHelperPlace({x: s1x ,y: s1y,direction:"left", length:stationSize});
@@ -479,19 +486,19 @@ static surroundThirdWithWalls() {
      
        // station2 walls
   const s2x = 3100;
-  const s2y = 10900;
+  const s2y = s2Reference.y
   
-     const station2Wall1 = this.wallHelperPlace({x: s2x ,y: s2y,direction:"up", length:stationSize});
+     const station2Wall1 = this.wallHelperPlace({x: s2x ,y: s2y,direction:"down", length:stationSize});
      const station2Wall2 = this.wallHelperPlaceNextTo({wall: station2Wall1 ,direction:"right", length:stationSize});
-     const station2Wall3 = this.wallHelperPlaceNextTo({wall: station2Wall2 ,direction:"down", length:stationSize});
+     const station2Wall3 = this.wallHelperPlaceNextTo({wall: station2Wall2 ,direction:"up", length:stationSize});
      
      // right platform
-      const station2Wall4 = this.wallHelperPlace({x: s2x ,y: s2y + 700,direction:"down", length:stationSize});
+      const station2Wall4 = this.wallHelperPlace({x: s2x ,y: s2y - 700,direction:"up", length:stationSize});
          const station2Wall5 = this.wallHelperPlaceNextTo({wall: station2Wall4 ,direction:"right", length:stationSize});
-     const station2Wall6 = this.wallHelperPlaceNextTo({wall: station2Wall5 ,direction:"up", length:stationSize});
+     const station2Wall6 = this.wallHelperPlaceNextTo({wall: station2Wall5 ,direction:"down", length:stationSize});
      
           // station3 walls
-  const s3x = 6000
+  const s3x = s3Reference.x
   const s3y = 13343;
   
      const station3Wall1 = this.wallHelperPlace({x: s3x ,y: s3y,direction:"left", length:stationSize});
@@ -504,16 +511,16 @@ static surroundThirdWithWalls() {
      const station3Wall6 = this.wallHelperPlaceNextTo({wall: station3Wall5 ,direction:"left", length:stationSize});
      
   const s4x = 8632;
-  const s4y = 15635;
+  const s4y = s4Reference.y;
   
-     const station4Wall1 = this.wallHelperPlace({x: s4x ,y: s4y,direction:"up", length:stationSize});
+     const station4Wall1 = this.wallHelperPlace({x: s4x ,y: s4y,direction:"down", length:stationSize});
      const station4Wall2 = this.wallHelperPlaceNextTo({wall: station4Wall1 ,direction:"right", length:stationSize});
-     const station4Wall3 = this.wallHelperPlaceNextTo({wall: station4Wall2 ,direction:"down", length:stationSize});
+     const station4Wall3 = this.wallHelperPlaceNextTo({wall: station4Wall2 ,direction:"up", length:stationSize});
      
      // bottom platform
-      const station4Wall4 = this.wallHelperPlace({x: s4x ,y: s4y + 700, direction:"down", length:stationSize});
+      const station4Wall4 = this.wallHelperPlace({x: s4x ,y: s4y - 700, direction:"up", length:stationSize});
          const station4Wall5 = this.wallHelperPlaceNextTo({wall: station4Wall4 ,direction:"right", length:stationSize});
-     const station4Wall6 = this.wallHelperPlaceNextTo({wall: station4Wall5 ,direction:"up", length:stationSize});
+     const station4Wall6 = this.wallHelperPlaceNextTo({wall: station4Wall5 ,direction:"down", length:stationSize});
    
    /*
    I would like#2: autogenerate all this
