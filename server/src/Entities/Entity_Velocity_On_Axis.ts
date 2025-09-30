@@ -1,6 +1,10 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
+import type { Entity_Velocity } from "#root/Entities/Entity_Velocity.js";
 import  { newLog } from "#root/My_Log.js";
+import  { Internal_Messaging } from "#root/Internal_Messaging.js";
 
+
+export type Most_Freq = {entityName: string, components: Velocity_Component[]};
 
 export type Velocity_Component = {
     key: string,
@@ -12,12 +16,14 @@ export type Axis = "x" | "y";
 export { Entity_Velocity_On_Axis };
 
 class Entity_Velocity_On_Axis {
+     velocity: Entity_Velocity;
      axis: Axis ='x'; //<- "x" is meaningless default
      propagationList: Entity_Velocity_On_Axis[] = [];
      components: Velocity_Component[] = [];
 
-    constructor(axis: Axis) {
+    constructor(axis: Axis, velocity: Entity_Velocity) {
         this.axis=axis;
+        this.velocity=velocity;
     }
 
     Component_Exists(key: Velocity_Component['key']): boolean {
@@ -49,8 +55,11 @@ class Entity_Velocity_On_Axis {
     }
 
     Add_Component(component: Velocity_Component) {
-        newLog({logCategory:"Entity_Velocity",message:`xComps ${this.components.length}`})
-  newLog({logCategory:"Entity_Velocity",message:`yComps: ${this.components.length}`})
+const most = <undefined| Most_Freq>Internal_Messaging.getMessage('mostPopulatedVelocity');
+if((!most) || this.components.length > most.components.length) {
+  Internal_Messaging.send("mostPopulatedVelocity",{entityName: this.velocity.entity.constructor.name, components: this.components})
+}
+
       // copy because otherwise... well, we basically assign same object to every entity
       const componentCopy = {...component};
          const existingComponent = this.components.find(thisComponent => thisComponent.key === component.key);
@@ -165,4 +174,28 @@ Remove_Component(key: Velocity_Component['key'] | {key: Velocity_Component['key'
 
 
 
+}
+
+function mostFreq(comps: Velocity_Component[]): {key: Velocity_Component['key'], frequency: number } {
+    // Create a map to store key frequencies
+    const frequencyMap = new Map<string, number>();
+    
+    // Iterate over the components to populate the frequency map
+    for (const comp of comps) {
+        const currentCount = frequencyMap.get(comp.key) || 0;
+        frequencyMap.set(comp.key, currentCount + 1);
+    }
+    
+    // Find the key with the highest frequency
+    let mostFrequentKey = '';
+    let maxCount = 0;
+    
+    frequencyMap.forEach((count, key) => {
+        if (count > maxCount) {
+            mostFrequentKey = key;
+            maxCount = count;
+        }
+    });
+    
+    return {key: mostFrequentKey, frequency: maxCount};
 }

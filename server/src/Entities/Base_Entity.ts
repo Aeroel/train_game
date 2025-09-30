@@ -63,6 +63,8 @@ collisionManager() {
   
 Clean_Up() {
    this.velocity.nullify()
+   this.velocity.x.components=[]
+   this.velocity.y.components=[]
 }
 
 

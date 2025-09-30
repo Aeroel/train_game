@@ -12,8 +12,8 @@ export class Entity_Velocity {
   constructor(ofEntity: Base_Entity
 ) {
     this.entity = ofEntity;
-    this.x = new Entity_Velocity_On_Axis("x");
-    this.y = new Entity_Velocity_On_Axis("y");
+    this.x = new Entity_Velocity_On_Axis("x", this);
+    this.y = new Entity_Velocity_On_Axis("y", this);
   }
   
   

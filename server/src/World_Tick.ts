@@ -5,6 +5,8 @@ import { newLog, type New_Log_Input} from "#root/My_Log.js"
 import { My_Assert} from "#root/My_Assert.js"
 import { getPercentOfWhole } from "#root/Utilities/Numerical.js"
 import { Stopwatch } from "#root/Utilities/Stopwatch.js"
+import { Internal_Messaging } from "#root/Internal_Messaging.js"
+import type { Most_Freq}from "#root/Entities/Entity_Velocity_On_Axis.js"
 export { World_Tick }
 
 
@@ -27,6 +29,12 @@ static tictac() {
  
 }
 static tick() {
+  const most = <Most_Freq>Internal_Messaging.getMessage("mostPopulatedVelocity") 
+  if(most) {
+  newLog({logCategory:"Entity_Velocity", message:`mostPopulatedVelocity so far: ${most.entityName} length ${most.components.length} 
+
+  `})
+  }
   newLog({logCategory:
   "World_Tick",message:`[#${World_Tick.tickId}] Tick starting`}
     )
@@ -188,16 +196,3 @@ static  Emit_To_Players() {
   }
 }
 
-export class Internal_Messaging {
-  static messages = new Map<string, any>();
-  static send(key: string, val: any) {
-    Internal_Messaging.messages.set(key, val)
-  }
-  static getMessage(key: string) : any {
-
-    
-    My_Assert.that(Internal_Messaging.messages.has(key), `[Internal_Messaging] Could not find message with id ${key} `);
-    const msg =  Internal_Messaging.messages.get(key);
-    return msg;
-  }
-}
