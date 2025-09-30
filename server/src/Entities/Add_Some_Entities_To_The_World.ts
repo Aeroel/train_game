@@ -4,6 +4,7 @@ import { Bot } from "#root/Entities/Bot.js";
 import { Car } from "#root/Entities/Car.js";
 import { Railway_Switch_Wall_Generator } from "#root/Entities/Railway_Switch_Wall_Generator.js"
 import { Base_Entity } from '#root/Entities/Base_Entity.js';
+import { Sliding_Door } from '#root/Entities/Sliding_Door.js';
 import { Railway_Placing_Functionality } from "#root/Entities/Train_Stuff/Railway_Placing_Functionality.js";
 import { Timer } from "#root/Entities/Timer/Timer.js";
 import { Digit } from "#root/Entities/Timer/Timer.js";
@@ -14,6 +15,7 @@ import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Position, Orientation } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
+import { Sliding_Door_Sensor } from "#root/Entities/Sliding_Door_Sensor.js";
 import { Wall } from "#root/Entities/Wall.js";
 import { My_Assert } from "#root/My_Assert.js";
 import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
@@ -479,25 +481,25 @@ static surroundThirdWithWalls() {
   const s1y = 7400;
   
   
-  this.placeStationWalls(s1x, s1y, stationSize, s1DistBetweenPlatforms, "horizontal")
+  this.placeStation(s1x, s1y, stationSize, s1DistBetweenPlatforms, "horizontal")
        // station2 walls
   const s2x = 3100;
   const s2y = s2Reference.y
    
-    this.placeStationWalls(s2x, s2y, stationSize, s2DistBetweenPlatforms, "vertical")
+    this.placeStation(s2x, s2y, stationSize, s2DistBetweenPlatforms, "vertical")
 
      
           // station3 walls
   const s3x = s3Reference.x
   const s3y = 13343;
   
-      this.placeStationWalls(s3x, s3y, stationSize, s3DistBetweenPlatforms, "horizontal")
+      this.placeStation(s3x, s3y, stationSize, s3DistBetweenPlatforms, "horizontal")
 
      
   const s4x = 8632;
   const s4y = s4Reference.y;
   
-      this.placeStationWalls(s4x, s4y, stationSize, s4DistBetweenPlatforms, "vertical")
+      this.placeStation(s4x, s4y, stationSize, s4DistBetweenPlatforms, "vertical")
 
    
    /*
@@ -512,11 +514,28 @@ static surroundThirdWithWalls() {
   
 }
 
-static placeStationWalls(sx: number, sy: number, stationSize: number, sDistBetweenPlatforms: number, orientation: Orientation) {
+static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPlatforms: number, orientation: Orientation) {
      if(orientation === "horizontal") {
+       const slidingDoorLength = stationSize/10;
      const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"left", length:stationSize});
-     const stationWall2 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"down", length:stationSize});
-     const stationWall3 = this.wallHelperPlaceNextTo({wall: stationWall2 ,direction:"right", length:stationSize});
+     const sideWallLength = (stationSize - slidingDoorLength) / 2;
+     
+     const stationWall2_1 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"down", length:sideWallLength});
+
+     const slidingDoorX = stationWall2_1.x;
+     const slidingDoorY = stationWall2_1.y + stationWall2_1.height;
+    const slidingDoor1= World.addEntity(
+       new Sliding_Door("down")
+       )
+       slidingDoor1.setXYWH(slidingDoorX, slidingDoorY, stationWall2_1.width, slidingDoorLength)
+       World.addEntity(
+         new Sliding_Door_Sensor(slidingDoor1, (contactEntity)=>contactEntity.hasTag("Player"))
+         );
+         
+     const stationWall2_2 = this.wallHelperPlaceNextTo({wall: stationWall2_1 ,direction:"down", length:sideWallLength});
+     stationWall2_2.setY(stationWall2_2.y + slidingDoorLength)
+     
+     const stationWall3 = this.wallHelperPlaceNextTo({wall: stationWall2_2,direction:"right", length:stationSize});
      
      // right platform
       const stationWall4 = this.wallHelperPlace({x: sx+sDistBetweenPlatforms ,y: sy,direction:"right", length:stationSize});

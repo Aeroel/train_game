@@ -163,6 +163,14 @@ applyVelocityToPosition() {
      this.setY(y);
          return this;
   }
+  getPosAndSize() {
+    return {
+      x: this.x,
+      y: this.y,
+      width: this.width,
+      height: this.height
+    }
+  }
   get position() {
     return {x:this.x,y:this.y}
   }

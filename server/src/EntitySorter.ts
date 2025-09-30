@@ -10,6 +10,7 @@ export {
 class EntitySorter {
   static readonly From_Top_Down_Camera_POV: Sort_Order = {
     "Planet": 0,
+    "Sliding_Door_Sensor": 0.4,
     "Rail_Switch_Wall": 0.5,
     "Rail": 1,
     "Train_Car": 2,
