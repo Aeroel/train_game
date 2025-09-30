@@ -334,8 +334,8 @@ const offset = carSquareSize * 2;
     
     static addThePlanet() {
         const planetOne = new Planet({color: "darkgreen"});
-        planetOne.setX(0);
-        planetOne.setY(0);
+        planetOne.setX(-10000);
+        planetOne.setY(-10000);
         planetOne.setWidth(World.width);
         planetOne.setHeight(World.height);
        return World.addEntity(planetOne);
@@ -407,31 +407,43 @@ static surroundThirdWithWalls() {
    
    // length controls x of next platform wall
    const wall11= this.wallHelperPlaceNextTo({
-     wall: wall10, direction:"right", length: 4800
+     wall: wall10, direction:"right", length: 4600
    })
    
    const wall12= this.wallHelperPlaceNextTo({
-     wall: wall11, direction:"down", length: 4800
+     wall: wall11, direction:"down", length: 4500
+   })
+   const wall12p1= this.wallHelperPlaceNextTo({
+     wall: wall12, direction:"right", length: 500
+   })
+   const wall12pf= this.wallHelperPlaceNextTo({
+     wall: wall12p1, direction:"down", length: 300
    })
    
    const wall13= this.wallHelperPlaceNextTo({
-     wall: wall12, direction:"right", length: 6000
+     wall: wall12pf, direction:"right", length: 5000
    })
    
    const wall14= this.wallHelperPlaceNextTo({
-     wall: wall13, direction:"down", length: 1700
+     wall: wall13, direction:"down", length: 1600
    })
    const wall15= this.wallHelperPlaceNextTo({
-     wall: wall14, direction:"left", length: 2000
+     wall: wall14, direction:"left", length: 1300
    })
   
   // this one determines y of the long platform wall
    const wall16= this.wallHelperPlaceNextTo({
-     wall: wall15, direction:"up", length: 1000
+     wall: wall15, direction:"up", length: 700
+   })
+   const wall16p1= this.wallHelperPlaceNextTo({
+     wall: wall16, direction:"left", length: 250
+   })
+   const wall16pf= this.wallHelperPlaceNextTo({
+     wall: wall16p1, direction:"up", length: 250
    })
    
    const wall17= this.wallHelperPlaceNextTo({
-     wall: wall16, direction:"left", length: 5000
+     wall: wall16pf, direction:"left", length: 4750
    })
    const wall18= this.wallHelperPlaceNextTo({
      wall: wall17, direction:"up", length: 4500
@@ -450,7 +462,58 @@ static surroundThirdWithWalls() {
      wall: wall21, direction:"up", length: 6300
    })
   
-   
+  const stationSize = 800;
+  // station1 walls
+  const s1x = 800;
+  const s1y = 7400;
+  
+     const station1Wall1 = this.wallHelperPlace({x: s1x ,y: s1y,direction:"left", length:stationSize});
+     const station1Wall2 = this.wallHelperPlaceNextTo({wall: station1Wall1 ,direction:"down", length:stationSize});
+     const station1Wall3 = this.wallHelperPlaceNextTo({wall: station1Wall2 ,direction:"right", length:stationSize});
+     
+     // right platform
+      const station1Wall4 = this.wallHelperPlace({x: s1x+700 ,y: s1y,direction:"right", length:stationSize});
+         const station1Wall5 = this.wallHelperPlaceNextTo({wall: station1Wall4 ,direction:"down", length:stationSize});
+     const station1Wall6 = this.wallHelperPlaceNextTo({wall: station1Wall5 ,direction:"left", length:stationSize});
+     
+     
+       // station2 walls
+  const s2x = 3100;
+  const s2y = 10900;
+  
+     const station2Wall1 = this.wallHelperPlace({x: s2x ,y: s2y,direction:"up", length:stationSize});
+     const station2Wall2 = this.wallHelperPlaceNextTo({wall: station2Wall1 ,direction:"right", length:stationSize});
+     const station2Wall3 = this.wallHelperPlaceNextTo({wall: station2Wall2 ,direction:"down", length:stationSize});
+     
+     // right platform
+      const station2Wall4 = this.wallHelperPlace({x: s2x ,y: s2y + 700,direction:"down", length:stationSize});
+         const station2Wall5 = this.wallHelperPlaceNextTo({wall: station2Wall4 ,direction:"right", length:stationSize});
+     const station2Wall6 = this.wallHelperPlaceNextTo({wall: station2Wall5 ,direction:"up", length:stationSize});
+     
+          // station3 walls
+  const s3x = 6000
+  const s3y = 13343;
+  
+     const station3Wall1 = this.wallHelperPlace({x: s3x ,y: s3y,direction:"left", length:stationSize});
+     const station3Wall2 = this.wallHelperPlaceNextTo({wall: station3Wall1 ,direction:"down", length:stationSize});
+     const station3Wall3 = this.wallHelperPlaceNextTo({wall: station3Wall2 ,direction:"right", length:stationSize});
+     
+     // right platform
+      const station3Wall4 = this.wallHelperPlace({x: s3x + 700 ,y: s3y, direction:"right", length:stationSize});
+         const station3Wall5 = this.wallHelperPlaceNextTo({wall: station3Wall4 ,direction:"down", length:stationSize});
+     const station3Wall6 = this.wallHelperPlaceNextTo({wall: station3Wall5 ,direction:"left", length:stationSize});
+     
+  const s4x = 8632;
+  const s4y = 15635;
+  
+     const station4Wall1 = this.wallHelperPlace({x: s4x ,y: s4y,direction:"up", length:stationSize});
+     const station4Wall2 = this.wallHelperPlaceNextTo({wall: station4Wall1 ,direction:"right", length:stationSize});
+     const station4Wall3 = this.wallHelperPlaceNextTo({wall: station4Wall2 ,direction:"down", length:stationSize});
+     
+     // bottom platform
+      const station4Wall4 = this.wallHelperPlace({x: s4x ,y: s4y + 700, direction:"down", length:stationSize});
+         const station4Wall5 = this.wallHelperPlaceNextTo({wall: station4Wall4 ,direction:"right", length:stationSize});
+     const station4Wall6 = this.wallHelperPlaceNextTo({wall: station4Wall5 ,direction:"up", length:stationSize});
    
    /*
    I would like#2: autogenerate all this
