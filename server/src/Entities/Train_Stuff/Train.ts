@@ -44,63 +44,10 @@ export class Train extends Base_Entity {
     
     
     updateState() {
-      //if(1>0) return;
-      if(this.begunWaiting) {
-        if(Date.now() >(this.waitingSince + this.waitPeriodMs) ) {
-        this.begunWaiting = false;
-        this.begunWaitingOnDoor = true
-        this.waitingOnDoorSince=Date.now();
-        if(this.currentStopSpot===null){
-          throw new Error("Station_Stop_Spot is null")
-        }
-        this.closeDoors(this.currentStopSpot.Which_Door_Of_A_Car_To_Open_And_Close);
-        }
-      } else if(this.begunWaitingOnDoor) {
-        if(Date.now() > (this.waitOnDoorPeriodMs + this.waitingOnDoorSince)) {
-        this.begunWaitingOnDoor = false;
-        this.resumeMovement();
-            }
-      } else {
-       this.checkForUpcomingStopSpot();
-      }
+
         super.updateState();
     }
 
-checkForUpcomingStopSpot() {
-    if (!this.isMoving()) return; // no point checking if stationary
-    const frontCar = this.cars[0];
-
-    // Find the closest collision where the other entity is a StopSpot
-    const collision = Collision_Stuff.getClosestCollision(
-        frontCar,
-        (other) => other.hasTag("Station_Stop_Spot")
-    );
-
-    if (!collision) {
-      return;
-    }
-     const stopSpotEntity = collision.entityB as Station_Stop_Spot;
-    if((this.currentStopSpot === stopSpotEntity )) {
-      return;
-    }
-
-        this.begunWaiting = true;
-        this.waitingSince = Date.now();
-        this.currentStopSpot = stopSpotEntity;
-        this.openDoors(this.currentStopSpot.Which_Door_Of_A_Car_To_Open_And_Close)
-        this.alignCars(collision);
-        this.pauseMovement();
-}
-openDoors(dir: Direction) {
-  this.cars.forEach(car=> {
-    car.openDoors(dir);
-  })
-}
-closeDoors(dir: Direction) {
-  this.cars.forEach(car=> {
-    car.closeDoors(dir);
-  })
-}
 
 alignCars(collision: Collision_Info) {
     // Calculate how far we need to shift everything
