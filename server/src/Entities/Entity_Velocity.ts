@@ -1,6 +1,7 @@
 import { Entity_Velocity_On_Axis, type Velocity_Component  }  from "#root/Entities/Entity_Velocity_On_Axis.js"
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Direction } from "#root/Type_Stuff.js";
+import  { newLog } from "#root/My_Log.js";
 export {type Velocity_Component }
 export class Entity_Velocity {
   x: Entity_Velocity_On_Axis;
@@ -17,8 +18,8 @@ export class Entity_Velocity {
   
   
   nullify() {
-    this.x.nullify();
-    this.y.nullify();
+    this.x.components =[]
+    this.y.components=[];
 }
 
 
@@ -78,6 +79,7 @@ directionToAxisVelocity({direction, key, value}:{direction: Direction, key: Velo
 
 
 directionToVelocity({direction, key, value}:{direction: Direction, key: Velocity_Component['key'], value: Velocity_Component['value']}) {
+
    const velAxis = this.directionToAxisVelocity({direction, key, value});
    switch(velAxis.axis) {
      case "y":

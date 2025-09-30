@@ -10,10 +10,11 @@ let loggingEnabled = false; // flip to false to disable all logs
 let newLoggingEnabled = true;
 
 const logCategories: {categoryName:Log_Category, loggingEnabled: boolean}[] = [
-  {categoryName:"World_Tick", loggingEnabled: true},
-  {categoryName:"Planet", loggingEnabled: true},
-  {categoryName:"Train_Car", loggingEnabled: true},
-  {categoryName:"Rail_Switch_Wall", loggingEnabled: true},
+  {categoryName:"World_Tick", loggingEnabled: false},
+  {categoryName:"Planet", loggingEnabled: false},
+  {categoryName:"Train_Car", loggingEnabled: false},
+  {categoryName:"Rail_Switch_Wall", loggingEnabled: false},
+  {categoryName:"Entity_Velocity", loggingEnabled: true},
   
   ];
 

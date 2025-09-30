@@ -1,4 +1,6 @@
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
+import  { newLog } from "#root/My_Log.js";
+
 
 export type Velocity_Component = {
     key: string,
@@ -47,7 +49,8 @@ class Entity_Velocity_On_Axis {
     }
 
     Add_Component(component: Velocity_Component) {
-      
+        newLog({logCategory:"Entity_Velocity",message:`xComps ${this.components.length}`})
+  newLog({logCategory:"Entity_Velocity",message:`yComps: ${this.components.length}`})
       // copy because otherwise... well, we basically assign same object to every entity
       const componentCopy = {...component};
          const existingComponent = this.components.find(thisComponent => thisComponent.key === component.key);
