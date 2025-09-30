@@ -97,7 +97,7 @@ collisionManager() {
     x: this.x,
     y: this.y,
     visionRange: this.visionRange,
- //   percentageOnPlanet: this.getPositionRelativeToPlanet(),
+
   };
 
   try {
@@ -119,8 +119,8 @@ collisionManager() {
     const file = fs.readFileSync(savePath, "utf-8");
     const data = JSON.parse(file);
     this.visionRange = data.visionRange;
-  //  this.percentageOnPlanet = data.percentageOnPlanet;
-//    this.setPositionRelativeToPlanet(this.percentageOnPlanet);
+    this.x = data.x
+    this.y = data.y
   } catch (err) {
     console.error("Failed to read player position:", err);
   }

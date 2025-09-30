@@ -390,6 +390,74 @@ static surroundThirdWithWalls() {
    const something = (this.carSquareSize-10)/4*2;
    const wall5= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: something  });
    wall5.setY(wall5.y+something)
+   const wall6 = this.wallHelperPlaceNextTo({
+     wall: wall5, direction:"down", length: something
+   })
+      wall6.setY(wall6.y+something)
+      
+   const wall7 = this.wallHelperPlaceNextTo({
+     wall: wall6, direction:"down", length: something
+   })
+      wall7.setY(wall7.y+something)
+      
+   const wall8 = this.wallHelperPlaceNextTo({
+     wall: wall7, direction:"down", length: 2000
+   })
+      wall8.setY(wall8.y+something)
+      
+   const wall9 = this.wallHelperPlaceNextTo({
+     wall: wall8, direction:"right", length: 700
+   })
+   
+   // length controls y of platform wall
+   const wall10= this.wallHelperPlaceNextTo({
+     wall: wall9, direction:"down", length: 600
+   })
+   
+   // length controls x of next platform wall
+   const wall11= this.wallHelperPlaceNextTo({
+     wall: wall10, direction:"right", length: 4800
+   })
+   
+   const wall12= this.wallHelperPlaceNextTo({
+     wall: wall11, direction:"down", length: 4800
+   })
+   
+   const wall13= this.wallHelperPlaceNextTo({
+     wall: wall12, direction:"right", length: 6000
+   })
+   
+   const wall14= this.wallHelperPlaceNextTo({
+     wall: wall13, direction:"down", length: 1700
+   })
+   const wall15= this.wallHelperPlaceNextTo({
+     wall: wall14, direction:"left", length: 2000
+   })
+  
+  // this one determines y of the long platform wall
+   const wall16= this.wallHelperPlaceNextTo({
+     wall: wall15, direction:"up", length: 1000
+   })
+   
+   const wall17= this.wallHelperPlaceNextTo({
+     wall: wall16, direction:"left", length: 5000
+   })
+   const wall18= this.wallHelperPlaceNextTo({
+     wall: wall17, direction:"up", length: 4500
+   })
+   const wall19= this.wallHelperPlaceNextTo({
+     wall: wall18, direction:"left", length: 500
+   })
+   const wall20= this.wallHelperPlaceNextTo({
+     wall: wall19, direction:"up", length: 300
+   })
+  
+   const wall21= this.wallHelperPlaceNextTo({
+     wall: wall20, direction:"left", length: 4700
+   })
+   const wall22= this.wallHelperPlaceNextTo({
+     wall: wall21, direction:"up", length: 6300
+   })
   
    
    

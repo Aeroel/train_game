@@ -25,25 +25,13 @@ class Socket_Processor {
         Helper_Functions.Run_This_Function_Upon_Initiation_Of_A_Socket_Connection(socket);
         socket.emit("welcome", "You have successfully connected to the server. Welcome!");
         const newPlayerEntity = new Player();
-    /*    const planet = World.getEntities().find(e=>e.hasTag("Planet"));
-        if(!planet) {
-          throw new Error("Could not find planet entity")
-        }
 
-   //     newPlayerEntity.readSavedState();
-       newPlayerEntity.setPositionRelativeToPlanet({
-         yPercentage:11,
-         xPercentage:11,
-       })*/
-       newPlayerEntity.setPosition({
-         x:1325,
-         y: 9000,
-       })
         newPlayerEntity.setWidth(25);
         newPlayerEntity.setHeight(25);
         newPlayerEntity.setVisionRange(5000);
 
         newPlayerEntity.setSocketId(socket.id);
+         newPlayerEntity.readSavedState();
         World.addEntity(newPlayerEntity);
        this.consoleStuff(socket, newPlayerEntity)
 

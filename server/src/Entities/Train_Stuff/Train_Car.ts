@@ -56,7 +56,7 @@ class Train_Car extends Base_Entity {
 
   Walls_And_Doors = this.Create_And_Return_Car_Walls_And_Doors();
 
-  normalSpeedForBothAxes = 0.10 * 2.5;
+  normalSpeedForBothAxes = 0.10 * 5;
   currentSpeedForBothAxes = this.normalSpeedForBothAxes;
   twoPossibleMovementMotions = ["backwards", "forwards"];
 
@@ -184,7 +184,7 @@ motionsDirections: Train_Car_Motions_Directions = {
       destinationY = wall.y - this.height;
       destinationX = this.x
     } else if (collisionNormal.y === 1){
-      destinationY = wall.y - this.height;
+      destinationY = wall.y + wall.height;
       destinationX = this.x
     }
     
