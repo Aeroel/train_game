@@ -10,7 +10,7 @@ import { World } from "#root/World.js";
 import { World_Tick} from "#root/World_Tick.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import {Pushable_Entity_With_Unpushable_Entities} from "#root/Collision_Stuff/Collision_Resolution_Methods/Pushable_Entity_With_Unpushable_Entities.js"
-import { Train_Car_Behaviour } from "#root/Entities/Train_Stuff/Train_Car_Behaviour.js";
+
 import { Train_Car_Static } from "#root/Entities/Train_Stuff/Train_Car_Static.js"
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
 import type { Direction, Orientation, Point, Position, Collision_Info, Face} from "#root/Type_Stuff.js";
@@ -71,7 +71,6 @@ motionsDirections: Train_Car_Motions_Directions = {
 
   Rail_Movement_Key = `Movement_Car_Id_${this.id}`;
 
-  behaviour: Train_Car_Behaviour;
   bulk_of_code: Bulk_Of_Train_Car_Code;
   orientation: Orientation = "horizontal"
 
@@ -91,7 +90,7 @@ motionsDirections: Train_Car_Motions_Directions = {
       this.orientation = "horizontal"
     }
 
-    this.behaviour = new Train_Car_Behaviour(this);
+
     this.bulk_of_code = new Bulk_Of_Train_Car_Code(this);
 
     this.train = train;

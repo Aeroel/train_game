@@ -1,5 +1,8 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
+import type { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
 import type { Direction } from "#root/Type_Stuff.js";
+import { My_Events } from "#root/My_Events.js";
+import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 export {
     Station_Stop_Spot
 }
@@ -20,5 +23,23 @@ class Station_Stop_Spot extends Base_Entity {
         this.width = this.height;
         this.Which_Door_Of_A_Car_To_Open_And_Close = Which_Door_Of_A_Car_To_Open_And_Close
         this.addTag("Station_Stop_Spot");
+    }
+    updateState() {
+      const thisSpot = this;
+      const trainContact = Collision_Stuff.getClosestCollision(this, (contactEntity)=>{
+        if(!contactEntity.hasTag("Train_Car")) {
+          return false;
+        }
+        const trainCar = <Train_Car>contactEntity;
+        if(trainCar.train.spot === thisSpot) {
+          return false;
+        }
+        return true;
+      })
+      if(trainContact) {
+
+        My_Events.emit("Train_Reached_Station", {trainCar: trainContact.entityB, stopSpot: this})
+      }
+      super.updateState();
     }
 }

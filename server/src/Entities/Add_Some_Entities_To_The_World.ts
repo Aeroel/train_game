@@ -481,7 +481,25 @@ static surroundThirdWithWalls() {
   const s1y = 7400;
   
   
-  this.placeStation(s1x, s1y, stationSize, s1DistBetweenPlatforms, "horizontal")
+  const s1StopSpotWalls = this.placeStation(s1x, s1y, stationSize, s1DistBetweenPlatforms, "horizontal")
+  const s1WallLeft = s1StopSpotWalls[0];
+  const s1WallRight = s1StopSpotWalls[1];
+  const s1StopSpot1 = World.addEntity(
+      new Station_Stop_Spot({x: s1WallLeft.x + s1WallLeft.width, y: s1WallLeft.y, Which_Door_Of_A_Car_To_Open_And_Close:"left"})
+      )
+  s1StopSpot1.setX(900);
+  s1StopSpot1.setWidth(this.carSquareSize);
+  s1StopSpot1.setHeight(this.carSquareSize/5);
+      
+  const s1StopSpot2 = World.addEntity(
+      new Station_Stop_Spot({x: s1WallRight.x, y: s1WallRight.y, Which_Door_Of_A_Car_To_Open_And_Close:"right"})
+      )
+      s1StopSpot2.setWidth(this.carSquareSize);
+      s1StopSpot2.setHeight(this.carSquareSize/5);
+      s1StopSpot2.setX(1300)
+      s1StopSpot2.setY(s1StopSpot2.y - s1StopSpot2.height)
+
+  
        // station2 walls
   const s2x = 3100;
   const s2y = s2Reference.y
@@ -515,6 +533,7 @@ static surroundThirdWithWalls() {
 }
 
 static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPlatforms: number, orientation: Orientation) {
+   const stopSpotWalls: Base_Entity[] =[];
      if(orientation === "horizontal") {
        const slidingDoorLength = stationSize/10;
      const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"left", length:stationSize});
@@ -541,16 +560,21 @@ static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPla
       const stationWall4 = this.wallHelperPlace({x: sx+sDistBetweenPlatforms ,y: sy,direction:"right", length:stationSize});
          const stationWall5 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"down", length:stationSize});
      const stationWall6 = this.wallHelperPlaceNextTo({wall: stationWall5 ,direction:"left", length:stationSize});
-     return
-     } else if (orientation==="vertical") {
+     stopSpotWalls.push(stationWall3)
+     stopSpotWalls.push(stationWall4)
+     return stopSpotWalls;
+     } else  {
             const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"down", length:stationSize});
      const stationWall2 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"right", length:stationSize});
      const stationWall3 = this.wallHelperPlaceNextTo({wall: stationWall2 ,direction:"up", length:stationSize});
      
-     // right platform
+     // bottom platform
       const stationWall4 = this.wallHelperPlace({x: sx ,y: sy - sDistBetweenPlatforms,direction:"up", length:stationSize});
          const stationWall5 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"right", length:stationSize});
      const stationWall6 = this.wallHelperPlaceNextTo({wall: stationWall5 ,direction:"down", length:stationSize});
+    stopSpotWalls.push(stationWall3)
+     stopSpotWalls.push(stationWall4)
+     return stopSpotWalls;
      }
      
   }

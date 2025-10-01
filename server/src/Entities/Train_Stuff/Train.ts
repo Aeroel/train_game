@@ -2,7 +2,7 @@ import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { log } from "#root/My_Log.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
-import type { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js"
+import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js"
 import { Train_Car, type Train_Car_Motion_Directions } from "#root/Entities/Train_Stuff/Train_Car.js";
 import type { Box, Direction, Position, Collision_Info } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
@@ -14,6 +14,7 @@ export class Train extends Base_Entity {
     x = 1;
     y = 1;
     cars: Train_Car[] = new Array();
+    spot: Station_Stop_Spot = new Station_Stop_Spot({x:0,y:0, Which_Door_Of_A_Car_To_Open_And_Close:"left"})
     movementMotion: Train_Movement_Motion = "forwards";
 
     Forwards_Movement_Directions: Train_Car_Motion_Directions =[];
@@ -51,17 +52,32 @@ export class Train extends Base_Entity {
 
 alignCars(collision: Collision_Info) {
     // Calculate how far we need to shift everything
-    const frontCar = this.cars[0];
+    const frontCar = collision.entityB;
+    const stopSpot = collision.entityA;
+    const normal = collision.normal;
    // Stop movement for the entire train immediately 
-    const before = Collision_Stuff.timeToPosition(this, collision.time);
+   const before = {x:0,y:0}
+if(normal.y === -1) {
+  before.x = frontCar.x;
+  before.y = stopSpot.y - frontCar.height; 
+} else if (normal.y === 1) {
+  before.x = frontCar.x;
+  before.y = stopSpot.y+stopSpot.height; 
+} else if (normal.x === -1) {
+    before.x = stopSpot.x - frontCar.width;
+    before.y = frontCar.y;
+} else if (normal.x === 1) {
+      before.x = stopSpot.x + stopSpot.width;
+    before.y = frontCar.y;
+}
 
     const deltaX = before.x - frontCar.x;
     const deltaY = before.y - frontCar.y;
 
     // Apply the delta to every car and update their internals
     for (const car of this.cars) {
-        car.moveCarContentsAndPassengersByDelta(deltaX, deltaY);
-        car.setXY(car.x + deltaX, car.y + deltaY);
+        car.moveCarAndItsContentsAndPassengers({x: car.x+deltaX, y:car.y+deltaY});
+
     }
 }
 
@@ -116,8 +132,8 @@ spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_D
     }
     
     
-    stopAllCars() {
-        this.stopMovement();
+    stop() {
+        this.pauseMovement();
     }
     
     stopMovement() {
