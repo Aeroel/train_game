@@ -133,7 +133,8 @@ spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_D
     
     
     stop() {
-        this.pauseMovement();
+      throw new Error("hehe")
+       // this.pauseMovement();
     }
     
     stopMovement() {

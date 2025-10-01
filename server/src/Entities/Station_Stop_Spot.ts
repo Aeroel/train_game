@@ -1,7 +1,7 @@
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Train_Car } from "#root/Entities/Train_Stuff/Train_Car.js";
 import type { Direction } from "#root/Type_Stuff.js";
-import { My_Events } from "#root/My_Events.js";
+import { My_Events, type Train_Reached_Station_Event } from "#root/My_Events.js";
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
 export {
     Station_Stop_Spot
@@ -38,7 +38,8 @@ class Station_Stop_Spot extends Base_Entity {
       })
       if(trainContact) {
 
-        My_Events.emit("Train_Reached_Station", {trainCar: trainContact.entityB, stopSpot: this})
+       const eventData: Train_Reached_Station_Event = {trainCar: trainContact.entityB,collision: trainContact, stopSpot: this};
+        My_Events.emit("Train_Reached_Station", eventData)
       }
       super.updateState();
     }

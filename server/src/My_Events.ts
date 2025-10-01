@@ -17,4 +17,7 @@ export class My_Events {
       listeners.forEach(listener => listener(data));
     }
   }
+  static clear() {
+    My_Events.events.clear();
+  }
 }

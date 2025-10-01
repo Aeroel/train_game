@@ -1,5 +1,6 @@
 import { EmitStuff } from "#root/World_State_Emission_Stuff/EmitStuff.js";
 import { EntitySorter } from "#root/EntitySorter.js";
+import { My_Events } from "#root/My_Events.js";
 import { World } from "#root/World.js";
 import { newLog, type New_Log_Input} from "#root/My_Log.js"
 import { My_Assert} from "#root/My_Assert.js"
@@ -188,6 +189,7 @@ static getTickIdStr() {
     
   }
   static Clean_Up() {
+    My_Events.clear();
         World.getCurrentEntities().forEach(entity => {
       entity.Clean_Up();
     });

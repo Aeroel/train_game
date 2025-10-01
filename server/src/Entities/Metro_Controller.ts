@@ -4,7 +4,7 @@ import type { Station_Stop_Spot} from '#root/Entities/Station_Stop_Spot.js'
 import type { Collision_Info} from '#root/Type_Stuff.js'
 import { My_Events } from '#root/My_Events.js'
 
-class Metro_Controller extends Base_Entity {
+export class Metro_Controller extends Base_Entity {
   updateState() {
     My_Events.addEventListener("Train_Reached_Station", (event:
     {
