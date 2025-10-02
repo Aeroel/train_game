@@ -450,7 +450,31 @@ setMotionDirections(motion: Train_Car_Motion, directions: Train_Car_Motion_Direc
   determine_new_velocity_for_movement_along_the_rail(): {vx: Velocity_Component, vy: Velocity_Component} {
     return this.bulk_of_code.determine_new_velocity_for_movement_along_the_rail();
   }
+  areDoorsClosed(dir:Direction) {
+    return this.doorsAre("closed", dir)
+  }
+  areDoorsOpened(dir:Direction) {
+    return this.doorsAre("opened", dir)
+  }
+doorsAre(state:"opened"|"closed", dir: Direction) {
+  let choosenDoor: Sliding_Door;
+  switch(dir) {
+    case "right":
+            choosenDoor= this.Walls_And_Doors.Right_Side_Top_Door;
+    break;
+    case "left":
+          choosenDoor=  this.Walls_And_Doors.Left_Side_Top_Door;
 
+    break;
+    case "up":
+           choosenDoor= this.Walls_And_Doors.Top_Left_Door
+    break;
+    case "down":
+           choosenDoor= this.Walls_And_Doors.Bottom_Left_Door
+    break;
+  }
+  return choosenDoor.getState() === state;
+}
 closeDoors(dir: Direction) {
   switch(dir) {
     case "right":

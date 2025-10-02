@@ -1,4 +1,5 @@
 import { Collision_Stuff } from "#root/Collision_Stuff/Collision_Stuff.js";
+import { My_Assert } from "#root/My_Assert.js";
 import { Base_Entity } from "#root/Entities/Base_Entity.js";
 import { log } from "#root/My_Log.js";
 import type { Rail } from "#root/Entities/Train_Stuff/Rail.js";
@@ -57,7 +58,7 @@ stateHandler() {
       this.setState("waitingForDoorsToOpen")
     break;
     case "waitingForDoorsToOpen":
-      if(this.doorsAreOpen()) {
+      if(this.doorsAreOpened()) {
         this.stopTime = Date.now();
         this.setState("waitingSomeTimeAtStation")
       }
@@ -78,6 +79,25 @@ stateHandler() {
        this.resumeMovement();
        this.setState("going")
     break;
+  }
+}
+
+doorsAreClosed() {
+  return this.cars[0].areDoorsClosed(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
+}
+doorsAreOpened() {
+    return this.cars[0].areDoorsOpened(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
+}
+openDoors() {
+
+  for (const trainCar of this.cars) {
+      trainCar.openDoors(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
+  }
+}
+closeDoors() {
+
+  for (const trainCar of this.cars) {
+      trainCar.closeDoors(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
   }
 }
 
