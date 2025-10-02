@@ -21,7 +21,7 @@ import { My_Assert } from "#root/My_Assert.js";
 import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Railway_Placer, type Railway_Placer_Required_Inputs } from "#root/Entities/Railway_Placer.js";
 import { Chained_Placement } from "#root/Chained_Placement.js";
-import { Metro_Controller } from "#root/Entities/Metro_Controller.js";
+import { Metro_Station } from "#root/Entities/Metro_Station.js";
 
 export { Add_Some_Entities_To_The_World };
 
@@ -57,7 +57,7 @@ class Add_Some_Entities_To_The_World {
 
   }
     static doItNow() {
-    World.addEntity(new Metro_Controller())
+    World.addEntity(new Metro_Station())
 
      const planet =   Add_Some_Entities_To_The_World.addThePlanet();
         
