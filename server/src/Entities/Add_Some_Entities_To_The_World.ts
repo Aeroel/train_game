@@ -483,7 +483,7 @@ static surroundThirdWithWalls() {
   const s3DistBetweenPlatforms = 800;
   const s4DistBetweenPlatforms = 600;
   // station1 walls
-  const s1x = s1Reference.x;
+  const s1x = s1Reference.x + s1Reference.width + 50;
   const s1y = 7400;
   
   
@@ -507,6 +507,9 @@ static surroundThirdWithWalls() {
       "up"
       )
     )
+    const s1WallBetweenDoors2And3= World.addEntity(
+      new Wall()
+      )
   const s1SlidingDoor3 = World.addEntity(
     new Sliding_Door(
       "down"
@@ -517,16 +520,27 @@ static surroundThirdWithWalls() {
       "up"
       )
     )
+    
+            const s1WallBetweenDoors4And5= World.addEntity(
+      new Wall()
+      )
+    
   const s1SlidingDoor5 = World.addEntity(
     new Sliding_Door(
       "down"
       )
     )
+
   const s1SlidingDoor6 = World.addEntity(
     new Sliding_Door(
       "up"
       )
     )
+    
+     const s1WallBetweenDoors6And7= World.addEntity(
+      new Wall()
+      )
+    
   const s1SlidingDoor7 = World.addEntity(
     new Sliding_Door(
       "down"
@@ -537,19 +551,34 @@ static surroundThirdWithWalls() {
       "up"
       )
     )
+         const s1WallAboveDoor8= World.addEntity(
+      new Wall()
+      )
     
     const css14 = Add_Some_Entities_To_The_World.carSquareSize / 4;
     s1SlidingDoor1.setXYWH(s1StopSpot1.x - this.railwayFenceWallThickness, s1StopSpot1.y - css14 , this.railwayFenceWallThickness, css14);
     s1SlidingDoor2.setXYWH(s1SlidingDoor1.x, s1SlidingDoor1.y - css14, this.railwayFenceWallThickness, css14);
     
     s1SlidingDoor3.setXYWH(s1SlidingDoor2.x, s1SlidingDoor2.y - css14 - css14 - css14 , this.railwayFenceWallThickness, css14);
+    s1WallBetweenDoors2And3.setXYWH(s1SlidingDoor3.x, s1SlidingDoor3.y + s1SlidingDoor3.height, s1SlidingDoor3.width, (s1SlidingDoor2.y - s1SlidingDoor2.height - s1SlidingDoor3.y))
     s1SlidingDoor4.setXYWH(s1SlidingDoor3.x, s1SlidingDoor3.y - css14, this.railwayFenceWallThickness, css14);
    
+   
     s1SlidingDoor5.setXYWH(s1SlidingDoor4.x, s1SlidingDoor4.y - css14 - css14 - css14 , this.railwayFenceWallThickness, css14);
+    
+               s1WallBetweenDoors4And5.setXYWH(s1SlidingDoor5.x, s1SlidingDoor5.y + s1SlidingDoor5.height, s1SlidingDoor5.width, (s1SlidingDoor4.y - s1SlidingDoor4.height - s1SlidingDoor5.y))
+    
+
     s1SlidingDoor6.setXYWH(s1SlidingDoor5.x, s1SlidingDoor5.y - css14, this.railwayFenceWallThickness, css14);
 
     s1SlidingDoor7.setXYWH(s1SlidingDoor6.x, s1SlidingDoor6.y - css14 - css14 - css14 , this.railwayFenceWallThickness, css14);
+    
+       s1WallBetweenDoors6And7.setXYWH(s1SlidingDoor7.x, s1SlidingDoor7.y + s1SlidingDoor7.height, s1SlidingDoor7.width, (s1SlidingDoor6.y - s1SlidingDoor6.height - s1SlidingDoor7.y))
+    
+    
     s1SlidingDoor8.setXYWH(s1SlidingDoor7.x, s1SlidingDoor7.y - css14, this.railwayFenceWallThickness, css14);
+   
+   s1WallAboveDoor8.setXYWH(s1SlidingDoor8.x, s1SlidingDoor8.y - (stationSize*0.4), this.railwayFenceWallThickness, (stationSize*0.4))
    
          // doors ended above
       
