@@ -53,14 +53,26 @@ stateHandler() {
       // nothing
     break;
     case "stoppingAtStation":
-      this.stopTime = Date.now();
-      this.setState("waitingSomeTimeAtStation")
+      this.openDoors();
+      this.setState("waitingForDoorsToOpen")
+    break;
+    case "waitingForDoorsToOpen":
+      if(this.doorsAreOpen()) {
+        this.stopTime = Date.now();
+        this.setState("waitingSomeTimeAtStation")
+      }
     break;
     case "waitingSomeTimeAtStation":
       const currTime = Date.now();
         if(currTime > (this.stopTime + this.stopFor)) {
-          this.setState("leavingStation")
+          this.closeDoors();
+          this.setState("waitingForDoorsToClose")
         }
+    break;
+    case "waitingForDoorsToClose":
+      if(this.doorsAreClosed()) {
+        this.setState("leavingStation");
+      }
     break;
     case "leavingStation":
        this.resumeMovement();
