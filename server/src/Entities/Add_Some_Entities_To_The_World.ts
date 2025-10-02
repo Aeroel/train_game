@@ -539,7 +539,7 @@ static surroundThirdWithWalls() {
     )
     
     const css14 = Add_Some_Entities_To_The_World.carSquareSize / 4;
-    s1SlidingDoor1.setXYWH(s1StopSpot1.x - this.railwayFenceWallThickness, s1StopSpot1.y - css14 - css14 , this.railwayFenceWallThickness, css14);
+    s1SlidingDoor1.setXYWH(s1StopSpot1.x - this.railwayFenceWallThickness, s1StopSpot1.y - css14 , this.railwayFenceWallThickness, css14);
     s1SlidingDoor2.setXYWH(s1SlidingDoor1.x, s1SlidingDoor1.y - css14, this.railwayFenceWallThickness, css14);
     
     s1SlidingDoor3.setXYWH(s1SlidingDoor2.x, s1SlidingDoor2.y - css14 - css14 - css14 , this.railwayFenceWallThickness, css14);
