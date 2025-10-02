@@ -23,7 +23,7 @@ function closestERN(x: number, level: number = 7): number {
 
 function getPercentOfWhole(value:number, whole: number) {
   if (whole === 0) {
-        throw new Error("Whole cannot be zero");
+        return 0;
     }
     
     // Calculate percentage and round to nearest whole number

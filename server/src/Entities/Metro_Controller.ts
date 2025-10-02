@@ -33,7 +33,12 @@ Train_Reached_Station)=>{
        const station = thisController.findStation(spot);
        thisController.openStationDoors(station, spot.Which_Door_Of_A_Car_To_Open_And_Close)
     }
+      const Doors_Of_Train_Closing_Handler = () => {
+       const station = thisController.findStation(spot);
+       thisController.closeStationDoors(station, spot.Which_Door_Of_A_Car_To_Open_And_Close)
+    }
       My_Events.addEventListenerOnce(`Doors_Of_Train_${train.id}_Opening`, Doors_Of_Train_Opening_Handler)
+      My_Events.addEventListenerOnce(`Doors_Of_Train_${train.id}_Closing`, Doors_Of_Train_Closing_Handler)
     };
         My_Events.addEventListener(`Train_Reached_Station`,Train_Reached_Station_Handler)
   }
