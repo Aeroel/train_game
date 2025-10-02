@@ -76,16 +76,17 @@ alignCars(collision: Collision_Info) {
     const normal = collision.normal;
    // Stop movement for the entire train immediately 
    const before = {x:0,y:0}
-if(normal.y === -1) {
+//   throw new Error(JSON.stringify(collision.normal))
+if(normal.y === 1) {
   before.x = frontCar.x;
   before.y = stopSpot.y - frontCar.height; 
-} else if (normal.y === 1) {
+} else if (normal.y === -1) {
   before.x = frontCar.x;
   before.y = stopSpot.y+stopSpot.height; 
-} else if (normal.x === -1) {
+} else if (normal.x === 1) {
     before.x = stopSpot.x - frontCar.width;
     before.y = frontCar.y;
-} else if (normal.x === 1) {
+} else if (normal.x === -1) {
       before.x = stopSpot.x + stopSpot.width;
     before.y = frontCar.y;
 }
