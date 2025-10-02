@@ -22,11 +22,13 @@ import { Rail_Switch_Wall} from "#root/Entities/Train_Stuff/Rail_Switch_Wall.js"
 import { Railway_Placer, type Railway_Placer_Required_Inputs } from "#root/Entities/Railway_Placer.js";
 import { Chained_Placement } from "#root/Chained_Placement.js";
 import { Metro_Station } from "#root/Entities/Metro_Station.js";
+import { Metro_Controller } from "#root/Entities/Metro_Controller.js";
 
 export { Add_Some_Entities_To_The_World };
 
 
 class Add_Some_Entities_To_The_World {
+  static metroController: Metro_Controller =  World.addEntity(new Metro_Controller());
     static carSquareSize = 150;
     static railLength = 1000;
     static railwayFenceWallThickness = 50;
@@ -558,7 +560,7 @@ static surroundThirdWithWalls() {
       new Wall()
       )
     
-        World.addEntity(new Metro_Station())
+      
     const css14 = Add_Some_Entities_To_The_World.carSquareSize / 4;
     s1SlidingDoor1.setXYWH(s1StopSpot1.x - this.railwayFenceWallThickness, s1StopSpot1.y - css14 - css14 , this.railwayFenceWallThickness, css14);
     s1WallBelowDoor1.setXYWH(s1SlidingDoor1.x, s1SlidingDoor1.y + s1SlidingDoor1.height, this.railwayFenceWallThickness, css14);
@@ -598,6 +600,20 @@ static surroundThirdWithWalls() {
       s1StopSpot2.setX(1300)
       s1StopSpot2.setY(s1StopSpot2.y - s1StopSpot2.height)
 
+
+      const ms1=  World.addEntity(new Metro_Station());
+      this.metroController.addStation({
+        station: ms1, stopSpots: [s1StopSpot1, s1StopSpot2], doors: {left: [
+          s1SlidingDoor1,
+          s1SlidingDoor2,
+          s1SlidingDoor3,
+          s1SlidingDoor4,
+          s1SlidingDoor5,
+          s1SlidingDoor6,
+          s1SlidingDoor7,
+          s1SlidingDoor8,
+          ], right:[], down:[], up:[]}
+      })
   
        // station2 walls
   const s2x = 3100;
