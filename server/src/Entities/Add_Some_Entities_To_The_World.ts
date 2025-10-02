@@ -527,6 +527,16 @@ static surroundThirdWithWalls() {
       "up"
       )
     )
+  const s1SlidingDoor7 = World.addEntity(
+    new Sliding_Door(
+      "down"
+      )
+    )
+  const s1SlidingDoor8 = World.addEntity(
+    new Sliding_Door(
+      "up"
+      )
+    )
     
     const css14 = Add_Some_Entities_To_The_World.carSquareSize / 4;
     s1SlidingDoor1.setXYWH(s1StopSpot1.x - this.railwayFenceWallThickness, s1StopSpot1.y - css14 - css14 , this.railwayFenceWallThickness, css14);
@@ -537,6 +547,9 @@ static surroundThirdWithWalls() {
    
     s1SlidingDoor5.setXYWH(s1SlidingDoor4.x, s1SlidingDoor4.y - css14 - css14 - css14 , this.railwayFenceWallThickness, css14);
     s1SlidingDoor6.setXYWH(s1SlidingDoor5.x, s1SlidingDoor5.y - css14, this.railwayFenceWallThickness, css14);
+
+    s1SlidingDoor7.setXYWH(s1SlidingDoor6.x, s1SlidingDoor6.y - css14 - css14 - css14 , this.railwayFenceWallThickness, css14);
+    s1SlidingDoor8.setXYWH(s1SlidingDoor7.x, s1SlidingDoor7.y - css14, this.railwayFenceWallThickness, css14);
    
          // doors ended above
       
