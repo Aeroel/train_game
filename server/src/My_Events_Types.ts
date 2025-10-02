@@ -7,3 +7,10 @@ export type Train_Reached_Station = {
      stopSpot: Station_Stop_Spot,
      collision: Collision_Info
     }
+
+export type Doors_Of_Train_Opening = {
+    train: Train,
+    }
+export type Doors_Of_Train_Closing = {
+    train: Train,
+    }

@@ -17,5 +17,5 @@ export class Metro_Station extends Base_Entity {
 
     super.updateState();
   }
-  
+
 }

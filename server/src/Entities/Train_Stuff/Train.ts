@@ -91,13 +91,13 @@ doorsAreOpened() {
     return this.cars[0].areDoorsOpened(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
 }
 openDoors() {
- My_Events.emit(`Doors_Of_Train_At_Stop_Spot_${this.spot.id}_Opening`, {});
+ My_Events.emit(`Doors_Of_Train_${this.id}_Opening`, {});
   for (const trainCar of this.cars) {
       trainCar.openDoors(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
   }
 }
 closeDoors() {
- My_Events.emit(`Doors_Of_Train_At_Stop_Spot_${this.spot.id}_Closing`, {});
+ My_Events.emit(`Doors_Of_Train_${this.id}_Closing`, {});
   for (const trainCar of this.cars) {
       trainCar.closeDoors(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
   }

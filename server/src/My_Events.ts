@@ -1,7 +1,7 @@
 
 type Event_Callback = ((event: any) => void);
 
-export type { Train_Reached_Station} from "#root/My_Events_Types.js"
+export type { Doors_Of_Train_Opening, Doors_Of_Train_Closing, Train_Reached_Station} from "#root/My_Events_Types.js"
 
 
 export class My_Events {
