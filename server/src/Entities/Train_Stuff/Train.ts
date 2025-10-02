@@ -10,25 +10,19 @@ import { World } from "#root/World.js";
 export type Train_Movement_Motion = null| "backwards" | "forwards"
 
 export class Train extends Base_Entity {
-    state: "waiting_at_station" | "in_transit" = "in_transit";
     x = 1;
     y = 1;
     cars: Train_Car[] = new Array();
-    spot: Station_Stop_Spot = new Station_Stop_Spot({x:0,y:0, Which_Door_Of_A_Car_To_Open_And_Close:"left"})
+    spot: Station_Stop_Spot = new Station_Stop_Spot({x:0,y:0, Which_Door_Of_A_Car_To_Open_And_Close:"left"});
+    state: "stoppingAtStation" | "waitingForDoorsToOpen" | "waitingSomeTimeAtStation" |"waitingForDoorsToClose" |"leavingStation"| "going" = "going"
     movementMotion: Train_Movement_Motion = "forwards";
 
     Forwards_Movement_Directions: Train_Car_Motion_Directions =[];
     Backwards_Movement_Directions: Train_Car_Motion_Directions=[];
         beforePauseMovementMotion: Train_Movement_Motion = null;
         
-        currentStopSpot: Station_Stop_Spot | null = null;
-        begunWaiting = false;
-        waitPeriodMs= 10 * 1000;
-        waitOnDoorPeriodMs= 5 * 1000;
-        waitingSince = 0;
-        begunWaitingOnDoor = false;
-        waitingOnDoorSince =0;
-    
+    stopTime= 0;
+    stopFor=10_000;
     constructor(rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
         super();
         this.movementMotion = movementMotion;
@@ -41,14 +35,39 @@ export class Train extends Base_Entity {
 
     }
    
-   
+   setState(state: Train['state']) {
+     this.state = state;
+   }
     
     
     updateState() {
-
+       this.stateHandler();
         super.updateState();
     }
-
+    getState() {
+      return this.state;
+    }
+stateHandler() {
+  switch(this.getState()) {
+    case "going":
+      // nothing
+    break;
+    case "stoppingAtStation":
+      this.stopTime = Date.now();
+      this.setState("waitingSomeTimeAtStation")
+    break;
+    case "waitingSomeTimeAtStation":
+      const currTime = Date.now();
+        if(currTime > (this.stopTime + this.stopFor)) {
+          this.setState("leavingStation")
+        }
+    break;
+    case "leavingStation":
+       this.resumeMovement();
+       this.setState("going")
+    break;
+  }
+}
 
 alignCars(collision: Collision_Info) {
     // Calculate how far we need to shift everything

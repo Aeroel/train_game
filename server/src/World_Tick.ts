@@ -189,7 +189,7 @@ static getTickIdStr() {
     
   }
   static Clean_Up() {
-    My_Events.clear();
+
         World.getCurrentEntities().forEach(entity => {
       entity.Clean_Up();
     });

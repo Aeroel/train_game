@@ -464,15 +464,20 @@ static surroundThirdWithWalls() {
    })
    // 22 is to be used as reference for station 1
    const wall22= this.wallHelperPlaceNextTo({
-     wall: wall21, direction:"up", length: 6300
+     wall: wall21, direction:"up", length: 3250
    })
+   const stationSize = 800;
+  const wall23= this.wallHelperPlaceNextTo({
+     wall: wall22, direction:"up", length: 6300-3250-stationSize
+   }) 
+   wall23.setY(wall23.getY()-stationSize)
   
   const s1Reference = wall22;
   const s2Reference = wall21;
   const s3Reference = wall18;
   const s4Reference = wall17;
   
-  const stationSize = 800;
+  
   const s1DistBetweenPlatforms = 700;
   const s2DistBetweenPlatforms = 600;
   const s3DistBetweenPlatforms = 800;

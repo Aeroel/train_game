@@ -8,7 +8,7 @@ import { My_Events, type Train_Reached_Station } from '#root/My_Events.js'
 export class Metro_Station extends Base_Entity {
   constructor() {
     super();
-        My_Events.addEventListener("Train_Reached_Station", (event:
+    const Train_Reached_Station_Handler =  (event:
 Train_Reached_Station)=>{
       const trainCar= event.trainCar;
       const train = trainCar.train;
@@ -16,10 +16,13 @@ Train_Reached_Station)=>{
       train.spot = spot;
       train.alignCars(event.collision)
       train.stop();
-    })
+      train.setState("stoppingAtStation")
+    };
+        My_Events.addEventListener("Train_Reached_Station",Train_Reached_Station_Handler)
   }
   updateState() {
 
     super.updateState();
   }
+  
 }
