@@ -26,9 +26,24 @@ class Sliding_Door extends Base_Entity {
     Door_Finished_Closing_Sensor: new Sensor()
 
   };
+  
   addedSensorsToWorld = false;
   Door_Sliding_Speed = 0.01;
   Sliding_Key = `Sliding_Door_${this.id}`;
+ 
+ constructor(Sliding_Open_Direction: Door_Sliding_Open_Direction) {
+    super();
+    this.addTag('Sliding_Door');
+    this.velocity.x.Add_Component({key:this.Sliding_Key,value:0});
+    this.velocity.y.Add_Component({key:this.Sliding_Key,value:0});
+
+    if (!Sliding_Door.Possible_Sliding_Open_Directions.includes(Sliding_Open_Direction)) {
+      throw new Error(`Invalid opening direction "${Sliding_Open_Direction}". `);
+    }
+    this.Which_Direction_The_Door_Slides_When_Opening = Sliding_Open_Direction;
+    this.Which_Direction_The_Door_Slides_When_Closing = Helper_Functions.getOppositeDirection(Sliding_Open_Direction) as Door_Sliding_Closed_Direction;
+  }
+ 
   setXYWH(x: number, y: number, w: number, h: number) {
     super.setXYWH(x, y, w, h);
     this.Sensors_Init_Pos();
@@ -86,18 +101,7 @@ class Sliding_Door extends Base_Entity {
     this.sensors.Door_Finished_Closing_Sensor.setX(Finished_Closing_X)
     this.sensors.Door_Finished_Closing_Sensor.setY(Finished_Closing_Y)
   }
-  constructor(Sliding_Open_Direction: Door_Sliding_Open_Direction) {
-    super();
-    this.addTag('Sliding_Door');
-    this.velocity.x.Add_Component({key:this.Sliding_Key,value:0});
-    this.velocity.y.Add_Component({key:this.Sliding_Key,value:0});
-
-    if (!Sliding_Door.Possible_Sliding_Open_Directions.includes(Sliding_Open_Direction)) {
-      throw new Error(`Invalid opening direction "${Sliding_Open_Direction}". `);
-    }
-    this.Which_Direction_The_Door_Slides_When_Opening = Sliding_Open_Direction;
-    this.Which_Direction_The_Door_Slides_When_Closing = Helper_Functions.getOppositeDirection(Sliding_Open_Direction) as Door_Sliding_Closed_Direction;
-  }
+  
   updateState() {
     if (this.getState() === 'opening') {
       this.handleOpening();

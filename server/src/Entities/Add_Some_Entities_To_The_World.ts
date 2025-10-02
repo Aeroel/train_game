@@ -496,10 +496,29 @@ static surroundThirdWithWalls() {
   s1StopSpot1.setX(900);
   s1StopSpot1.setWidth(this.carSquareSize);
   s1StopSpot1.setHeight(this.carSquareSize/5);
+  // doors
+  const s1SlidingDoor1 = World.addEntity(
+    new Sliding_Door(
+      "up"
+      )
+    )
+  const s1SlidingDoor2 = World.addEntity(
+    new Sliding_Door(
+      "down"
+      )
+    )
+    const css14 = Add_Some_Entities_To_The_World.carSquareSize / 4;
+    s1SlidingDoor2.setXYWH(s1StopSpot1.x, s1StopSpot1.y - css14 - css14 , 5, css14);
+    s1SlidingDoor1.setXYWH(s1SlidingDoor2.x, s1SlidingDoor2.y - css14, 5, css14);
+   
+         // doors ended above
       
   const s1StopSpot2 = World.addEntity(
       new Station_Stop_Spot({x: s1WallRight.x, y: s1WallRight.y, Which_Door_Of_A_Car_To_Open_And_Close:"right"})
       )
+      
+
+      
       s1StopSpot2.setWidth(this.carSquareSize);
       s1StopSpot2.setHeight(this.carSquareSize/5);
       s1StopSpot2.setX(1300)
