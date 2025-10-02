@@ -77,6 +77,9 @@ alignCars(collision: Collision_Info) {
    // Stop movement for the entire train immediately 
    const before = {x:0,y:0}
 //   throw new Error(JSON.stringify(collision.normal))
+/*/ the normal should be flipped, but it is wrong. it shpild if if normal y===1, then we push car below, not up. But for some reason the actual game acts as if I flipped the objecrs and thus their normal. I do not know why. but flipping the comditions seems to work
+.. very mysterious
+*/
 if(normal.y === 1) {
   before.x = frontCar.x;
   before.y = stopSpot.y - frontCar.height; 
