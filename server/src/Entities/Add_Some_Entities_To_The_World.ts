@@ -57,7 +57,7 @@ class Add_Some_Entities_To_The_World {
 
   }
     static doItNow() {
-    World.addEntity(new Metro_Station())
+
 
      const planet =   Add_Some_Entities_To_The_World.addThePlanet();
         
@@ -558,6 +558,7 @@ static surroundThirdWithWalls() {
       new Wall()
       )
     
+        World.addEntity(new Metro_Station())
     const css14 = Add_Some_Entities_To_The_World.carSquareSize / 4;
     s1SlidingDoor1.setXYWH(s1StopSpot1.x - this.railwayFenceWallThickness, s1StopSpot1.y - css14 - css14 , this.railwayFenceWallThickness, css14);
     s1WallBelowDoor1.setXYWH(s1SlidingDoor1.x, s1SlidingDoor1.y + s1SlidingDoor1.height, this.railwayFenceWallThickness, css14);

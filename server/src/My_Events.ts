@@ -15,12 +15,40 @@ export class My_Events {
         event.push(callback);
       }
   }
+  
+  static addEventListenerOnce(eventName: string, callback: Event_Callback) {
+    const onceCallback = (data: any) => {
+      // Call the original callback
+      callback(data);
+      // Remove this listener immediately after the first call
+      My_Events.removeEventListener(eventName, onceCallback);
+    };
+    My_Events.addEventListener(eventName, onceCallback);
+  }
+
+  
   static emit(eventName: string, data: any) {
        const listeners = My_Events.events.get(eventName);
     if (listeners) {
       listeners.forEach(listener => listener(data));
     }
   }
+  
+  
+  
+  static removeEventListener(eventName: string, callback: Event_Callback) {
+    const listeners = My_Events.events.get(eventName);
+    if (!listeners) {
+      return;
+    }
+      // Filter out the callback to remove it
+      My_Events.events.set(
+        eventName,
+        listeners.filter(listener => listener !== callback)
+      );
+
+  }
+
   static clear() {
     My_Events.events.clear();
   }

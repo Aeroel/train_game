@@ -39,7 +39,7 @@ class Station_Stop_Spot extends Base_Entity {
       if(trainContact) {
         const trainCar = <Train_Car>trainContact.entityB;
        const eventData: Train_Reached_Station = {trainCar: trainCar,collision: trainContact, stopSpot: this};
-        My_Events.emit("Train_Reached_Station", eventData)
+        My_Events.emit(`Train_Reached_Station`, eventData)
       }
       super.updateState();
     }

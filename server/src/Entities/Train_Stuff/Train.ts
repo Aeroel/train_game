@@ -7,6 +7,7 @@ import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js"
 import { Train_Car, type Train_Car_Motion_Directions } from "#root/Entities/Train_Stuff/Train_Car.js";
 import type { Box, Direction, Position, Collision_Info } from "#root/Type_Stuff.js";
 import { World } from "#root/World.js";
+import { My_Events } from "#root/My_Events.js";
 
 export type Train_Movement_Motion = null| "backwards" | "forwards"
 
@@ -37,6 +38,7 @@ export class Train extends Base_Entity {
     }
    
    setState(state: Train['state']) {
+
      this.state = state;
    }
     
@@ -89,13 +91,13 @@ doorsAreOpened() {
     return this.cars[0].areDoorsOpened(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
 }
 openDoors() {
-
+ My_Events.emit(`Doors_Of_Train_At_Stop_Spot_${this.spot.id}_Opening`, {});
   for (const trainCar of this.cars) {
       trainCar.openDoors(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
   }
 }
 closeDoors() {
-
+ My_Events.emit(`Doors_Of_Train_At_Stop_Spot_${this.spot.id}_Closing`, {});
   for (const trainCar of this.cars) {
       trainCar.closeDoors(this.spot.Which_Door_Of_A_Car_To_Open_And_Close)
   }
