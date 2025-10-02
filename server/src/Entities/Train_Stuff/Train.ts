@@ -85,16 +85,18 @@ if(normal.y === -1) {
 
 getStartingPosition(rail: Rail, carSquareSize: number) {
   let startPosition = {x:0,y:0};
-  const orientation = rail.getOrientation;
+  const railMiddleX = ((rail.getX() + rail.getX()+ rail.getWidth()) / 2);
+  const railMiddleY = ((rail.getY() + rail.getY()+ rail.getHeight()) / 2);
   log("Train.ts:getStartingPosition:rail",rail)
           if (rail.getOrientation() === 'horizontal') {
             startPosition = {
                 x: rail.getX() +(0.5*rail.width),
-                y: rail.getY() - (carSquareSize / 2),
+                y: railMiddleY - (carSquareSize / 2),
             };
         } else {
+
             startPosition = {
-                x: rail.getX() - (carSquareSize / 2),
+                x: railMiddleX - (carSquareSize / 2),
                 y: rail.getY() + (rail.height*0.5)
             }
         }
@@ -133,8 +135,7 @@ spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_D
     
     
     stop() {
-      throw new Error("hehe")
-       // this.pauseMovement();
+       this.pauseMovement();
     }
     
     stopMovement() {

@@ -1,5 +1,5 @@
 type Event_Callback = ((event: any) => void);
-
+export type Train_Reached_Station_Event = {}
 export class My_Events {
   static events: Map<string, Event_Callback[]> = new Map();
   static addEventListener(eventName: string, callback: Event_Callback) {
