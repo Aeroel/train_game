@@ -591,6 +591,17 @@ static surroundThirdWithWalls() {
    
          // doors ended above
       
+    // doors for right side 
+    
+     const s1RSBarrierWall1 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall1.setX(s1WallRightTop.x)
+       s1RSBarrierWall1.setY(s1WallRightTop.y + s1WallRightTop.height)
+      s1RSBarrierWall1.setHeight(css14);
+      s1RSBarrierWall1.setWidth(this.railwayFenceWallThickness);
+    // ended above 
+      
+      
   const s1StopSpot2 = World.addEntity(
       new Station_Stop_Spot({x: s1WallRightTop.x, y: s1WallRightTop.y, Which_Door_Of_A_Car_To_Open_And_Close:"right"})
       )
