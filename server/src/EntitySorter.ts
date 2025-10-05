@@ -11,6 +11,7 @@ class EntitySorter {
   static readonly From_Top_Down_Camera_POV: Sort_Order = {
     "Planet": 0,
     "Sliding_Door_Sensor": 0.4,
+     "Catapult_Gate": 0.45,
     "Rail_Switch_Wall": 0.5,
     "Rail": 1,
     "Train_Car": 2,
@@ -19,7 +20,7 @@ class EntitySorter {
     "Walls": 4,
     "Sliding_Door": 5, 
     "Sensor":6,
-    "Catapult_Gate": 7
+
   };
   static Sort_Entities_In_Order_Of_Appearance_For_The_Top_Down_Camera(entities: Base_Entity[]) {
     this.entitySort(this.From_Top_Down_Camera_POV, entities);
