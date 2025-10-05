@@ -605,8 +605,9 @@ static surroundThirdWithWalls() {
     let currWall: Wall = s1RSBarrierWall1;
     const s1RSBarrierWalls: Wall[]=[];
      for(let i =1; i <= s1RSBarrierWallsCount; i++) {
-       
+      // todo: replace the below 15 walls with this somehow
      }
+     
      const s1RSBarrierWall2 = World.addEntity(
        new Wall())
        s1RSBarrierWall2.setX(s1WallRightTop.x)
