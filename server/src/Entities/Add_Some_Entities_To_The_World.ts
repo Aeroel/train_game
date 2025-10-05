@@ -392,15 +392,16 @@ static surroundThirdWithWalls() {
    const wall1 = this.wallHelperPlace({x,y,direction:"right", length:1700});
    const wall2= this.wallHelperPlaceNextTo({wall: wall1, direction:"down",length: 1500  });
    const wall3= this.wallHelperPlaceNextTo({wall: wall2, direction:"left",length: 970  });
-   const wall4= this.wallHelperPlaceNextTo({wall: wall3, direction:"down",length: 1045  });
+   const wall4= this.wallHelperPlaceNextTo({wall: wall3, direction:"down",length: 745  });
    // small walls to let player through
 
-   const wall5= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: 500  });
+   let wall5Filler= this.wallHelperPlaceNextTo({wall: wall4, direction:"down",length: 800  });
       
    const wall8 = this.wallHelperPlaceNextTo({
-     wall: wall5, direction:"down", length: 2000
+     wall: wall5Filler, direction:"down", length: 2000
    })
-      
+    // it was just filler
+      World.removeEntity(wall5Filler);
       // end of small walls
    const wall9 = this.wallHelperPlaceNextTo({
      wall: wall8, direction:"right", length: 700
@@ -682,8 +683,25 @@ static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPla
      
      // right platform
       const stationWall4 = this.wallHelperPlace({x: sx+sDistBetweenPlatforms ,y: sy,direction:"right", length:stationSize});
-         const stationWall5 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"down", length:stationSize});
-     const stationWall6 = this.wallHelperPlaceNextTo({wall: stationWall5 ,direction:"left", length:stationSize});
+    //sliding door wall
+      const stationWall5_1 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"down", length:sideWallLength});
+
+     const slidingDoorX2 = stationWall5_1.x;
+     const slidingDoorY2 = stationWall5_1.y + stationWall5_1.height;
+    const slidingDoor2= World.addEntity(
+       new Sliding_Door("down")
+       )
+       slidingDoor2.setXYWH(slidingDoorX2, slidingDoorY2, stationWall5_1.width, slidingDoorLength)
+       World.addEntity(
+         new Sliding_Door_Sensor(slidingDoor2, (contactEntity)=>contactEntity.hasTag("Player"))
+         );
+         
+     const stationWall5_2 = this.wallHelperPlaceNextTo({wall: stationWall5_1 ,direction:"down", length:sideWallLength});
+     stationWall5_2.setY(stationWall5_2.y + slidingDoorLength)
+
+    // end 
+
+     const stationWall6 = this.wallHelperPlaceNextTo({wall: stationWall5_2,direction:"left", length:stationSize});
      stopSpotWalls.push(stationWall3)
      stopSpotWalls.push(stationWall4)
      return stopSpotWalls;

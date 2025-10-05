@@ -38,7 +38,11 @@ class World {
   static getEntities(): Base_Entity[] {
     return World.getAllEntities();
   }
-  static removeEntity(start: number, deleteCount?: number): Base_Entity[] {
+  static removeEntity(entity: Base_Entity) {
+    const index = World.getEntities().indexOf(entity);
+    World.spliceEntity(index, 1);    
+  }
+  static spliceEntity(start: number, deleteCount?: number): Base_Entity[] {
 
     const arr = World.getEntities();
     

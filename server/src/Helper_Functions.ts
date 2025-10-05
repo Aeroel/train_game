@@ -59,8 +59,7 @@ class Helper_Functions {
             return player.socketId === socket.id;
         });
         My_Assert.that(playerAssociatedWithSocket !== undefined)
-        const index = World.getEntities().indexOf(playerAssociatedWithSocket);
-        World.removeEntity(index, 1);
+        World.removeEntity(playerAssociatedWithSocket);
     }
     static getOppositeDirection(dir: Direction): Direction {
       if(dir==="up") {
