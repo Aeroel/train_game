@@ -152,6 +152,7 @@ applyVelocityToPosition() {
     this.height = height;
     return this;
   }
+  
   setPosition(position: Position) {
     this.setX(position.x);
     this.setY(position.y);
@@ -228,7 +229,12 @@ set vy(value: number) {
     this.x = newX;
     this.y = newY;
   }
-
+getPosition() {
+  return {
+    x: this.x,
+    y: this.y,
+  }
+}
   getPositionRelativeToPlanet(): Position_Percentage {
     const planet = World.getEntities().find(en => en.hasTag("Planet"));
     if (!planet) {

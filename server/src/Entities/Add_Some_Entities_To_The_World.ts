@@ -13,6 +13,7 @@ import { World } from "#root/World.js";
 import { Forcefield } from "#root/Entities/Forcefield.js";
 import { Station_Stop_Spot } from "#root/Entities/Station_Stop_Spot.js";
 import { Rail } from "#root/Entities/Train_Stuff/Rail.js";
+import { Catapult_Travel } from "#root/Entities/Catapult_Travel.js";
 import type { Direction, Position, Orientation } from "#root/Type_Stuff.js";
 import { Train } from "#root/Entities/Train_Stuff/Train.js";
 import { Sliding_Door_Sensor } from "#root/Entities/Sliding_Door_Sensor.js";
@@ -602,6 +603,14 @@ static surroundThirdWithWalls() {
 
 
       const ms1=  World.addEntity(new Metro_Station());
+      const ct = World.addEntity(new Catapult_Travel());
+      ct.setGatePosition({gateNumber:1, position: {
+        x: 640, y: 7560
+      }})
+      ct.setGatePosition({gateNumber:2, position: {
+        x: 1740, y: 7560
+      }})
+
       this.metroController.addStation({
         station: ms1, stopSpots: [s1StopSpot1, s1StopSpot2], doors: {left: [
           s1SlidingDoor1,

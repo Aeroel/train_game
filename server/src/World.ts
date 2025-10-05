@@ -14,6 +14,9 @@ class World {
       throw new Error('Entity has no entity tag, check stuff');
 
     }
+    if(World.state.entities.has(entity)) {
+      throw new Error("Tried to add entity to world but it already exists in the world")
+    }
     World.state.entities.add(entity);
     entity.addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld:true});
           return entity;
