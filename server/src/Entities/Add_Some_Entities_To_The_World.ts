@@ -481,7 +481,7 @@ static surroundThirdWithWalls() {
   const s4Reference = wall17;
   
   
-  const s1DistBetweenPlatforms = 700;
+  const s1DistBetweenPlatforms = 600;
   const s2DistBetweenPlatforms = 600;
   const s3DistBetweenPlatforms = 800;
   const s4DistBetweenPlatforms = 600;
