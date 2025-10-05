@@ -709,6 +709,35 @@ static surroundThirdWithWalls() {
       s1RSBarrierWall16.setHeight(rem);
       s1RSBarrierWall16.setWidth(this.railwayFenceWallThickness);
 
+      const wallsAsSlidingDoors: Wall[]=[];
+      wallsAsSlidingDoors.push(s1RSBarrierWall2)
+      wallsAsSlidingDoors.push(s1RSBarrierWall3)
+      
+      wallsAsSlidingDoors.push(s1RSBarrierWall6)
+      wallsAsSlidingDoors.push(s1RSBarrierWall7)
+      
+      wallsAsSlidingDoors.push(s1RSBarrierWall10)
+      wallsAsSlidingDoors.push(s1RSBarrierWall11)
+      
+      wallsAsSlidingDoors.push(s1RSBarrierWall14)
+      wallsAsSlidingDoors.push(s1RSBarrierWall15)
+      
+
+      let i = 1;
+      const s1RSSlidingDoors:Sliding_Door[]=[];
+      for(const wall of wallsAsSlidingDoors) {
+        const isEven =  (i % 2)===0;
+        i++;
+        let dir:Direction="up";
+        if(isEven) dir = "down";
+            const slidingDoor1= World.addEntity(
+       new Sliding_Door(dir)
+       )
+       slidingDoor1.setXYWH(wall.x, wall.y, wall.width, wall.height)
+         s1RSSlidingDoors.push(slidingDoor1)
+
+         World.removeEntity(wall);
+      }
       
     // ended above 
       
@@ -744,7 +773,7 @@ static surroundThirdWithWalls() {
           s1SlidingDoor6,
           s1SlidingDoor7,
           s1SlidingDoor8,
-          ], right:[], down:[], up:[]}
+          ], right:[...s1RSSlidingDoors], down:[], up:[]}
       })
   
        // station2 walls
