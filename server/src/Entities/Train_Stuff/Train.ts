@@ -25,13 +25,13 @@ export class Train extends Base_Entity {
         
     stopTime= 0;
     stopFor=10_000;
-    constructor(rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
+    constructor(rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number, carWallThickness: number) {
         super();
         this.movementMotion = movementMotion;
 
         let startPosition: Position = this.getStartingPosition(rail, carSquareSize);
         for (let count = 0; count < numberOfCars; count++) {
-              this.spawnCar(startPosition, count, rail, Forwards_Movement_Directions, Backwards_Movement_Directions, movementMotion, numberOfCars, carSquareSize)
+              this.spawnCar(startPosition, count, rail, Forwards_Movement_Directions, Backwards_Movement_Directions, movementMotion, numberOfCars, carSquareSize, carWallThickness)
         }
         
 
@@ -160,7 +160,7 @@ getStartingPosition(rail: Rail, carSquareSize: number) {
         log("getStartingPosition:", startPosition)
         return startPosition;
 }
-spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number) {
+spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_Directions: Train_Car_Motion_Directions, Backwards_Movement_Directions: Train_Car_Motion_Directions, movementMotion: 'forwards' | 'backwards', numberOfCars: number, carSquareSize: number, carWallThickness: number) {
   log("spawnCar:startPosition",startPosition)
               let carX;
             let carY;
@@ -171,7 +171,7 @@ spawnCar(startPosition: Position, count: number, rail: Rail, Forwards_Movement_D
                 carX = startPosition.x;
                 carY = startPosition.y + (count * carSquareSize);
             }
-            const car = new Train_Car({ Backwards_Movement_Directions, Forwards_Movement_Directions,  size: carSquareSize, x: carX, y: carY, train: this });
+            const car = new Train_Car({ Backwards_Movement_Directions, Forwards_Movement_Directions,  size: carSquareSize, wallThickness:carWallThickness, x: carX, y: carY, train: this });
             car.setMovementMotion(this.movementMotion);
             World.addEntity(car);
             console.log("pushed", car.motionsDirections, car.x, car.y)

@@ -28,6 +28,7 @@ interface Train_Car_Constructor {
   x: Base_Entity['x'],
   y: Base_Entity['y'],
   size: Base_Entity['x'] | Base_Entity['y'],
+  wallThickness: number,
   train: Train,
 
 }
@@ -74,7 +75,7 @@ motionsDirections: Train_Car_Motions_Directions = {
   bulk_of_code: Bulk_Of_Train_Car_Code;
   orientation: Orientation = "horizontal"
 
-  constructor({ Backwards_Movement_Directions, Forwards_Movement_Directions, x, y, size, train }: Train_Car_Constructor) {
+  constructor({ Backwards_Movement_Directions, Forwards_Movement_Directions, wallThickness, x, y, size, train }: Train_Car_Constructor) {
     if (!isFinite(x) || !isFinite(y) || !(size > 0)) {
       throw new Error(`x and y and size must be passed and be finite numbers. size must be greater than 0; Passed xysize are instead: ${x} and ${y} and ${size}`);
     }
@@ -97,7 +98,7 @@ motionsDirections: Train_Car_Motions_Directions = {
     this.setX(x);
     this.setY(y);
     this.Set_To_Square_Of_Size(size);
-
+    this.Wall_And_Door_Thickness = wallThickness;
 
     this.Add_Car_Walls_And_Doors();
     this.Add_Center_Box_Entity();

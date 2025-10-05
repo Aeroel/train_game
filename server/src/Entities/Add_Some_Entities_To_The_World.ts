@@ -33,6 +33,7 @@ class Add_Some_Entities_To_The_World {
     static carSquareSize = 150;
     static railLength = 1000;
     static railwayFenceWallThickness = 50;
+    static trainCarWallThickness = 5;
     static rails: Rail[] = [];
    
   static randomWalls() {
@@ -331,7 +332,7 @@ const offset = carSquareSize * 2;
         if (!(rail instanceof Rail) || !(rail.hasTag("Rail"))) {
             throw new Error(`Expects object of Rail, but got ${JSON.stringify(rail)}`);
         }
-        const train = new Train(rail, forwards, backwards, movementDirection, 4, Add_Some_Entities_To_The_World.carSquareSize);
+        const train = new Train(rail, forwards, backwards, movementDirection, 4, Add_Some_Entities_To_The_World.carSquareSize, Add_Some_Entities_To_The_World.trainCarWallThickness);
         World.addEntity(train)
         log(`Train spawned on ${JSON.stringify({x: train.x, y: train.y})}`)
 
@@ -593,12 +594,69 @@ static surroundThirdWithWalls() {
       
     // doors for right side 
     
+   const smallOffset = this.trainCarWallThickness / 2;
      const s1RSBarrierWall1 = World.addEntity(
        new Wall())
        s1RSBarrierWall1.setX(s1WallRightTop.x)
        s1RSBarrierWall1.setY(s1WallRightTop.y + s1WallRightTop.height)
-      s1RSBarrierWall1.setHeight(css14);
+      s1RSBarrierWall1.setHeight(css14 + smallOffset);
       s1RSBarrierWall1.setWidth(this.railwayFenceWallThickness);
+     
+     const s1RSBarrierWall2 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall2.setX(s1WallRightTop.x)
+       s1RSBarrierWall2.setY(s1RSBarrierWall1.y + s1RSBarrierWall1.height)
+      s1RSBarrierWall2.setHeight(css14);
+      s1RSBarrierWall2.setWidth(this.railwayFenceWallThickness);
+      
+     const s1RSBarrierWall3 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall3.setX(s1WallRightTop.x)
+       s1RSBarrierWall3.setY(s1RSBarrierWall2.y + s1RSBarrierWall2.height)
+      s1RSBarrierWall3.setHeight(css14 - smallOffset *2);
+      s1RSBarrierWall3.setWidth(this.railwayFenceWallThickness);
+      
+     const s1RSBarrierWall4 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall4.setX(s1WallRightTop.x)
+       s1RSBarrierWall4.setY(s1RSBarrierWall3.y + s1RSBarrierWall3.height)
+      s1RSBarrierWall4.setHeight(css14 + smallOffset);
+      s1RSBarrierWall4.setWidth(this.railwayFenceWallThickness);
+     const s1RSBarrierWall5 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall5.setX(s1WallRightTop.x)
+       s1RSBarrierWall5.setY(s1RSBarrierWall4.y + s1RSBarrierWall4.height)
+      s1RSBarrierWall5.setHeight(css14 + smallOffset);
+      s1RSBarrierWall5.setWidth(this.railwayFenceWallThickness);
+      
+      
+     const s1RSBarrierWall6 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall6.setX(s1WallRightTop.x)
+       s1RSBarrierWall6.setY(s1RSBarrierWall5.y + s1RSBarrierWall5.height)
+      s1RSBarrierWall6.setHeight(css14);
+      s1RSBarrierWall6.setWidth(this.railwayFenceWallThickness);
+ 
+     const s1RSBarrierWall7 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall7.setX(s1WallRightTop.x)
+       s1RSBarrierWall7.setY(s1RSBarrierWall6.y + s1RSBarrierWall6.height)
+      s1RSBarrierWall7.setHeight(css14 - smallOffset * 2);
+      s1RSBarrierWall7.setWidth(this.railwayFenceWallThickness);
+   
+     const s1RSBarrierWall8 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall8.setX(s1WallRightTop.x)
+       s1RSBarrierWall8.setY(s1RSBarrierWall7.y + s1RSBarrierWall7.height)
+      s1RSBarrierWall8.setHeight(css14 + smallOffset);
+      s1RSBarrierWall8.setWidth(this.railwayFenceWallThickness);
+  
+     const s1RSBarrierWall9 = World.addEntity(
+       new Wall())
+       s1RSBarrierWall9.setX(s1WallRightTop.x)
+       s1RSBarrierWall9.setY(s1RSBarrierWall8.y + s1RSBarrierWall8.height)
+      s1RSBarrierWall9.setHeight(css14 + smallOffset * 2);
+      s1RSBarrierWall9.setWidth(this.railwayFenceWallThickness);
     // ended above 
       
       
