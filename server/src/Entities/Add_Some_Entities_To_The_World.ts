@@ -601,7 +601,12 @@ static surroundThirdWithWalls() {
        s1RSBarrierWall1.setY(s1WallRightTop.y + s1WallRightTop.height)
       s1RSBarrierWall1.setHeight(css14 + smallOffset);
       s1RSBarrierWall1.setWidth(this.railwayFenceWallThickness);
-     
+     const s1RSBarrierWallsCount = 16 - 1;
+    let currWall: Wall = s1RSBarrierWall1;
+    const s1RSBarrierWalls: Wall[]=[];
+     for(let i =1; i <= s1RSBarrierWallsCount; i++) {
+       
+     }
      const s1RSBarrierWall2 = World.addEntity(
        new Wall())
        s1RSBarrierWall2.setX(s1WallRightTop.x)
@@ -701,7 +706,7 @@ static surroundThirdWithWalls() {
       s1RSBarrierWall15.setHeight(css14 + smallOffset * 2);
       s1RSBarrierWall15.setWidth(this.railwayFenceWallThickness);
       
-        const rem = stationSize - ((stationSize / css14) * 15)
+        const rem = stationSize - ( css14 * 15)
      const s1RSBarrierWall16 = World.addEntity(
        new Wall())
        s1RSBarrierWall16.setX(s1WallRightTop.x)
