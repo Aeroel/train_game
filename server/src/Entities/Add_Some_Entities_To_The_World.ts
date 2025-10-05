@@ -493,7 +493,7 @@ static surroundThirdWithWalls() {
   
   const s1StopSpotWalls = this.placeStation(s1x, s1y, stationSize, s1DistBetweenPlatforms, "horizontal")
   const s1WallLeft = s1StopSpotWalls[0];
-  const s1WallRight = s1StopSpotWalls[1];
+  const s1WallRightTop = s1StopSpotWalls[1];
   const s1StopSpot1 = World.addEntity(
       new Station_Stop_Spot({x: s1WallLeft.x + s1WallLeft.width, y: s1WallLeft.y, Which_Door_Of_A_Car_To_Open_And_Close:"left"})
       )
@@ -592,7 +592,7 @@ static surroundThirdWithWalls() {
          // doors ended above
       
   const s1StopSpot2 = World.addEntity(
-      new Station_Stop_Spot({x: s1WallRight.x, y: s1WallRight.y, Which_Door_Of_A_Car_To_Open_And_Close:"right"})
+      new Station_Stop_Spot({x: s1WallRightTop.x, y: s1WallRightTop.y, Which_Door_Of_A_Car_To_Open_And_Close:"right"})
       )
       
 
@@ -600,7 +600,7 @@ static surroundThirdWithWalls() {
       s1StopSpot2.setWidth(this.carSquareSize);
       s1StopSpot2.setHeight(this.carSquareSize/5);
       s1StopSpot2.setX(1300)
-      s1StopSpot2.setY(s1StopSpot2.y - s1StopSpot2.height)
+      s1StopSpot2.setY(s1StopSpot2.y + (s1WallRightTop.height - s1StopSpot2.height))
 
 
       const ms1=  World.addEntity(new Metro_Station());
