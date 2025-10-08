@@ -804,6 +804,15 @@ static surroundThirdWithWalls(railsArr: Rail[]) {
       
   s2StopSpot2.setWidth(this.carSquareSize/5);
   s2StopSpot2.setHeight(this.carSquareSize);
+        const ms2=  World.addEntity(new Metro_Station());
+        const s2SlidingDoorsBottom: Sliding_Door[] =[];
+        const s2SlidingDoorsTop: Sliding_Door[]=[];
+              this.metroController.addStation({
+        station: ms2, stopSpots: [s2StopSpot1, s2StopSpot2], doors: {down: [
+          ...s2SlidingDoorsBottom
+          ], up:[...s2SlidingDoorsTop], right:[], left:[]}
+      })
+  
 
           // station3 walls
   const s3x = s3Reference.x
