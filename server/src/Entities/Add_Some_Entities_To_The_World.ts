@@ -91,11 +91,11 @@ class Add_Some_Entities_To_The_World {
          .setXY(500,500)) 
         // */
         
-       const firstRailOutOfThirdRailway = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
+       const {railsArr, returnRail: firstRailOutOfThirdRailway} = Add_Some_Entities_To_The_World.addThirdRailway(1400, 6600, 4000, 400);
        log(firstRailOutOfThirdRailway)
        
         this.Put_A_Train_On_Rail(firstRailOutOfThirdRailway, ["up"], ["down"], "forwards");
-       this.surroundThirdWithWalls()
+       this.surroundThirdWithWalls(railsArr)
 
 //this.randomWalls();
 if(1>0)return;
@@ -385,7 +385,7 @@ const offset = carSquareSize * 2;
      
     }
  
-static surroundThirdWithWalls() {
+static surroundThirdWithWalls(railsArr: Rail[]) {
 
   const x=750;
   const y=5200;
@@ -862,17 +862,26 @@ static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPla
      stopSpotWalls.push(stationWall3)
      stopSpotWalls.push(stationWall4)
      return stopSpotWalls;
-     } else  {
+     } else  { // vertical
             const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"down", length:stationSize});
      const stationWall2 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"right", length:stationSize});
      const stationWall3 = this.wallHelperPlaceNextTo({wall: stationWall2 ,direction:"up", length:stationSize});
      
-     // bottom platform
+     // top platform
       const stationWall4 = this.wallHelperPlace({x: sx ,y: sy - sDistBetweenPlatforms,direction:"up", length:stationSize});
          const stationWall5 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"right", length:stationSize});
      const stationWall6 = this.wallHelperPlaceNextTo({wall: stationWall5 ,direction:"down", length:stationSize});
     stopSpotWalls.push(stationWall3)
      stopSpotWalls.push(stationWall4)
+     
+           const ct = World.addEntity(new Catapult_Travel());
+      ct.setGatePosition({gateNumber:1, position: {
+        x: stationWall1.x + stationWall1.width, y: stationWall1.y + stationWall6.height
+      }})
+      ct.setGatePosition({gateNumber:2, position: {
+        x: stationWall6.x - ct.gate2.width, y: stationWall6.y + stationWall6.height - ct.gate2.height
+      }})
+     
      return stopSpotWalls;
      }
      
@@ -930,6 +939,7 @@ const lenHalf = lengthWall + half;
 
     // BEGIN railPairTwo
     const railTwo_Dir = "right";
+    
        const railTwo_B = Railway_Placing_Functionality.placeSwitch(railOne_B, railTwo_Dir, switchLength, mainLength+400);
 
        const railTwo_A = Railway_Placing_Functionality.placeSwitch(railOne_A, railTwo_Dir, switchLength, mainLength+400);
@@ -1046,7 +1056,8 @@ const lenHalf = lengthWall + half;
         })
         
         // END Switch_Wall_Generation
-       return returnRail;
+        const railsArrOnly = railsArr.map(elem => elem.rail)
+       return { returnRail, railsArr: railsArrOnly};
     }
 
 }
