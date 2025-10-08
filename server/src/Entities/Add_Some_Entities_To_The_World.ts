@@ -786,16 +786,25 @@ static surroundThirdWithWalls(railsArr: Rail[]) {
   const s2x = 3100;
   const s2y = s2Reference.y
    
-   const s2StopSpots =  this.placeStation(s2x, s2y, stationSize, s2DistBetweenPlatforms, "vertical")
-  const s2WallBottom = s1StopSpotWalls[0];
-  const s2WallTop = s1StopSpotWalls[1];
+   const s2StopSpotWalls =  this.placeStation(s2x, s2y, stationSize, s2DistBetweenPlatforms, "vertical")
+  const s2WallBottom = s2StopSpotWalls[0];
+  const s2WallTop = s2StopSpotWalls[1];
   const s2StopSpot1 = World.addEntity(
-      new Station_Stop_Spot({x: s2WallBottom.x + s2WallBottom.width, y: s2WallBottom.y, Which_Door_Of_A_Car_To_Open_And_Close:"down"})
+      new Station_Stop_Spot({x: s2WallBottom.x, y: s2WallBottom.y, Which_Door_Of_A_Car_To_Open_And_Close:"down"})
       )
-  s1StopSpot1.setX(900);
-  s1StopSpot1.setWidth(this.carSquareSize);
-  s1StopSpot1.setHeight(this.carSquareSize/5);
-     
+      
+  s2StopSpot1.setWidth(this.carSquareSize/5);
+  s2StopSpot1.setHeight(this.carSquareSize);
+  s2StopSpot1.y = s2WallBottom.y - s2StopSpot1.height;
+
+
+  const s2StopSpot2 = World.addEntity(
+      new Station_Stop_Spot({x: s2WallTop.x, y: s2WallTop.y + s2WallTop.height, Which_Door_Of_A_Car_To_Open_And_Close:"up"})
+      )
+      
+  s2StopSpot2.setWidth(this.carSquareSize/5);
+  s2StopSpot2.setHeight(this.carSquareSize);
+
           // station3 walls
   const s3x = s3Reference.x
   const s3y = 13343;
