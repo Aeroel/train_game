@@ -816,10 +816,11 @@ static surroundThirdWithWalls(railsArr: Rail[]) {
 
 static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPlatforms: number, orientation: Orientation) {
    const stopSpotWalls: Base_Entity[] =[];
+   const slidingDoorLength = stationSize/10;
+   const sideWallLength = (stationSize - slidingDoorLength) / 2;
      if(orientation === "horizontal") {
-       const slidingDoorLength = stationSize/10;
+
      const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"left", length:stationSize});
-     const sideWallLength = (stationSize - slidingDoorLength) / 2;
      
      const stationWall2_1 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"down", length:sideWallLength});
 
@@ -865,6 +866,7 @@ static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPla
      } else  { // vertical
             const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"down", length:stationSize});
      const stationWall2 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"right", length:stationSize});
+     
      const stationWall3 = this.wallHelperPlaceNextTo({wall: stationWall2 ,direction:"up", length:stationSize});
      
      // top platform
@@ -876,10 +878,10 @@ static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPla
      
            const ct = World.addEntity(new Catapult_Travel());
       ct.setGatePosition({gateNumber:1, position: {
-        x: stationWall1.x + stationWall1.width, y: stationWall1.y + stationWall6.height
+        x: stationWall1.x + stationWall1.width, y: stationWall1.y + ct.gate1.height
       }})
       ct.setGatePosition({gateNumber:2, position: {
-        x: stationWall6.x - ct.gate2.width, y: stationWall6.y + stationWall6.height - ct.gate2.height
+        x: stationWall6.x - ct.gate2.width, y: stationWall6.y + stationWall6.height - (ct.gate2.height * 2)
       }})
      
      return stopSpotWalls;
