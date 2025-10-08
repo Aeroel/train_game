@@ -864,14 +864,41 @@ static placeStation(sx: number, sy: number, stationSize: number, sDistBetweenPla
      stopSpotWalls.push(stationWall4)
      return stopSpotWalls;
      } else  { // vertical
+     
+     // bot platform
             const stationWall1 = this.wallHelperPlace({x: sx ,y: sy,direction:"down", length:stationSize});
-     const stationWall2 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"right", length:stationSize});
+     const stationWall2_p1 = this.wallHelperPlaceNextTo({wall: stationWall1 ,direction:"right", length:sideWallLength});
+     
+       const stationWall2 = this.wallHelperPlaceNextTo({wall: stationWall2_p1 ,direction:"right", length:sideWallLength});
+       stationWall2.setX(stationWall2.x + slidingDoorLength);
+       
+     const slidingDoor1X = stationWall2.x - slidingDoorLength;
+     const slidingDoor1Y = stationWall2.y;
+    const slidingDoor1= World.addEntity(
+       new Sliding_Door("left")
+       )
+       slidingDoor1.setXYWH(slidingDoor1X, slidingDoor1Y, slidingDoorLength, stationWall2.height)
+       World.addEntity(
+         new Sliding_Door_Sensor(slidingDoor1, (contactEntity)=>contactEntity.hasTag("Player"))
+         );
      
      const stationWall3 = this.wallHelperPlaceNextTo({wall: stationWall2 ,direction:"up", length:stationSize});
      
      // top platform
       const stationWall4 = this.wallHelperPlace({x: sx ,y: sy - sDistBetweenPlatforms,direction:"up", length:stationSize});
-         const stationWall5 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"right", length:stationSize});
+         const stationWall5_p1 = this.wallHelperPlaceNextTo({wall: stationWall4 ,direction:"right", length:sideWallLength});
+         const stationWall5 = this.wallHelperPlaceNextTo({wall: stationWall5_p1 ,direction:"right", length:sideWallLength});
+         stationWall5.setX(stationWall5.x + slidingDoorLength)
+              const slidingDoor2X = stationWall5.x - slidingDoorLength;
+     const slidingDoor2Y = stationWall5.y;
+    const slidingDoor2= World.addEntity(
+       new Sliding_Door("left")
+       )
+       slidingDoor2.setXYWH(slidingDoor2X, slidingDoor2Y, slidingDoorLength, stationWall5.height)
+       World.addEntity(
+         new Sliding_Door_Sensor(slidingDoor2, (contactEntity)=>contactEntity.hasTag("Player"))
+         );
+         
      const stationWall6 = this.wallHelperPlaceNextTo({wall: stationWall5 ,direction:"down", length:stationSize});
     stopSpotWalls.push(stationWall3)
      stopSpotWalls.push(stationWall4)
