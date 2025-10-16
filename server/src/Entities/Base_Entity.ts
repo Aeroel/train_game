@@ -178,6 +178,7 @@ applyVelocityToPosition() {
   get size(){
     return {width: this.width, height: this.height}
   }
+  
 get vx() {
  // console.log("getting vx")
 
