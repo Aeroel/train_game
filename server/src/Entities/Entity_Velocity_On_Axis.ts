@@ -16,6 +16,8 @@ export type Axis = "x" | "y";
 export { Entity_Velocity_On_Axis };
 
 class Entity_Velocity_On_Axis {
+    lastGetSumTime = 0
+    lastSetComponentTime = 0;
      velocity: Entity_Velocity;
      axis: Axis ='x'; //<- "x" is meaningless default
      propagationList: Entity_Velocity_On_Axis[] = [];
@@ -75,6 +77,14 @@ if((!most) || this.components.length > most.components.length) {
     }
 
     Sum_Of_Components(): number {
+      if(!(<undefined | number>Internal_Messaging.getMessage("Sum_Of_Components_Call_Count"))) {
+        Internal_Messaging.send("Sum_Of_Components_Call_Count", 0)
+      }
+      Internal_Messaging.send("Sum_Of_Components_Call_Count", (<number>Internal_Messaging.getMessage("Sum_Of_Components_Call_Count"))+1);
+    if( this.lastGetSumTime > this.lastSetComponentTime) {
+      this.lastGetSumTime = Date.now();
+      
+    }
     const sum =  this.components.reduce(
       (sum, component) => sum + component.value,
       0);
