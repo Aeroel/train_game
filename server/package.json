@@ -25,6 +25,8 @@
         "devservernode": "node --watch --enable-source-maps --env-file=.env build/startThisToStartTheGameServer.js",
         "devserverprof": "pnpm run devservertsxprof",
         "devservertsxprof": "tsx watch --env-file=.env --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
-        "devservernodeprof": "node --prof --watch --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js"
+        "devservernodeprof": "node --prof --watch --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js",
+        "devservernodeinspect":
+        "node --inspect-brk --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js"
     }
 }
