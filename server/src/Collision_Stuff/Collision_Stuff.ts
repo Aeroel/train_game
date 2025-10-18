@@ -9,30 +9,37 @@ import { Expand_entities_by_their_velocities_and_check_whether_they_might_collid
 import {World} from "#root/World.js"
 import {World_Tick} from "#root/World_Tick.js"
 export { Collision_Stuff, };
+type Filter_Fn= (other: Base_Entity) => boolean
+
 class Collision_Stuff {
  static Increase_hitbox_when_checking_by = 2;
  static findCollisions(
   entity: Base_Entity,
-  filterFn?: (other: Base_Entity) => boolean
-): Collision_Info[] {
+  filterFn?: Filter_Fn): Collision_Info[] {
         const allCollisions: Collision_Info[] = [];
       const filterOrAll = filterFn ?? (() => true);
+      const entities = World.getCurrentEntities();
+    for (const other of entities) {
+      const collision = checkCollision(entity, other, filterOrAll);
+      if(!collision) {
+        continue;
+      }
+      allCollisions.push(collision)
+    }
+    function checkCollision(entity: Base_Entity, other: Base_Entity, filterOrAll:Filter_Fn ) {
 
-        World.getCurrentEntities().forEach((other) => {
-
-          if (entity === other) return;
-         if (!filterOrAll(other)) return;
+          if (entity === other) return null;
+         if (!filterOrAll(other)) return null;
           Internal_Messaging.inc("Iterated_Over_Entities_X_Times_This_Tick");
       
           const collisionInfo = Collision_Stuff.Precise_collision_check(entity, other);
       
-          if (collisionInfo) {
-            allCollisions.push(collisionInfo);
-          }
-        });
+          return collisionInfo;
+        }
       if(allCollisions.length===0)  { 
       return [];
       }
+      
       const sortClosestFirst = (a: Collision_Info, b: Collision_Info) => a.time - b.time;
        allCollisions.sort(sortClosestFirst);
         return allCollisions;
