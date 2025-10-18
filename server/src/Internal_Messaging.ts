@@ -11,4 +11,13 @@ export class Internal_Messaging {
     const msg =  Internal_Messaging.messages.get(key);
     return msg;
   }
+  static inc(key: string) {
+          if(!(<undefined | number>Internal_Messaging.getMessage(key))) {
+        Internal_Messaging.send(key, 0)
+      }
+      Internal_Messaging.send(key, (<number>Internal_Messaging.getMessage(key))+1);
+  }
+  static resetCounter(key: string) {
+     Internal_Messaging.send(key, 0)
+  }
 }

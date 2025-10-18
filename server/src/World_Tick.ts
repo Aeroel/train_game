@@ -63,8 +63,15 @@ static tick() {
             newLog({
       logCategory:"World_Tick",
       message:`[#${World_Tick.tickId}] Performance stats:
-      ${Internal_Messaging.getMessage("simulationPerformance")}`
+      ${Internal_Messaging.getMessage("simulationPerformance")}
+      Other: 
+      Sum_Of_Components_Reduce_Call_Count: ${<number>Internal_Messaging.getMessage("Sum_Of_Components_Reduce_Call_Count")}
+      Iterated_Over_Entities_X_Times_This_Tick:  ${<number>Internal_Messaging.getMessage("Iterated_Over_Entities_X_Times_This_Tick")}
+      `
     })
+    Internal_Messaging.resetCounter("Sum_Of_Components_Reduce_Call_Count");
+    Internal_Messaging.resetCounter("Iterated_Over_Entities_X_Times_This_Tick");
+    
              World_Tick.tickId++;
            // Schedule the next tick
      setTimeout(World_Tick.tick, 5); 

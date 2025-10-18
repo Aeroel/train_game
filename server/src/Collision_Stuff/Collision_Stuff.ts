@@ -1,6 +1,7 @@
 import { My_Assert } from "#root/My_Assert.js";
 import type { Player } from "#root/Entities/Player.js";
 import  { Helper_Functions } from "#root/Helper_Functions.js";
+import  { Internal_Messaging } from "#root/Internal_Messaging.js";
 import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Box, Direction, Position, Collision_Info, Box_With_Velocity, Face, Normal  } from "#root/Type_Stuff.js";
 import { Check_For_Collision} from "#root/Collision_Stuff/Check_For_Collision.js"
@@ -18,13 +19,10 @@ class Collision_Stuff {
       const filterOrAll = filterFn ?? (() => true);
 
         World.getCurrentEntities().forEach((other) => {
+
           if (entity === other) return;
-          if(!Expand_entities_by_their_velocities_and_check_whether_they_might_collide(entity, other)) {
-            return;
-          }
-          
-          if (!filterOrAll(other)) return;
-        
+         if (!filterOrAll(other)) return;
+          Internal_Messaging.inc("Iterated_Over_Entities_X_Times_This_Tick");
       
           const collisionInfo = Collision_Stuff.Precise_collision_check(entity, other);
       

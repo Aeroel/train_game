@@ -2,6 +2,7 @@ import type { Base_Entity } from "#root/Entities/Base_Entity.js";
 import type { Entity_Velocity } from "#root/Entities/Entity_Velocity.js";
 import  { newLog } from "#root/My_Log.js";
 import  { Internal_Messaging } from "#root/Internal_Messaging.js";
+import  { now } from "#root/Utilities/Time.js";
 
 
 export type Most_Freq = {entityName: string, components: Velocity_Component[]};
@@ -18,6 +19,7 @@ export { Entity_Velocity_On_Axis };
 class Entity_Velocity_On_Axis {
     lastGetSumTime = 0
     lastSetComponentTime = 0;
+    lastSum = 0;
      velocity: Entity_Velocity;
      axis: Axis ='x'; //<- "x" is meaningless default
      propagationList: Entity_Velocity_On_Axis[] = [];
@@ -57,11 +59,7 @@ class Entity_Velocity_On_Axis {
     }
 
     Add_Component(component: Velocity_Component) {
-const most = <undefined| Most_Freq>Internal_Messaging.getMessage('mostPopulatedVelocity');
-if((!most) || this.components.length > most.components.length) {
-  Internal_Messaging.send("mostPopulatedVelocity",{entityName: this.velocity.entity.constructor.name, components: this.components})
-}
-
+   this.lastSetComponentTime  = now();
       // copy because otherwise... well, we basically assign same object to every entity
       const componentCopy = {...component};
          const existingComponent = this.components.find(thisComponent => thisComponent.key === component.key);
@@ -77,17 +75,16 @@ if((!most) || this.components.length > most.components.length) {
     }
 
     Sum_Of_Components(): number {
-      if(!(<undefined | number>Internal_Messaging.getMessage("Sum_Of_Components_Call_Count"))) {
-        Internal_Messaging.send("Sum_Of_Components_Call_Count", 0)
-      }
-      Internal_Messaging.send("Sum_Of_Components_Call_Count", (<number>Internal_Messaging.getMessage("Sum_Of_Components_Call_Count"))+1);
+
     if( this.lastGetSumTime > this.lastSetComponentTime) {
-      this.lastGetSumTime = Date.now();
-      
+      return this.lastSum;
     }
+        Internal_Messaging.inc("Sum_Of_Components_Reduce_Call_Count")
     const sum =  this.components.reduce(
       (sum, component) => sum + component.value,
       0);
+      this.lastGetSumTime = now();
+      this.lastSum = sum;
       return sum;
     }
 

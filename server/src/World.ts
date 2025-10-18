@@ -6,7 +6,7 @@ class World {
   static width: number = 60_000;
   static height: number = 60_000;
   static state = {
-    entities: new Set<Base_Entity>(),
+    entities: new Array<Base_Entity>(),
   };
   static pastStates = [];  // to do save all past states? 
   static addEntity<T extends Base_Entity>(entity: T)  {
@@ -14,10 +14,10 @@ class World {
       throw new Error('Entity has no entity tag, check stuff');
 
     }
-    if(World.state.entities.has(entity)) {
+    if(World.state.entities.includes(entity)) {
       throw new Error("Tried to add entity to world but it already exists in the world")
     }
-    World.state.entities.add(entity);
+    World.state.entities.push(entity);
     entity.addPartsToWorld({setThisToTrueToIndicateThatYouCalledThisFromWorld:true});
           return entity;
   }
@@ -29,7 +29,7 @@ class World {
   
   
   static getCurrentEntities() : Base_Entity[] {
-    return Array.from(World.getCurrentState().entities);
+    return World.getCurrentState().entities;
   }
   // aliases
   static getAllEntities() : Base_Entity[] {
@@ -49,9 +49,6 @@ class World {
 
     const removedItems = arr.splice(start, deleteCount ?? (arr.length - start));
     
-    World.state.entities.clear();
-    
-    arr.forEach(item => World.state.entities.add(item));
     
     return removedItems;
 }
