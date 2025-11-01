@@ -18,11 +18,11 @@ class Helper_Functions {
         if (nets['wlan0']) {
             return nets['wlan0'][1].address;
         }
-        else if (nets['Wi-Fi']) {
+        else if (nets['Wi-Fi'] && nets['Wi-Fi'][0]) {
             return nets['Wi-Fi'][0].address;
-        } else if (nets['swlan0']) {
+        } else if (nets['swlan0'] && nets['swlan0'][2]) {
             return nets['swlan0'][2].address;
-        } else if(nets["rmnet4"]) {
+        } else if(nets["rmnet4"] && nets["rmnet4"][1]) {
           return nets["rmnet4"][1].address;
          } else {
             return "Couldn't get LAN IP";
