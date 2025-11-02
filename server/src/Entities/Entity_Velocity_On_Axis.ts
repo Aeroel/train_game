@@ -17,8 +17,8 @@ export type Axis = "x" | "y";
 export { Entity_Velocity_On_Axis };
 
 class Entity_Velocity_On_Axis {
-    lastGetSumTime = 0
-    lastSetComponentTime = 0;
+    lastGetComponentsTime = 0;
+    lastComponentsUpdateTime = 0;
     lastSum = 0;
      velocity: Entity_Velocity;
      axis: Axis ='x'; //<- "x" is meaningless default
@@ -59,7 +59,7 @@ class Entity_Velocity_On_Axis {
     }
 
     Add_Component(component: Velocity_Component) {
-   this.lastSetComponentTime  = now();
+   this.lastComponentsUpdateTime  = now();
       // copy because otherwise... well, we basically assign same object to every entity
       const componentCopy = {...component};
          const existingComponent = this.components.find(thisComponent => thisComponent.key === component.key);
@@ -76,14 +76,14 @@ class Entity_Velocity_On_Axis {
 
     Sum_Of_Components(): number {
 
-    if( this.lastGetSumTime > this.lastSetComponentTime) {
+    if( this.lastGetComponentsTime > this.lastComponentsUpdateTime) {
       return this.lastSum;
     }
         Internal_Messaging.inc("Sum_Of_Components_Reduce_Call_Count")
     const sum =  this.components.reduce(
       (sum, component) => sum + component.value,
       0);
-      this.lastGetSumTime = now();
+      this.lastGetComponentsTime = now();
       this.lastSum = sum;
       return sum;
     }
@@ -175,7 +175,10 @@ Remove_Component(key: Velocity_Component['key'] | {key: Velocity_Component['key'
 
 
     // remove the component
-        this.components.splice(index, 1); 
+        this.components.splice(index, 1);
+      
+      
+       this.lastComponentsUpdateTime  = now();
 
 }
 
