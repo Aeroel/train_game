@@ -43,15 +43,14 @@ static ipAddressFieldAndButton() {
 
     AnimationLoop.start();
 
-  const everyMs = 50;
-   this.sendUserInputToServer({everyMs});
+   this.sendUserInputToServer({everySoOften: 50});
     
-   this.pingMeasurement();
+   this.measurePing({pingServerEveryMs: 2000});
    CommandConsole.consoleStuff();
 
   }
   
-  static sendUserInputToServer({everyMs}:{everyMs: number}) {
+  static sendUserInputToServer({everySoOften}:{everySoOften: number}) {
     // send whatever keys user presses every something secs
     setInterval(() => {
       
@@ -65,18 +64,18 @@ static ipAddressFieldAndButton() {
       });
       // reset zoom after sending so we do not keep zooming in or out more than once when user clicks 
       App.zoom = "no_change";
-    }, everyMs);
+    }, everySoOften);
   }
   
   
   
-  static pingMeasurement() {
+  static measurePing({pingServerEveryMs}: {pingServerEveryMs: number}) {
     setInterval(
     ()=>{
-      SocketWrapper.emit("ping", "ok");
+      SocketWrapper.emit("ping", "emptyMsg");
       this.lastPingTime=Date.now();
-    }
-    ,2000);
+    }, pingServerEveryMs);
+    
   SocketWrapper.on("pong",()=>{
     const pingMs = Date.now() - this.lastPingTime;
   const msg = `Ping: ${pingMs} ms`;

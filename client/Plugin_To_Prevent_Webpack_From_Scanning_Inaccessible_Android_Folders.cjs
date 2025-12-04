@@ -1,3 +1,13 @@
+/*
+Purpose: When running webpack watch mode on termux, webpack apparently tries accessing root folders like / and /data/data, etc. It is unable to access them and it reports this and retries this over and over, spamming the console with these messages.
+  This is very inconvenient.
+  Although it does not seem to have any discernible negative effect on the actual functionality of the watcher.
+  
+  Anyway, the script below is supposed to fix this. I am not 100 percent sure what it does but it basically seems to delete the paths that can be taken out of the TERMUX_DIR constant below, so, I assume, like, /, /data, /data/data, etc, and removes them from webpack.
+  I found this on some random website, maybe on Github.
+  It seems to work pretty well.
+*/
+
 const TERMUX_DIR = '/data/data/com.termux';
 
 function isTermux() {
