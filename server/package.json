@@ -1,10 +1,10 @@
 {
     "type": "module",
     "dependencies": {
-        "@types/express": "^5.0.5",
-        "@types/node": "^24.9.2",
+        "@types/express": "^5.0.6",
+        "@types/node": "^24.10.1",
         "colors": "^1.4.0",
-        "express": "^5.1.0",
+        "express": "^5.2.1",
         "socket.io": "^4.8.1",
         "source-map-support": "^0.5.21",
         "tsconfig-paths": "^4.2.0"
@@ -14,18 +14,18 @@
     },
     "devDependencies": {
         "ts-node": "^10.9.2",
-        "tsx": "^4.20.6",
+        "tsx": "^4.21.0",
         "typescript": "^5.9.3"
     },
     "scripts": {
         "test": "ts-node -r tsconfig-paths/register build/Tests/runTests.js",
-        "devtsc": "tsc --watch --noEmit",
-        "devserver": "pnpm run devservertsx",
-        "devservertsx": "tsx watch --env-file=.env --clear-screen=false src/startThisToStartTheGameServer.ts",
-        "devservernode": "node --watch --enable-source-maps --env-file=.env build/startThisToStartTheGameServer.js",
-        "devserverprof": "pnpm run devservertsxprof",
-        "devservertsxprof": "tsx watch --env-file=.env --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
-        "devservernodeprof": "node --prof --watch --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js",
-        "devservernodeinspect": "node --inspect-brk --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js"
+        "dev:tsc": "tsc --watch --noEmit",
+        "dev:server": "pnpm run dev:server-tsx",
+        "dev:server-tsx": "tsx watch --env-file=.env --clear-screen=false src/startThisToStartTheGameServer.ts",
+        "dev:server-node": "node --watch --enable-source-maps --env-file=.env build/startThisToStartTheGameServer.js",
+        "dev:server-prof": "pnpm run dev:server-tsx-prof",
+        "dev:server-tsx-prof": "tsx watch --env-file=.env --prof --clear-screen=false src/startThisToStartTheGameServer.ts",
+        "dev:server-node-prof": "node --prof --watch --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js",
+        "dev:server-node-inspect": "node --inspect-brk --env-file=.env --enable-source-maps build/startThisToStartTheGameServer.js"
     }
 }

@@ -10,7 +10,7 @@
         "webpack-cli": "^6.0.1"
     },
     "scripts": {
-        "devwebpack": "webpack --watch --mode development",
-        "devliveserver": "live-server public/ --no-browser"
+        "dev:devwebpack": "webpack --watch --mode development",
+        "dev:http-server": "live-server public/ --no-browser"
     }
 }
