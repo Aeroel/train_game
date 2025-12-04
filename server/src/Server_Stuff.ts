@@ -1,7 +1,9 @@
-// here I import external packages
+// external packages
 import express from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
+
+// internal packages
 import { Socket_Processor } from "#root/Socket_Processor.js"
 import { Helper_Functions } from "./Helper_Functions.js";
 
